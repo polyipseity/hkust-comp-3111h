@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="600" prefWidth="600" spacing="20" style="-fx-background-repeat: stretch;-fx-background-position: center center;" styleClass="root-pane" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="library.controllers.LoginController">
+    <Label fx:id="headerLabel" styleClass="header-label" text="Login">
+      <font>
+         <Font size="27.0" />
+      </font></Label>
+    <GridPane alignment="CENTER" hgap="10" prefWidth="859.0" vgap="10">
+        <Label text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <TextField fx:id="usernameField" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+        <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <PasswordField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <columnConstraints>
+         <ColumnConstraints />
+         <ColumnConstraints />
+      </columnConstraints>
+      <rowConstraints>
+         <RowConstraints />
+         <RowConstraints />
+      </rowConstraints>
+    </GridPane>
+    <Button onAction="#handleLogin" prefHeight="40" prefWidth="150" text="Login" />
+    <Button onAction="#handleBack" prefHeight="30" prefWidth="100" text="Back" />
+
+    <!-- New Register link: -->
+    <Button onAction="#handleGoToRegister" style="-fx-background-color:transparent; -fx-underline:true;" text="Don't have an account? Register" />
+    <padding>
+        <Insets bottom="40" left="40" right="40" top="40" />
+    </padding>
+</VBox>

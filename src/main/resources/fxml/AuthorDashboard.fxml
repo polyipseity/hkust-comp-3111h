@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<BorderPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="library.controllers.AuthorDashboardController">
+
+    <top>
+        <Label style="-fx-font-size:24px; -fx-padding:10" text="Author Dashboard" BorderPane.alignment="CENTER" />
+    </top>
+
+    <center>
+        <TabPane fx:id="tabPane" prefHeight="500">
+
+            <!-- My Books Tab -->
+            <Tab text="My Books">
+            </Tab>
+
+            <!-- Publish New Book Tab -->
+            <Tab text="Publish New Book">
+            </Tab>
+
+
+            <!-- Status View Tab -->
+            <Tab text="Status View">
+            </Tab>
+
+            <!-- Update Account Tab -->
+            <Tab text="My Profile">
+            </Tab>
+
+            <!-- Inform Board -->
+            <Tab text="Inform Board">
+            </Tab>
+
+        </TabPane>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER" spacing="20">
+            <padding>
+                <Insets bottom="10" left="10" right="10" top="10" />
+            </padding>
+            <Button onAction="#handleLogout" prefHeight="40" prefWidth="150" text="Logout" />
+        </HBox>
+    </bottom>
+
+</BorderPane>
