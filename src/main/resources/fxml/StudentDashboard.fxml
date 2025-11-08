@@ -1,46 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" styleClass="root-pane" xmlns="http://javafx.com/javafx/17.0.12"
+            fx:controller="library.controllers.StudentDashboardController">
 
-<BorderPane styleClass="root-pane" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="library.controllers.StudentDashboardController">
+	<top>
+		<Label text="Student/Staff Dashboard"
+		       style="-fx-font-size:24px; -fx-padding:10"
+		       BorderPane.alignment="CENTER"/>
+	</top>
 
-    <top>
-        <Label text="Student/Staff Dashboard"
-               style="-fx-font-size:24px; -fx-padding:10"
-               BorderPane.alignment="CENTER"/>
-    </top>
+	<center>
+		<TabPane fx:id="tabPane">
 
-    <center>
-        <TabPane fx:id="tabPane">
+			<!-- Available Books -->
+			<Tab text="Available Books">
+			</Tab>
 
-            <!-- Available Books -->
-            <Tab text="Available Books">
-            </Tab>
+			<!-- My Borrowed Books -->
+			<Tab text="My Borrowed Books">
+			</Tab>
 
-            <!-- My Borrowed Books -->
-            <Tab text="My Borrowed Books">
-            </Tab>
+			<!-- Update Account -->
+			<Tab text="My Profile">
+			</Tab>
 
-            <!-- Update Account -->
-            <Tab text="My Profile">
-            </Tab>
+			<!-- Inform Board -->
+			<Tab text="Inform Board">
+			</Tab>
 
-            <!-- Inform Board -->
-            <Tab text="Inform Board">
-            </Tab>
+		</TabPane>
+	</center>
 
-        </TabPane>
-    </center>
-
-    <bottom>
-        <HBox alignment="CENTER" spacing="20">
-            <padding>
-                <Insets bottom="10" left="10" right="10" top="10" />
-            </padding>
-            <Button onAction="#handleLogout" prefHeight="40" prefWidth="150" text="Logout" />
-        </HBox>
-    </bottom>
+	<bottom>
+		<HBox alignment="CENTER" spacing="20">
+			<padding>
+				<Insets bottom="10" left="10" right="10" top="10"/>
+			</padding>
+			<Button onAction="#handleLogout" prefHeight="40" prefWidth="150" text="Logout"/>
+		</HBox>
+	</bottom>
 </BorderPane>
