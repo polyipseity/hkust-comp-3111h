@@ -83,6 +83,9 @@
 							<noManPages>true</noManPages>
 							<stripDebug>true</stripDebug>
 							<noHeaderFiles>true</noHeaderFiles>
+							<options>
+								<option>--enable-native-access=javafx.graphics</option>
+							</options>
 						</configuration>
 					</execution>
 				</executions>
