@@ -6,7 +6,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="Comp3111LEx" />
+        <module name="HKUST COMP 3111H" />
       </profile>
     </annotationProcessing>
   </component>
