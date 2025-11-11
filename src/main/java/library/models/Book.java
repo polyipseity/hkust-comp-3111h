@@ -16,8 +16,13 @@ import java.util.Map;
 
 public record Book(
 		@NotNull String title,
-		@NotNull Author author
+		@NotNull Author author,
+		boolean modified
 ) {
+	public Book(@NotNull String title, @NotNull Author author) {
+		this(title, author, false);
+	}
+
 	public enum ApprovalStatus {
 		PENDING,
 		APPROVED,
@@ -131,16 +136,18 @@ public record Book(
 	public record S(Serializer<Author> authorSerializer) implements Serializer<Book> {
 		@Override
 		public void serialize(@NotNull DataOutput2 out, @NotNull Book value) throws IOException {
-			// title string + author
+			// title string + author + modified
 			out.writeUTF(value.title());
 			authorSerializer.serialize(out, value.author());
+			out.writeBoolean(value.modified());
 		}
 
 		@Override
 		public Book deserialize(@NotNull DataInput2 input, int available) throws IOException {
 			String t = input.readUTF();
 			Author a = authorSerializer.deserialize(input, available);
-			return new Book(t, a);
+			boolean m = input.readBoolean();
+			return new Book(t, a, m);
 		}
 	}
 }
