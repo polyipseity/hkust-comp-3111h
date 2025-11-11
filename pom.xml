@@ -10,8 +10,9 @@
 	<version>1.0.0</version>
 
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.version>25</java.version>
 		<junit.version>5.14.1</junit.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<dependencies>
@@ -52,6 +53,19 @@
 			<artifactId>openpdf</artifactId>
 			<version>3.0.0</version>
 		</dependency>
+		<!-- MapDB – a fast key/value store for Java -->
+		<dependency>
+			<groupId>org.mapdb</groupId>
+			<artifactId>mapdb</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+		<!-- Lombok – generates boilerplate code via annotations -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.42</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -61,8 +75,16 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.14.1</version>
 				<configuration>
-					<source>25</source>
-					<target>25</target>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<!-- Enable annotation processing for Lombok -->
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>1.18.42</version>
+						</path>
+					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
 			<plugin>
