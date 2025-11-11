@@ -42,21 +42,12 @@ public class LoginController {
 
 	@FXML
 	private void handleLogin(ActionEvent event) {
-		String fxml;
-		switch (selectedRole.toLowerCase()) {
-			case "student":
-				fxml = "/fxml/StudentDashboard.fxml";
-				break;
-			case "author":
-				fxml = "/fxml/AuthorDashboard.fxml";
-				break;
-			case "librarian":
-				fxml = "/fxml/LibrarianDashboard.fxml";
-				break;
-			default:
-				fxml = "/fxml/Home.fxml";
-				break;
-		}
+		String fxml = switch (selectedRole.toLowerCase()) {
+			case "student" -> "/fxml/StudentDashboard.fxml";
+			case "author" -> "/fxml/AuthorDashboard.fxml";
+			case "librarian" -> "/fxml/LibrarianDashboard.fxml";
+			default -> "/fxml/Home.fxml";
+		};
 		try {
 			Parent dash = FXMLLoader.load(getClass().getResource(fxml));
 			Main.getPrimaryStage().setScene(new Scene(dash, 1000, 700));
