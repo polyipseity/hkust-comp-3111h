@@ -73,6 +73,17 @@ public record Book(
 			@NotNull Map<User, Borrow> borrows,
 			long timesBorrowed
 	) {
+		@NotNull
+		public Data withBorrow(@NotNull User user, @Nullable Borrow borrow) {
+			var borrows = new HashMap<>(this.borrows);
+			if (borrow == null) {
+				borrows.remove(user);
+			} else {
+				borrows.put(user, borrow);
+			}
+			return withBorrows(borrows);
+		}
+
 		public record S(Serializer<User> userSerializer, Serializer<Book> bookSerializer,
 		                Serializer<Borrow> borrowSerializer) implements Serializer<Data> {
 

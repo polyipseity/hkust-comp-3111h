@@ -2,6 +2,7 @@ package library.models;
 
 import lombok.With;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.mapdb.DataInput2;
 import org.mapdb.DataOutput2;
 import org.mapdb.Serializer;
@@ -30,6 +31,31 @@ public record User(
 			@NotNull List<String> notifications,
 			@NotNull Map<BookRequest, BookRequest.Data> bookRequests
 	) {
+		@NotNull
+		public Data addNotification(@NotNull String notification) {
+			var notifications = new ArrayList<>(this.notifications);
+			notifications.add(notification);
+			return withNotifications(notifications);
+		}
+
+		@NotNull
+		public Data removeNotification(int index) {
+			var notifications = new ArrayList<>(this.notifications);
+			notifications.remove(index);
+			return withNotifications(notifications);
+		}
+
+		@NotNull
+		public Data withBookRequest(@NotNull BookRequest bookRequest, @Nullable BookRequest.Data bookRequestData) {
+			var bookRequests = new HashMap<>(this.bookRequests);
+			if (bookRequestData == null) {
+				bookRequests.remove(bookRequest);
+			} else {
+				bookRequests.put(bookRequest, bookRequestData);
+			}
+			return withBookRequests(bookRequests);
+		}
+
 		public record S(Serializer<BookRequest> bookRequestSerializer,
 		                Serializer<BookRequest.Data> bookRequestDataSerializer) implements Serializer<Data> {
 
