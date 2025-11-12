@@ -6,9 +6,10 @@ module library {
 	requires static lombok;
 	requires org.eclipse.collections.api;
 
-	opens library;
 	exports library;
-
 	opens library.controllers;
 	exports library.controllers;
+	exports library.models;
+	exports library.persistence;
+	exports library.utils;
 }
