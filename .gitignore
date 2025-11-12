@@ -295,5 +295,5 @@ buildNumber.properties
 
 # custom {
 /repository.db
-/repository.db.wal.0
+/repository.db.wal.*
 # }
