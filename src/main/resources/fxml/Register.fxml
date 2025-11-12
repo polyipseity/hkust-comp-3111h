@@ -5,7 +5,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 <VBox xmlns:fx="http://javafx.com/fxml/1"
-      xmlns="http://javafx.com/javafx/17.0.1" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="600"
+      xmlns="http://javafx.com/javafx/17.0.1" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="-Infinity"
+      prefHeight="600"
       prefWidth="600"
       style="-fx-background-repeat: stretch;-fx-background-position: center center;"
       fx:controller="library.controllers.RegisterController"

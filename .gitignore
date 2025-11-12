@@ -292,3 +292,8 @@ buildNumber.properties
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 # }
+
+# custom {
+/repository.db
+/repository.db.wal.0
+# }
