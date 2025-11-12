@@ -5,6 +5,7 @@ module library {
 	requires annotations;
 	requires static lombok;
 	requires org.eclipse.collections.api;
+	requires javafx.graphics;
 
 	exports library;
 	opens library.controllers;

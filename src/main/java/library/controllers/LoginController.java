@@ -5,13 +5,17 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.stage.Modality;
 import library.Main;
+import library.models.User;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 
 public class LoginController {
 	@FXML
@@ -42,17 +46,35 @@ public class LoginController {
 
 	@FXML
 	private void handleLogin(ActionEvent event) {
-		String fxml = switch (selectedRole.toLowerCase()) {
-			case "student" -> "/fxml/StudentDashboard.fxml";
-			case "author" -> "/fxml/AuthorDashboard.fxml";
-			case "librarian" -> "/fxml/LibrarianDashboard.fxml";
-			default -> "/fxml/Home.fxml";
-		};
-		try {
-			Parent dash = FXMLLoader.load(getClass().getResource(fxml));
-			Main.getPrimaryStage().setScene(new Scene(dash, 1000, 700));
-		} catch (IOException e) {
-			e.printStackTrace();
+		Alert errorAlert = new Alert(Alert.AlertType.ERROR, "");
+		errorAlert.initModality(Modality.APPLICATION_MODAL);
+		errorAlert.getDialogPane().setContentText("Username/Password Invalid");
+
+		String username = usernameField.getText();
+		String password = passwordField.getText();
+
+		User user = new User(username);
+		Optional<User.Data> userData = Main.getRepository().readUser(user);
+
+		// The user with the provided username is not found
+		if (userData.isEmpty())
+			errorAlert.showAndWait();
+		else if (!userData.get().password().equals(password))
+			errorAlert.showAndWait();
+		else {
+			String fxml = switch (selectedRole.toLowerCase()) {
+				case "student" -> "/fxml/StudentDashboard.fxml";
+				case "author" -> "/fxml/AuthorDashboard.fxml";
+				case "librarian" -> "/fxml/LibrarianDashboard.fxml";
+				default -> "/fxml/Home.fxml";
+			};
+			try {
+				// TODO: pass user details to Student/Author/Librarian dashboard
+				Parent dash = FXMLLoader.load(getClass().getResource(fxml));
+				Main.getPrimaryStage().setScene(new Scene(dash, 1000, 700));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
