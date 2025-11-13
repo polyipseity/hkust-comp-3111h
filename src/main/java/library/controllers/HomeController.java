@@ -1,32 +1,34 @@
 package library.controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import library.FXMLs;
 import library.Main;
 import library.models.User;
 
+import java.io.IOException;
+
 public class HomeController {
 	@FXML
-	private void handleStudent(ActionEvent event) {
+	private void initialize() {
+		Main.getContext().setLoggedInUser(null);
+	}
+
+	@FXML
+	private void handleStudentStaff() throws IOException {
 		navigateToLogin(User.Role.STUDENT_STAFF);
 	}
 
 	@FXML
-	private void handleAuthor(ActionEvent event) {
+	private void handleAuthor() throws IOException {
 		navigateToLogin(User.Role.AUTHOR);
 	}
 
 	@FXML
-	private void handleLibrarian(ActionEvent event) {
+	private void handleLibrarian() throws IOException {
 		navigateToLogin(User.Role.LIBRARIAN);
 	}
 
-	private void navigateToLogin(User.Role role) {
-		try {
-			Main.getContext().setScene(FXMLs.LOGIN.load(loader -> loader.<LoginController>getController().setRole(role)));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	private void navigateToLogin(User.Role role) throws IOException {
+		Main.getContext().setScene(FXMLs.LOGIN.load(loader -> loader.<LoginController>getController().setRole(role)));
 	}
 }

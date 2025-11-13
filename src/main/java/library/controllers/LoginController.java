@@ -1,21 +1,21 @@
 package library.controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Modality;
 import library.FXMLs;
 import library.Main;
+import library.controls.ManageProfileControl;
 import library.models.User;
+import library.utils.Alerts;
+import library.utils.HasMessage;
+import library.utils.Tuple2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.Optional;
 
 public class LoginController {
 	@FXML
@@ -28,6 +28,11 @@ public class LoginController {
 	@Nullable
 	private User.Role role;
 
+	@FXML
+	private void initialize() {
+		Main.getContext().setLoggedInUser(null);
+	}
+
 	public @NotNull User.Role getRole() {
 		return Objects.requireNonNull(role);
 	}
@@ -38,39 +43,26 @@ public class LoginController {
 	}
 
 	@FXML
-	private void handleBack(ActionEvent event) throws IOException {
+	private void handleBack() throws IOException {
 		Main.getContext().setScene(FXMLs.HOME.load());
 	}
 
 	@FXML
-	private void handleLogin(ActionEvent event) {
-		Alert errorAlert = new Alert(Alert.AlertType.ERROR, "");
-		errorAlert.initModality(Modality.APPLICATION_MODAL);
-		errorAlert.getDialogPane().setContentText("Username/Password Invalid");
-
+	private void handleLogin() throws IOException {
 		String username = usernameField.getText();
 		String password = passwordField.getText();
 
-		User user = new User(username);
-		Optional<User.Data> userData = Main.getContext().getRepository().readUser(user);
-
-		// The user with the provided username is not found
-		if (userData.isEmpty())
-			errorAlert.showAndWait();
-		else if (!userData.get().password().equals(password))
-			errorAlert.showAndWait();
-		else {
-			FXMLs fxml = switch (getRole()) {
-				case STUDENT_STAFF -> FXMLs.STUDENT_DASHBOARD;
-				case AUTHOR -> FXMLs.AUTHOR_DASHBOARD;
-				case LIBRARIAN -> FXMLs.LIBRARIAN_DASHBOARD;
-			};
-			try {
-				// TODO: pass user details to Student/Author/Librarian dashboard
-				Main.getContext().setScene(fxml.load());
-			} catch (IOException e) {
-				e.printStackTrace();
+		final var context = Main.getContext();
+		switch (context.manageProfile.login(getRole(), username, password)) {
+			case ManageProfileControl.LoginResult.Success(final var user, final var data) -> {
+				context.setLoggedInUser(new Tuple2<>(user, data));
+				Main.getContext().setScene((switch (getRole()) {
+					case STUDENT_STAFF -> FXMLs.STUDENT_DASHBOARD;
+					case AUTHOR -> FXMLs.AUTHOR_DASHBOARD;
+					case LIBRARIAN -> FXMLs.LIBRARIAN_DASHBOARD;
+				}).load());
 			}
+			case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
 		}
 	}
 
@@ -78,11 +70,7 @@ public class LoginController {
 	 * New: navigate to the standalone Register screen
 	 */
 	@FXML
-	private void handleGoToRegister(ActionEvent event) throws IOException {
+	private void handleGoToRegister() throws IOException {
 		Main.getContext().setScene(FXMLs.REGISTER.load(loader -> loader.<RegisterController>getController().setRole(getRole())));
-	}
-
-	private String capitalize(String s) {
-		return s.substring(0, 1).toUpperCase() + s.substring(1);
 	}
 }

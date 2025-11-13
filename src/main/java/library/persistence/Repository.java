@@ -4,6 +4,7 @@ import library.models.Author;
 import library.models.Book;
 import library.models.BookRequest;
 import library.models.User;
+import library.utils.HasMessage;
 import org.eclipse.collections.api.block.function.primitive.BooleanFunction;
 import org.jetbrains.annotations.NotNull;
 import org.mapdb.DB;
@@ -132,7 +133,7 @@ public class Repository implements Closeable {
 	public record TransactData(HTreeMap<User, User.Data> users, HTreeMap<Book, Book.Data> books) {
 	}
 
-	public static final class TransactionException extends Exception {
+	public static final class TransactionException extends Exception implements HasMessage {
 		/**
 		 * Constructs a new exception with {@code null} as its detail message.
 		 * The cause is not initialized, and may subsequently be initialized by a
@@ -188,6 +189,14 @@ public class Repository implements Closeable {
 		 */
 		public TransactionException(Throwable cause) {
 			super(cause);
+		}
+
+		@Override
+		public @NotNull String getMessage() {
+			return switch (super.getMessage()) {
+				case "" -> "Database transaction exception";
+				case String val -> "Database transaction exception: %s".formatted(val);
+			};
 		}
 	}
 }

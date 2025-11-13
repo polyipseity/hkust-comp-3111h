@@ -10,6 +10,7 @@ module library {
 	exports library;
 	opens library.controllers;
 	exports library.controllers;
+	exports library.controls;
 	exports library.models;
 	exports library.persistence;
 	exports library.utils;
