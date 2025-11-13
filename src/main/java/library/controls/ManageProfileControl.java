@@ -36,7 +36,7 @@ public record ManageProfileControl(Repository repository) {
 				final var user = new User(username);
 				switch (repository.readUser(user).orElse(null)) {
 					case null -> {
-						final var data = new User.Data(password, true, role, fullName, Collections.emptyList(), Collections.emptyMap());
+						final var data = new User.Data(role, true, password, fullName, Collections.emptyList(), Collections.emptyMap());
 						repository.createUser(user, data);
 						return new RegisterResult.Success(user, data);
 					}

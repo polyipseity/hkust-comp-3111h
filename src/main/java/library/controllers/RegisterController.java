@@ -65,7 +65,7 @@ public class RegisterController {
 			errorAlert.showAndWait();
 		} else {
 			User newUser = new User(username);
-			User.Data newUserData = new User.Data(password, true, getRole(),
+			User.Data newUserData = new User.Data(getRole(), true, password,
 					fullName, new ArrayList<>(), new HashMap<>());
 			try {
 				Main.getContext().getRepository().createUser(newUser, newUserData);

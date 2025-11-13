@@ -38,7 +38,7 @@ class RepositoryTest {
 	@Test
 	void userCreateReadUpdateDelete() {
 		var user = new User("alice");
-		var data = new User.Data("alice", true, User.Role.STUDENT_STAFF, "Alice Smith", Arrays.asList("notification 0", "notification 1"), Collections.singletonMap(new BookRequest("Clean Code", "Robert C. Martin"), new BookRequest.Data(new Date())));
+		var data = new User.Data(User.Role.STUDENT_STAFF, true, "alice_pwd", "Alice Smith", Arrays.asList("notification 0", "notification 1"), Collections.singletonMap(new BookRequest("Clean Code", "Robert C. Martin"), new BookRequest.Data(new Date())));
 
 		// ---- create ---------------------------------------------------------
 		assertDoesNotThrow(() -> service.createUser(user, data), "createUser should not throw when the key is new");

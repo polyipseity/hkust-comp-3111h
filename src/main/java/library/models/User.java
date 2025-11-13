@@ -31,9 +31,9 @@ public record User(
 
 	@With
 	public record Data(
-			@NotNull String password,
-			boolean active,
 			@NotNull Role role,
+			boolean active,
+			@NotNull String password,
 			@NotNull String fullName,
 			@NotNull List<String> notifications,
 			@NotNull Map<BookRequest, BookRequest.Data> bookRequests
@@ -68,11 +68,9 @@ public record User(
 
 			@Override
 			public void serialize(@NotNull DataOutput2 out, @NotNull Data value) throws IOException {
-				// String fields
-				out.writeUTF(value.password());
-				out.writeBoolean(value.active());
-				// enum – store its ordinal
 				out.writeInt(value.role().ordinal());
+				out.writeBoolean(value.active());
+				out.writeUTF(value.password());
 				out.writeUTF(value.fullName());
 
 				/* notifications : List<String> */
@@ -93,9 +91,9 @@ public record User(
 
 			@Override
 			public Data deserialize(@NotNull DataInput2 input, int available) throws IOException {
-				String pwd = input.readUTF();
-				boolean act = input.readBoolean();
 				Role r = Role.values()[input.readInt()];
+				boolean act = input.readBoolean();
+				String pwd = input.readUTF();
 				String fn = input.readUTF();
 
 				/* notifications */
@@ -114,7 +112,7 @@ public record User(
 					reqs.put(key, val);
 				}
 
-				return new Data(pwd, act, r, fn, notifs, reqs);
+				return new Data(r, act, pwd, fn, notifs, reqs);
 			}
 		}
 	}
