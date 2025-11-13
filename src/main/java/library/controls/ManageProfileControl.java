@@ -35,13 +35,13 @@ public record ManageProfileControl(Repository repository) {
 			case UserValidator.Result.Success _ -> {
 				final var user = new User(username);
 				switch (repository.readUser(user).orElse(null)) {
+					case User.Data _ -> {
+						return new RegisterResult.UsernameExists();
+					}
 					case null -> {
 						final var data = new User.Data(role, true, password, fullName, Collections.emptyList(), Collections.emptyMap());
 						repository.createUser(user, data);
 						return new RegisterResult.Success(user, data);
-					}
-					case User.Data _ -> {
-						return new RegisterResult.UsernameExists();
 					}
 				}
 			}
