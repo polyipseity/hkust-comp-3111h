@@ -10,45 +10,31 @@ public record ManageProfileControl(Repository repository) {
 	@NotNull
 	public LoginResult login(@NotNull User.Role role, @NotNull String username, @NotNull String password) {
 		final var user = new User(username);
-		switch (repository.readUser(user).orElse(null)) {
-			case null -> {
-				return new LoginResult.InvalidUsername();
-			}
-			case User.Data data when data.role() != role -> {
-				return new LoginResult.WrongRole(data.role());
-			}
-			case User.Data data when !data.password().equals(password) -> {
-				return new LoginResult.InvalidPassword();
-			}
-			case User.Data data when !data.active() -> {
-				return new LoginResult.DeactivatedAccount();
-			}
-			case User.Data data -> {
-				return new LoginResult.Success(user, data);
-			}
-		}
+		return switch (repository.readUser(user).orElse(null)) {
+			case null -> new LoginResult.InvalidUsername();
+			case User.Data data when data.role() != role -> new LoginResult.WrongRole(data.role());
+			case User.Data data when !data.password().equals(password) -> new LoginResult.InvalidPassword();
+			case User.Data data when !data.active() -> new LoginResult.DeactivatedAccount();
+			case User.Data data -> new LoginResult.Success(user, data);
+		};
 	}
 
 	@NotNull
 	public RegisterResult register(@NotNull UserValidator validator, @NotNull User.Role role, @NotNull String username, @NotNull String password, @NotNull String fullName) throws Repository.TransactionException {
-		switch (validator.apply(username, password, fullName)) {
+		return switch (validator.apply(username, password, fullName)) {
 			case UserValidator.Result.Success _ -> {
 				final var user = new User(username);
-				switch (repository.readUser(user).orElse(null)) {
-					case User.Data _ -> {
-						return new RegisterResult.UsernameExists();
-					}
+				yield switch (repository.readUser(user).orElse(null)) {
+					case User.Data _ -> new RegisterResult.UsernameExists();
 					case null -> {
 						final var data = new User.Data(role, true, password, fullName, Collections.emptyList(), Collections.emptyMap());
 						repository.createUser(user, data);
-						return new RegisterResult.Success(user, data);
+						yield new RegisterResult.Success(user, data);
 					}
-				}
+				};
 			}
-			case UserValidator.Result cause -> {
-				return new RegisterResult.InvalidDetails(cause);
-			}
-		}
+			case UserValidator.Result cause -> new RegisterResult.InvalidDetails(cause);
+		};
 	}
 
 	public sealed interface LoginResult {
