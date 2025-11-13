@@ -22,7 +22,8 @@ import java.util.Collections;
 import java.util.Optional;
 
 public class AuthorPublishBooksController {
-    Repository repository = Main.getContext().repository;
+
+    private final Repository repository = Main.getContext().repository;
 
     @FXML
     private TextField BookTitle, BookContent, BookAbstract;
@@ -62,7 +63,7 @@ public class AuthorPublishBooksController {
     //Method for publishing the book
     @FXML
     private void PublishBook() throws IOException {
-        if(BookTitle.getText().isEmpty() || BookContent.getText().isEmpty() || BookAbstract.getText().isEmpty()) {
+        if(BookTitle.getText().isEmpty() || ContentTxt.isEmpty() || BookAbstract.getText().isEmpty()) {
             Alerts.showErrorDialog("Missing information of the book");
         }
         assert Main.getContext().getLoggedInUser() != null;
@@ -71,7 +72,7 @@ public class AuthorPublishBooksController {
         if(opt.isPresent()) {
             Alerts.showErrorDialog("Duplicated Book Title");
         }else{
-            var data = new Book.Data(BookAbstract.getText(), Book.ApprovalStatus.PENDING, book, Collections.emptyMap(), 0);
+            var data = new Book.Data(BookAbstract.getText(), ContentTxt, Book.ApprovalStatus.PENDING, null, Collections.emptyMap(), 0);
             try {
                 repository.createBook(book, data);
             } catch (Repository.TransactionException e) {
