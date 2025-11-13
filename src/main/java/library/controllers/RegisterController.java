@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Objects;
 
-public class RegisterController {
+public class RegisterController implements DependsOnRole {
 
 	@FXML
 	private Label headerLabel;
@@ -33,10 +33,12 @@ public class RegisterController {
 		Main.getContext().setLoggedInUser(null);
 	}
 
+	@Override
 	public @NotNull User.Role getRole() {
 		return Objects.requireNonNull(role);
 	}
 
+	@Override
 	public void setRole(@NotNull User.Role role) {
 		this.role = role;
 		headerLabel.setText("%s Register".formatted(role.name));
@@ -49,7 +51,7 @@ public class RegisterController {
 
 	@FXML
 	private void handleGoToLogin() throws IOException {
-		Main.getContext().setScene(FXMLs.LOGIN.load(loader -> loader.<RegisterController>getController().setRole(getRole())));
+		Main.getContext().setScene(FXMLs.LOGIN.load(loader -> loader.<DependsOnRole>getController().setRole(getRole())));
 	}
 
 	@FXML
@@ -63,7 +65,7 @@ public class RegisterController {
 			switch (context.manageProfile.register(UserValidator.DEFAULT, getRole(), username, password, fullName)) {
 				case ManageProfileControl.RegisterResult.Success val -> {
 					Alerts.showInfoDialog(val.getMessage());
-					context.setScene(FXMLs.LOGIN.load(loader -> loader.<LoginController>getController().setRole(getRole())));
+					context.setScene(FXMLs.LOGIN.load(loader -> loader.<DependsOnRole>getController().setRole(getRole())));
 				}
 				case HasMessage val -> Alerts.showErrorDialog(val.getMessage());
 			}

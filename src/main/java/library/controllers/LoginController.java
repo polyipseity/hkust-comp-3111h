@@ -17,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Objects;
 
-public class LoginController {
+public class LoginController implements DependsOnRole {
 	@FXML
 	private Label headerLabel;
 	@FXML
@@ -33,10 +33,12 @@ public class LoginController {
 		Main.getContext().setLoggedInUser(null);
 	}
 
+	@Override
 	public @NotNull User.Role getRole() {
 		return Objects.requireNonNull(role);
 	}
 
+	@Override
 	public void setRole(@NotNull User.Role role) {
 		this.role = role;
 		headerLabel.setText("%s Login".formatted(role.name));
@@ -71,6 +73,6 @@ public class LoginController {
 	 */
 	@FXML
 	private void handleGoToRegister() throws IOException {
-		Main.getContext().setScene(FXMLs.REGISTER.load(loader -> loader.<RegisterController>getController().setRole(getRole())));
+		Main.getContext().setScene(FXMLs.REGISTER.load(loader -> loader.<DependsOnRole>getController().setRole(getRole())));
 	}
 }
