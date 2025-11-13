@@ -16,12 +16,14 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
         </processorPath>
         <module name="HKUST COMP 3111H" />
+        <module name="LibraryManagementSystem" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="HKUST COMP 3111H" options="" />
+      <module name="LibraryManagementSystem" options="" />
     </option>
   </component>
 </project>

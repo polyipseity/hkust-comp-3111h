@@ -44,7 +44,7 @@
 			<!-- Inform Board -->
 			<Tab text="Inform Board">
                 <StackPane>
-                    <fx:include source="AuthorNotification.fxml"/>
+                    <fx:include source="AuthorInformBoard.fxml"/>
                 </StackPane>
 			</Tab>
 

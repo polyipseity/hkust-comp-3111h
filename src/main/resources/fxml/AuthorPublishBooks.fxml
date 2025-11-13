@@ -22,9 +22,9 @@
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <TextField id="BookTitle" GridPane.columnIndex="1" />
-      <TextField id="BookContent" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <TextField id="BookAbstract" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <TextField fx:id="BookTitle" GridPane.columnIndex="1" />
+      <TextField fx:id="BookContent" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <TextField fx:id="BookAbstract" GridPane.columnIndex="1" GridPane.rowIndex="2" />
       <Button onAction ="#ChooseTextFile" mnemonicParsing="false" text="Choose Text File" GridPane.columnIndex="2" GridPane.rowIndex="1" />
       <Button onAction ="#Generate" mnemonicParsing="false" text="Generate" GridPane.columnIndex="2" GridPane.rowIndex="2" />
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Book Title:" />

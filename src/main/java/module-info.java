@@ -6,8 +6,9 @@ module library {
 	requires static lombok;
 	requires org.eclipse.collections.api;
 	requires javafx.graphics;
+    requires java.desktop;
 
-	exports library;
+    exports library;
 	opens library.controllers;
 	exports library.controllers;
 	exports library.controls;

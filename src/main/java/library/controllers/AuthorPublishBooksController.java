@@ -3,17 +3,30 @@ package library.controllers;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
 import library.FXMLs;
 import library.Main;
+import library.controls.UserValidator;
+import library.models.Author;
+import library.models.Book;
+import library.models.User;
+import library.persistence.Repository;
+import library.utils.Alerts;
 
-import java.awt.*;
+import javafx.scene.control.TextField;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Collections;
+import java.util.Optional;
 
 public class AuthorPublishBooksController {
+    Repository repository = Main.getContext().repository;
+
+    @FXML
     private TextField BookTitle, BookContent, BookAbstract;
+    private String ContentTxt;
 
     //Method for choosing text file
     @FXML
@@ -32,47 +45,38 @@ public class AuthorPublishBooksController {
             try {
                 // Read the file content
                 String content = Files.readString(file.toPath());
-
-                // Process the file content (your logic here)
-                processUploadedFile(content, file.getName());
-
-                // Show success message
-                showAlert(Alert.AlertType.INFORMATION, "Success",
-                        "File uploaded successfully: " + file.getName());
-
+                ContentTxt = Files.readString(file.toPath());
+                BookContent.setText(content);
             } catch (IOException e) {
-                showAlert(Alert.AlertType.ERROR, "Error",
-                        "Could not read file: " + e.getMessage());
+                Alerts.showErrorDialog(e.getMessage());
             }
         }
-    }
-
-    private void processUploadedFile(String content, String fileName) {
-        // Your business logic here
-        System.out.println("Processing file: " + fileName);
-        System.out.println("Content: " + content);
-
-        // Example: Update UI, save to database, etc.
-        // expensesTableView.getItems().add(...);
-    }
-
-    private void showAlert(Alert.AlertType alertType, String title, String message) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 
     //Method for generating summary of the book based on the title
     @FXML
     private void Generate() throws IOException {
-
+        BookAbstract.setText("Example summary of the Book");
     }
 
     //Method for publishing the book
     @FXML
     private void PublishBook() throws IOException {
-
+        if(BookTitle.getText().isEmpty() || BookContent.getText().isEmpty() || BookAbstract.getText().isEmpty()) {
+            Alerts.showErrorDialog("Missing information of the book");
+        }
+        assert Main.getContext().getLoggedInUser() != null;
+        var book = new Book(BookTitle.getText(), new Author.ByRef(Main.getContext().getLoggedInUser()._1()), false);
+        Optional<Book.Data> opt = repository.readBook(book);
+        if(opt.isPresent()) {
+            Alerts.showErrorDialog("Duplicated Book Title");
+        }else{
+            var data = new Book.Data(BookAbstract.getText(), Book.ApprovalStatus.PENDING, book, Collections.emptyMap(), 0);
+            try {
+                repository.createBook(book, data);
+            } catch (Repository.TransactionException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
