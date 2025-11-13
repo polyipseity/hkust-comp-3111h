@@ -53,6 +53,11 @@
 			<artifactId>openpdf</artifactId>
 			<version>3.0.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.jetbrains</groupId>
+			<artifactId>annotations</artifactId>
+			<version>26.0.2</version>
+		</dependency>
 		<!-- MapDB – a fast key/value store for Java -->
 		<dependency>
 			<groupId>org.mapdb</groupId>
