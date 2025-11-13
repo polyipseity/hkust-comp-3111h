@@ -72,7 +72,11 @@ public record ManageProfileControl(Repository repository) {
 	}
 
 	public sealed interface RegisterResult {
-		record Success(@NotNull User user, @NotNull User.Data data) implements RegisterResult {
+		record Success(@NotNull User user, @NotNull User.Data data) implements RegisterResult, HasMessage {
+			@Override
+			public @NotNull String getMessage() {
+				return "Registration successful";
+			}
 		}
 
 		record InvalidDetails(@NotNull HasMessage cause) implements RegisterResult, HasMessage {

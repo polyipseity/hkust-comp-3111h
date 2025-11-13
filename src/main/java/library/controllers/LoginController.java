@@ -6,14 +6,16 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import library.FXMLs;
 import library.Main;
+import library.controls.ManageProfileControl;
 import library.models.User;
 import library.utils.Alerts;
+import library.utils.HasMessage;
+import library.utils.Tuple2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.Optional;
 
 public class LoginController {
 	@FXML
@@ -41,30 +43,21 @@ public class LoginController {
 	}
 
 	@FXML
-	private void handleLogin() {
+	private void handleLogin() throws IOException {
 		String username = usernameField.getText();
 		String password = passwordField.getText();
 
-		User user = new User(username);
-		Optional<User.Data> userData = Main.getContext().repository.readUser(user);
-
-		// The user with the provided username is not found
-		if (userData.isEmpty())
-			Alerts.showErrorDialog("Username/Password Invalid");
-		else if (!userData.get().password().equals(password))
-			Alerts.showErrorDialog("Username/Password Invalid");
-		else {
-			FXMLs fxml = switch (getRole()) {
-				case STUDENT_STAFF -> FXMLs.STUDENT_DASHBOARD;
-				case AUTHOR -> FXMLs.AUTHOR_DASHBOARD;
-				case LIBRARIAN -> FXMLs.LIBRARIAN_DASHBOARD;
-			};
-			try {
-				// TODO: pass user details to Student/Author/Librarian dashboard
-				Main.getContext().setScene(fxml.load());
-			} catch (IOException e) {
-				e.printStackTrace();
+		final var context = Main.getContext();
+		switch (context.manageProfile.login(getRole(), username, password)) {
+			case ManageProfileControl.LoginResult.Success(final var user, final var data) -> {
+				context.setLoggedInUser(new Tuple2<>(user, data));
+				Main.getContext().setScene((switch (getRole()) {
+					case STUDENT_STAFF -> FXMLs.STUDENT_DASHBOARD;
+					case AUTHOR -> FXMLs.AUTHOR_DASHBOARD;
+					case LIBRARIAN -> FXMLs.LIBRARIAN_DASHBOARD;
+				}).load());
 			}
+			case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
 		}
 	}
 

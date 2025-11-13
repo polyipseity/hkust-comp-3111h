@@ -5,15 +5,16 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import library.FXMLs;
 import library.Main;
+import library.controls.ManageProfileControl;
+import library.controls.UserValidator;
 import library.models.User;
 import library.persistence.Repository;
 import library.utils.Alerts;
+import library.utils.HasMessage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Objects;
 
 public class RegisterController {
@@ -52,18 +53,14 @@ public class RegisterController {
 		String password = passwordField.getText();
 		String fullName = fullNameField.getText();
 
-		if (username.isEmpty() || password.isEmpty() || fullName.isEmpty()) {
-			Alerts.showErrorDialog("One or more input fields are blank");
-		} else {
-			User newUser = new User(username);
-			User.Data newUserData = new User.Data(getRole(), true, password,
-					fullName, new ArrayList<>(), new HashMap<>());
-			try {
-				Main.getContext().repository.createUser(newUser, newUserData);
-				Alerts.showInfoDialog("Account successfully created");
-			} catch (Repository.TransactionException e) {
-				Alerts.showErrorDialog("Duplicate username found in database");
+		final var context = Main.getContext();
+		try {
+			switch (context.manageProfile.register(UserValidator.DEFAULT, getRole(), username, password, fullName)) {
+				case ManageProfileControl.RegisterResult.Success val -> Alerts.showInfoDialog(val.getMessage());
+				case HasMessage val -> Alerts.showErrorDialog(val.getMessage());
 			}
+		} catch (Repository.TransactionException exception) {
+			Alerts.showErrorDialog(exception.getMessage());
 		}
 	}
 }
