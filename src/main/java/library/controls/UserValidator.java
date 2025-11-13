@@ -1,5 +1,7 @@
 package library.controls;
 
+import library.utils.HasMessage;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 @FunctionalInterface
@@ -47,13 +49,13 @@ public interface UserValidator {
 		record Success() implements Result {
 		}
 
-		record BadUsername(@NotNull String message) implements Result {
+		record BadUsername(@Getter @NotNull String message) implements Result, HasMessage {
 		}
 
-		record BadPassword(@NotNull String message) implements Result {
+		record BadPassword(@Getter @NotNull String message) implements Result, HasMessage {
 		}
 
-		record BadFullName(@NotNull String message) implements Result {
+		record BadFullName(@Getter @NotNull String message) implements Result, HasMessage {
 		}
 	}
 }

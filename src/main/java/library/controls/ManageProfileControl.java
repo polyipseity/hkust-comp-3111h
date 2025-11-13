@@ -2,6 +2,7 @@ package library.controls;
 
 import library.models.User;
 import library.persistence.Repository;
+import library.utils.HasMessage;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -33,7 +34,7 @@ public record ManageProfileControl(Repository repository) {
 					}
 				};
 			}
-			case UserValidator.Result cause -> new RegisterResult.InvalidDetails(cause);
+			case HasMessage cause -> new RegisterResult.InvalidDetails(cause);
 		};
 	}
 
@@ -41,16 +42,32 @@ public record ManageProfileControl(Repository repository) {
 		record Success(User user, User.Data data) implements LoginResult {
 		}
 
-		record InvalidUsername() implements LoginResult {
+		record InvalidUsername() implements LoginResult, HasMessage {
+			@Override
+			public @NotNull String getMessage() {
+				return "Invalid username";
+			}
 		}
 
-		record WrongRole(User.Role actualRole) implements LoginResult {
+		record WrongRole(User.Role actualRole) implements LoginResult, HasMessage {
+			@Override
+			public @NotNull String getMessage() {
+				return "Wrong role: %s".formatted(actualRole.name);
+			}
 		}
 
-		record InvalidPassword() implements LoginResult {
+		record InvalidPassword() implements LoginResult, HasMessage {
+			@Override
+			public @NotNull String getMessage() {
+				return "Invalid password";
+			}
 		}
 
-		record DeactivatedAccount() implements LoginResult {
+		record DeactivatedAccount() implements LoginResult, HasMessage {
+			@Override
+			public @NotNull String getMessage() {
+				return "Deactivated account";
+			}
 		}
 	}
 
@@ -58,10 +75,18 @@ public record ManageProfileControl(Repository repository) {
 		record Success(@NotNull User user, @NotNull User.Data data) implements RegisterResult {
 		}
 
-		record InvalidDetails(@NotNull UserValidator.Result cause) implements RegisterResult {
+		record InvalidDetails(@NotNull HasMessage cause) implements RegisterResult, HasMessage {
+			@Override
+			public @NotNull String getMessage() {
+				return "Invalid details: %s".formatted(cause.getMessage());
+			}
 		}
 
-		record UsernameExists() implements RegisterResult {
+		record UsernameExists() implements RegisterResult, HasMessage {
+			@Override
+			public @NotNull String getMessage() {
+				return "Username exists";
+			}
 		}
 	}
 }
