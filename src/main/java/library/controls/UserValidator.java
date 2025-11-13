@@ -5,23 +5,38 @@ import org.jetbrains.annotations.NotNull;
 @FunctionalInterface
 public interface UserValidator {
 	@NotNull UserValidator DEFAULT = (username, password, fullName) -> {
-		if (username.isEmpty()) {
-			return new Result.BadUsername("Empty username");
+		switch (username) {
+			case "" -> {
+				return new Result.BadUsername("Empty username");
+			}
+			case String val when val.chars().anyMatch(ch -> ch < 32 || ch >= 127) -> {
+				// non-ASCII or control characters
+				return new Result.BadUsername("Bad characters in username");
+			}
+			default -> {
+			}
 		}
-		if (username.chars().anyMatch(ch -> ch < 32 || ch >= 127)) { // non-ASCII or control characters
-			return new Result.BadUsername("Bad characters in username");
+		switch (password) {
+			case String val when val.length() < 8 -> {
+				return new Result.BadPassword("Password too short");
+			}
+			case String val when val.chars().anyMatch(ch -> ch < 32 || ch >= 127) -> {
+				// non-ASCII or control characters
+				return new Result.BadUsername("Bad characters in password");
+			}
+			default -> {
+			}
 		}
-		if (password.length() < 8) {
-			return new Result.BadPassword("Password too short");
-		}
-		if (password.chars().anyMatch(ch -> ch < 32 || ch >= 127)) {// non-ASCII or control characters
-			return new Result.BadPassword("Bad characters in password");
-		}
-		if (fullName.isEmpty()) {
-			return new Result.BadFullName("Empty full name");
-		}
-		if (fullName.chars().anyMatch(ch -> ch < 32)) { // control characters
-			return new Result.BadFullName("Bad characters in full name");
+		switch (fullName) {
+			case "" -> {
+				return new Result.BadFullName("Empty full name");
+			}
+			case String val when val.chars().anyMatch(ch -> ch < 32) -> {
+				// control characters
+				return new Result.BadFullName("Bad characters in full name");
+			}
+			default -> {
+			}
 		}
 		return new Result.Success();
 	};
