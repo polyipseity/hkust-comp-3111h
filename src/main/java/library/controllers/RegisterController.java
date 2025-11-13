@@ -1,14 +1,13 @@
 package library.controllers;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.stage.Modality;
 import library.FXMLs;
 import library.Main;
 import library.models.User;
 import library.persistence.Repository;
+import library.utils.Alerts;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,30 +48,21 @@ public class RegisterController {
 
 	@FXML
 	private void handleRegistration() {
-		Alert errorAlert = new Alert(Alert.AlertType.ERROR, "");
-		errorAlert.initModality(Modality.APPLICATION_MODAL);
-
-		Alert infoAlert = new Alert(Alert.AlertType.INFORMATION, "");
-		infoAlert.initModality(Modality.APPLICATION_MODAL);
-
 		String username = usernameField.getText();
 		String password = passwordField.getText();
 		String fullName = fullNameField.getText();
 
 		if (username.isEmpty() || password.isEmpty() || fullName.isEmpty()) {
-			errorAlert.getDialogPane().setContentText("One or more input fields are blank");
-			errorAlert.showAndWait();
+			Alerts.showErrorDialog("One or more input fields are blank");
 		} else {
 			User newUser = new User(username);
 			User.Data newUserData = new User.Data(getRole(), true, password,
 					fullName, new ArrayList<>(), new HashMap<>());
 			try {
 				Main.getContext().getRepository().createUser(newUser, newUserData);
-				infoAlert.getDialogPane().setContentText("Account successfully created");
-				infoAlert.showAndWait();
+				Alerts.showInfoDialog("Account successfully created");
 			} catch (Repository.TransactionException e) {
-				errorAlert.getDialogPane().setContentText("Duplicate username found in database");
-				errorAlert.showAndWait();
+				Alerts.showErrorDialog("Duplicate username found in database");
 			}
 		}
 	}

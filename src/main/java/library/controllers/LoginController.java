@@ -1,14 +1,13 @@
 package library.controllers;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Modality;
 import library.FXMLs;
 import library.Main;
 import library.models.User;
+import library.utils.Alerts;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,10 +42,6 @@ public class LoginController {
 
 	@FXML
 	private void handleLogin() {
-		Alert errorAlert = new Alert(Alert.AlertType.ERROR, "");
-		errorAlert.initModality(Modality.APPLICATION_MODAL);
-		errorAlert.getDialogPane().setContentText("Username/Password Invalid");
-
 		String username = usernameField.getText();
 		String password = passwordField.getText();
 
@@ -55,9 +50,9 @@ public class LoginController {
 
 		// The user with the provided username is not found
 		if (userData.isEmpty())
-			errorAlert.showAndWait();
+			Alerts.showErrorDialog("Username/Password Invalid");
 		else if (!userData.get().password().equals(password))
-			errorAlert.showAndWait();
+			Alerts.showErrorDialog("Username/Password Invalid");
 		else {
 			FXMLs fxml = switch (getRole()) {
 				case STUDENT_STAFF -> FXMLs.STUDENT_DASHBOARD;
