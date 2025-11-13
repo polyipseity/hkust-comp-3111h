@@ -2,8 +2,6 @@ package library.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -12,8 +10,11 @@ import javafx.stage.Modality;
 import library.FXMLs;
 import library.Main;
 import library.models.User;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
 
 public class LoginController {
@@ -24,17 +25,16 @@ public class LoginController {
 	@FXML
 	private PasswordField passwordField;
 
-	private String selectedRole;
+	@Nullable
+	private User.Role role;
 
-	public void setRole(String role) {
-		this.selectedRole = role;
-		String role_name = switch (role.toLowerCase()) {
-			case "student", "staff" -> "Student/Staff";
-			case "author" -> "Author";
-			case "librarian" -> "Librarian";
-			default -> "";
-		};
-		headerLabel.setText(role_name + " Login");
+	public @NotNull User.Role getRole() {
+		return Objects.requireNonNull(role);
+	}
+
+	public void setRole(@NotNull User.Role role) {
+		this.role = role;
+		headerLabel.setText("%s Login".formatted(role.name));
 	}
 
 	@FXML
@@ -60,11 +60,10 @@ public class LoginController {
 		else if (!userData.get().password().equals(password))
 			errorAlert.showAndWait();
 		else {
-			FXMLs fxml = switch (selectedRole.toLowerCase()) {
-				case "student" -> FXMLs.STUDENT_DASHBOARD;
-				case "author" -> FXMLs.AUTHOR_DASHBOARD;
-				case "librarian" -> FXMLs.LIBRARIAN_DASHBOARD;
-				default -> FXMLs.HOME;
+			FXMLs fxml = switch (getRole()) {
+				case STUDENT_STAFF -> FXMLs.STUDENT_DASHBOARD;
+				case AUTHOR -> FXMLs.AUTHOR_DASHBOARD;
+				case LIBRARIAN -> FXMLs.LIBRARIAN_DASHBOARD;
 			};
 			try {
 				// TODO: pass user details to Student/Author/Librarian dashboard
@@ -80,13 +79,8 @@ public class LoginController {
 	 */
 	@FXML
 	private void handleGoToRegister(ActionEvent event) throws IOException {
-		FXMLLoader loader = FXMLs.REGISTER.loader();
-		Parent root = loader.load();
-		RegisterController ctrl = loader.getController();
-		ctrl.setRole(selectedRole);
-		Main.getContext().setScene(root);
+		Main.getContext().setScene(FXMLs.REGISTER.load(loader -> loader.<RegisterController>getController().setRole(getRole())));
 	}
-
 
 	private String capitalize(String s) {
 		return s.substring(0, 1).toUpperCase() + s.substring(1);

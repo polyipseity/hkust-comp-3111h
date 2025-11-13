@@ -2,8 +2,6 @@ package library.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -12,10 +10,13 @@ import library.FXMLs;
 import library.Main;
 import library.models.User;
 import library.persistence.Repository;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class RegisterController {
 
@@ -25,11 +26,16 @@ public class RegisterController {
 	@FXML
 	private TextField usernameField, passwordField, fullNameField;
 
-	private String selectedRole;
+	@Nullable
+	private User.Role role;
 
-	public void setRole(String role) {
-		this.selectedRole = role;
-		headerLabel.setText(capitalize(role) + " Register");
+	public @NotNull User.Role getRole() {
+		return Objects.requireNonNull(role);
+	}
+
+	public void setRole(@NotNull User.Role role) {
+		this.role = role;
+		headerLabel.setText("%s Register".formatted(role.name));
 	}
 
 	@FXML
@@ -39,11 +45,7 @@ public class RegisterController {
 
 	@FXML
 	private void handleGoToLogin(ActionEvent event) throws IOException {
-		FXMLLoader loader = FXMLs.LOGIN.loader();
-		Parent root = loader.load();
-		LoginController ctrl = loader.getController();
-		ctrl.setRole(selectedRole);
-		Main.getContext().setScene(root);
+		Main.getContext().setScene(FXMLs.LOGIN.load(loader -> loader.<RegisterController>getController().setRole(getRole())));
 	}
 
 	@FXML
@@ -63,13 +65,7 @@ public class RegisterController {
 			errorAlert.showAndWait();
 		} else {
 			User newUser = new User(username);
-			User.Role role = switch (this.selectedRole) {
-				case "student" -> User.Role.STUDENT_STAFF;
-				case "author" -> User.Role.AUTHOR;
-				case "librarian" -> User.Role.LIBRARIAN;
-				default -> throw new IllegalStateException("Unexpected value: " + this.selectedRole);
-			};
-			User.Data newUserData = new User.Data(password, true, User.Role.STUDENT_STAFF,
+			User.Data newUserData = new User.Data(password, true, getRole(),
 					fullName, new ArrayList<>(), new HashMap<>());
 			try {
 				Main.getContext().getRepository().createUser(newUser, newUserData);

@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public enum FXMLs {
 	AUTHOR_DASHBOARD("/fxml/AuthorDashboard.fxml"),
@@ -24,12 +25,16 @@ public enum FXMLs {
 	}
 
 	@NotNull
-	public FXMLLoader loader() {
-		return new FXMLLoader(resource);
+	public <T> T load(@NotNull Consumer<FXMLLoader> callback) throws IOException {
+		final var loader = new FXMLLoader(resource);
+		final var ret = loader.<T>load();
+		callback.accept(loader);
+		return ret;
 	}
 
 	@NotNull
 	public <T> T load() throws IOException {
-		return loader().load();
+		return load(_ -> {
+		});
 	}
 }

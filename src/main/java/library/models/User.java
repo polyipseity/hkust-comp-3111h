@@ -17,9 +17,16 @@ public record User(
 		@NotNull String username
 ) {
 	public enum Role {
-		STUDENT_STAFF,
-		LIBRARIAN,
-		AUTHOR
+		STUDENT_STAFF("Student/Staff"),
+		LIBRARIAN("Librarian"),
+		AUTHOR("Author"),
+		;
+
+		public final String name;
+
+		Role(String name) {
+			this.name = name;
+		}
 	}
 
 	@With

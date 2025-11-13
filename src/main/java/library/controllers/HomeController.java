@@ -2,37 +2,29 @@ package library.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import library.FXMLs;
 import library.Main;
+import library.models.User;
 
 public class HomeController {
 	@FXML
 	private void handleStudent(ActionEvent event) {
-		navigateToLogin("student");
+		navigateToLogin(User.Role.STUDENT_STAFF);
 	}
 
 	@FXML
 	private void handleAuthor(ActionEvent event) {
-		navigateToLogin("author");
+		navigateToLogin(User.Role.AUTHOR);
 	}
 
 	@FXML
 	private void handleLibrarian(ActionEvent event) {
-		navigateToLogin("librarian");
+		navigateToLogin(User.Role.LIBRARIAN);
 	}
 
-	private void navigateToLogin(String role) {
+	private void navigateToLogin(User.Role role) {
 		try {
-			FXMLLoader loader = FXMLs.LOGIN.loader();
-			Parent root = loader.load();
-
-			// Pass the role to LoginController
-			LoginController ctrl = loader.getController();
-			ctrl.setRole(role);
-
-			Main.getContext().setScene(root);
+			Main.getContext().setScene(FXMLs.LOGIN.load(loader -> loader.<LoginController>getController().setRole(role)));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
