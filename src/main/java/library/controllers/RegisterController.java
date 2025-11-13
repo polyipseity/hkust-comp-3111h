@@ -4,11 +4,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
+import library.FXMLs;
 import library.Main;
 import library.models.User;
 import library.persistence.Repository;
@@ -34,17 +34,16 @@ public class RegisterController {
 
 	@FXML
 	private void handleBack(ActionEvent event) throws IOException {
-		Parent home = FXMLLoader.load(getClass().getResource("/fxml/Home.fxml"));
-		Main.getContext().getPrimaryStage().setScene(new Scene(home, 640, 480));
+		Main.getContext().setScene(FXMLs.HOME.load());
 	}
 
 	@FXML
 	private void handleGoToLogin(ActionEvent event) throws IOException {
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
+		FXMLLoader loader = FXMLs.LOGIN.loader();
 		Parent root = loader.load();
 		LoginController ctrl = loader.getController();
 		ctrl.setRole(selectedRole);
-		Main.getContext().getPrimaryStage().setScene(new Scene(root, 640, 480));
+		Main.getContext().setScene(root);
 	}
 
 	@FXML

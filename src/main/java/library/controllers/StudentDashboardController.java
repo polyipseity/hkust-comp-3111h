@@ -2,10 +2,7 @@ package library.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+import library.FXMLs;
 import library.Main;
 
 import java.io.IOException;
@@ -25,9 +22,7 @@ public class StudentDashboardController {
 	@FXML
 	private void handleLogout(ActionEvent event) {
 		try {
-			Parent root = FXMLLoader.load(getClass().getResource("/fxml/Home.fxml"));
-			Stage st = Main.getContext().getPrimaryStage();
-			st.setScene(new Scene(root, 640, 480));
+			Main.getContext().setScene(FXMLs.HOME.load());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

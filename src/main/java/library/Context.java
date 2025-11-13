@@ -1,5 +1,7 @@
 package library;
 
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 import library.models.User;
 import library.persistence.Repository;
@@ -20,6 +22,15 @@ public class Context implements Closeable {
 	@Setter
 	@Nullable
 	private Tuple2<User, User.Data> loggedInUser;
+
+	public void setTitle(@NotNull String value) {
+		primaryStage.setTitle(value);
+	}
+
+	public void setScene(@NotNull Parent value) {
+		final var oldScene = primaryStage.getScene();
+		primaryStage.setScene(new Scene(value, oldScene.getWidth(), oldScene.getHeight()));
+	}
 
 	@Override
 	public void close() {

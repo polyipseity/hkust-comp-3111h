@@ -4,11 +4,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+import library.FXMLs;
 import library.Main;
 
 public class HomeController {
+	@FXML
+	private void initialize() {
+		Main.getContext().setTitle("Library Management System");
+	}
 
 	@FXML
 	private void handleStudent(ActionEvent event) {
@@ -27,15 +30,14 @@ public class HomeController {
 
 	private void navigateToLogin(String role) {
 		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Login.fxml"));
+			FXMLLoader loader = FXMLs.LOGIN.loader();
 			Parent root = loader.load();
 
 			// Pass the role to LoginController
 			LoginController ctrl = loader.getController();
 			ctrl.setRole(role);
 
-			Stage stage = Main.getContext().getPrimaryStage();
-			stage.setScene(new Scene(root, 640, 480));
+			Main.getContext().setScene(root);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

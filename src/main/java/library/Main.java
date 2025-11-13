@@ -1,8 +1,6 @@
 package library;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import library.persistence.Repository;
@@ -25,9 +23,8 @@ public class Main extends Application {
 	public void start(Stage stage) throws Exception {
 		context = new Context(stage, new Repository(() -> DBMaker.fileDB("repository.db")));
 		// Show the Home (role‐select) first, not the Login screen directly:
-		final var root = FXMLLoader.<Parent>load(Objects.requireNonNull(getClass().getResource("/fxml/Home.fxml")));
-		stage.setTitle("Library Management System");
-		stage.setScene(new Scene(root, 640, 480));
+		stage.setScene(new Scene(FXMLs.HOME.load(), 640, 480));
+		stage.setResizable(true);
 		stage.show();
 	}
 
