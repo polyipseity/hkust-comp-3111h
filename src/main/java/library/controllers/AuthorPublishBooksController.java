@@ -64,17 +64,18 @@ public class AuthorPublishBooksController {
     @FXML
     private void PublishBook() throws IOException {
         if(BookTitle.getText().isEmpty() || ContentTxt.isEmpty() || BookAbstract.getText().isEmpty()) {
-            Alerts.showErrorDialog("Missing information of the book");
+            Alerts.showErrorDialog("Missing information of the book.");
         }
         assert Main.getContext().getLoggedInUser() != null;
         var book = new Book(BookTitle.getText(), new Author.ByRef(Main.getContext().getLoggedInUser()._1()), false);
         Optional<Book.Data> opt = repository.readBook(book);
         if(opt.isPresent()) {
-            Alerts.showErrorDialog("Duplicated Book Title");
+            Alerts.showErrorDialog("Duplicated Book Title.");
         }else{
             var data = new Book.Data(BookAbstract.getText(), ContentTxt, Book.ApprovalStatus.PENDING, null, Collections.emptyMap(), 0);
             try {
                 repository.createBook(book, data);
+                Alerts.showInfoDialog("Book is awaiting approval.");
             } catch (Repository.TransactionException e) {
                 throw new RuntimeException(e);
             }

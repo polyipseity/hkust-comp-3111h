@@ -9,13 +9,13 @@
 
 <VBox alignment="CENTER" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="library.controllers.AuthorMyBooksController">
    <children>
-      <TableView VBox.vgrow="ALWAYS" fx:id="expensesTableView">
+      <TableView VBox.vgrow="ALWAYS" fx:id="BooksTable">
          <columns>
-            <TableColumn prefWidth="${expensesTableView.width*0.25}" text="Title" />
-            <TableColumn prefWidth="${expensesTableView.width*0.1}" text="Status" />
-            <TableColumn prefWidth="${expensesTableView.width*0.1}" text="Publish Date" />
-            <TableColumn prefWidth="${expensesTableView.width*0.1}" text="Readers" />
-            <TableColumn prefWidth="${expensesTableView.width*0.45}" text="Abstract" />
+            <TableColumn fx:id="Title" prefWidth="${BooksTable.width*0.25}" text="Title" />
+            <TableColumn fx:id="Status" prefWidth="${BooksTable.width*0.1}" text="Status" />
+            <TableColumn fx:id="Date" prefWidth="${BooksTable.width*0.1}" text="Publish Date" />
+            <TableColumn fx:id="Readers" prefWidth="${BooksTable.width*0.1}" text="Readers" />
+            <TableColumn fx:id="Abstract" prefWidth="${BooksTable.width*0.45}" text="Abstract" />
          </columns>
          <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
