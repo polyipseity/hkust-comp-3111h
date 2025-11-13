@@ -12,11 +12,7 @@ public class AuthorDashboardController {
 	 * Log out back to the Home screen.
 	 */
 	@FXML
-	private void handleLogout() {
-		try {
+	private void handleLogout() throws IOException {
 			Main.getContext().setScene(FXMLs.HOME.load());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 }
