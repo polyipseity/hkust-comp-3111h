@@ -34,7 +34,7 @@ public class HomeController {
 			LoginController ctrl = loader.getController();
 			ctrl.setRole(role);
 
-			Stage stage = Main.getPrimaryStage();
+			Stage stage = Main.getContext().getPrimaryStage();
 			stage.setScene(new Scene(root, 640, 480));
 		} catch (Exception e) {
 			e.printStackTrace();

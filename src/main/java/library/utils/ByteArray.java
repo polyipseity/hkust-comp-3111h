@@ -5,5 +5,5 @@ import org.jetbrains.annotations.NotNull;
 
 @Data
 public class ByteArray {
-	private final @NotNull byte[] data;
+	private final byte @NotNull [] data;
 }

@@ -27,7 +27,7 @@ public class LibrarianDashboardController {
 	private void handleLogout(ActionEvent event) {
 		try {
 			Parent root = FXMLLoader.load(getClass().getResource("/fxml/Home.fxml"));
-			Stage st = Main.getPrimaryStage();
+			Stage st = Main.getContext().getPrimaryStage();
 			st.setScene(new Scene(root, 640, 480));
 		} catch (IOException e) {
 			e.printStackTrace();

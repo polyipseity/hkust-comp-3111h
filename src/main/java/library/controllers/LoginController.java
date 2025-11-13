@@ -41,7 +41,7 @@ public class LoginController {
 	@FXML
 	private void handleBack(ActionEvent event) throws IOException {
 		Parent home = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("/fxml/Home.fxml")));
-		Main.getPrimaryStage().setScene(new Scene(home, 640, 480));
+		Main.getContext().getPrimaryStage().setScene(new Scene(home, 640, 480));
 	}
 
 	@FXML
@@ -54,7 +54,7 @@ public class LoginController {
 		String password = passwordField.getText();
 
 		User user = new User(username);
-		Optional<User.Data> userData = Main.getRepository().readUser(user);
+		Optional<User.Data> userData = Main.getContext().getRepository().readUser(user);
 
 		// The user with the provided username is not found
 		if (userData.isEmpty())
@@ -71,7 +71,7 @@ public class LoginController {
 			try {
 				// TODO: pass user details to Student/Author/Librarian dashboard
 				Parent dash = FXMLLoader.load(getClass().getResource(fxml));
-				Main.getPrimaryStage().setScene(new Scene(dash, 1000, 700));
+				Main.getContext().getPrimaryStage().setScene(new Scene(dash, 1000, 700));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -87,7 +87,7 @@ public class LoginController {
 		Parent root = loader.load();
 		RegisterController ctrl = loader.getController();
 		ctrl.setRole(selectedRole);
-		Main.getPrimaryStage().setScene(new Scene(root, 640, 480));
+		Main.getContext().getPrimaryStage().setScene(new Scene(root, 640, 480));
 	}
 
 

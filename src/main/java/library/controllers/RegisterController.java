@@ -10,15 +10,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import library.Main;
-import library.models.BookRequest;
 import library.models.User;
 import library.persistence.Repository;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class RegisterController {
 
@@ -38,7 +35,7 @@ public class RegisterController {
 	@FXML
 	private void handleBack(ActionEvent event) throws IOException {
 		Parent home = FXMLLoader.load(getClass().getResource("/fxml/Home.fxml"));
-		Main.getPrimaryStage().setScene(new Scene(home, 640, 480));
+		Main.getContext().getPrimaryStage().setScene(new Scene(home, 640, 480));
 	}
 
 	@FXML
@@ -47,7 +44,7 @@ public class RegisterController {
 		Parent root = loader.load();
 		LoginController ctrl = loader.getController();
 		ctrl.setRole(selectedRole);
-		Main.getPrimaryStage().setScene(new Scene(root, 640, 480));
+		Main.getContext().getPrimaryStage().setScene(new Scene(root, 640, 480));
 	}
 
 	@FXML
@@ -76,7 +73,7 @@ public class RegisterController {
 			User.Data newUserData = new User.Data(password, true, User.Role.STUDENT_STAFF,
 					fullName, new ArrayList<>(), new HashMap<>());
 			try {
-				Main.getRepository().createUser(newUser, newUserData);
+				Main.getContext().getRepository().createUser(newUser, newUserData);
 				infoAlert.getDialogPane().setContentText("Account successfully created");
 				infoAlert.showAndWait();
 			} catch (Repository.TransactionException e) {
