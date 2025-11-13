@@ -1,6 +1,5 @@
 package library.controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -38,12 +37,12 @@ public class LoginController {
 	}
 
 	@FXML
-	private void handleBack(ActionEvent event) throws IOException {
+	private void handleBack() throws IOException {
 		Main.getContext().setScene(FXMLs.HOME.load());
 	}
 
 	@FXML
-	private void handleLogin(ActionEvent event) {
+	private void handleLogin() {
 		Alert errorAlert = new Alert(Alert.AlertType.ERROR, "");
 		errorAlert.initModality(Modality.APPLICATION_MODAL);
 		errorAlert.getDialogPane().setContentText("Username/Password Invalid");
@@ -78,11 +77,7 @@ public class LoginController {
 	 * New: navigate to the standalone Register screen
 	 */
 	@FXML
-	private void handleGoToRegister(ActionEvent event) throws IOException {
+	private void handleGoToRegister() throws IOException {
 		Main.getContext().setScene(FXMLs.REGISTER.load(loader -> loader.<RegisterController>getController().setRole(getRole())));
-	}
-
-	private String capitalize(String s) {
-		return s.substring(0, 1).toUpperCase() + s.substring(1);
 	}
 }

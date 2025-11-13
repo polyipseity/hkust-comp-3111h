@@ -1,6 +1,5 @@
 package library.controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import library.FXMLs;
 import library.Main;
@@ -8,17 +7,17 @@ import library.models.User;
 
 public class HomeController {
 	@FXML
-	private void handleStudent(ActionEvent event) {
+	private void handleStudent() {
 		navigateToLogin(User.Role.STUDENT_STAFF);
 	}
 
 	@FXML
-	private void handleAuthor(ActionEvent event) {
+	private void handleAuthor() {
 		navigateToLogin(User.Role.AUTHOR);
 	}
 
 	@FXML
-	private void handleLibrarian(ActionEvent event) {
+	private void handleLibrarian() {
 		navigateToLogin(User.Role.LIBRARIAN);
 	}
 

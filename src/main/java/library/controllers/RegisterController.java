@@ -1,6 +1,5 @@
 package library.controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
@@ -39,17 +38,17 @@ public class RegisterController {
 	}
 
 	@FXML
-	private void handleBack(ActionEvent event) throws IOException {
+	private void handleBack() throws IOException {
 		Main.getContext().setScene(FXMLs.HOME.load());
 	}
 
 	@FXML
-	private void handleGoToLogin(ActionEvent event) throws IOException {
+	private void handleGoToLogin() throws IOException {
 		Main.getContext().setScene(FXMLs.LOGIN.load(loader -> loader.<RegisterController>getController().setRole(getRole())));
 	}
 
 	@FXML
-	private void handleRegistration(ActionEvent event) throws IOException {
+	private void handleRegistration() {
 		Alert errorAlert = new Alert(Alert.AlertType.ERROR, "");
 		errorAlert.initModality(Modality.APPLICATION_MODAL);
 
@@ -76,9 +75,5 @@ public class RegisterController {
 				errorAlert.showAndWait();
 			}
 		}
-	}
-
-	private String capitalize(String s) {
-		return s.substring(0, 1).toUpperCase() + s.substring(1);
 	}
 }

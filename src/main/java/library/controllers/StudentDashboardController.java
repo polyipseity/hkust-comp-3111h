@@ -1,6 +1,5 @@
 package library.controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import library.FXMLs;
 import library.Main;
@@ -10,17 +9,10 @@ import java.io.IOException;
 public class StudentDashboardController {
 
 	/**
-	 * Called automatically after FXML is loaded.
-	 */
-	@FXML
-	private void initialize() {
-	}
-
-	/**
 	 * Log out back to the Home screen.
 	 */
 	@FXML
-	private void handleLogout(ActionEvent event) {
+	private void handleLogout() {
 		try {
 			Main.getContext().setScene(FXMLs.HOME.load());
 		} catch (IOException e) {
