@@ -59,7 +59,7 @@ public class RegisterController {
 			User.Data newUserData = new User.Data(getRole(), true, password,
 					fullName, new ArrayList<>(), new HashMap<>());
 			try {
-				Main.getContext().getRepository().createUser(newUser, newUserData);
+				Main.getContext().repository.createUser(newUser, newUserData);
 				Alerts.showInfoDialog("Account successfully created");
 			} catch (Repository.TransactionException e) {
 				Alerts.showErrorDialog("Duplicate username found in database");

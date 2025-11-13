@@ -46,7 +46,7 @@ public class LoginController {
 		String password = passwordField.getText();
 
 		User user = new User(username);
-		Optional<User.Data> userData = Main.getContext().getRepository().readUser(user);
+		Optional<User.Data> userData = Main.getContext().repository.readUser(user);
 
 		// The user with the provided username is not found
 		if (userData.isEmpty())
