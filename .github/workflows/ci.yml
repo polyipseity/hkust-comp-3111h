@@ -1,6 +1,7 @@
 name: continuous integration
 
-permissions: { }
+permissions:
+  contents: read
 
 on:
   workflow_dispatch:
