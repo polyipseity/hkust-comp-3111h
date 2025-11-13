@@ -7,6 +7,11 @@ import library.models.User;
 
 public class HomeController {
 	@FXML
+	private void initialize() {
+		Main.getContext().setLoggedInUser(null);
+	}
+
+	@FXML
 	private void handleStudent() {
 		navigateToLogin(User.Role.STUDENT_STAFF);
 	}

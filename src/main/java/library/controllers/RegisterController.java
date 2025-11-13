@@ -28,6 +28,11 @@ public class RegisterController {
 	@Nullable
 	private User.Role role;
 
+	@FXML
+	private void initialize() {
+		Main.getContext().setLoggedInUser(null);
+	}
+
 	public @NotNull User.Role getRole() {
 		return Objects.requireNonNull(role);
 	}
