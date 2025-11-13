@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Text?>
+
+<GridPane alignment="CENTER" hgap="10.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="150.0" prefWidth="425.0" vgap="10.0"
+          xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25" fx:controller="library.controllers.AuthorPublishBooksController">
+  <columnConstraints>
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <TextField id="BookTitle" GridPane.columnIndex="1" />
+      <TextField id="BookContent" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <TextField id="BookAbstract" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <Button onAction ="#ChooseTextFile" mnemonicParsing="false" text="Choose Text File" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+      <Button onAction ="#Generate" mnemonicParsing="false" text="Generate" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Book Title:" />
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Selected Text File:" GridPane.rowIndex="1" />
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Summary of this Book:" GridPane.rowIndex="2" />
+      <Button onAction ="#PublishBook" mnemonicParsing="false" text="Publish Book" GridPane.rowIndex="3" />
+   </children>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+</GridPane>
