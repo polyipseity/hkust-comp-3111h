@@ -53,7 +53,7 @@ public class RegisterController {
 	}
 
 	@FXML
-	private void handleRegistration() {
+	private void handleRegistration() throws IOException {
 		String username = usernameField.getText();
 		String password = passwordField.getText();
 		String fullName = fullNameField.getText();
@@ -61,7 +61,10 @@ public class RegisterController {
 		final var context = Main.getContext();
 		try {
 			switch (context.manageProfile.register(UserValidator.DEFAULT, getRole(), username, password, fullName)) {
-				case ManageProfileControl.RegisterResult.Success val -> Alerts.showInfoDialog(val.getMessage());
+				case ManageProfileControl.RegisterResult.Success val -> {
+					Alerts.showInfoDialog(val.getMessage());
+					context.setScene(FXMLs.LOGIN.load(loader -> loader.<LoginController>getController().setRole(getRole())));
+				}
 				case HasMessage val -> Alerts.showErrorDialog(val.getMessage());
 			}
 		} catch (Repository.TransactionException exception) {
