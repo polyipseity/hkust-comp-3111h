@@ -20,6 +20,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
+          distribution: oracle
           java-version: 25
 
       - name: Compile via Maven
@@ -33,6 +34,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
+          distribution: oracle
           java-version: 25
 
       - name: Test via Maven
