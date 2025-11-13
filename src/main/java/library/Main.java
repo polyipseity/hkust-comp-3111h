@@ -24,6 +24,7 @@ public class Main extends Application {
 		context = new Context(stage, new Repository(() -> DBMaker.fileDB("repository.db")));
 		// Show the Home (role‐select) first, not the Login screen directly:
 		stage.setScene(new Scene(FXMLs.HOME.load(), 640, 480));
+		stage.setTitle("Library Management System");
 		stage.setResizable(true);
 		stage.show();
 	}

@@ -9,11 +9,6 @@ import library.Main;
 
 public class HomeController {
 	@FXML
-	private void initialize() {
-		Main.getContext().setTitle("Library Management System");
-	}
-
-	@FXML
 	private void handleStudent(ActionEvent event) {
 		navigateToLogin("student");
 	}

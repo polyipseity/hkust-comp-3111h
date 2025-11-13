@@ -23,10 +23,6 @@ public class Context implements Closeable {
 	@Nullable
 	private Tuple2<User, User.Data> loggedInUser;
 
-	public void setTitle(@NotNull String value) {
-		primaryStage.setTitle(value);
-	}
-
 	public void setScene(@NotNull Parent value) {
 		final var oldScene = primaryStage.getScene();
 		primaryStage.setScene(new Scene(value, oldScene.getWidth(), oldScene.getHeight()));
