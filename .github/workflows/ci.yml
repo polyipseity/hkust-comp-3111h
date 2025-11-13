@@ -1,0 +1,38 @@
+name: continuous integration
+
+permissions: { }
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request_target:
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/jdk-setup@v1
+        with:
+          java-version: "25"
+
+      - name: Compile via Maven
+        run: mvn compile
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/jdk-setup@v1
+        with:
+          java-version: "25"
+
+      - name: Test via Maven
+        run: mvn test
