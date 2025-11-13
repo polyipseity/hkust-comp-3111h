@@ -29,6 +29,6 @@ public class HomeController {
 	}
 
 	private void navigateToLogin(User.Role role) throws IOException {
-			Main.getContext().setScene(FXMLs.LOGIN.load(loader -> loader.<LoginController>getController().setRole(role)));
+		Main.getContext().setScene(FXMLs.LOGIN.load(loader -> loader.<LoginController>getController().setRole(role)));
 	}
 }

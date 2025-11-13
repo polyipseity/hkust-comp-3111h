@@ -13,6 +13,6 @@ public class AuthorDashboardController {
 	 */
 	@FXML
 	private void handleLogout() throws IOException {
-			Main.getContext().setScene(FXMLs.HOME.load());
+		Main.getContext().setScene(FXMLs.HOME.load());
 	}
 }
