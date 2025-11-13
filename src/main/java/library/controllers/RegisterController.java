@@ -45,16 +45,6 @@ public class RegisterController implements DependsOnRole {
 	}
 
 	@FXML
-	private void handleBack() throws IOException {
-		Main.getContext().setScene(FXMLs.HOME.load());
-	}
-
-	@FXML
-	private void handleGoToLogin() throws IOException {
-		Main.getContext().setScene(FXMLs.LOGIN.load(loader -> loader.<DependsOnRole>getController().setRole(getRole())));
-	}
-
-	@FXML
 	private void handleRegistration() throws IOException {
 		String username = usernameField.getText();
 		String password = passwordField.getText();
@@ -65,12 +55,22 @@ public class RegisterController implements DependsOnRole {
 			switch (context.manageProfile.register(UserValidator.DEFAULT, getRole(), username, password, fullName)) {
 				case ManageProfileControl.RegisterResult.Success val -> {
 					Alerts.showInfoDialog(val.getMessage());
-					context.setScene(FXMLs.LOGIN.load(loader -> loader.<DependsOnRole>getController().setRole(getRole())));
+					goToLogin();
 				}
 				case HasMessage val -> Alerts.showErrorDialog(val.getMessage());
 			}
 		} catch (Repository.TransactionException exception) {
 			Alerts.showErrorDialog(exception.getMessage());
 		}
+	}
+
+	@FXML
+	private void goToHome() throws IOException {
+		Main.getContext().setScene(FXMLs.HOME.load());
+	}
+
+	@FXML
+	private void goToLogin() throws IOException {
+		Main.getContext().setScene(FXMLs.LOGIN.load(loader -> loader.<DependsOnRole>getController().setRole(getRole())));
 	}
 }

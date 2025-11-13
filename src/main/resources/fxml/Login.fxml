@@ -30,10 +30,10 @@
 		</rowConstraints>
 	</GridPane>
 	<Button onAction="#handleLogin" prefHeight="40" prefWidth="150" text="Login"/>
-	<Button onAction="#handleBack" prefHeight="30" prefWidth="100" text="Back"/>
+	<Button onAction="#goToHome" prefHeight="30" prefWidth="100" text="Back"/>
 
 	<!-- New Register link: -->
-	<Button onAction="#handleGoToRegister" style="-fx-background-color:transparent; -fx-underline:true;"
+	<Button onAction="#goToRegister" style="-fx-background-color:transparent; -fx-underline:true;"
 	        text="Don't have an account? Register"/>
 	<padding>
 		<Insets bottom="40" left="40" right="40" top="40"/>

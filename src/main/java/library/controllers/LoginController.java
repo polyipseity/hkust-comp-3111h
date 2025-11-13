@@ -45,11 +45,6 @@ public class LoginController implements DependsOnRole {
 	}
 
 	@FXML
-	private void handleBack() throws IOException {
-		Main.getContext().setScene(FXMLs.HOME.load());
-	}
-
-	@FXML
 	private void handleLogin() throws IOException {
 		String username = usernameField.getText();
 		String password = passwordField.getText();
@@ -68,11 +63,17 @@ public class LoginController implements DependsOnRole {
 		}
 	}
 
+
+	@FXML
+	private void goToHome() throws IOException {
+		Main.getContext().setScene(FXMLs.HOME.load());
+	}
+
 	/**
 	 * New: navigate to the standalone Register screen
 	 */
 	@FXML
-	private void handleGoToRegister() throws IOException {
+	private void goToRegister() throws IOException {
 		Main.getContext().setScene(FXMLs.REGISTER.load(loader -> loader.<DependsOnRole>getController().setRole(getRole())));
 	}
 }
