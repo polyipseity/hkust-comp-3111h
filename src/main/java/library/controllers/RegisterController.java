@@ -8,7 +8,7 @@ import library.Main;
 import library.controls.ManageProfileControl;
 import library.controls.UserValidator;
 import library.models.User;
-import library.persistence.Repository;
+import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.HasMessage;
 import org.jetbrains.annotations.NotNull;
@@ -59,7 +59,7 @@ public class RegisterController implements DependsOnRole {
 				}
 				case HasMessage val -> Alerts.showErrorDialog(val.getMessage());
 			}
-		} catch (Repository.TransactionException exception) {
+		} catch (TransactionException exception) {
 			Alerts.showErrorDialog(exception.getMessage());
 		}
 	}
