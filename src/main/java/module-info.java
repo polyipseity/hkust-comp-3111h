@@ -14,4 +14,6 @@ module library {
 	exports library.models;
 	exports library.persistence;
 	exports library.utils;
+    exports library.controllers.student_staff;
+    opens library.controllers.student_staff;
 }

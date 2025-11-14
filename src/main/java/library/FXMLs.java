@@ -14,7 +14,7 @@ public enum FXMLs {
 	LIBRARIAN_DASHBOARD("/fxml/LibrarianDashboard.fxml"),
 	LOGIN("/fxml/Login.fxml"),
 	REGISTER("/fxml/Register.fxml"),
-	STUDENT_DASHBOARD("/fxml/StudentDashboard.fxml"),
+	STUDENT_DASHBOARD("/fxml/student_staff/StudentDashboard.fxml"),
 	;
 
 	@NotNull
