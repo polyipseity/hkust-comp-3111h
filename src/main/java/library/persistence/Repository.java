@@ -42,25 +42,79 @@ public final class Repository implements Closeable {
 		final var bookDataS = new Book.Data.S(bookS);
 		final var borrowS = new Borrow.S();
 
-		this.userNotifications = db.hashMap("userNotifications", userS, new SerializerArray<>(Serializer.STRING)).valueLoader(_ -> new String[0]).createOrOpen();
-		this.userBookRequests = db.treeMap("userBookRequests", new SerializerArrayTuple(userS, bookRequestS), bookRequestDataS).createOrOpen();
-		this.userBookBorrows = db.treeMap("userBookBorrows", new SerializerArrayTuple(userS, bookS), borrowS).createOrOpen();
-
+		final var this2 = this;
 		this.users = db.hashMap("users", userS, userDataS).modificationListener(((key, _, newValue, _) -> {
-			if (newValue != null) return;
-			final var key2 = new Object[]{key};
-			userNotifications.remove(key);
-			userBookRequests.prefixSubMap(key2).clear();
-			userBookBorrows.prefixSubMap(key2).clear();
+			if (newValue == null) {
+				final var key2 = new Object[]{key};
+				this2.userNotifications.remove(key);
+				this2.userBookRequests.prefixSubMap(key2).clear();
+				this2.userBookBorrows.prefixSubMap(key2).clear();
+			}
 		})).createOrOpen();
-		this.books = db.hashMap("books", bookS, bookDataS).modificationListener((key, _, newValue, _) -> {
-			if (newValue != null) return;
-			for (final var userBookBorrowKey : userBookBorrows.getKeys()) {
-				if (key.equals(userBookBorrowKey[1])) {
-					userBookBorrows.remove(userBookBorrowKey);
+		this.books = db.hashMap("books", bookS, bookDataS).modificationListener((key, oldValue, newValue, _) -> {
+			if (oldValue == null) {
+				switch (newValue) {
+					case Book.Data(_, _, _, final Book original, _) when original != null -> {
+						switch (this2.books.get(original)) {
+							case null -> throw new IllegalStateException("Original book not found");
+							case Book.Data data -> this2.books.put(original, data.withOriginalOrModified(key));
+						}
+					}
+					case null, default -> {
+					}
+				}
+			}
+			if (newValue == null) {
+				for (final var userBookBorrowKey : this2.userBookBorrows.getKeys()) {
+					if (key.equals(userBookBorrowKey[1])) {
+						this2.userBookBorrows.remove(userBookBorrowKey);
+					}
+				}
+				switch (oldValue) {
+					case Book.Data(_, _, _, final Book other, _) when other != null -> {
+						switch (this2.books.get(other)) {
+							case null -> throw new IllegalStateException("Other book not found");
+							case Book.Data data -> this2.books.put(other, data.withOriginalOrModified(null));
+						}
+					}
+					case null, default -> {
+					}
 				}
 			}
 		}).createOrOpen();
+
+		this.userNotifications = db.hashMap("userNotifications", userS, new SerializerArray<>(Serializer.STRING)).valueLoader(_ -> new String[0])
+				.modificationListener((key, oldValue, newValue, _) -> {
+					if (oldValue == null && newValue != null) {
+						if (!users.containsKey(key)) {
+							throw new IllegalStateException("User not found");
+						}
+					}
+				})
+				.createOrOpen();
+		this.userBookRequests = db.treeMap("userBookRequests", new SerializerArrayTuple(userS, bookRequestS), bookRequestDataS)
+				.modificationListener((key, oldValue, newValue, _) -> {
+					if (oldValue == null && newValue != null) {
+						@SuppressWarnings("SuspiciousMethodCalls") final var containsUser = users.containsKey(key[0]);
+						if (!containsUser) {
+							throw new IllegalStateException("User not found");
+						}
+					}
+				})
+				.createOrOpen();
+		this.userBookBorrows = db.treeMap("userBookBorrows", new SerializerArrayTuple(userS, bookS), borrowS)
+				.modificationListener((key, oldValue, newValue, _) -> {
+					if (oldValue == null && newValue != null) {
+						@SuppressWarnings("SuspiciousMethodCalls") final var containsUser = users.containsKey(key[0]);
+						if (!containsUser) {
+							throw new IllegalStateException("User not found");
+						}
+						@SuppressWarnings("SuspiciousMethodCalls") final var containsBook = users.containsKey(key[1]);
+						if (!containsBook) {
+							throw new IllegalStateException("Book not found");
+						}
+					}
+				}).createOrOpen();
 	}
 
 	public void transact(@NotNull BooleanFunction<@NotNull TransactData> action) throws TransactionException {
@@ -89,13 +143,7 @@ public final class Repository implements Closeable {
 	}
 
 	public void createUser(@NotNull User user, @NotNull User.Data data) throws TransactionException {
-		transact(tx -> {
-			if (tx.users.containsKey(user)) {
-				return false;
-			}
-			tx.users.put(user, data);
-			return true;
-		});
+		transact(tx -> tx.users.put(user, data) == null);
 	}
 
 	@NotNull
@@ -106,9 +154,7 @@ public final class Repository implements Closeable {
 	public void updateUser(@NotNull User user, @NotNull Function<User.@NotNull Data, User.@NotNull Data> callback) throws TransactionException {
 		transact(tx -> {
 			final var oldValue = tx.users.get(user);
-			if (oldValue == null) {
-				return false;
-			}
+			if (oldValue == null) return false;
 			tx.users.put(user, callback.apply(oldValue));
 			return true;
 		});
@@ -120,9 +166,6 @@ public final class Repository implements Closeable {
 
 	public void updateUserNotification(@NotNull User user, @NotNull Function<@NotNull String[], @NotNull String[]> callback) throws TransactionException {
 		transact(tx -> {
-			if (!tx.users.containsKey(user)) {
-				return false;
-			}
 			tx.userNotifications.put(user, callback.apply(tx.userNotifications.get(user)));
 			return true;
 		});
@@ -143,23 +186,14 @@ public final class Repository implements Closeable {
 	}
 
 	public void createUserBookRequest(@NotNull User user, @NotNull BookRequest bookRequest, @NotNull BookRequest.Data data) throws TransactionException {
-		transact(tx -> {
-			final var key = new Object[]{user, bookRequest};
-			if (!tx.users.containsKey(user) || tx.userBookRequests.containsKey(key)) {
-				return false;
-			}
-			tx.userBookRequests.put(key, data);
-			return true;
-		});
+		transact(tx -> tx.userBookRequests.put(new Object[]{user, bookRequest}, data) == null);
 	}
 
 	public void updateUserBookRequest(@NotNull User user, @NotNull BookRequest bookRequest, @NotNull Function<BookRequest.@NotNull Data, BookRequest.@NotNull Data> callback) throws TransactionException {
 		transact(tx -> {
 			final var key = new Object[]{user, bookRequest};
 			final var oldValue = tx.userBookRequests.get(key);
-			if (oldValue == null) {
-				return false;
-			}
+			if (oldValue == null) return false;
 			tx.userBookRequests.put(key, callback.apply(oldValue));
 			return true;
 		});
@@ -178,13 +212,7 @@ public final class Repository implements Closeable {
 	}
 
 	public void createBook(@NotNull Book book, @NotNull Book.Data data) throws TransactionException {
-		transact(tx -> {
-			if (tx.books.containsKey(book)) {
-				return false;
-			}
-			tx.books.put(book, data);
-			return true;
-		});
+		transact(tx -> tx.books.put(book, data) == null);
 	}
 
 	@NotNull
@@ -195,9 +223,7 @@ public final class Repository implements Closeable {
 	public void updateBook(@NotNull Book book, @NotNull Function<Book.@NotNull Data, Book.@NotNull Data> callback) throws TransactionException {
 		transact(tx -> {
 			final var oldValue = tx.books.get(book);
-			if (oldValue == null) {
-				return false;
-			}
+			if (oldValue == null) return false;
 			tx.books.put(book, callback.apply(oldValue));
 			return true;
 		});
@@ -218,15 +244,15 @@ public final class Repository implements Closeable {
 				.collect(Collectors.toUnmodifiableMap(entry -> (Book) entry.getKey()[1], Map.Entry::getValue));
 	}
 
+	@NotNull
+	public Map<User, Borrow> readUserBookBorrow(@NotNull Book book) {
+		return userBookBorrows.entrySet().stream()
+				.filter(entry -> book.equals(entry.getKey()[1]))
+				.collect(Collectors.toUnmodifiableMap(entry -> (User) entry.getKey()[0], Map.Entry::getValue));
+	}
+
 	public void createUserBookBorrow(@NotNull User user, @NotNull Book book, @NotNull Borrow data) throws TransactionException {
-		transact(tx -> {
-			final var key = new Object[]{user, book};
-			if (!tx.users.containsKey(user) || tx.userBookBorrows.containsKey(key)) {
-				return false;
-			}
-			tx.userBookBorrows.put(key, data);
-			return true;
-		});
+		transact(tx -> tx.userBookBorrows.put(new Object[]{user, book}, data) == null);
 	}
 
 	public void updateUserBookBorrow(@NotNull User user, @NotNull Book book, @NotNull Function<@NotNull Borrow, @NotNull Borrow> callback) throws TransactionException {

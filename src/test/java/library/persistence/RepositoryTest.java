@@ -43,7 +43,7 @@ class RepositoryTest {
 		// ---- read -----------------------------------------------------------
 		Optional<User.Data> opt = service.readUser(user);
 		assertTrue(opt.isPresent(), "readUser should find the inserted key");
-		assertEquals(data, opt.get(), "Returned data must match what was stored");
+		assertEquals(data, opt.get(), "Returned data must match what was stored after considering constraints");
 
 		// ---- update ---------------------------------------------------------
 		Function<User.Data, User.Data> deactivateAccount = d -> d.withActive(false);
@@ -66,7 +66,7 @@ class RepositoryTest {
 		var book = new Book("Clean Code", new Author.ByName("Robert C. Martin"));
 		var data = new Book.Data("Good book!", "...", Book.ApprovalStatus.APPROVED, null, 5);
 		var book2 = new Book("Dirty Code", new Author.ByRef(new User("alice")), true);
-		var data2 = new Book.Data("Bad book!", "...", Book.ApprovalStatus.PENDING, new Book("Dirty Code", new Author.ByRef(new User("alice"))), 0);
+		var data2 = new Book.Data("Bad book!", "...", Book.ApprovalStatus.PENDING, book, 0);
 
 		// ---- create ---------------------------------------------------------
 		assertDoesNotThrow(() -> service.createBook(book, data), "createBook should not throw when the key is new");
@@ -77,10 +77,10 @@ class RepositoryTest {
 		// ---- read -----------------------------------------------------------
 		Optional<Book.Data> opt = service.readBook(book);
 		assertTrue(opt.isPresent(), "readBook should find the inserted key");
-		assertEquals(data, opt.get(), "Returned data must match what was stored");
+		assertEquals(data.withOriginalOrModified(book2), opt.get(), "Returned data must match what was stored after considering constraints");
 		Optional<Book.Data> opt2 = service.readBook(book2);
 		assertTrue(opt2.isPresent(), "readBook should find the inserted key");
-		assertEquals(data2, opt2.get(), "Returned data must match what was stored");
+		assertEquals(data2, opt2.get(), "Returned data must match what was stored after considering constraints");
 
 		// ---- update ---------------------------------------------------------
 		Function<Book.Data, Book.Data> addTimesBorrowed = d -> d.withTimesBorrowed(d.timesBorrowed() + 3);
