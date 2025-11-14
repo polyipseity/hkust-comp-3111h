@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
-            fx:controller="library.controllers.AuthorDashboardController">
+            fx:controller="library.controllers.author.AuthorDashboardController">
 
 	<top>
 		<Label style="-fx-font-size:24px; -fx-padding:10" text="Author Dashboard" BorderPane.alignment="CENTER"/>
@@ -37,14 +37,14 @@
 			<!-- Update Account Tab -->
 			<Tab text="My Profile">
                 <StackPane>
-                    <fx:include source="AuthorUpdateProfile.fxml"/>
+                    <fx:include source="../MyProfile.fxml"/>
                 </StackPane>
 			</Tab>
 
 			<!-- Inform Board -->
 			<Tab text="Inform Board">
                 <StackPane>
-                    <fx:include source="AuthorInformBoard.fxml"/>
+                    <fx:include source="../InformBoard.fxml"/>
                 </StackPane>
 			</Tab>
 

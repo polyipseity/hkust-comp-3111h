@@ -6,13 +6,19 @@ module library {
 	requires static lombok;
 	requires org.eclipse.collections.api;
 	requires javafx.graphics;
+	requires kotlin.stdlib;
     requires java.desktop;
 
     exports library;
-	opens library.controllers;
 	exports library.controllers;
 	exports library.controls;
 	exports library.models;
 	exports library.persistence;
 	exports library.utils;
+	exports library.controllers.student_staff;
+
+	opens library.controllers;
+	opens library.controllers.student_staff;
+    exports library.controllers.author;
+    opens library.controllers.author;
 }

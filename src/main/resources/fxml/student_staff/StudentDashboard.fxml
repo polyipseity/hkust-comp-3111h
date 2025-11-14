@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25"
+            fx:controller="library.controllers.student_staff.StudentDashboardController">
+
+	<top>
+		<Label style="-fx-font-size:24px; -fx-padding:10" text="Student/Staff Dashboard" BorderPane.alignment="CENTER"/>
+	</top>
+
+	<center>
+		<TabPane>
+			<Tab text="Available Books">
+				<fx:include source="AvailableBooks.fxml"/>
+			</Tab>
+			<Tab text="My Borrowed Books">
+				<fx:include source="BorrowedBooks.fxml"/>
+			</Tab>
+			<Tab text="Request Book">
+				<fx:include source="RequestBook.fxml"/>
+			</Tab>
+			<Tab text="My Profile">
+				<fx:include source="../MyProfile.fxml"/>
+			</Tab>
+			<Tab text="Inform Board">
+				<fx:include source="../InformBoard.fxml"/>
+			</Tab>
+		</TabPane>
+	</center>
+
+	<bottom>
+		<HBox alignment="CENTER" spacing="20">
+			<padding>
+				<Insets bottom="10" left="10" right="10" top="10"/>
+			</padding>
+			<Button onAction="#handleLogout" prefHeight="40" prefWidth="150" text="Logout"/>
+		</HBox>
+	</bottom>
+</BorderPane>

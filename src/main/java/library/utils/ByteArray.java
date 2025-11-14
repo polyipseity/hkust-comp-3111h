@@ -4,6 +4,6 @@ import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 
 @Data
-public class ByteArray {
+public final class ByteArray {
 	private final byte @NotNull [] data;
 }

@@ -7,7 +7,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="library.controllers.AuthorMyBooksController">
+<VBox alignment="CENTER" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="library.controllers.author.AuthorMyBooksController">
    <children>
       <TableView VBox.vgrow="ALWAYS" fx:id="BooksTable">
          <columns>
@@ -26,9 +27,9 @@
       </TableView>
       <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
          <children>
-            <Button mnemonicParsing="false" text="View" textAlignment="CENTER"/>
+            <Button onAction="#AuthorViewBook" mnemonicParsing="false" text="View" textAlignment="CENTER"/>
             <Button mnemonicParsing="false" text="Modify" textAlignment="CENTER"/>
-            <Button mnemonicParsing="false" text="Delete" textAlignment="CENTER" />
+            <Button onAction="#AuthorDeleteBook" mnemonicParsing="false" text="Delete" textAlignment="CENTER" />
          </children>
           <padding>
               <Insets top="10.0" />
