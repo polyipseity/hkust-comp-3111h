@@ -5,6 +5,7 @@ import library.utils.ByteArray;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mapdb.DBMaker;
 
@@ -57,167 +58,170 @@ class RepositoryTest {
 	void tearDown() {
 	}
 
-	@Test
-	void transact() {
-		try (final var repository = new Repository(DBMaker::memoryDirectDB)) {
-			assertDoesNotThrow(() -> repository.transact(_ -> true));
+	@Nested
+	class TransactTests {
 
-			assertThrows(TransactionException.class, () -> repository.transact(_ -> false));
+		@Test
+		void transact() {
+			try (final var repository = new Repository(DBMaker::memoryDirectDB)) {
+				assertDoesNotThrow(() -> repository.transact(_ -> true));
 
-			assertThrows(TransactionException.class, () -> repository.transact(_ -> {
-				throw new RuntimeException();
-			}));
+				assertThrows(TransactionException.class, () -> repository.transact(_ -> false));
 
-			assertThrows(Error.class, () -> repository.transact(_ -> {
-				throw new Error();
-			}));
+				assertThrows(TransactionException.class, () -> repository.transact(_ -> {
+					throw new RuntimeException();
+				}));
 
-			assertDoesNotThrow(() -> repository.transact(RepositoryTest::populateRepository));
+				assertThrows(Error.class, () -> repository.transact(_ -> {
+					throw new Error();
+				}));
 
-			repository.close();
-			assertThrows(IllegalAccessError.class, () -> repository.transact(RepositoryTest::populateRepository));
+				assertDoesNotThrow(() -> repository.transact(RepositoryTest::populateRepository));
+
+				repository.close();
+				assertThrows(IllegalAccessError.class, () -> repository.transact(RepositoryTest::populateRepository));
+			}
+		}
+
+		@Test
+		void transactConstraintBookLink() {
+			try (final var repository = new Repository(DBMaker::memoryDirectDB)) {
+				assertDoesNotThrow(() -> repository.transact(RepositoryTest::populateRepository));
+
+				// book `originalOrModified` link constraints
+				assertThrows(TransactionException.class, () -> repository.transact(tx -> {
+					tx.books().put(new Book("book with missing author", new Author.ByRef(new User("missing author"))), new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, null, 42));
+					return true;
+				}));
+				assertThrows(TransactionException.class, () -> repository.transact(tx -> {
+					tx.books().put(new Book("book with missing link", new Author.ByName("author")), new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, new Book("missing book", new Author.ByName("author")), 42));
+					return true;
+				}));
+				assertThrows(TransactionException.class, () -> repository.transact(tx -> {
+					tx.books().put(new Book("book with self-link", new Author.ByName("author")), new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, new Book("book with self-link", new Author.ByName("author")), 42));
+					return true;
+				}));
+				assertThrows(TransactionException.class, () -> repository.transact(tx -> {
+					tx.books().put(new Book("book with duplicate link", new Author.ByName("author")), new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, new Book("book2", new Author.ByRef(new User("author"))), 42));
+					return true;
+				}));
+
+				final var existingBook = new Book("book", new Author.ByName("author"));
+				final var existingBookData = Objects.requireNonNull(repository.books.get(existingBook));
+				final var newBookToLink = new Book("book with link", new Author.ByName("author"));
+				assertDoesNotThrow(() -> repository.transact(tx -> tx.books().put(newBookToLink, new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, new Book("book", new Author.ByName("author")), 42)) == null));
+				assertEquals(existingBookData.withOriginalOrModified(newBookToLink), repository.books.get(existingBook));
+				assertDoesNotThrow(() -> repository.transact(tx -> tx.books().remove(newBookToLink) != null));
+				assertEquals(existingBookData, repository.books.get(existingBook));
+			}
+		}
+
+		@Test
+		void transactConstraintMissingUser() {
+			try (final var repository = new Repository(DBMaker::memoryDirectDB)) {
+				assertDoesNotThrow(() -> repository.transact(RepositoryTest::populateRepository));
+
+				// missing user
+				final var existingBook = new Book("book", new Author.ByName("author"));
+				final var missingUser = new User("missing user");
+				assertThrows(TransactionException.class, () -> repository.transact(tx -> {
+					tx.books().put(new Book("title", new Author.ByRef(missingUser)), new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, null, 42));
+					return true;
+				}));
+				assertThrows(TransactionException.class, () -> repository.transact(tx -> {
+					tx.userNotifications().put(missingUser, new String[]{"notification"});
+					return true;
+				}));
+				assertThrows(TransactionException.class, () -> repository.transact(tx -> {
+					tx.userBookRequests().put(new Object[]{missingUser, new BookRequest("title", "author")}, new BookRequest.Data(new Date()));
+					return true;
+				}));
+				assertThrows(TransactionException.class, () -> repository.transact(tx -> {
+					tx.borrows().put(new Object[]{missingUser, existingBook}, new Borrow(new Date(), Duration.ofNanos(42), new ByteArray(new byte[42])));
+					return true;
+				}));
+			}
+		}
+
+		@Test
+		void transactConstraintMissingBook() {
+			try (final var repository = new Repository(DBMaker::memoryDirectDB)) {
+				assertDoesNotThrow(() -> repository.transact(RepositoryTest::populateRepository));
+
+				// missing book
+				final var existingUser = new User("reader");
+				final var missingBook = new Book("missing book", new Author.ByName("author"), true);
+				assertThrows(TransactionException.class, () -> repository.transact(tx -> {
+					tx.borrows().put(new Object[]{existingUser, missingBook}, new Borrow(new Date(), Duration.ofNanos(42), new ByteArray(new byte[42])));
+					return true;
+				}));
+			}
+		}
+
+		@Test
+		void transactConstraintRemoveUser() {
+			try (final var repository = new Repository(DBMaker::memoryDirectDB)) {
+				assertDoesNotThrow(() -> repository.transact(RepositoryTest::populateRepository));
+
+				// remove user
+				final var existingBook = new Book("book", new Author.ByName("author"));
+				final var newUser = new User("new user");
+				final var newUserData = new User.Data(User.Role.STUDENT_STAFF, true, "password", "full name");
+
+				assertDoesNotThrow(() -> repository.transact(tx -> tx.users().put(newUser, newUserData) == null));
+				assertEquals(newUserData, repository.users.get(newUser));
+
+				final var newBookToRemove = new Book("title", new Author.ByRef(newUser));
+				final var newBookToRemoveData = new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, null, 42);
+				assertDoesNotThrow(() -> repository.transact(tx -> tx.books().put(newBookToRemove, newBookToRemoveData) == null));
+				assertEquals(newBookToRemoveData, repository.books.get(newBookToRemove));
+
+				final var newUserNotificationsToRemove = new String[]{"notification"};
+				assertDoesNotThrow(() -> repository.transact(tx -> tx.userNotifications().put(newUser, newUserNotificationsToRemove) == null));
+				assertArrayEquals(newUserNotificationsToRemove, repository.userNotifications.get(newUser));
+
+				final var newBookRequestToRemove = new BookRequest("title", "author");
+				final var newBookRequestToRemoveData = new BookRequest.Data(new Date());
+				assertDoesNotThrow(() -> repository.transact(tx -> tx.userBookRequests().put(new Object[]{newUser, newBookRequestToRemove}, newBookRequestToRemoveData) == null));
+				assertEquals(newBookRequestToRemoveData, repository.userBookRequests.get(new Object[]{newUser, newBookRequestToRemove}));
+
+				final var borrowToRemove = new Borrow(new Date(), Duration.ofNanos(42), new ByteArray(new byte[42]));
+				assertDoesNotThrow(() -> repository.transact(tx -> tx.borrows().put(new Object[]{newUser, existingBook}, borrowToRemove) == null));
+				assertEquals(borrowToRemove, repository.borrows.get(new Object[]{newUser, existingBook}));
+
+				assertDoesNotThrow(() -> repository.transact(tx -> tx.users().remove(newUser) != null));
+				assertNull(repository.users.get(newUser));
+				assertNull(repository.books.get(newBookToRemove));
+				assertNull(repository.userNotifications.get(newUser));
+				assertNull(repository.userBookRequests.get(new Object[]{newUser, newBookRequestToRemove}));
+				assertNull(repository.borrows.get(new Object[]{newUser, existingBook}));
+
+			}
+		}
+
+		@Test
+		void transactConstraintRemoveBook() {
+			try (final var repository = new Repository(DBMaker::memoryDirectDB)) {
+				assertDoesNotThrow(() -> repository.transact(RepositoryTest::populateRepository));
+
+				// remove book
+				final var existingUser = new User("reader");
+				final var newBook = new Book("new book", new Author.ByRef(existingUser));
+				final var newBookData = new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, null, 42);
+
+				assertDoesNotThrow(() -> repository.transact(tx -> tx.books().put(newBook, newBookData) == null));
+				assertEquals(newBookData, repository.books.get(newBook));
+
+				final var newBorrowToRemove = new Borrow(new Date(), Duration.ofNanos(42), new ByteArray(new byte[42]));
+				assertDoesNotThrow(() -> repository.transact(tx -> tx.borrows().put(new Object[]{existingUser, newBook}, newBorrowToRemove) == null));
+				assertEquals(newBorrowToRemove, repository.borrows.get(new Object[]{existingUser, newBook}));
+
+				assertDoesNotThrow(() -> repository.transact(tx -> tx.books().remove(newBook) != null));
+				assertNull(repository.books.get(newBook));
+				assertNull(repository.borrows.get(new Object[]{existingUser, newBook}));
+			}
 		}
 	}
-
-	@Test
-	void transactConstraintBookLink() {
-		try (final var repository = new Repository(DBMaker::memoryDirectDB)) {
-			assertDoesNotThrow(() -> repository.transact(RepositoryTest::populateRepository));
-
-			// book `originalOrModified` link constraints
-			assertThrows(TransactionException.class, () -> repository.transact(tx -> {
-				tx.books().put(new Book("book with missing author", new Author.ByRef(new User("missing author"))), new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, null, 42));
-				return true;
-			}));
-			assertThrows(TransactionException.class, () -> repository.transact(tx -> {
-				tx.books().put(new Book("book with missing link", new Author.ByName("author")), new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, new Book("missing book", new Author.ByName("author")), 42));
-				return true;
-			}));
-			assertThrows(TransactionException.class, () -> repository.transact(tx -> {
-				tx.books().put(new Book("book with self-link", new Author.ByName("author")), new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, new Book("book with self-link", new Author.ByName("author")), 42));
-				return true;
-			}));
-			assertThrows(TransactionException.class, () -> repository.transact(tx -> {
-				tx.books().put(new Book("book with duplicate link", new Author.ByName("author")), new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, new Book("book2", new Author.ByRef(new User("author"))), 42));
-				return true;
-			}));
-
-			final var existingBook = new Book("book", new Author.ByName("author"));
-			final var existingBookData = Objects.requireNonNull(repository.books.get(existingBook));
-			final var newBookToLink = new Book("book with link", new Author.ByName("author"));
-			assertDoesNotThrow(() -> repository.transact(tx -> tx.books().put(newBookToLink, new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, new Book("book", new Author.ByName("author")), 42)) == null));
-			assertEquals(existingBookData.withOriginalOrModified(newBookToLink), repository.books.get(existingBook));
-			assertDoesNotThrow(() -> repository.transact(tx -> tx.books().remove(newBookToLink) != null));
-			assertEquals(existingBookData, repository.books.get(existingBook));
-		}
-	}
-
-	@Test
-	void transactConstraintMissingUser() {
-		try (final var repository = new Repository(DBMaker::memoryDirectDB)) {
-			assertDoesNotThrow(() -> repository.transact(RepositoryTest::populateRepository));
-
-			// missing user
-			final var existingBook = new Book("book", new Author.ByName("author"));
-			final var missingUser = new User("missing user");
-			assertThrows(TransactionException.class, () -> repository.transact(tx -> {
-				tx.books().put(new Book("title", new Author.ByRef(missingUser)), new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, null, 42));
-				return true;
-			}));
-			assertThrows(TransactionException.class, () -> repository.transact(tx -> {
-				tx.userNotifications().put(missingUser, new String[]{"notification"});
-				return true;
-			}));
-			assertThrows(TransactionException.class, () -> repository.transact(tx -> {
-				tx.userBookRequests().put(new Object[]{missingUser, new BookRequest("title", "author")}, new BookRequest.Data(new Date()));
-				return true;
-			}));
-			assertThrows(TransactionException.class, () -> repository.transact(tx -> {
-				tx.borrows().put(new Object[]{missingUser, existingBook}, new Borrow(new Date(), Duration.ofNanos(42), new ByteArray(new byte[42])));
-				return true;
-			}));
-		}
-	}
-
-	@Test
-	void transactConstraintMissingBook() {
-		try (final var repository = new Repository(DBMaker::memoryDirectDB)) {
-			assertDoesNotThrow(() -> repository.transact(RepositoryTest::populateRepository));
-
-			// missing book
-			final var existingUser = new User("reader");
-			final var missingBook = new Book("missing book", new Author.ByName("author"), true);
-			assertThrows(TransactionException.class, () -> repository.transact(tx -> {
-				tx.borrows().put(new Object[]{existingUser, missingBook}, new Borrow(new Date(), Duration.ofNanos(42), new ByteArray(new byte[42])));
-				return true;
-			}));
-		}
-	}
-
-	@Test
-	void transactConstraintRemoveUser() {
-		try (final var repository = new Repository(DBMaker::memoryDirectDB)) {
-			assertDoesNotThrow(() -> repository.transact(RepositoryTest::populateRepository));
-
-			// remove user
-			final var existingBook = new Book("book", new Author.ByName("author"));
-			final var newUser = new User("new user");
-			final var newUserData = new User.Data(User.Role.STUDENT_STAFF, true, "password", "full name");
-
-			assertDoesNotThrow(() -> repository.transact(tx -> tx.users().put(newUser, newUserData) == null));
-			assertEquals(newUserData, repository.users.get(newUser));
-
-			final var newBookToRemove = new Book("title", new Author.ByRef(newUser));
-			final var newBookToRemoveData = new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, null, 42);
-			assertDoesNotThrow(() -> repository.transact(tx -> tx.books().put(newBookToRemove, newBookToRemoveData) == null));
-			assertEquals(newBookToRemoveData, repository.books.get(newBookToRemove));
-
-			final var newUserNotificationsToRemove = new String[]{"notification"};
-			assertDoesNotThrow(() -> repository.transact(tx -> tx.userNotifications().put(newUser, newUserNotificationsToRemove) == null));
-			assertArrayEquals(newUserNotificationsToRemove, repository.userNotifications.get(newUser));
-
-			final var newBookRequestToRemove = new BookRequest("title", "author");
-			final var newBookRequestToRemoveData = new BookRequest.Data(new Date());
-			assertDoesNotThrow(() -> repository.transact(tx -> tx.userBookRequests().put(new Object[]{newUser, newBookRequestToRemove}, newBookRequestToRemoveData) == null));
-			assertEquals(newBookRequestToRemoveData, repository.userBookRequests.get(new Object[]{newUser, newBookRequestToRemove}));
-
-			final var borrowToRemove = new Borrow(new Date(), Duration.ofNanos(42), new ByteArray(new byte[42]));
-			assertDoesNotThrow(() -> repository.transact(tx -> tx.borrows().put(new Object[]{newUser, existingBook}, borrowToRemove) == null));
-			assertEquals(borrowToRemove, repository.borrows.get(new Object[]{newUser, existingBook}));
-
-			assertDoesNotThrow(() -> repository.transact(tx -> tx.users().remove(newUser) != null));
-			assertNull(repository.users.get(newUser));
-			assertNull(repository.books.get(newBookToRemove));
-			assertNull(repository.userNotifications.get(newUser));
-			assertNull(repository.userBookRequests.get(new Object[]{newUser, newBookRequestToRemove}));
-			assertNull(repository.borrows.get(new Object[]{newUser, existingBook}));
-
-		}
-	}
-
-	@Test
-	void transactConstraintRemoveBook() {
-		try (final var repository = new Repository(DBMaker::memoryDirectDB)) {
-			assertDoesNotThrow(() -> repository.transact(RepositoryTest::populateRepository));
-
-			// remove book
-			final var existingUser = new User("reader");
-			final var newBook = new Book("new book", new Author.ByRef(existingUser));
-			final var newBookData = new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, null, 42);
-
-			assertDoesNotThrow(() -> repository.transact(tx -> tx.books().put(newBook, newBookData) == null));
-			assertEquals(newBookData, repository.books.get(newBook));
-
-			final var newBorrowToRemove = new Borrow(new Date(), Duration.ofNanos(42), new ByteArray(new byte[42]));
-			assertDoesNotThrow(() -> repository.transact(tx -> tx.borrows().put(new Object[]{existingUser, newBook}, newBorrowToRemove) == null));
-			assertEquals(newBorrowToRemove, repository.borrows.get(new Object[]{existingUser, newBook}));
-
-			assertDoesNotThrow(() -> repository.transact(tx -> tx.books().remove(newBook) != null));
-			assertNull(repository.books.get(newBook));
-			assertNull(repository.borrows.get(new Object[]{existingUser, newBook}));
-		}
-	}
-
 
 	@Test
 	void close() {
