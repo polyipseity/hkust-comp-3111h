@@ -15,7 +15,7 @@ import java.util.Comparator;
 public record Book(
 		@NotNull String title,
 		@NotNull Author author,
-		boolean modified
+		boolean temporary
 ) implements Comparable<Book> {
 	public Book(@NotNull String title, @NotNull Author author) {
 		this(title, author, false);
@@ -58,7 +58,7 @@ public record Book(
 		return Comparator
 				.comparing(Book::title)
 				.thenComparing(Book::author)
-				.thenComparingInt(book -> book.modified ? 1 : 0)
+				.thenComparingInt(book -> book.temporary ? 1 : 0)
 				.compare(this, o);
 	}
 
@@ -143,7 +143,7 @@ public record Book(
 		public void serialize(@NotNull DataOutput2 out, @NotNull Book value) throws IOException {
 			out.writeUTF(value.title());
 			authorSerializer.serialize(out, value.author());
-			out.writeBoolean(value.modified());
+			out.writeBoolean(value.temporary());
 		}
 
 		/**
@@ -160,8 +160,8 @@ public record Book(
 		public Book deserialize(@NotNull DataInput2 input, int available) throws IOException {
 			final var title = input.readUTF();
 			final var author = authorSerializer.deserialize(input, available);
-			final var modified = input.readBoolean();
-			return new Book(title, author, modified);
+			final var temporary = input.readBoolean();
+			return new Book(title, author, temporary);
 		}
 	}
 }
