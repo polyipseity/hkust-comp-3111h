@@ -7,20 +7,25 @@ import library.models.User;
 import library.utils.HasMessage;
 import org.eclipse.collections.api.block.function.primitive.BooleanFunction;
 import org.jetbrains.annotations.NotNull;
-import org.mapdb.DB;
-import org.mapdb.DBMaker;
-import org.mapdb.HTreeMap;
+import org.mapdb.*;
+import org.mapdb.serializer.SerializerArray;
+import org.mapdb.serializer.SerializerArrayTuple;
 
 import java.io.Closeable;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class Repository implements Closeable {
 	@NotNull
 	private final DB db;
 	@NotNull
 	private final HTreeMap<User, User.Data> users;
+	@NotNull
+	private final HTreeMap<User, String[]> userNotifications;
+	@NotNull
+	private final BTreeMap<Object[], BookRequest.Data> userBookRequests; // key: (User, BookRequest)
 	@NotNull
 	private final HTreeMap<Book, Book.Data> books;
 
@@ -36,7 +41,13 @@ public class Repository implements Closeable {
 		final var bookS = new Book.S(authorS);
 		final var bookDataS = new Book.Data.S(userS, bookS, borrowS);
 
-		this.users = db.hashMap("users", userS, userDataS).createOrOpen();
+		this.userNotifications = db.hashMap("userNotifications", userS, new SerializerArray<>(Serializer.STRING)).valueLoader(_ -> new String[0]).createOrOpen();
+		this.userBookRequests = db.treeMap("userBookRequests", new SerializerArrayTuple(userS, bookRequestS), bookRequestDataS).createOrOpen();
+		this.users = db.hashMap("users", userS, userDataS).modificationListener(((key, _, newValue, _) -> {
+			if (newValue != null) return;
+			userNotifications.remove(key);
+			userBookRequests.prefixSubMap(new Object[]{key}).clear();
+		})).createOrOpen();
 		this.books = db.hashMap("books", bookS, bookDataS).createOrOpen();
 	}
 
@@ -44,7 +55,7 @@ public class Repository implements Closeable {
 		try {
 			var ok = false;
 			try {
-				ok = action.booleanValueOf(new TransactData(users, books));
+				ok = action.booleanValueOf(new TransactData(users, userNotifications, userBookRequests, books));
 			} finally {
 				if (!ok) {
 					db.rollback();
@@ -67,10 +78,10 @@ public class Repository implements Closeable {
 
 	public void createUser(@NotNull User user, @NotNull User.Data data) throws TransactionException {
 		transact(tx -> {
-			if (tx.users().containsKey(user)) {
+			if (tx.users.containsKey(user)) {
 				return false;
 			}
-			tx.users().put(user, data);
+			tx.users.put(user, data);
 			return true;
 		});
 	}
@@ -82,25 +93,84 @@ public class Repository implements Closeable {
 
 	public void updateUser(@NotNull User user, @NotNull Function<User.Data, User.Data> callback) throws TransactionException {
 		transact(tx -> {
-			final var old = tx.users().get(user);
-			if (old == null) {
+			final var oldValue = tx.users.get(user);
+			if (oldValue == null) {
 				return false;
 			}
-			tx.users().put(user, callback.apply(old));
+			tx.users.put(user, callback.apply(oldValue));
 			return true;
 		});
 	}
 
 	public void deleteUser(@NotNull User user) throws TransactionException {
-		transact(tx -> tx.users().remove(user) != null);
+		transact(tx -> tx.users.remove(user) != null);
+	}
+
+	public void updateUserNotification(@NotNull User user, @NotNull Function<@NotNull String[], @NotNull String[]> callback) throws TransactionException {
+		transact(tx -> {
+			if (!tx.users.containsKey(user)) {
+				return false;
+			}
+			tx.userNotifications.put(user, callback.apply(tx.userNotifications.get(user)));
+			return true;
+		});
+	}
+
+	public void updateUserNotificationList(@NotNull User user, @NotNull Function<@NotNull List<String>, @NotNull List<String>> callback) throws TransactionException {
+		updateUserNotification(user, oldValue -> callback.apply(new ArrayList<>(Arrays.asList(oldValue))).toArray(String[]::new));
+	}
+
+	@NotNull
+	public Optional<BookRequest.Data> readUserBookRequest(@NotNull User user, @NotNull BookRequest bookRequest) {
+		return Optional.ofNullable(userBookRequests.get(new Object[]{user, bookRequest}));
+	}
+
+	@NotNull
+	public Map<BookRequest, BookRequest.Data> readUserBookRequest(@NotNull User user) {
+		return userBookRequests.prefixSubMap(new Object[]{user}).entrySet().stream().collect(Collectors.toUnmodifiableMap(entry -> (BookRequest) entry.getKey()[1], Map.Entry::getValue));
+	}
+
+	public void createUserBookRequest(@NotNull User user, @NotNull BookRequest bookRequest, @NotNull BookRequest.Data data) throws TransactionException {
+		transact(tx -> {
+			final var key = new Object[]{user, bookRequest};
+			if (!tx.users.containsKey(user) || tx.userBookRequests.containsKey(key)) {
+				return false;
+			}
+			tx.userBookRequests.put(key, data);
+			return true;
+		});
+	}
+
+	public void updateUserBookRequest(@NotNull User user, @NotNull BookRequest bookRequest, @NotNull Function<BookRequest.Data, BookRequest.Data> callback) throws TransactionException {
+		transact(tx -> {
+			final var key = new Object[]{user, bookRequest};
+			final var oldValue = tx.userBookRequests.get(key);
+			if (oldValue == null) {
+				return false;
+			}
+			tx.userBookRequests.put(key, callback.apply(oldValue));
+			return true;
+		});
+	}
+
+	public void deleteUserBookRequest(@NotNull User user, @NotNull BookRequest bookRequest) throws TransactionException {
+		transact(tx -> tx.userBookRequests.remove(new Object[]{user, bookRequest}) != null);
+	}
+
+	public void deleteUserBookRequest(@NotNull User user) throws TransactionException {
+		transact(tx -> {
+			if (!tx.users.containsKey(user)) return false;
+			tx.userBookRequests.prefixSubMap(new Object[]{user}).clear();
+			return true;
+		});
 	}
 
 	public void createBook(@NotNull Book book, @NotNull Book.Data data) throws TransactionException {
 		transact(tx -> {
-			if (tx.books().containsKey(book)) {
+			if (tx.books.containsKey(book)) {
 				return false;
 			}
-			tx.books().put(book, data);
+			tx.books.put(book, data);
 			return true;
 		});
 	}
@@ -112,17 +182,17 @@ public class Repository implements Closeable {
 
 	public void updateBook(@NotNull Book book, @NotNull Function<Book.Data, Book.Data> callback) throws TransactionException {
 		transact(tx -> {
-			final var old = tx.books().get(book);
-			if (old == null) {
+			final var oldValue = tx.books.get(book);
+			if (oldValue == null) {
 				return false;
 			}
-			tx.books().put(book, callback.apply(old));
+			tx.books.put(book, callback.apply(oldValue));
 			return true;
 		});
 	}
 
 	public void deleteBook(@NotNull Book book) throws TransactionException {
-		transact(tx -> tx.books().remove(book) != null);
+		transact(tx -> tx.books.remove(book) != null);
 	}
 
 	@Override
@@ -130,7 +200,10 @@ public class Repository implements Closeable {
 		db.close();
 	}
 
-	public record TransactData(HTreeMap<User, User.Data> users, HTreeMap<Book, Book.Data> books) {
+	public record TransactData(@NotNull HTreeMap<User, User.Data> users,
+	                           @NotNull HTreeMap<User, String[]> userNotifications,
+	                           @NotNull BTreeMap<Object[], BookRequest.Data> userBookRequests,
+	                           @NotNull HTreeMap<Book, Book.Data> books) {
 	}
 
 	public static final class TransactionException extends Exception implements HasMessage {

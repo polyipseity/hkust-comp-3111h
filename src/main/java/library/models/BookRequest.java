@@ -4,7 +4,7 @@ import lombok.With;
 import org.jetbrains.annotations.NotNull;
 import org.mapdb.DataInput2;
 import org.mapdb.DataOutput2;
-import org.mapdb.Serializer;
+import org.mapdb.serializer.GroupSerializerObjectArray;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -58,7 +58,7 @@ public record BookRequest(
 	public record Data(
 			@NotNull Date requestDate
 	) {
-		public record S() implements Serializer<Data> {
+		public static class S extends GroupSerializerObjectArray<Data> {
 			@Override
 			public void serialize(@NotNull DataOutput2 out, @NotNull BookRequest.Data value) throws IOException {
 				DATE.serialize(out, value.requestDate());
@@ -72,7 +72,7 @@ public record BookRequest(
 		}
 	}
 
-	public record S() implements Serializer<BookRequest> {
+	public static class S extends GroupSerializerObjectArray<BookRequest> {
 		@Override
 		public void serialize(@NotNull DataOutput2 out, @NotNull BookRequest value) throws IOException {
 			out.writeUTF(value.title());
@@ -81,8 +81,8 @@ public record BookRequest(
 
 		@Override
 		public BookRequest deserialize(@NotNull DataInput2 input, int available) throws IOException {
-			String title = input.readUTF();
-			String author = input.readUTF();
+			final var title = input.readUTF();
+			final var author = input.readUTF();
 			return new BookRequest(title, author);
 		}
 	}
