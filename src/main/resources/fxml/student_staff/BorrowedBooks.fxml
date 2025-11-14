@@ -2,23 +2,22 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.BorderPane?>
-
-<BorderPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            xmlns="http://javafx.com/javafx"
             fx:controller="library.controllers.student_staff.BorrowedBooksController"
             prefHeight="200.0" prefWidth="200.0">
-    <center>
-        <TableView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-            <columns>
-                <TableColumn prefWidth="75.0" text="Title"/>
-                <TableColumn prefWidth="75.0" text="Author"/>
-                <TableColumn prefWidth="75.0" text="Borrowed On"/>
-                <TableColumn prefWidth="75.0" text="Time Left"/>
-                <TableColumn prefWidth="75.0" text="Actions"/>
-            </columns>
-        </TableView>
-    </center>
-    <bottom>
-        <Button mnemonicParsing="false" text="Read Selected Book" BorderPane.alignment="CENTER"/>
-    </bottom>
+	<center>
+		<TableView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+			<columns>
+				<TableColumn prefWidth="75.0" text="Title"/>
+				<TableColumn prefWidth="75.0" text="Author"/>
+				<TableColumn prefWidth="75.0" text="Borrowed On"/>
+				<TableColumn prefWidth="75.0" text="Time Left"/>
+				<TableColumn prefWidth="75.0" text="Actions"/>
+			</columns>
+		</TableView>
+	</center>
+	<bottom>
+		<Button mnemonicParsing="false" text="Read Selected Book" BorderPane.alignment="CENTER"/>
+	</bottom>
 </BorderPane>

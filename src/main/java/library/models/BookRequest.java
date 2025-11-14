@@ -117,7 +117,8 @@ public record BookRequest(
 		 * @return the de-serialized content of the given {@link DataInput2}
 		 * @throws IOException in case of an I/O error
 		 */
-		@Override@NotNull
+		@Override
+		@NotNull
 		public BookRequest deserialize(@NotNull DataInput2 input, int available) throws IOException {
 			final var title = input.readUTF();
 			final var author = input.readUTF();

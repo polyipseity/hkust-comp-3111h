@@ -96,7 +96,8 @@ public record User(
 			 * @return the de-serialized content of the given {@link DataInput2}
 			 * @throws IOException in case of an I/O error
 			 */
-			@Override@NotNull
+			@Override
+			@NotNull
 			public Data deserialize(@NotNull DataInput2 input, int available) throws IOException {
 				final var role = Role.values()[input.readInt()];
 				final var active = input.readBoolean();
@@ -131,7 +132,8 @@ public record User(
 		 * @return the de-serialized content of the given {@link DataInput2}
 		 * @throws IOException in case of an I/O error
 		 */
-		@Override@NotNull
+		@Override
+		@NotNull
 		public User deserialize(@NotNull DataInput2 input, int available) throws IOException {
 			final var username = input.readUTF();
 			return new User(username);

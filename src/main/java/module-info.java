@@ -9,12 +9,13 @@ module library {
 	requires kotlin.stdlib;
 
 	exports library;
-	opens library.controllers;
 	exports library.controllers;
 	exports library.controls;
 	exports library.models;
 	exports library.persistence;
 	exports library.utils;
-    exports library.controllers.student_staff;
-    opens library.controllers.student_staff;
+	exports library.controllers.student_staff;
+
+	opens library.controllers;
+	opens library.controllers.student_staff;
 }

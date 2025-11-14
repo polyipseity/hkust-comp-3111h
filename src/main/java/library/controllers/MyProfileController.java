@@ -6,11 +6,10 @@ import library.Main;
 import library.models.User;
 
 public class MyProfileController {
-	private User currentUser;
-	private User.Data currentUserData;
-
 	@FXML
 	public Text usernameText;
+	private User currentUser;
+	private User.Data currentUserData;
 
 	@FXML
 	private void initialize() {
