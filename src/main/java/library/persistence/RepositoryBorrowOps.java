@@ -1,0 +1,59 @@
+package library.persistence;
+
+import library.models.Book;
+import library.models.Borrow;
+import library.models.User;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public record RepositoryBorrowOps(Repository repository) {
+	@NotNull
+	public Optional<Borrow> read(@NotNull User user, @NotNull Book book) {
+		return Optional.ofNullable(repository.borrows.get(new Object[]{user, book}));
+	}
+
+	@NotNull
+	public Map<Book, Borrow> read(@NotNull User user) {
+		return repository.borrows.prefixSubMap(new Object[]{user}).entrySet().stream()
+				.collect(Collectors.toUnmodifiableMap(entry -> (Book) entry.getKey()[1], Map.Entry::getValue));
+	}
+
+	@NotNull
+	public Map<User, Borrow> read(@NotNull Book book) {
+		return repository.borrows.entrySet().stream()
+				.filter(entry -> book.equals(entry.getKey()[1]))
+				.collect(Collectors.toUnmodifiableMap(entry -> (User) entry.getKey()[0], Map.Entry::getValue));
+	}
+
+	public void create(@NotNull User user, @NotNull Book book, @NotNull Borrow data) throws Repository.TransactionException {
+		repository.transact(tx -> tx.borrows().put(new Object[]{user, book}, data) == null);
+	}
+
+	public void update(@NotNull User user, @NotNull Book book, @NotNull Function<@NotNull Borrow, @NotNull Borrow> callback) throws Repository.TransactionException {
+		repository.transact(tx -> {
+			final var key = new Object[]{user, book};
+			final var oldValue = tx.borrows().get(key);
+			if (oldValue == null) {
+				return false;
+			}
+			tx.borrows().put(key, callback.apply(oldValue));
+			return true;
+		});
+	}
+
+	public void delete(@NotNull User user, @NotNull Book book) throws Repository.TransactionException {
+		repository.transact(tx -> tx.borrows().remove(new Object[]{user, book}) != null);
+	}
+
+	public void delete(@NotNull User user) throws Repository.TransactionException {
+		repository.transact(tx -> {
+			if (!tx.users().containsKey(user)) return false;
+			tx.borrows().prefixSubMap(new Object[]{user}).clear();
+			return true;
+		});
+	}
+}

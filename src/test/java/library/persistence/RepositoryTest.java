@@ -35,30 +35,30 @@ class RepositoryTest {
 		var data = new User.Data(User.Role.STUDENT_STAFF, true, "alice_pwd", "Alice Smith");
 
 		// ---- create ---------------------------------------------------------
-		assertDoesNotThrow(() -> service.createUser(user, data), "createUser should not throw when the key is new");
+		assertDoesNotThrow(() -> service.userOps.create(user, data), "userOps.create should not throw when the key is new");
 
 		// Trying to insert the same user again must fail
-		assertThrows(Repository.TransactionException.class, () -> service.createUser(user, data), "createUser should throw for duplicate keys");
+		assertThrows(Repository.TransactionException.class, () -> service.userOps.create(user, data), "userOps.create should throw for duplicate keys");
 
 		// ---- read -----------------------------------------------------------
-		Optional<User.Data> opt = service.readUser(user);
-		assertTrue(opt.isPresent(), "readUser should find the inserted key");
+		Optional<User.Data> opt = service.userOps.read(user);
+		assertTrue(opt.isPresent(), "userOps.read should find the inserted key");
 		assertEquals(data, opt.get(), "Returned data must match what was stored after considering constraints");
 
 		// ---- update ---------------------------------------------------------
 		Function<User.Data, User.Data> deactivateAccount = d -> d.withActive(false);
-		assertDoesNotThrow(() -> service.updateUser(user, deactivateAccount));
-		assertThrows(Repository.TransactionException.class, () -> service.updateUser(user, _ -> {
+		assertDoesNotThrow(() -> service.userOps.update(user, deactivateAccount));
+		assertThrows(Repository.TransactionException.class, () -> service.userOps.update(user, _ -> {
 			throw new RuntimeException();
 		}));
 
-		var afterUpdate = service.readUser(user).orElseThrow();
+		var afterUpdate = service.userOps.read(user).orElseThrow();
 		assertFalse(afterUpdate.active(), "The callback should have deactivated account");
 
 		// ---- delete ---------------------------------------------------------
-		assertDoesNotThrow(() -> service.deleteUser(user), "deleteUser must not throw when the key existed");
-		assertThrows(Repository.TransactionException.class, () -> service.deleteUser(user), "deleteUser must throw for a non‑existent key");
-		assertThrows(Repository.TransactionException.class, () -> service.updateUser(user, deactivateAccount));
+		assertDoesNotThrow(() -> service.userOps.delete(user), "deleteUser must not throw when the key existed");
+		assertThrows(Repository.TransactionException.class, () -> service.userOps.delete(user), "deleteUser must throw for a non‑existent key");
+		assertThrows(Repository.TransactionException.class, () -> service.userOps.update(user, deactivateAccount));
 	}
 
 	@Test
@@ -69,32 +69,32 @@ class RepositoryTest {
 		var data2 = new Book.Data("Bad book!", "Bad book content...", Book.ApprovalStatus.PENDING, book, 0);
 
 		// ---- create ---------------------------------------------------------
-		assertDoesNotThrow(() -> service.createBook(book, data), "createBook should not throw when the key is new");
+		assertDoesNotThrow(() -> service.bookOps.create(book, data), "bookOps.create should not throw when the key is new");
 		// Trying to insert the same book again must fail
-		assertThrows(Repository.TransactionException.class, () -> service.createBook(book, data), "createBook should throw for duplicate keys");
-		assertDoesNotThrow(() -> service.createBook(book2, data2), "createBook should not throw when the key is new");
+		assertThrows(Repository.TransactionException.class, () -> service.bookOps.create(book, data), "bookOps.create should throw for duplicate keys");
+		assertDoesNotThrow(() -> service.bookOps.create(book2, data2), "bookOps.create should not throw when the key is new");
 
 		// ---- read -----------------------------------------------------------
-		Optional<Book.Data> opt = service.readBook(book);
-		assertTrue(opt.isPresent(), "readBook should find the inserted key");
+		Optional<Book.Data> opt = service.bookOps.read(book);
+		assertTrue(opt.isPresent(), "bookOps.read should find the inserted key");
 		assertEquals(data.withOriginalOrModified(book2), opt.get(), "Returned data must match what was stored after considering constraints");
-		Optional<Book.Data> opt2 = service.readBook(book2);
-		assertTrue(opt2.isPresent(), "readBook should find the inserted key");
+		Optional<Book.Data> opt2 = service.bookOps.read(book2);
+		assertTrue(opt2.isPresent(), "bookOps.read should find the inserted key");
 		assertEquals(data2, opt2.get(), "Returned data must match what was stored after considering constraints");
 
 		// ---- update ---------------------------------------------------------
 		Function<Book.Data, Book.Data> addTimesBorrowed = d -> d.withTimesBorrowed(d.timesBorrowed() + 3);
-		assertDoesNotThrow(() -> service.updateBook(book, addTimesBorrowed));
-		assertThrows(Repository.TransactionException.class, () -> service.updateBook(book, _ -> {
+		assertDoesNotThrow(() -> service.bookOps.update(book, addTimesBorrowed));
+		assertThrows(Repository.TransactionException.class, () -> service.bookOps.update(book, _ -> {
 			throw new RuntimeException();
 		}));
 
-		var afterUpdate = service.readBook(book).orElseThrow();
+		var afterUpdate = service.bookOps.read(book).orElseThrow();
 		assertEquals(8, afterUpdate.timesBorrowed(), "The callback should have increased times borrowed to 3");
 
 		// ---- delete ---------------------------------------------------------
-		assertDoesNotThrow(() -> service.deleteBook(book), "deleteBook must not throw when the key existed");
-		assertThrows(Repository.TransactionException.class, () -> service.deleteBook(book), "deleteBook must throw for a non‑existent key");
-		assertThrows(Repository.TransactionException.class, () -> service.updateBook(book, addTimesBorrowed));
+		assertDoesNotThrow(() -> service.bookOps.delete(book), "deleteBook must not throw when the key existed");
+		assertThrows(Repository.TransactionException.class, () -> service.bookOps.delete(book), "deleteBook must throw for a non‑existent key");
+		assertThrows(Repository.TransactionException.class, () -> service.bookOps.update(book, addTimesBorrowed));
 	}
 }

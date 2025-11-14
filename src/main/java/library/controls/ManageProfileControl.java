@@ -9,7 +9,7 @@ public record ManageProfileControl(Repository repository) {
 	@NotNull
 	public LoginResult login(@NotNull User.Role role, @NotNull String username, @NotNull String password) {
 		final var user = new User(username);
-		return switch (repository.readUser(user).orElse(null)) {
+		return switch (repository.userOps.read(user).orElse(null)) {
 			case null -> new LoginResult.InvalidUsername();
 			case User.Data data when data.role() != role -> new LoginResult.WrongRole(data.role());
 			case User.Data data when !data.password().equals(password) -> new LoginResult.InvalidPassword();
@@ -23,11 +23,11 @@ public record ManageProfileControl(Repository repository) {
 		return switch (validator.apply(username, password, fullName)) {
 			case UserValidator.Result.Success _ -> {
 				final var user = new User(username);
-				yield switch (repository.readUser(user).orElse(null)) {
+				yield switch (repository.userOps.read(user).orElse(null)) {
 					case User.Data _ -> new RegisterResult.UsernameExists();
 					case null -> {
 						final var data = new User.Data(role, true, password, fullName);
-						repository.createUser(user, data);
+						repository.userOps.create(user, data);
 						yield new RegisterResult.Success(user, data);
 					}
 				};
