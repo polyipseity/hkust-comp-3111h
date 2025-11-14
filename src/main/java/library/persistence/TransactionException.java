@@ -64,6 +64,7 @@ public final class TransactionException extends Exception implements HasMessage 
 	@Override
 	public @NotNull String getMessage() {
 		return switch (super.getMessage()) {
+			case null -> "Database transaction exception";
 			case "" -> "Database transaction exception";
 			case String val -> "Database transaction exception: %s".formatted(val);
 		};
