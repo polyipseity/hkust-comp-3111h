@@ -1,10 +1,11 @@
 package library.models;
 
+import lombok.RequiredArgsConstructor;
 import lombok.With;
 import org.jetbrains.annotations.NotNull;
 import org.mapdb.DataInput2;
 import org.mapdb.DataOutput2;
-import org.mapdb.Serializer;
+import org.mapdb.serializer.GroupSerializerObjectArray;
 
 import java.io.IOException;
 
@@ -68,9 +69,16 @@ public record User(
 			@NotNull String password,
 			@NotNull String fullName
 	) {
-		public record S(Serializer<BookRequest> bookRequestSerializer,
-		                Serializer<BookRequest.Data> bookRequestDataSerializer) implements Serializer<Data> {
-
+		@RequiredArgsConstructor
+		public static class S extends GroupSerializerObjectArray<Data> {
+			/**
+			 * Serializes the content of the given value into the given
+			 * {@link DataOutput2}.
+			 *
+			 * @param out   DataOutput2 to save object into
+			 * @param value Object to serialize
+			 * @throws IOException in case of an I/O error
+			 */
 			@Override
 			public void serialize(@NotNull DataOutput2 out, @NotNull Data value) throws IOException {
 				out.writeInt(value.role().ordinal());
@@ -79,24 +87,51 @@ public record User(
 				out.writeUTF(value.fullName());
 			}
 
-			@Override
+			/**
+			 * Deserializes and returns the content of the given {@link DataInput2}.
+			 *
+			 * @param input     DataInput2 to de-serialize data from
+			 * @param available how many bytes that are available in the DataInput2 for
+			 *                  reading, may be -1 (in streams) or 0 (null).
+			 * @return the de-serialized content of the given {@link DataInput2}
+			 * @throws IOException in case of an I/O error
+			 */
+			@Override@NotNull
 			public Data deserialize(@NotNull DataInput2 input, int available) throws IOException {
-				final var r = Role.values()[input.readInt()];
-				final var act = input.readBoolean();
-				final var pwd = input.readUTF();
-				final var fn = input.readUTF();
-				return new Data(r, act, pwd, fn);
+				final var role = Role.values()[input.readInt()];
+				final var active = input.readBoolean();
+				final var password = input.readUTF();
+				final var fullName = input.readUTF();
+				return new Data(role, active, password, fullName);
 			}
 		}
 	}
 
-	public record S() implements Serializer<User> {
+	@RequiredArgsConstructor
+	public static class S extends GroupSerializerObjectArray<User> {
+		/**
+		 * Serializes the content of the given value into the given
+		 * {@link DataOutput2}.
+		 *
+		 * @param out   DataOutput2 to save object into
+		 * @param value Object to serialize
+		 * @throws IOException in case of an I/O error
+		 */
 		@Override
 		public void serialize(@NotNull DataOutput2 out, @NotNull User value) throws IOException {
 			out.writeUTF(value.username());
 		}
 
-		@Override
+		/**
+		 * Deserializes and returns the content of the given {@link DataInput2}.
+		 *
+		 * @param input     DataInput2 to de-serialize data from
+		 * @param available how many bytes that are available in the DataInput2 for
+		 *                  reading, may be -1 (in streams) or 0 (null).
+		 * @return the de-serialized content of the given {@link DataInput2}
+		 * @throws IOException in case of an I/O error
+		 */
+		@Override@NotNull
 		public User deserialize(@NotNull DataInput2 input, int available) throws IOException {
 			final var username = input.readUTF();
 			return new User(username);

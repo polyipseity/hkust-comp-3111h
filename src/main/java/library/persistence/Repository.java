@@ -17,7 +17,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class Repository implements Closeable {
+public final class Repository implements Closeable {
 	@NotNull
 	private final DB db;
 	@NotNull
@@ -35,7 +35,7 @@ public class Repository implements Closeable {
 		final var bookRequestS = new BookRequest.S();
 		final var bookRequestDataS = new BookRequest.Data.S();
 		final var userS = new User.S();
-		final var userDataS = new User.Data.S(bookRequestS, bookRequestDataS);
+		final var userDataS = new User.Data.S();
 		final var authorS = new Author.S(userS);
 		final var borrowS = new Book.Borrow.S();
 		final var bookS = new Book.S(authorS);

@@ -1,5 +1,6 @@
 package library.models;
 
+import lombok.RequiredArgsConstructor;
 import lombok.With;
 import org.jetbrains.annotations.NotNull;
 import org.mapdb.DataInput2;
@@ -58,28 +59,65 @@ public record BookRequest(
 	public record Data(
 			@NotNull Date requestDate
 	) {
+		@RequiredArgsConstructor
 		public static class S extends GroupSerializerObjectArray<Data> {
+			/**
+			 * Serializes the content of the given value into the given
+			 * {@link DataOutput2}.
+			 *
+			 * @param out   DataOutput2 to save object into
+			 * @param value Object to serialize
+			 * @throws IOException in case of an I/O error
+			 */
 			@Override
 			public void serialize(@NotNull DataOutput2 out, @NotNull BookRequest.Data value) throws IOException {
 				DATE.serialize(out, value.requestDate());
 			}
 
+			/**
+			 * Deserializes and returns the content of the given {@link DataInput2}.
+			 *
+			 * @param input     DataInput2 to de-serialize data from
+			 * @param available how many bytes that are available in the DataInput2 for
+			 *                  reading, may be -1 (in streams) or 0 (null).
+			 * @return the de-serialized content of the given {@link DataInput2}
+			 * @throws IOException in case of an I/O error
+			 */
 			@Override
+			@NotNull
 			public Data deserialize(@NotNull DataInput2 input, int available) throws IOException {
-				Date d = DATE.deserialize(input, available);
-				return new Data(d);
+				final var requestDate = DATE.deserialize(input, available);
+				return new Data(requestDate);
 			}
 		}
 	}
 
+	@RequiredArgsConstructor
 	public static class S extends GroupSerializerObjectArray<BookRequest> {
+		/**
+		 * Serializes the content of the given value into the given
+		 * {@link DataOutput2}.
+		 *
+		 * @param out   DataOutput2 to save object into
+		 * @param value Object to serialize
+		 * @throws IOException in case of an I/O error
+		 */
 		@Override
 		public void serialize(@NotNull DataOutput2 out, @NotNull BookRequest value) throws IOException {
 			out.writeUTF(value.title());
 			out.writeUTF(value.author());
 		}
 
-		@Override
+		/**
+		 * Deserializes and returns the content of the given {@link DataInput2}.
+		 *
+		 * @param input     DataInput2 to de-serialize data from
+		 * @param available how many bytes that are available in the DataInput2 for
+		 *                  reading, may be -1 (in streams) or 0 (null).
+		 * @return the de-serialized content of the given {@link DataInput2}
+		 * @throws IOException in case of an I/O error
+		 */
+		@Override@NotNull
 		public BookRequest deserialize(@NotNull DataInput2 input, int available) throws IOException {
 			final var title = input.readUTF();
 			final var author = input.readUTF();
