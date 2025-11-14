@@ -5,8 +5,6 @@ import library.persistence.Repository;
 import library.utils.HasMessage;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-
 public record ManageProfileControl(Repository repository) {
 	@NotNull
 	public LoginResult login(@NotNull User.Role role, @NotNull String username, @NotNull String password) {
@@ -28,7 +26,7 @@ public record ManageProfileControl(Repository repository) {
 				yield switch (repository.readUser(user).orElse(null)) {
 					case User.Data _ -> new RegisterResult.UsernameExists();
 					case null -> {
-						final var data = new User.Data(role, true, password, fullName, Collections.emptyList(), Collections.emptyMap());
+						final var data = new User.Data(role, true, password, fullName);
 						repository.createUser(user, data);
 						yield new RegisterResult.Success(user, data);
 					}

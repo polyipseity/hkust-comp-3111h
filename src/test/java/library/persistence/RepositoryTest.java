@@ -2,18 +2,12 @@ package library.persistence;
 
 import library.models.Author;
 import library.models.Book;
-import library.models.BookRequest;
 import library.models.User;
-import library.utils.ByteArray;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapdb.DBMaker;
 
-import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -38,7 +32,7 @@ class RepositoryTest {
 	@Test
 	void userCreateReadUpdateDelete() {
 		var user = new User("alice");
-		var data = new User.Data(User.Role.STUDENT_STAFF, true, "alice_pwd", "Alice Smith", Arrays.asList("notification 0", "notification 1"), Collections.singletonMap(new BookRequest("Clean Code", "Robert C. Martin"), new BookRequest.Data(new Date())));
+		var data = new User.Data(User.Role.STUDENT_STAFF, true, "alice_pwd", "Alice Smith");
 
 		// ---- create ---------------------------------------------------------
 		assertDoesNotThrow(() -> service.createUser(user, data), "createUser should not throw when the key is new");
@@ -49,7 +43,7 @@ class RepositoryTest {
 		// ---- read -----------------------------------------------------------
 		Optional<User.Data> opt = service.readUser(user);
 		assertTrue(opt.isPresent(), "readUser should find the inserted key");
-		assertEquals(data, opt.get(), "Returned data must match what was stored");
+		assertEquals(data, opt.get(), "Returned data must match what was stored after considering constraints");
 
 		// ---- update ---------------------------------------------------------
 		Function<User.Data, User.Data> deactivateAccount = d -> d.withActive(false);
@@ -70,9 +64,9 @@ class RepositoryTest {
 	@Test
 	void bookCreateReadUpdateDelete() {
 		var book = new Book("Clean Code", new Author.ByName("Robert C. Martin"));
-		var data = new Book.Data("Good book!", "Good book content", Book.ApprovalStatus.APPROVED, null, Collections.singletonMap(new User("alice"), new Book.Borrow(new Date(), Duration.ofMillis(42), new ByteArray(new byte[42]))), 5);
+		var data = new Book.Data("Good book!", "Good book content...", Book.ApprovalStatus.APPROVED, null, 5);
 		var book2 = new Book("Dirty Code", new Author.ByRef(new User("alice")), true);
-		var data2 = new Book.Data("Bad book!", "Bad book content", Book.ApprovalStatus.PENDING, new Book("Dirty Code", new Author.ByRef(new User("alice"))), Collections.emptyMap(), 0);
+		var data2 = new Book.Data("Bad book!", "Bad book content...", Book.ApprovalStatus.PENDING, book, 0);
 
 		// ---- create ---------------------------------------------------------
 		assertDoesNotThrow(() -> service.createBook(book, data), "createBook should not throw when the key is new");
@@ -83,10 +77,10 @@ class RepositoryTest {
 		// ---- read -----------------------------------------------------------
 		Optional<Book.Data> opt = service.readBook(book);
 		assertTrue(opt.isPresent(), "readBook should find the inserted key");
-		assertEquals(data, opt.get(), "Returned data must match what was stored");
+		assertEquals(data.withOriginalOrModified(book2), opt.get(), "Returned data must match what was stored after considering constraints");
 		Optional<Book.Data> opt2 = service.readBook(book2);
 		assertTrue(opt2.isPresent(), "readBook should find the inserted key");
-		assertEquals(data2, opt2.get(), "Returned data must match what was stored");
+		assertEquals(data2, opt2.get(), "Returned data must match what was stored after considering constraints");
 
 		// ---- update ---------------------------------------------------------
 		Function<Book.Data, Book.Data> addTimesBorrowed = d -> d.withTimesBorrowed(d.timesBorrowed() + 3);
