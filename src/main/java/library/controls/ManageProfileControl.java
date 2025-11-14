@@ -2,6 +2,7 @@ package library.controls;
 
 import library.models.User;
 import library.persistence.Repository;
+import library.persistence.TransactionException;
 import library.utils.HasMessage;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,7 +20,7 @@ public record ManageProfileControl(Repository repository) {
 	}
 
 	@NotNull
-	public RegisterResult register(@NotNull UserValidator validator, @NotNull User.Role role, @NotNull String username, @NotNull String password, @NotNull String fullName) throws Repository.TransactionException {
+	public RegisterResult register(@NotNull UserValidator validator, @NotNull User.Role role, @NotNull String username, @NotNull String password, @NotNull String fullName) throws TransactionException {
 		return switch (validator.apply(username, password, fullName)) {
 			case UserValidator.Result.Success _ -> {
 				final var user = new User(username);

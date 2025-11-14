@@ -38,7 +38,7 @@ class RepositoryTest {
 		assertDoesNotThrow(() -> service.userOps.create(user, data), "userOps.create should not throw when the key is new");
 
 		// Trying to insert the same user again must fail
-		assertThrows(Repository.TransactionException.class, () -> service.userOps.create(user, data), "userOps.create should throw for duplicate keys");
+		assertThrows(TransactionException.class, () -> service.userOps.create(user, data), "userOps.create should throw for duplicate keys");
 
 		// ---- read -----------------------------------------------------------
 		Optional<User.Data> opt = service.userOps.read(user);
@@ -48,7 +48,7 @@ class RepositoryTest {
 		// ---- update ---------------------------------------------------------
 		Function<User.Data, User.Data> deactivateAccount = d -> d.withActive(false);
 		assertDoesNotThrow(() -> service.userOps.update(user, deactivateAccount));
-		assertThrows(Repository.TransactionException.class, () -> service.userOps.update(user, _ -> {
+		assertThrows(TransactionException.class, () -> service.userOps.update(user, _ -> {
 			throw new RuntimeException();
 		}));
 
@@ -57,8 +57,8 @@ class RepositoryTest {
 
 		// ---- delete ---------------------------------------------------------
 		assertDoesNotThrow(() -> service.userOps.delete(user), "deleteUser must not throw when the key existed");
-		assertThrows(Repository.TransactionException.class, () -> service.userOps.delete(user), "deleteUser must throw for a non‑existent key");
-		assertThrows(Repository.TransactionException.class, () -> service.userOps.update(user, deactivateAccount));
+		assertThrows(TransactionException.class, () -> service.userOps.delete(user), "deleteUser must throw for a non‑existent key");
+		assertThrows(TransactionException.class, () -> service.userOps.update(user, deactivateAccount));
 	}
 
 	@Test
@@ -71,7 +71,7 @@ class RepositoryTest {
 		// ---- create ---------------------------------------------------------
 		assertDoesNotThrow(() -> service.bookOps.create(book, data), "bookOps.create should not throw when the key is new");
 		// Trying to insert the same book again must fail
-		assertThrows(Repository.TransactionException.class, () -> service.bookOps.create(book, data), "bookOps.create should throw for duplicate keys");
+		assertThrows(TransactionException.class, () -> service.bookOps.create(book, data), "bookOps.create should throw for duplicate keys");
 		assertDoesNotThrow(() -> service.bookOps.create(book2, data2), "bookOps.create should not throw when the key is new");
 
 		// ---- read -----------------------------------------------------------
@@ -85,7 +85,7 @@ class RepositoryTest {
 		// ---- update ---------------------------------------------------------
 		Function<Book.Data, Book.Data> addTimesBorrowed = d -> d.withTimesBorrowed(d.timesBorrowed() + 3);
 		assertDoesNotThrow(() -> service.bookOps.update(book, addTimesBorrowed));
-		assertThrows(Repository.TransactionException.class, () -> service.bookOps.update(book, _ -> {
+		assertThrows(TransactionException.class, () -> service.bookOps.update(book, _ -> {
 			throw new RuntimeException();
 		}));
 
@@ -94,7 +94,7 @@ class RepositoryTest {
 
 		// ---- delete ---------------------------------------------------------
 		assertDoesNotThrow(() -> service.bookOps.delete(book), "deleteBook must not throw when the key existed");
-		assertThrows(Repository.TransactionException.class, () -> service.bookOps.delete(book), "deleteBook must throw for a non‑existent key");
-		assertThrows(Repository.TransactionException.class, () -> service.bookOps.update(book, addTimesBorrowed));
+		assertThrows(TransactionException.class, () -> service.bookOps.delete(book), "deleteBook must throw for a non‑existent key");
+		assertThrows(TransactionException.class, () -> service.bookOps.update(book, addTimesBorrowed));
 	}
 }

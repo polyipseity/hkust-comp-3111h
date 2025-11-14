@@ -29,11 +29,11 @@ public record RepositoryBorrowOps(Repository repository) {
 				.collect(Collectors.toUnmodifiableMap(entry -> (User) entry.getKey()[0], Map.Entry::getValue));
 	}
 
-	public void create(@NotNull User user, @NotNull Book book, @NotNull Borrow data) throws Repository.TransactionException {
+	public void create(@NotNull User user, @NotNull Book book, @NotNull Borrow data) throws TransactionException {
 		repository.transact(tx -> tx.borrows().put(new Object[]{user, book}, data) == null);
 	}
 
-	public void update(@NotNull User user, @NotNull Book book, @NotNull Function<@NotNull Borrow, @NotNull Borrow> callback) throws Repository.TransactionException {
+	public void update(@NotNull User user, @NotNull Book book, @NotNull Function<@NotNull Borrow, @NotNull Borrow> callback) throws TransactionException {
 		repository.transact(tx -> {
 			final var key = new Object[]{user, book};
 			final var oldValue = tx.borrows().get(key);
@@ -45,11 +45,11 @@ public record RepositoryBorrowOps(Repository repository) {
 		});
 	}
 
-	public void delete(@NotNull User user, @NotNull Book book) throws Repository.TransactionException {
+	public void delete(@NotNull User user, @NotNull Book book) throws TransactionException {
 		repository.transact(tx -> tx.borrows().remove(new Object[]{user, book}) != null);
 	}
 
-	public void delete(@NotNull User user) throws Repository.TransactionException {
+	public void delete(@NotNull User user) throws TransactionException {
 		repository.transact(tx -> {
 			if (!tx.users().containsKey(user)) return false;
 			tx.borrows().prefixSubMap(new Object[]{user}).clear();

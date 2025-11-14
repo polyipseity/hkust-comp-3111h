@@ -20,11 +20,11 @@ public record RepositoryBookRequestOps(Repository repository) {
 		return repository.userBookRequests.prefixSubMap(new Object[]{user}).entrySet().stream().collect(Collectors.toUnmodifiableMap(entry -> (BookRequest) entry.getKey()[1], Map.Entry::getValue));
 	}
 
-	public void create(@NotNull User user, @NotNull BookRequest bookRequest, @NotNull BookRequest.Data data) throws Repository.TransactionException {
+	public void create(@NotNull User user, @NotNull BookRequest bookRequest, @NotNull BookRequest.Data data) throws TransactionException {
 		repository.transact(tx -> tx.userBookRequests().put(new Object[]{user, bookRequest}, data) == null);
 	}
 
-	public void update(@NotNull User user, @NotNull BookRequest bookRequest, @NotNull Function<BookRequest.@NotNull Data, BookRequest.@NotNull Data> callback) throws Repository.TransactionException {
+	public void update(@NotNull User user, @NotNull BookRequest bookRequest, @NotNull Function<BookRequest.@NotNull Data, BookRequest.@NotNull Data> callback) throws TransactionException {
 		repository.transact(tx -> {
 			final var key = new Object[]{user, bookRequest};
 			final var oldValue = tx.userBookRequests().get(key);
@@ -34,11 +34,11 @@ public record RepositoryBookRequestOps(Repository repository) {
 		});
 	}
 
-	public void delete(@NotNull User user, @NotNull BookRequest bookRequest) throws Repository.TransactionException {
+	public void delete(@NotNull User user, @NotNull BookRequest bookRequest) throws TransactionException {
 		repository.transact(tx -> tx.userBookRequests().remove(new Object[]{user, bookRequest}) != null);
 	}
 
-	public void delete(@NotNull User user) throws Repository.TransactionException {
+	public void delete(@NotNull User user) throws TransactionException {
 		repository.transact(tx -> {
 			if (!tx.users().containsKey(user)) return false;
 			tx.userBookRequests().prefixSubMap(new Object[]{user}).clear();
