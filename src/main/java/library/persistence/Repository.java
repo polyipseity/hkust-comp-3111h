@@ -70,9 +70,8 @@ public final class Repository implements Closeable {
 				switch (newValue) {
 					case Book.Data(_, _, _, final Book original, _) -> {
 						switch (key.author()) {
-							case Author.ByRef(final var val) when !users.containsKey(val) -> {
-								throw new IllegalStateException("User not found");
-							}
+							case Author.ByRef(final var val) when !users.containsKey(val) ->
+									throw new IllegalStateException("User not found");
 							case Author.ByRef _, Author.ByName _ -> {
 							}
 						}
