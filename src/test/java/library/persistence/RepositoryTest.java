@@ -16,6 +16,7 @@ import java.util.Objects;
 import static org.junit.jupiter.api.Assertions.*;
 
 class RepositoryTest {
+	private Repository repository;
 
 	public static boolean populateRepository(@NotNull Repository.TransactData data) {
 		final var reader = new User("reader");
@@ -51,11 +52,14 @@ class RepositoryTest {
 
 	@BeforeEach
 	void setUp() {
-
+		repository = new Repository(DBMaker::memoryDirectDB);
 	}
 
 	@AfterEach
 	void tearDown() {
+		try (final var _ = repository) {
+			repository = null;
+		}
 	}
 
 	@Nested
@@ -63,7 +67,6 @@ class RepositoryTest {
 
 		@Test
 		void transact() {
-			try (final var repository = new Repository(DBMaker::memoryDirectDB)) {
 				assertDoesNotThrow(() -> repository.transact(_ -> true));
 
 				assertThrows(TransactionException.class, () -> repository.transact(_ -> false));
@@ -80,12 +83,10 @@ class RepositoryTest {
 
 				repository.close();
 				assertThrows(IllegalAccessError.class, () -> repository.transact(RepositoryTest::populateRepository));
-			}
 		}
 
 		@Test
 		void transactConstraintBookLink() {
-			try (final var repository = new Repository(DBMaker::memoryDirectDB)) {
 				assertDoesNotThrow(() -> repository.transact(RepositoryTest::populateRepository));
 
 				// book `originalOrModified` link constraints
@@ -113,12 +114,11 @@ class RepositoryTest {
 				assertEquals(existingBookData.withOriginalOrModified(newBookToLink), repository.books.get(existingBook));
 				assertDoesNotThrow(() -> repository.transact(tx -> tx.books().remove(newBookToLink) != null));
 				assertEquals(existingBookData, repository.books.get(existingBook));
-			}
+
 		}
 
 		@Test
 		void transactConstraintMissingUser() {
-			try (final var repository = new Repository(DBMaker::memoryDirectDB)) {
 				assertDoesNotThrow(() -> repository.transact(RepositoryTest::populateRepository));
 
 				// missing user
@@ -140,12 +140,11 @@ class RepositoryTest {
 					tx.borrows().put(new Object[]{missingUser, existingBook}, new Borrow(new Date(), Duration.ofNanos(42), new ByteArray(new byte[42])));
 					return true;
 				}));
-			}
+
 		}
 
 		@Test
 		void transactConstraintMissingBook() {
-			try (final var repository = new Repository(DBMaker::memoryDirectDB)) {
 				assertDoesNotThrow(() -> repository.transact(RepositoryTest::populateRepository));
 
 				// missing book
@@ -155,12 +154,10 @@ class RepositoryTest {
 					tx.borrows().put(new Object[]{existingUser, missingBook}, new Borrow(new Date(), Duration.ofNanos(42), new ByteArray(new byte[42])));
 					return true;
 				}));
-			}
 		}
 
 		@Test
 		void transactConstraintRemoveUser() {
-			try (final var repository = new Repository(DBMaker::memoryDirectDB)) {
 				assertDoesNotThrow(() -> repository.transact(RepositoryTest::populateRepository));
 
 				// remove user
@@ -195,13 +192,10 @@ class RepositoryTest {
 				assertNull(repository.userNotifications.get(newUser));
 				assertNull(repository.userBookRequests.get(new Object[]{newUser, newBookRequestToRemove}));
 				assertNull(repository.borrows.get(new Object[]{newUser, existingBook}));
-
-			}
 		}
 
 		@Test
 		void transactConstraintRemoveBook() {
-			try (final var repository = new Repository(DBMaker::memoryDirectDB)) {
 				assertDoesNotThrow(() -> repository.transact(RepositoryTest::populateRepository));
 
 				// remove book
@@ -220,16 +214,13 @@ class RepositoryTest {
 				assertNull(repository.books.get(newBook));
 				assertNull(repository.borrows.get(new Object[]{existingUser, newBook}));
 			}
-		}
 	}
 
 	@Test
 	void close() {
-		try (final var repository = new Repository(DBMaker::memoryDirectDB)) {
 			assertDoesNotThrow(() -> repository.transact(RepositoryTest::populateRepository));
 
 			repository.close();
 			assertThrows(IllegalAccessError.class, () -> repository.transact(RepositoryTest::populateRepository));
-		}
 	}
 }
