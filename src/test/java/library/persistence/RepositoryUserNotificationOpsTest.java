@@ -4,7 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class RepositoryTest {
+class RepositoryUserNotificationOpsTest {
 
 	@BeforeEach
 	void setUp() {
@@ -15,10 +15,14 @@ class RepositoryTest {
 	}
 
 	@Test
-	void transact() {
+	void update() {
 	}
 
 	@Test
-	void close() {
+	void updateAsList() {
+	}
+
+	@Test
+	void repository() {
 	}
 }

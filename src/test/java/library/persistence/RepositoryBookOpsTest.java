@@ -4,7 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class RepositoryTest {
+class RepositoryBookOpsTest {
 
 	@BeforeEach
 	void setUp() {
@@ -15,10 +15,22 @@ class RepositoryTest {
 	}
 
 	@Test
-	void transact() {
+	void create() {
 	}
 
 	@Test
-	void close() {
+	void read() {
+	}
+
+	@Test
+	void update() {
+	}
+
+	@Test
+	void delete() {
+	}
+
+	@Test
+	void repository() {
 	}
 }
