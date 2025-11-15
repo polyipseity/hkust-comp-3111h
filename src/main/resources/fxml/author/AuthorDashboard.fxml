@@ -4,8 +4,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
-            fx:controller="library.controllers.AuthorDashboardController">
+            fx:controller="library.controllers.author.AuthorDashboardController">
 
 	<top>
 		<Label style="-fx-font-size:24px; -fx-padding:10" text="Author Dashboard" BorderPane.alignment="CENTER"/>
@@ -16,10 +17,16 @@
 
 			<!-- My Books Tab -->
 			<Tab text="My Books">
+                <StackPane>
+                    <fx:include source="AuthorMyBooks.fxml"/>
+                </StackPane>
 			</Tab>
 
 			<!-- Publish New Book Tab -->
 			<Tab text="Publish New Book">
+                <StackPane>
+                    <fx:include source="AuthorPublishBooks.fxml"/>
+                </StackPane>
 			</Tab>
 
 
@@ -29,10 +36,16 @@
 
 			<!-- Update Account Tab -->
 			<Tab text="My Profile">
+                <StackPane>
+                    <fx:include source="../MyProfile.fxml"/>
+                </StackPane>
 			</Tab>
 
 			<!-- Inform Board -->
 			<Tab text="Inform Board">
+                <StackPane>
+                    <fx:include source="../InformBoard.fxml"/>
+                </StackPane>
 			</Tab>
 
 		</TabPane>

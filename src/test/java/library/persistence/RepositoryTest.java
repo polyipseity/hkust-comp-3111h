@@ -30,10 +30,10 @@ class RepositoryTest {
 		final var book2 = new Book("book", new Author.ByName("author"));
 		final var oldBook = new Book("book2", new Author.ByRef(author));
 		final var newBook = new Book("book2", new Author.ByRef(author), true);
-		data.books().put(book, new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, null, 42));
-		data.books().put(book2, new Book.Data("summary", "content", Book.ApprovalStatus.REJECTED, null, 42));
-		data.books().put(oldBook, new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, null, 42)); // `originalOrModified`: newBook
-		data.books().put(newBook, new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, oldBook, 42));
+		data.books().put(book, new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, "", null,42));
+		data.books().put(book2, new Book.Data("summary", "content", Book.ApprovalStatus.REJECTED, "", null, 42));
+		data.books().put(oldBook, new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, "", null, 42)); // `originalOrModified`: newBook
+		data.books().put(newBook, new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, "", oldBook, 42));
 
 		data.userNotifications().put(reader, new String[]{"notification", "notification2"});
 		data.userNotifications().put(author, new String[]{"notification"});

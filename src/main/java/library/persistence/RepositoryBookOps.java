@@ -1,13 +1,16 @@
 package library.persistence;
 
+import library.models.Author;
 import library.models.Book;
 import org.jetbrains.annotations.NotNull;
+import org.mapdb.Store;
 
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 public record RepositoryBookOps(Repository repository) {
-	public void create(@NotNull Book book, @NotNull Book.Data data) throws TransactionException {
+
+    public void create(@NotNull Book book, @NotNull Book.Data data) throws TransactionException {
 		repository.transact(tx -> tx.books().put(book, data) == null);
 	}
 
@@ -16,7 +19,35 @@ public record RepositoryBookOps(Repository repository) {
 		return Optional.ofNullable(repository.books.get(book));
 	}
 
-	public void update(@NotNull Book book, @NotNull Function<Book.@NotNull Data, Book.@NotNull Data> callback) throws TransactionException {
+    public List<Book> getBooks() {
+        List<Book> bookList = new ArrayList<>();
+        for (Map.Entry<Book, Book.Data> entry : repository.books.entrySet()) {
+            bookList.add(entry.getKey());
+        }
+        return bookList;
+    }
+
+    public List<Book> getBooksWithAuthor(@NotNull Author author2) {
+        List<Book> bookList = new ArrayList<>();
+        for (Map.Entry<Book, Book.Data> entry : repository.books.entrySet()) {
+            if(entry.getKey().author().equals(author2)) {
+                bookList.add(entry.getKey());
+            }
+        }
+        return bookList;
+    }
+
+    public List<Book> getBooksWithTitle(@NotNull String title) {
+        List<Book> bookList = new ArrayList<>();
+        for (Map.Entry<Book, Book.Data> entry : repository.books.entrySet()) {
+            if(entry.getKey().title().equals(title)) {
+                bookList.add(entry.getKey());
+            }
+        }
+        return bookList;
+    }
+    
+    public void update(@NotNull Book book, @NotNull Function<Book.@NotNull Data, Book.@NotNull Data> callback) throws TransactionException {
 		repository.transact(tx -> {
 			final var oldValue = tx.books().get(book);
 			if (oldValue == null) return false;

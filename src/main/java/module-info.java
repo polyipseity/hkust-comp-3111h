@@ -18,6 +18,7 @@ module library {
 	exports library.persistence;
 	exports library.utils;
 	exports library.controllers.student_staff;
+    exports library.controllers.author;
 
 	opens library;
 	opens library.controllers;
@@ -26,4 +27,5 @@ module library {
 	opens library.persistence;
 	opens library.utils;
 	opens library.controllers.student_staff;
+    opens library.controllers.author;
 }
