@@ -8,8 +8,11 @@ module library {
 	requires org.eclipse.collections.api;
 	requires javafx.graphics;
 	requires kotlin.stdlib;
+    requires java.sql;
+    requires library;
+    requires javafx.base;
 
-	exports library;
+    exports library;
 	exports library.controllers;
 	exports library.controls;
 	exports library.models;

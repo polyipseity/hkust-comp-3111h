@@ -7,13 +7,13 @@
             fx:controller="library.controllers.student_staff.BorrowedBooksController"
             prefHeight="200.0" prefWidth="200.0">
 	<center>
-		<TableView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+		<TableView fx:id="table" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
 			<columns>
-				<TableColumn prefWidth="75.0" text="Title"/>
-				<TableColumn prefWidth="75.0" text="Author"/>
-				<TableColumn prefWidth="75.0" text="Borrowed On"/>
-				<TableColumn prefWidth="75.0" text="Time Left"/>
-				<TableColumn prefWidth="75.0" text="Actions"/>
+				<TableColumn fx:id="titleCol" prefWidth="75.0" text="Title"/>
+				<TableColumn fx:id="authorCol" prefWidth="75.0" text="Author"/>
+				<TableColumn fx:id="borrowedOnCol" prefWidth="75.0" text="Borrowed On"/>
+				<TableColumn fx:id="timeLeftCol" prefWidth="75.0" text="Time Left"/>
+				<TableColumn fx:id="actionsCol" prefWidth="75.0" text="Actions"/>
 			</columns>
 		</TableView>
 	</center>
