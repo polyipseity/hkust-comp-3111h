@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class AuthorDashboardController {
-    private final Repository repository = Main.getContext().repository;
+    private final Repository repository = Main.getContext().getRepository();
 
 	/**
 	 * Log out back to the Home screen.

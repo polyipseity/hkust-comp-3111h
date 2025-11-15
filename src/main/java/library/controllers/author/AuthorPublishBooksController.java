@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 public class AuthorPublishBooksController {
-    private final Repository repository = Main.getContext().repository;
+    private final Repository repository = Main.getContext().getRepository();
 
     @FXML
     private TextField BookTitle, BookContent, BookAbstract;
@@ -38,7 +38,7 @@ public class AuthorPublishBooksController {
         fileChooser.getExtensionFilters().add(filter);
 
         // Show open file dialog
-        File file = fileChooser.showOpenDialog(Main.getContext().primaryStage);
+        File file = fileChooser.showOpenDialog(Main.getContext().getPrimaryStage());
 
         if (file != null) {
             try {
@@ -78,7 +78,7 @@ public class AuthorPublishBooksController {
         if(opt.isPresent()) {
             Alerts.showErrorDialog("Duplicated Book Title.");
         }else{
-            var data = new Book.Data(BookAbstract.getText(), ContentTxt, Book.ApprovalStatus.PENDING, null, 0);
+            var data = new Book.Data(BookAbstract.getText(), ContentTxt, Book.ApprovalStatus.PENDING, "", null,0);
             try {
                 repository.bookOps.create(book, data);
                 Alerts.showInfoDialog("Book is awaiting approval.");

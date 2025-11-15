@@ -27,8 +27,9 @@
       </TableView>
       <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
          <children>
+             <Button onAction="#refresh" mnemonicParsing="false" text="Refresh" textAlignment="CENTER"/>
             <Button onAction="#AuthorViewBook" mnemonicParsing="false" text="View" textAlignment="CENTER"/>
-            <Button mnemonicParsing="false" text="Modify" textAlignment="CENTER"/>
+            <Button onAction="#AuthorModifyBook" mnemonicParsing="false" text="Modify" textAlignment="CENTER"/>
             <Button onAction="#AuthorDeleteBook" mnemonicParsing="false" text="Delete" textAlignment="CENTER" />
          </children>
           <padding>

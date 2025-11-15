@@ -4,75 +4,72 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<SplitPane xmlns:fx="http://javafx.com/fxml"
-           xmlns="http://javafx.com/javafx"
-           fx:controller="library.controllers.student_staff.AvailableBooksController"
-           dividerPositions="0.5" prefHeight="160.0" prefWidth="200.0">
-	<TableView prefHeight="200.0" prefWidth="200.0">
+
+<SplitPane dividerPositions="0.5" prefHeight="160.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="library.controllers.student_staff.AvailableBooksController">
+	<TableView fx:id="table" prefHeight="200.0" prefWidth="200.0">
 		<columns>
-			<TableColumn prefWidth="75.0" text="Title"/>
-			<TableColumn prefWidth="75.0" text="Author"/>
-			<TableColumn prefWidth="75.0" text="Published On"/>
-			<TableColumn prefWidth="75.0" text="Abstract"/>
+			<TableColumn fx:id="titleCol" prefWidth="75.0" text="Title" />
+			<TableColumn fx:id="authorCol" prefWidth="75.0" text="Author" />
+			<TableColumn fx:id="publishDateCol" prefWidth="75.0" text="Published On" />
+			<TableColumn fx:id="summaryCol" prefWidth="75.0" text="Abstract" />
 		</columns>
 	</TableView>
 	<StackPane prefHeight="150.0" prefWidth="200.0">
 		<VBox prefHeight="200.0" prefWidth="100.0">
 			<padding>
-				<Insets bottom="8.0" left="8.0" right="8.0" top="8.0"/>
+				<Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
 			</padding>
 			<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Book Details">
 				<font>
-					<Font name="System Bold" size="14.0"/>
+					<Font name="System Bold" size="14.0" />
 				</font>
 				<VBox.margin>
-					<Insets bottom="8.0"/>
+					<Insets bottom="8.0" />
 				</VBox.margin>
 			</Text>
-			<Button maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-			        text="Borrow Selected Book">
+			<Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Borrow Selected Book">
 				<VBox.margin>
-					<Insets bottom="8.0"/>
+					<Insets bottom="8.0" />
 				</VBox.margin>
 			</Button>
 			<Separator prefWidth="200.0">
 				<VBox.margin>
-					<Insets bottom="16.0"/>
+					<Insets bottom="16.0" />
 				</VBox.margin>
 			</Separator>
 			<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Title:">
 				<font>
-					<Font name="System Bold" size="12.0"/>
+					<Font name="System Bold" size="12.0" />
 				</font>
 			</Text>
-			<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fx:id="titleText"/>
+			<Text fx:id="titleText" strokeType="OUTSIDE" strokeWidth="0.0" />
 			<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Author:">
 				<VBox.margin>
-					<Insets top="16.0"/>
+					<Insets top="16.0" />
 				</VBox.margin>
 				<font>
-					<Font name="System Bold" size="12.0"/>
+					<Font name="System Bold" size="12.0" />
 				</font>
 			</Text>
-			<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fx:id="authorText"/>
+			<Text fx:id="authorText" strokeType="OUTSIDE" strokeWidth="0.0" />
 			<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Published On:">
 				<VBox.margin>
-					<Insets top="16.0"/>
+					<Insets top="16.0" />
 				</VBox.margin>
 				<font>
-					<Font name="System Bold" size="12.0"/>
+					<Font name="System Bold" size="12.0" />
 				</font>
 			</Text>
-			<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fx:id="publishDateText"/>
+			<Text fx:id="publishDateText" strokeType="OUTSIDE" strokeWidth="0.0" />
 			<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Abstract:">
 				<VBox.margin>
-					<Insets top="16.0"/>
+					<Insets top="16.0" />
 				</VBox.margin>
 				<font>
-					<Font name="System Bold" size="12.0"/>
+					<Font name="System Bold" size="12.0" />
 				</font>
 			</Text>
-			<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" fx:id="abstractText"/>
+			<Text fx:id="summaryText" strokeType="OUTSIDE" strokeWidth="0.0" />
 		</VBox>
 	</StackPane>
 </SplitPane>

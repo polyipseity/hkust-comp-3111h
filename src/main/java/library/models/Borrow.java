@@ -10,20 +10,16 @@ import org.mapdb.serializer.GroupSerializerObjectArray;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @With
 public record Borrow(
-		@NotNull Date borrowDate,
+		@NotNull ZonedDateTime borrowDate,
 		@NotNull Duration duration,
 		@NotNull ByteArray pdfContent
 ) {
-	public Borrow(@NotNull Date borrowDate, @NotNull Duration duration, @NotNull ByteArray pdfContent) {
-		this.borrowDate = borrowDate;
-		this.duration = Duration.ofMillis(duration.toMillis());
-		this.pdfContent = pdfContent;
-	}
-
 	@RequiredArgsConstructor
 	public static class S extends GroupSerializerObjectArray<Borrow> {
 		/**
@@ -36,8 +32,13 @@ public record Borrow(
 		 */
 		@Override
 		public void serialize(@NotNull DataOutput2 out, @NotNull Borrow value) throws IOException {
-			DATE.serialize(out, value.borrowDate());
-			out.writeLong(value.duration().toMillis());
+			// `borrowDate`: second, nano, zone
+			final var borrowDate = value.borrowDate();
+			out.writeLong(borrowDate.toEpochSecond());
+			out.writeLong(borrowDate.getNano());
+			out.writeUTF(borrowDate.getZone().getId());
+
+			out.writeLong(value.duration().toNanos());
 
 			// `pdfContent`: length, raw bytes
 			final var data = value.pdfContent().getData();
@@ -57,12 +58,12 @@ public record Borrow(
 		@Override
 		@NotNull
 		public Borrow deserialize(@NotNull DataInput2 input, int available) throws IOException {
-			final var d = DATE.deserialize(input, available);
-			final var dur = Duration.ofMillis(input.readLong());
+			final var borrowDate = ZonedDateTime.ofInstant(Instant.ofEpochSecond(input.readLong(), input.readLong()), ZoneId.of(input.readUTF()));
+			final var duration = Duration.ofNanos(input.readLong());
 
 			final var file = new byte[input.readInt()];
 			input.readFully(file);
-			return new Borrow(d, dur, new ByteArray(file));
+			return new Borrow(borrowDate, duration, new ByteArray(file));
 		}
 	}
 }

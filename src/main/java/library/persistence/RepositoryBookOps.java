@@ -36,6 +36,16 @@ public record RepositoryBookOps(Repository repository) {
         }
         return bookList;
     }
+
+    public List<Book> getBooksWithTitle(@NotNull String title) {
+        List<Book> bookList = new ArrayList<>();
+        for (Map.Entry<Book, Book.Data> entry : repository.books.entrySet()) {
+            if(entry.getKey().title().equals(title)) {
+                bookList.add(entry.getKey());
+            }
+        }
+        return bookList;
+    }
     
     public void update(@NotNull Book book, @NotNull Function<Book.@NotNull Data, Book.@NotNull Data> callback) throws TransactionException {
 		repository.transact(tx -> {

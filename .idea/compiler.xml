@@ -19,11 +19,13 @@
         <module name="LibraryManagementSystem" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="HKUST COMP 3111H" target="25" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="HKUST COMP 3111H" options="" />
-      <module name="LibraryManagementSystem" options="" />
     </option>
   </component>
 </project>

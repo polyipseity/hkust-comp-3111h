@@ -59,6 +59,9 @@ public sealed interface Author extends Comparable<Author> {
 				case Author author -> Byte.compare(getTag(), author.getTag());
 			};
 		}
+
+		@Override @NotNull
+		public String toString() { return value.username(); }
 	}
 
 	record ByName(@NotNull String value) implements Author {
@@ -108,6 +111,9 @@ public sealed interface Author extends Comparable<Author> {
 				case Author author -> Byte.compare(getTag(), author.getTag());
 			};
 		}
+
+		@Override @NotNull
+		public String toString() { return value; }
 	}
 
 	@RequiredArgsConstructor

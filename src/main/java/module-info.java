@@ -1,3 +1,4 @@
+@SuppressWarnings("Java9RedundantRequiresStatement")
 module library {
 	requires javafx.controls;
 	requires javafx.fxml;
@@ -7,7 +8,8 @@ module library {
 	requires org.eclipse.collections.api;
 	requires javafx.graphics;
 	requires kotlin.stdlib;
-    requires java.desktop;
+    requires java.sql;
+    requires javafx.base;
 
     exports library;
 	exports library.controllers;
@@ -16,9 +18,14 @@ module library {
 	exports library.persistence;
 	exports library.utils;
 	exports library.controllers.student_staff;
-
-	opens library.controllers;
-	opens library.controllers.student_staff;
     exports library.controllers.author;
+
+	opens library;
+	opens library.controllers;
+	opens library.controls;
+	opens library.models;
+	opens library.persistence;
+	opens library.utils;
+	opens library.controllers.student_staff;
     opens library.controllers.author;
 }

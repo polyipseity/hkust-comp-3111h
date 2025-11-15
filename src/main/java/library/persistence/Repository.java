@@ -1,6 +1,7 @@
 package library.persistence;
 
 import library.models.*;
+import library.utils.Dates;
 import org.eclipse.collections.api.block.function.primitive.BooleanFunction;
 import org.jetbrains.annotations.NotNull;
 import org.mapdb.*;
@@ -26,7 +27,7 @@ public final class Repository implements Closeable {
 	@NotNull
 	final HTreeMap<User, User.Data> users;
 	@NotNull
-    final HTreeMap<Book, Book.Data> books;
+	final HTreeMap<Book, Book.Data> books;
 	@NotNull
 	final HTreeMap<User, String[]> userNotifications;
 	@NotNull
@@ -68,7 +69,7 @@ public final class Repository implements Closeable {
 		this.books = db.hashMap("books", bookS, bookDataS).modificationListener((key, oldValue, newValue, _) -> {
 			if (oldValue == null) {
 				switch (newValue) {
-					case Book.Data(_, _, _, final Book original, _) -> {
+					case Book.Data(_, _, _, _,final Book original, _) -> {
 						switch (key.author()) {
 							case Author.ByRef(final var val) when !users.containsKey(val) ->
 									throw new IllegalStateException("User not found");
@@ -78,9 +79,9 @@ public final class Repository implements Closeable {
 						if (original != null) {
 							switch (this2.books.get(original)) {
 								case null -> throw new IllegalStateException("Original book not found");
-								case Book.Data(_, _, _, final Book originalOrModified, _) when key.equals(originalOrModified) ->
+								case Book.Data(_, _, _, _,final Book originalOrModified, _) when key.equals(originalOrModified) ->
 										throw new IllegalStateException("New book linked to itself");
-								case Book.Data(_, _, _, final Book originalOrModified, _) when originalOrModified != null ->
+								case Book.Data(_, _, _, _,final Book originalOrModified, _) when originalOrModified != null ->
 										throw new IllegalStateException("Original book already linked");
 								case Book.Data data -> this2.books.put(original, data.withOriginalOrModified(key));
 							}
@@ -92,11 +93,11 @@ public final class Repository implements Closeable {
 			}
 			if (newValue == null) {
 				switch (oldValue) {
-					case Book.Data(_, _, _, final Book other, _) -> {
+					case Book.Data(_, _, _, _,final Book other, _) -> {
 						if (other != null) {
 							switch (this2.books.get(other)) {
 								case null -> throw new IllegalStateException("Other book not found");
-								case Book.Data(_, _, _, final Book originalOrModified, _) when !key.equals(originalOrModified) ->
+								case Book.Data(_, _, _, _, final Book originalOrModified, _) when !key.equals(originalOrModified) ->
 										throw new IllegalStateException("Other book wrongly linked");
 								case Book.Data data -> this2.books.put(other, data.withOriginalOrModified(null));
 							}
