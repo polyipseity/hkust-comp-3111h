@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.lang.reflect.Proxy;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.abort;
 
 class FXMLsTest {
 
@@ -22,6 +23,9 @@ class FXMLsTest {
 			Platform.startup(() -> {
 			});   // starts the toolkit
 		} catch (IllegalStateException _) {
+		} catch (UnsupportedOperationException ex) {
+			// java.lang.UnsupportedOperationException: Unable to open DISPLAY
+			abort(ex.getMessage());
 		}
 		@SuppressWarnings("SuspiciousInvocationHandlerImplementation") final var context = (Context) Proxy.newProxyInstance(FXMLsTest.class.getClassLoader(), new Class[]{Context.class}, ((_, method, _) -> {
 			if ("getLoggedInUser".equals(method.getName())) {
