@@ -9,7 +9,6 @@ module library {
 	requires javafx.graphics;
 	requires kotlin.stdlib;
     requires java.sql;
-    requires library;
     requires javafx.base;
 
     exports library;
