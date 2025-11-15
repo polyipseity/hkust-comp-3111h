@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.abort;
 
 class FXMLsTest {
+	private static boolean unsupported = false;
 
 	@BeforeAll
 	static void setUpAll() {
@@ -25,6 +26,7 @@ class FXMLsTest {
 		} catch (IllegalStateException _) {
 		} catch (UnsupportedOperationException ex) {
 			// java.lang.UnsupportedOperationException: Unable to open DISPLAY
+			unsupported = true;
 			abort(ex.getMessage());
 		}
 		@SuppressWarnings("SuspiciousInvocationHandlerImplementation") final var context = (Context) Proxy.newProxyInstance(FXMLsTest.class.getClassLoader(), new Class[]{Context.class}, ((_, method, _) -> {
@@ -38,6 +40,9 @@ class FXMLsTest {
 
 	@AfterAll
 	static void tearDownAll() {
+		if (unsupported) {
+			return;
+		}
 		Main.getContext().close();
 		Main.setContext(null);
 	}
