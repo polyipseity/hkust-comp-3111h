@@ -153,7 +153,7 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@Test
-	void deleteNonExistingBorrowDoesNothing() {
+	void deleteNonExistingBorrow() {
 		final var user = new User("reader");
 		final var book = new Book("missing", new Author.ByRef(new User("author")));
 
@@ -167,6 +167,14 @@ class RepositoryBorrowOpsTest {
 
 		assertDoesNotThrow(() -> ops.delete(user));
 		assertTrue(ops.read(user).isEmpty());
+	}
+
+	@Test
+	void deleteAllBorrowsForNonExistingUser() {
+		final var user = new User("missing");
+
+		// should throw, nothing to remove
+		assertThrows(TransactionException.class, () -> ops.delete(user));
 	}
 
 	@Test
