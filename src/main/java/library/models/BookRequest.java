@@ -8,8 +8,10 @@ import org.mapdb.DataOutput2;
 import org.mapdb.serializer.GroupSerializerObjectArray;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Comparator;
-import java.util.Date;
 
 public record BookRequest(
 		@NotNull String title,
@@ -57,7 +59,7 @@ public record BookRequest(
 
 	@With
 	public record Data(
-			@NotNull Date requestDate
+			@NotNull ZonedDateTime requestDate
 	) {
 		@RequiredArgsConstructor
 		public static class S extends GroupSerializerObjectArray<Data> {
@@ -71,7 +73,11 @@ public record BookRequest(
 			 */
 			@Override
 			public void serialize(@NotNull DataOutput2 out, @NotNull BookRequest.Data value) throws IOException {
-				DATE.serialize(out, value.requestDate());
+				// `requestDate`: second, nano, zone
+				final var requestDate = value.requestDate();
+				out.writeLong(requestDate.toEpochSecond());
+				out.writeLong(requestDate.getNano());
+				out.writeUTF(requestDate.getZone().getId());
 			}
 
 			/**
@@ -86,7 +92,7 @@ public record BookRequest(
 			@Override
 			@NotNull
 			public Data deserialize(@NotNull DataInput2 input, int available) throws IOException {
-				final var requestDate = DATE.deserialize(input, available);
+				final var requestDate = ZonedDateTime.ofInstant(Instant.ofEpochSecond(input.readLong(), input.readLong()), ZoneId.of(input.readUTF()));
 				return new Data(requestDate);
 			}
 		}
