@@ -1,5 +1,6 @@
 package library.models;
 
+import library.utils.Dates;
 import lombok.RequiredArgsConstructor;
 import lombok.With;
 import org.jetbrains.annotations.NotNull;
@@ -73,6 +74,7 @@ public record Book(
 			@NotNull String summary,
 			@NotNull String content,
 			@NotNull ApprovalStatus approvalStatus,
+            @Nullable String dates,
 			@Nullable Book originalOrModified,
 			long timesBorrowed
 	) {
@@ -92,6 +94,7 @@ public record Book(
 			public void serialize(@NotNull DataOutput2 out, @NotNull Book.Data value) throws IOException {
 				out.writeUTF(value.summary());
 				out.writeUTF(value.content());
+                out.writeUTF(value.dates());
 				out.writeInt(value.approvalStatus().ordinal());
 				if (value.originalOrModified() == null) {
 					out.writeBoolean(false);   // flag that it is absent
@@ -116,13 +119,14 @@ public record Book(
 			public Data deserialize(@NotNull DataInput2 input, int available) throws IOException {
 				final var summary = input.readUTF();
 				final var content = input.readUTF();
+                final var dates = input.readUTF();
 				final var status = ApprovalStatus.values()[input.readInt()];
 				@SuppressWarnings("SwitchStatementWithTooFewBranches") final var originalOrModified = switch (input.readBoolean() ? 1 : 0) {
 					case 1 -> bookSerializer.deserialize(input, available);
 					default -> null;
 				};
 				final var times = input.readLong();
-				return new Data(summary, content, status, originalOrModified, times);
+				return new Data(summary, content, status, dates, originalOrModified, times);
 			}
 		}
 	}
