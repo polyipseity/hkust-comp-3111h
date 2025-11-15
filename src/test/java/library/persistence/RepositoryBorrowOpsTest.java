@@ -21,6 +21,7 @@ class RepositoryBorrowOpsTest {
 	private Repository repository;
 	private RepositoryBorrowOps ops;
 
+	@SuppressWarnings("SameReturnValue")
 	private static boolean populate(@NotNull Repository.TransactData data) {
 		final var reader = new User("reader");
 		final var author = new User("author");
@@ -89,7 +90,7 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@Test
-	void createBorrowSucceeds() throws TransactionException {
+	void createBorrowSucceeds() {
 		final var user = new User("author");
 		final var book = new Book("book", new Author.ByRef(new User("author")));
 		final var borrow = new Borrow(
@@ -121,7 +122,7 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@Test
-	void updateBorrowSucceeds() throws TransactionException {
+	void updateBorrowSucceeds() {
 		final var user = new User("reader");
 		final var book = new Book("book", new Author.ByRef(new User("author")));
 
@@ -143,7 +144,7 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@Test
-	void deleteBorrowSucceeds() throws TransactionException {
+	void deleteBorrowSucceeds() {
 		final var user = new User("reader");
 		final var book = new Book("book", new Author.ByRef(new User("author")));
 
@@ -152,7 +153,7 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@Test
-	void deleteNonExistingBorrowDoesNothing() throws TransactionException {
+	void deleteNonExistingBorrowDoesNothing() {
 		final var user = new User("reader");
 		final var book = new Book("missing", new Author.ByRef(new User("author")));
 
@@ -161,7 +162,7 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@Test
-	void deleteAllBorrowsForUser() throws TransactionException {
+	void deleteAllBorrowsForUser() {
 		final var user = new User("reader");
 
 		assertDoesNotThrow(() -> ops.delete(user));

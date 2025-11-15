@@ -1,3 +1,4 @@
+@SuppressWarnings("Java9RedundantRequiresStatement")
 module library {
 	requires javafx.controls;
 	requires javafx.fxml;

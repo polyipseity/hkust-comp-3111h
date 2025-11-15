@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class RepositoryTest {
 	private Repository repository;
 
+	@SuppressWarnings("SameReturnValue")
 	private static boolean populate(@NotNull Repository.TransactData data) {
 		final var reader = new User("reader");
 		final var author = new User("author");

@@ -12,6 +12,7 @@ class RepositoryUserNotificationOpsTest {
 	private Repository repository;
 	private RepositoryUserNotificationOps ops;
 
+	@SuppressWarnings("SameReturnValue")
 	private static boolean populate(@NotNull Repository.TransactData data) {
 		// initialise a user with some notifications
 		final var reader = new User("reader");
@@ -49,7 +50,7 @@ class RepositoryUserNotificationOpsTest {
 	}
 
 	@Test
-	void update() throws TransactionException {
+	void update() {
 		final var reader = new User("reader");
 
 		// add a new notification via the callback
@@ -65,7 +66,7 @@ class RepositoryUserNotificationOpsTest {
 	}
 
 	@Test
-	void updateAsList() throws TransactionException {
+	void updateAsList() {
 		final var reader = new User("reader");
 
 		// remove the first notification using a List callback

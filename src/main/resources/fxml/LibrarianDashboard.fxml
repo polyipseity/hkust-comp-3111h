@@ -14,7 +14,7 @@
 
 	<!-- Main tabs -->
 	<center>
-		<TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE">
+		<TabPane tabClosingPolicy="UNAVAILABLE">
 
 			<!-- 1) Pending Approvals -->
 			<Tab text="Pending Approvals">

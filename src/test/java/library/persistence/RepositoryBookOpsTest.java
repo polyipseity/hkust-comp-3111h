@@ -31,7 +31,7 @@ class RepositoryBookOpsTest {
 	}
 
 	@Test
-	void create_successful() throws TransactionException {
+	void create_successful() {
 		final var book = new Book("testTitle", new Author.ByName("author"));
 		final var data = new Book.Data("summary", "content",
 				Book.ApprovalStatus.PENDING, null, 42);
@@ -106,7 +106,7 @@ class RepositoryBookOpsTest {
 	}
 
 	@Test
-	void delete_nonExistingDoesNothing() throws TransactionException {
+	void delete_nonExistingDoesNothing() {
 		final var book = new Book("neverAdded", new Author.ByName("author"));
 
 		// Exception should be thrown if the key is absent
