@@ -17,6 +17,11 @@ module library {
 	exports library.utils;
 	exports library.controllers.student_staff;
 
+	opens library;
 	opens library.controllers;
+	opens library.controls;
+	opens library.models;
+	opens library.persistence;
+	opens library.utils;
 	opens library.controllers.student_staff;
 }

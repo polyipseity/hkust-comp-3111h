@@ -1,45 +1,39 @@
 package library;
 
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import library.controls.ManageProfileControl;
 import library.models.User;
 import library.persistence.Repository;
 import library.utils.Tuple2;
-import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.Closeable;
 
-public class Context implements Closeable {
-	@NotNull
-	public final Stage primaryStage;
-	@NotNull
-	public final Repository repository;
-	@NotNull
-	public final ManageProfileControl manageProfile;
+public interface Context extends Closeable {
+	void setScene(@NotNull Parent value);
 
-	@Getter
-	@Setter
-	@Nullable
-	private Tuple2<User, User.Data> loggedInUser;
+	@NotNull Stage getPrimaryStage();
 
-	public Context(@NotNull Stage primaryStage, @NotNull Repository repository) {
-		this.primaryStage = primaryStage;
-		this.repository = repository;
-		this.manageProfile = new ManageProfileControl(repository);
-	}
+	@NotNull Repository getRepository();
 
+	@NotNull ManageProfileControl getManageProfile();
+
+	Tuple2<User, User.Data> getLoggedInUser();
+
+	void setLoggedInUser(Tuple2<library.models.User, library.models.User.Data> loggedInUser);
+
+	/**
+	 * Closes this stream and releases any system resources associated
+	 * with it. If the stream is already closed then invoking this
+	 * method has no effect.
+	 *
+	 * <p> As noted in {@link AutoCloseable#close()}, cases where the
+	 * close may fail require careful attention. It is strongly advised
+	 * to relinquish the underlying resources and to internally
+	 * <em>mark</em> the {@code Closeable} as closed, prior to throwing
+	 * the {@code IOException}.
+	 */
 	@Override
-	public void close() {
-		repository.close();
-	}
-
-	public void setScene(@NotNull Parent value) {
-		final var oldScene = primaryStage.getScene();
-		primaryStage.setScene(new Scene(value, oldScene.getWidth(), oldScene.getHeight()));
-	}
+	void close();
 }

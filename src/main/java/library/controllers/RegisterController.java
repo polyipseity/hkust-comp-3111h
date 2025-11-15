@@ -52,7 +52,7 @@ public class RegisterController implements DependsOnRole {
 
 		final var context = Main.getContext();
 		try {
-			switch (context.manageProfile.register(UserValidator.DEFAULT, getRole(), username, password, fullName)) {
+			switch (context.getManageProfile().register(UserValidator.DEFAULT, getRole(), username, password, fullName)) {
 				case ManageProfileControl.RegisterResult.Success val -> {
 					Alerts.showInfoDialog(val.getMessage());
 					goToLogin();
