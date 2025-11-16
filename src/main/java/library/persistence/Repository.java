@@ -1,13 +1,13 @@
 package library.persistence;
 
 import library.models.*;
-import org.eclipse.collections.api.block.function.primitive.BooleanFunction;
 import org.jetbrains.annotations.NotNull;
 import org.mapdb.*;
 import org.mapdb.serializer.SerializerArray;
 import org.mapdb.serializer.SerializerArrayTuple;
 
 import java.io.Closeable;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public final class Repository implements Closeable {
@@ -148,11 +148,11 @@ public final class Repository implements Closeable {
 		}).createOrOpen();
 	}
 
-	public void transact(@NotNull BooleanFunction<@NotNull TransactData> action) throws TransactionException {
+	public void transact(@NotNull Function<@NotNull TransactData, @NotNull Boolean> action) throws TransactionException {
 		try {
 			var ok = false;
 			try {
-				ok = action.booleanValueOf(new TransactData(users, books, userNotifications, userBookRequests, borrows));
+				ok = action.apply(new TransactData(users, books, userNotifications, userBookRequests, borrows));
 			} finally {
 				if (!ok) {
 					db.rollback();

@@ -7,7 +7,6 @@ module library {
 	requires javafx.graphics;
 	requires kotlin.stdlib;
 	requires mapdb;
-	requires org.eclipse.collections.api;
 	requires org.jetbrains.annotations;
 	requires static lombok;
 
