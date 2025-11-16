@@ -36,7 +36,7 @@
 			<padding>
 				<Insets bottom="10" left="10" right="10" top="10"/>
 			</padding>
-			<Button onAction="#handleLogout" prefHeight="40" prefWidth="150" text="Logout"/>
+			<Button onAction="#goToLogout" prefHeight="40" prefWidth="150" text="Logout"/>
 		</HBox>
 	</bottom>
 </BorderPane>

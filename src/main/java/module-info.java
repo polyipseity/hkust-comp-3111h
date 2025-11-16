@@ -13,6 +13,7 @@ module library {
 	exports library;
 	exports library.controllers;
 	exports library.controllers.author;
+	exports library.controllers.librarian;
 	exports library.controllers.student_staff;
 	exports library.controls;
 	exports library.models;
@@ -22,6 +23,7 @@ module library {
 	opens library;
 	opens library.controllers;
 	opens library.controllers.author;
+	opens library.controllers.librarian;
 	opens library.controllers.student_staff;
 	opens library.controls;
 	opens library.models;

@@ -1,4 +1,3 @@
-// src/main/java/library/controllers/LibrarianDashboardController.java
 package library.controllers;
 
 import javafx.fxml.FXML;
@@ -7,13 +6,12 @@ import library.Main;
 
 import java.io.IOException;
 
-public class LibrarianDashboardController {
-
+public abstract class DashboardController {
 	/**
 	 * Log out back to the Home screen.
 	 */
 	@FXML
-	private void handleLogout() throws IOException {
+	private void goToLogout() throws IOException {
 		Main.getContext().setScene(FXMLs.HOME.load());
 	}
 }
