@@ -1,7 +1,6 @@
 package library.persistence;
 
 import library.models.*;
-import library.utils.Dates;
 import org.eclipse.collections.api.block.function.primitive.BooleanFunction;
 import org.jetbrains.annotations.NotNull;
 import org.mapdb.*;
@@ -114,10 +113,16 @@ public final class Repository implements Closeable {
 			}
 		}).createOrOpen();
 
-		this.userNotifications = db.hashMap("userNotifications", userS, new SerializerArray<>(Serializer.STRING, String.class)).valueLoader(key -> users.containsKey(key) ? new String[0] : null).modificationListener((key, oldValue, newValue, _) -> {
-			if (oldValue == null && newValue != null) {
-				if (!users.containsKey(key)) {
-					throw new IllegalStateException("User not found");
+		this.userNotifications = db.hashMap("userNotifications", userS, new SerializerArray<>(Serializer.STRING, String.class)).valueLoader(key -> users.containsKey(key) ? new String[0] : null).modificationListener((key, oldValue, newValue, triggered) -> {
+			if (oldValue == null) {
+				if (newValue == null) {
+					if (triggered) {
+						this2.userNotifications.remove(key);
+					}
+				} else {
+					if (!users.containsKey(key)) {
+						throw new IllegalStateException("User not found");
+					}
 				}
 			}
 		}).createOrOpen();

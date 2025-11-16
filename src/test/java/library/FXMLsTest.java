@@ -2,15 +2,21 @@ package library;
 
 import javafx.application.Platform;
 import javafx.scene.Parent;
+import javafx.stage.Stage;
+import library.controls.ManageProfileControl;
 import library.models.User;
+import library.persistence.Repository;
+import library.persistence.TransactionException;
 import library.utils.Tuple2;
+import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mapdb.DBMaker;
 
 import java.io.IOException;
-import java.lang.reflect.Proxy;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.abort;
@@ -19,7 +25,7 @@ class FXMLsTest {
 	private static boolean unsupported = false;
 
 	@BeforeAll
-	static void setUpAll() {
+	static void setUpAll() throws TransactionException {
 		try {
 			Platform.startup(() -> {
 			});   // starts the toolkit
@@ -29,12 +35,39 @@ class FXMLsTest {
 			unsupported = true;
 			abort(ex.getMessage());
 		}
-		@SuppressWarnings("SuspiciousInvocationHandlerImplementation") final var context = (Context) Proxy.newProxyInstance(FXMLsTest.class.getClassLoader(), new Class[]{Context.class}, ((_, method, _) -> {
-			if ("getLoggedInUser".equals(method.getName())) {
-				return new Tuple2<>(new User("username"), new User.Data(User.Role.values()[0], true, "password", "full name"));
+		final var context = new Context() {
+			@Getter
+			private final Repository repository = new Repository(DBMaker::memoryDirectDB);
+			@Getter
+			private final ManageProfileControl manageProfile = new ManageProfileControl(repository);
+
+			@Getter
+			private final Tuple2<User, User.Data> loggedInUser = new Tuple2<>(new User("username"), new User.Data(User.Role.values()[0], true, "password", "full name"));
+
+			{
+				repository.userOps.create(loggedInUser._1(), loggedInUser._2());
 			}
-			return null;
-		}));
+
+			@Override
+			public void setScene(@NotNull Parent value) {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public @NotNull Stage getPrimaryStage() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public void setLoggedInUser(Tuple2<User, User.Data> loggedInUser) {
+				// noop
+			}
+
+			@Override
+			public void close() {
+				repository.close();
+			}
+		};
 		Main.setContext(context);
 	}
 

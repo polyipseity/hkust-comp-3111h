@@ -37,16 +37,28 @@ class RepositoryUserNotificationOpsTest {
 	@Test
 	void read_existingUser() {
 		final var reader = new User("reader");
-		final var opt = ops.read(reader);
+		final var opt = assertDoesNotThrow(() -> ops.read(reader));
 		assertTrue(opt.isPresent(), "Expected notifications to be present");
 		assertArrayEquals(new String[]{"n1", "n2"}, opt.get());
 	}
 
 	@Test
+	void read_existingUserWithoutUserNotifications() throws TransactionException {
+		final var reader = new User("new reader");
+		final var readerData = new User.Data(User.Role.STUDENT_STAFF, true, "password", "full name");
+		repository.userOps.create(reader, readerData);
+
+		final var opt = assertDoesNotThrow(() -> ops.read(reader));
+		assertTrue(opt.isPresent(), "Expected notifications to be present");
+		assertArrayEquals(new String[]{}, opt.get());
+	}
+
+	@Test
 	void read_missingUser() {
 		final var missing = new User("missing");
-		final var opt = ops.read(missing);
+		final var opt = assertDoesNotThrow(() -> ops.read(missing));
 		assertFalse(opt.isPresent(), "Expected no notifications for unknown user");
+		assertFalse(repository.userNotifications.containsKey(missing));
 	}
 
 	@Test
