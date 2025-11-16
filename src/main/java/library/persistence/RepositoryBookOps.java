@@ -4,11 +4,11 @@ import library.models.Author;
 import library.models.Book;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public record RepositoryBookOps(Repository repository) {
 
@@ -21,32 +21,14 @@ public record RepositoryBookOps(Repository repository) {
 		return Optional.ofNullable(repository.books.get(book));
 	}
 
-	public List<Book> getBooks() {
-		List<Book> bookList = new ArrayList<>();
-		for (Map.Entry<Book, Book.Data> entry : repository.books.entrySet()) {
-			bookList.add(entry.getKey());
-		}
-		return bookList;
+	@NotNull
+	public Map<Book, Book.Data> read(@NotNull Predicate<? super Map.Entry<Book, Book.Data>> filter) {
+		return repository.books.entrySet().stream().filter(filter).collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
-	public List<Book> getBooksWithAuthor(@NotNull Author author2) {
-		List<Book> bookList = new ArrayList<>();
-		for (Map.Entry<Book, Book.Data> entry : repository.books.entrySet()) {
-			if (entry.getKey().author().equals(author2)) {
-				bookList.add(entry.getKey());
-			}
-		}
-		return bookList;
-	}
-
-	public List<Book> getBooksWithTitle(@NotNull String title) {
-		List<Book> bookList = new ArrayList<>();
-		for (Map.Entry<Book, Book.Data> entry : repository.books.entrySet()) {
-			if (entry.getKey().title().equals(title)) {
-				bookList.add(entry.getKey());
-			}
-		}
-		return bookList;
+	@NotNull
+	public Map<Book, Book.Data> read(@NotNull Author author) {
+		return read(entry -> author.equals(entry.getKey().author()));
 	}
 
 	public void update(@NotNull Book book, @NotNull Function<Book.@NotNull Data, Book.@NotNull Data> callback) throws TransactionException {

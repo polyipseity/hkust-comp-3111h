@@ -20,10 +20,11 @@ import library.utils.Dates;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 
 public class AuthorMyBooksController {
     private final Repository repository = Main.getContext().getRepository();
-    List<Book> authorBooks;
+	Map<Book, Book.Data> authorBooks;
 
     public class BookRecord{
         private final Book book;
@@ -79,13 +80,14 @@ public class AuthorMyBooksController {
 
     public void reload(){
         //Get book authorized by the current author
-        authorBooks = repository.bookOps.getBooksWithAuthor(new Author.ByRef(Main.getContext().getLoggedInUser()._1()));
+	    authorBooks = repository.bookOps.read(new Author.ByRef(Main.getContext().getLoggedInUser()._1()));
 
         ObservableList<BookRecord> tableData = FXCollections.observableArrayList();
 
         //For each book in the db, write it in the tableView
-        for(Book book : authorBooks){
-            var data = repository.bookOps.read(book).get();
+	    for (final var bookEntry : authorBooks.entrySet()) {
+		    final var book = bookEntry.getKey();
+		    final var data = bookEntry.getValue();
 	        var date = switch (data.publishDate()) {
 		        case ZonedDateTime val -> Dates.zonedLocalToString(val);
 		        case null -> data.approvalStatus().toString();
@@ -166,7 +168,7 @@ public class AuthorMyBooksController {
         }
 
         //Get selected book from db
-        List<Book> selectedBook = authorBooks.stream()
+	    List<Book> selectedBook = authorBooks.keySet().stream()
                 .filter(book -> selected.title.equals(book.title()))
                 .toList();
 

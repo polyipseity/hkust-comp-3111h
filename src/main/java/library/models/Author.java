@@ -161,14 +161,13 @@ public sealed interface Author extends Comparable<Author> {
 		@NotNull
 		public Author deserialize(@NotNull DataInput2 input, int available) throws IOException {
 			final var tag = input.readByte();
-			return switch (tag) {
+			final var ret = switch (tag) {
 				case ByRef.TAG -> new ByRef(userSerializer.deserialize(input, available));
-				case ByName.TAG -> {
-					final var val = input.readUTF();
-					yield new ByName(val);
-				}
+				case ByName.TAG -> new ByName(input.readUTF());
 				default -> throw new IOException("Unknown `Author` tag: %s".formatted(tag));
 			};
+			assert tag == ret.getTag();
+			return ret;
 		}
 	}
 }
