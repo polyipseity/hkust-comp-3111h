@@ -18,6 +18,7 @@
 		</TableView>
 	</center>
 	<bottom>
-		<Button mnemonicParsing="false" text="Read Selected Book" BorderPane.alignment="CENTER"/>
+		<Button onAction="#readSelectedBook" mnemonicParsing="false" text="Read Selected Book"
+				BorderPane.alignment="CENTER"/>
 	</bottom>
 </BorderPane>

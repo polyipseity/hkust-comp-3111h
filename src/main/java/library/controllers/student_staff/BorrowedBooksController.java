@@ -18,8 +18,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
-import java.util.Optional;
 
 public class BorrowedBooksController {
 	private final Context context = Main.getContext();
@@ -37,10 +37,13 @@ public class BorrowedBooksController {
 	public record tableRow(
 			@NotNull @Getter String title,
 			@NotNull @Getter String author,
-			@NotNull @Getter ZonedDateTime borrowedOn,
-			@NotNull @Getter Duration timeLeft
+			@NotNull @Getter String borrowedOn,
+			@NotNull @Getter String timeLeft,
+			@NotNull Book book
 	) {
 	}
+
+	DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
 	@FXML
 	private void initialize() {
@@ -49,14 +52,28 @@ public class BorrowedBooksController {
 		borrowedOnCol.setCellValueFactory(new PropertyValueFactory<>("borrowedOn"));
 		timeLeftCol.setCellValueFactory(new PropertyValueFactory<>("timeLeft"));
 
-		ObservableList<tableRow> data = FXCollections.observableArrayList();
+		reload();
+	}
 
+	private void reload() {
+		ObservableList<tableRow> data = FXCollections.observableArrayList();
 		Map<Book, Borrow> borrowedBooksMap = repository.borrowOps.read(user);
 		for (var entry: borrowedBooksMap.entrySet()) {
 			Book book = entry.getKey();
 			Borrow borrow = entry.getValue();
-			@NotNull Optional<Book.Data> bookData = repository.bookOps.read(book);
-			// data.add(new tableRow(...));
+			long s = Duration.between(borrow.borrowDate(), ZonedDateTime.now()).getSeconds();
+			data.add(new tableRow(
+					book.title(),
+					book.author().toString(),
+					borrow.borrowDate().format(dateTimeFormatter),
+					String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60)),
+					book
+			));
 		}
+		table.setItems(data);
+	}
+
+	@FXML
+	private void readSelectedBook() {
 	}
 }
