@@ -1,6 +1,8 @@
 package library.controllers.author;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import library.Main;
@@ -77,6 +79,10 @@ public class AuthorPublishBooksController {
             try {
                 repository.bookOps.create(book, data);
                 Alerts.showInfoDialog("Book is awaiting approval.");
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/author/AuthorMyBooks.fxml"));
+                Parent root = fxmlLoader.load();
+                AuthorMyBooksController controller = fxmlLoader.getController();
+                controller.reload();
             } catch (TransactionException e) {
                 throw new RuntimeException(e);
             }

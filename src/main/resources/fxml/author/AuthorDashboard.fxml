@@ -30,6 +30,9 @@
 
 			<!-- Status View Tab -->
 			<Tab text="Status View">
+                <StackPane>
+                    <fx:include source="AuthorStatus.fxml"/>
+                </StackPane>
 			</Tab>
 
 			<!-- Update Account Tab -->
