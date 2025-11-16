@@ -30,10 +30,10 @@ class RepositoryTest {
 		final var book2 = new Book("book", new Author.ByName("author"));
 		final var oldBook = new Book("book2", new Author.ByRef(author));
 		final var newBook = new Book("book2", new Author.ByRef(author), true);
-		data.books().put(book, new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, "", null,42));
-		data.books().put(book2, new Book.Data("summary", "content", Book.ApprovalStatus.REJECTED, "", null, 42));
-		data.books().put(oldBook, new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, "", null, 42)); // `originalOrModified`: newBook
-		data.books().put(newBook, new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, "", oldBook, 42));
+		data.books().put(book, new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, Dates.nowZoned(), null, 42));
+		data.books().put(book2, new Book.Data("summary", "content", Book.ApprovalStatus.REJECTED, null, null, 42));
+		data.books().put(oldBook, new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, Dates.nowZoned(), null, 42)); // `originalOrModified`: newBook
+		data.books().put(newBook, new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, null, oldBook, 42));
 
 		data.userNotifications().put(reader, new String[]{"notification", "notification2"});
 		data.userNotifications().put(author, new String[]{"notification"});
@@ -88,26 +88,26 @@ class RepositoryTest {
 
 		// book `originalOrModified` link constraints
 		assertThrows(TransactionException.class, () -> repository.transact(tx -> {
-			tx.books().put(new Book("book with missing author", new Author.ByRef(new User("missing author"))), new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, null, 42));
+			tx.books().put(new Book("book with missing author", new Author.ByRef(new User("missing author"))), new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, null, null, 42));
 			return true;
 		}));
 		assertThrows(TransactionException.class, () -> repository.transact(tx -> {
-			tx.books().put(new Book("book with missing link", new Author.ByName("author")), new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, new Book("missing book", new Author.ByName("author")), 42));
+			tx.books().put(new Book("book with missing link", new Author.ByName("author")), new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, null, new Book("missing book", new Author.ByName("author")), 42));
 			return true;
 		}));
 		assertThrows(TransactionException.class, () -> repository.transact(tx -> {
-			tx.books().put(new Book("book with self-link", new Author.ByName("author")), new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, new Book("book with self-link", new Author.ByName("author")), 42));
+			tx.books().put(new Book("book with self-link", new Author.ByName("author")), new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, null, new Book("book with self-link", new Author.ByName("author")), 42));
 			return true;
 		}));
 		assertThrows(TransactionException.class, () -> repository.transact(tx -> {
-			tx.books().put(new Book("book with duplicate link", new Author.ByName("author")), new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, new Book("book2", new Author.ByRef(new User("author"))), 42));
+			tx.books().put(new Book("book with duplicate link", new Author.ByName("author")), new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, null, new Book("book2", new Author.ByRef(new User("author"))), 42));
 			return true;
 		}));
 
 		final var existingBook = new Book("book", new Author.ByName("author"));
 		final var existingBookData = Objects.requireNonNull(repository.books.get(existingBook));
 		final var newBookToLink = new Book("book with link", new Author.ByName("author"));
-		assertDoesNotThrow(() -> repository.transact(tx -> tx.books().put(newBookToLink, new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, new Book("book", new Author.ByName("author")), 42)) == null));
+		assertDoesNotThrow(() -> repository.transact(tx -> tx.books().put(newBookToLink, new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, null, new Book("book", new Author.ByName("author")), 42)) == null));
 		assertEquals(existingBookData.withOriginalOrModified(newBookToLink), repository.books.get(existingBook));
 		assertDoesNotThrow(() -> repository.transact(tx -> tx.books().remove(newBookToLink) != null));
 		assertEquals(existingBookData, repository.books.get(existingBook));
@@ -122,7 +122,7 @@ class RepositoryTest {
 		final var existingBook = new Book("book", new Author.ByName("author"));
 		final var missingUser = new User("missing user");
 		assertThrows(TransactionException.class, () -> repository.transact(tx -> {
-			tx.books().put(new Book("title", new Author.ByRef(missingUser)), new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, null, 42));
+			tx.books().put(new Book("title", new Author.ByRef(missingUser)), new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, Dates.nowZoned(), null, 42));
 			return true;
 		}));
 		assertThrows(TransactionException.class, () -> repository.transact(tx -> {
@@ -166,7 +166,7 @@ class RepositoryTest {
 		assertEquals(newUserData, repository.users.get(newUser));
 
 		final var newBookToRemove = new Book("title", new Author.ByRef(newUser));
-		final var newBookToRemoveData = new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, null, 42);
+		final var newBookToRemoveData = new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, Dates.nowZoned(), null, 42);
 		assertDoesNotThrow(() -> repository.transact(tx -> tx.books().put(newBookToRemove, newBookToRemoveData) == null));
 		assertEquals(newBookToRemoveData, repository.books.get(newBookToRemove));
 
@@ -198,7 +198,7 @@ class RepositoryTest {
 		// remove book
 		final var existingUser = new User("reader");
 		final var newBook = new Book("new book", new Author.ByRef(existingUser));
-		final var newBookData = new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, null, 42);
+		final var newBookData = new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, Dates.nowZoned(), null, 42);
 
 		assertDoesNotThrow(() -> repository.transact(tx -> tx.books().put(newBook, newBookData) == null));
 		assertEquals(newBookData, repository.books.get(newBook));

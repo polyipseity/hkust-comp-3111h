@@ -1,6 +1,8 @@
 package library.models;
 
 import library.utils.ByteArray;
+import library.utils.DurationSerializer;
+import library.utils.ZonedDateTimeSerializer;
 import lombok.RequiredArgsConstructor;
 import lombok.With;
 import org.jetbrains.annotations.NotNull;
@@ -10,8 +12,6 @@ import org.mapdb.serializer.GroupSerializerObjectArray;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @With
@@ -21,7 +21,7 @@ public record Borrow(
 		@NotNull ByteArray pdfContent
 ) {
 	@RequiredArgsConstructor
-	public static class S extends GroupSerializerObjectArray<Borrow> {
+	public static final class S extends GroupSerializerObjectArray<Borrow> {
 		/**
 		 * Serializes the content of the given value into the given
 		 * {@link DataOutput2}.
@@ -32,18 +32,9 @@ public record Borrow(
 		 */
 		@Override
 		public void serialize(@NotNull DataOutput2 out, @NotNull Borrow value) throws IOException {
-			// `borrowDate`: second, nano, zone
-			final var borrowDate = value.borrowDate();
-			out.writeLong(borrowDate.toEpochSecond());
-			out.writeLong(borrowDate.getNano());
-			out.writeUTF(borrowDate.getZone().getId());
-
-			out.writeLong(value.duration().toNanos());
-
-			// `pdfContent`: length, raw bytes
-			final var data = value.pdfContent().getData();
-			out.writeInt(data.length);
-			out.write(data);
+			ZonedDateTimeSerializer.INSTANCE.serialize(out, value.borrowDate());
+			DurationSerializer.INSTANCE.serialize(out, value.duration());
+			ByteArray.SERIALIZER.serialize(out, value.pdfContent());
 		}
 
 		/**
@@ -58,12 +49,10 @@ public record Borrow(
 		@Override
 		@NotNull
 		public Borrow deserialize(@NotNull DataInput2 input, int available) throws IOException {
-			final var borrowDate = ZonedDateTime.ofInstant(Instant.ofEpochSecond(input.readLong(), input.readLong()), ZoneId.of(input.readUTF()));
-			final var duration = Duration.ofNanos(input.readLong());
-
-			final var file = new byte[input.readInt()];
-			input.readFully(file);
-			return new Borrow(borrowDate, duration, new ByteArray(file));
+			final var borrowDate = ZonedDateTimeSerializer.INSTANCE.deserialize(input, available);
+			final var duration = DurationSerializer.INSTANCE.deserialize(input, available);
+			final var pdfContent = ByteArray.SERIALIZER.deserialize(input, available);
+			return new Borrow(borrowDate, duration, pdfContent);
 		}
 	}
 }

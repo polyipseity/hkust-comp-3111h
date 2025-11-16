@@ -70,7 +70,7 @@ public record User(
 			@NotNull String fullName
 	) {
 		@RequiredArgsConstructor
-		public static class S extends GroupSerializerObjectArray<Data> {
+		public static final class S extends GroupSerializerObjectArray<Data> {
 			/**
 			 * Serializes the content of the given value into the given
 			 * {@link DataOutput2}.
@@ -109,7 +109,7 @@ public record User(
 	}
 
 	@RequiredArgsConstructor
-	public static class S extends GroupSerializerObjectArray<User> {
+	public static final class S extends GroupSerializerObjectArray<User> {
 		/**
 		 * Serializes the content of the given value into the given
 		 * {@link DataOutput2}.

@@ -16,11 +16,10 @@ import library.models.Book;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
+import library.utils.Dates;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class AuthorMyBooksController {
     private final Repository repository = Main.getContext().getRepository();
@@ -87,10 +86,9 @@ public class AuthorMyBooksController {
         //For each book in the db, write it in the tableView
         for(Book book : authorBooks){
             var data = repository.bookOps.read(book).get();
-            var date = switch (data.dates()){
-                case null -> "";
-                case "" -> data.approvalStatus().toString();
-                default -> data.dates();
+	        var date = switch (data.publishDate()) {
+		        case ZonedDateTime val -> Dates.zonedLocalToString(val);
+		        case null -> data.approvalStatus().toString();
             };
             var record = new BookRecord(book, book.title(),data.approvalStatus().toString(), date, data.timesBorrowed(),data.summary());
             tableData.add(record);

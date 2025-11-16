@@ -1,6 +1,6 @@
 package library.models;
 
-import library.utils.Dates;
+import library.utils.ZonedDateTimeSerializer;
 import lombok.RequiredArgsConstructor;
 import lombok.With;
 import org.jetbrains.annotations.NotNull;
@@ -11,6 +11,7 @@ import org.mapdb.Serializer;
 import org.mapdb.serializer.GroupSerializerObjectArray;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.Comparator;
 
 public record Book(
@@ -74,13 +75,13 @@ public record Book(
 			@NotNull String summary,
 			@NotNull String content,
 			@NotNull ApprovalStatus approvalStatus,
-            @Nullable String dates,
+			@Nullable ZonedDateTime publishDate,
 			@Nullable Book originalOrModified,
 			long timesBorrowed
 	) {
 		@RequiredArgsConstructor
-		public static class S extends GroupSerializerObjectArray<Data> {
-			protected final Serializer<Book> bookSerializer;
+		public static final class S extends GroupSerializerObjectArray<Data> {
+			private final Serializer<Book> bookSerializer;
 
 			/**
 			 * Serializes the content of the given value into the given
@@ -94,10 +95,15 @@ public record Book(
 			public void serialize(@NotNull DataOutput2 out, @NotNull Book.Data value) throws IOException {
 				out.writeUTF(value.summary());
 				out.writeUTF(value.content());
-                out.writeUTF(value.dates());
 				out.writeInt(value.approvalStatus().ordinal());
+				if (value.publishDate() == null) {
+					out.writeBoolean(false);  // flag that it is absent
+				} else {
+					out.writeBoolean(true);
+					ZonedDateTimeSerializer.INSTANCE.serialize(out, value.publishDate());
+				}
 				if (value.originalOrModified() == null) {
-					out.writeBoolean(false);   // flag that it is absent
+					out.writeBoolean(false);  // flag that it is absent
 				} else {
 					out.writeBoolean(true);
 					bookSerializer.serialize(out, value.originalOrModified());
@@ -119,21 +125,24 @@ public record Book(
 			public Data deserialize(@NotNull DataInput2 input, int available) throws IOException {
 				final var summary = input.readUTF();
 				final var content = input.readUTF();
-                final var dates = input.readUTF();
 				final var status = ApprovalStatus.values()[input.readInt()];
+				@SuppressWarnings("SwitchStatementWithTooFewBranches") final var publishDate = switch (input.readBoolean() ? 1 : 0) {
+					case 1 -> ZonedDateTimeSerializer.INSTANCE.deserialize(input, available);
+					default -> null;
+				};
 				@SuppressWarnings("SwitchStatementWithTooFewBranches") final var originalOrModified = switch (input.readBoolean() ? 1 : 0) {
 					case 1 -> bookSerializer.deserialize(input, available);
 					default -> null;
 				};
 				final var times = input.readLong();
-				return new Data(summary, content, status, dates, originalOrModified, times);
+				return new Data(summary, content, status, publishDate, originalOrModified, times);
 			}
 		}
 	}
 
 	@RequiredArgsConstructor
-	public static class S extends GroupSerializerObjectArray<Book> {
-		protected final Serializer<Author> authorSerializer;
+	public static final class S extends GroupSerializerObjectArray<Book> {
+		private final Serializer<Author> authorSerializer;
 
 		/**
 		 * Serializes the content of the given value into the given

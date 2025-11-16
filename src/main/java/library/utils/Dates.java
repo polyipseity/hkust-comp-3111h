@@ -1,16 +1,10 @@
 package library.utils;
 
-import library.models.Author;
-import library.models.Book;
 import org.jetbrains.annotations.NotNull;
-import org.mapdb.DataInput2;
-import org.mapdb.DataOutput2;
-import org.mapdb.Serializer;
-import org.mapdb.serializer.GroupSerializerObjectArray;
 
-import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 public enum Dates {
 	;
@@ -20,5 +14,10 @@ public enum Dates {
 	@NotNull
 	public static ZonedDateTime nowZoned() {
 		return ZonedDateTime.now(UTC);
+	}
+
+	@NotNull
+	public static String zonedLocalToString(@NotNull ZonedDateTime dateTime) {
+		return DateTimeFormatter.ISO_ZONED_DATE_TIME.format(dateTime.withZoneSameInstant(ZoneId.systemDefault()));
 	}
 }

@@ -1,8 +1,7 @@
 package library.controllers.author;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
+import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import library.Main;
 import library.models.Author;
@@ -11,13 +10,9 @@ import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 
-import javafx.scene.control.TextField;
-import lombok.Setter;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Collections;
 import java.util.Optional;
 
 public class AuthorPublishBooksController {
@@ -78,7 +73,7 @@ public class AuthorPublishBooksController {
         if(opt.isPresent()) {
             Alerts.showErrorDialog("Duplicated Book Title.");
         }else{
-            var data = new Book.Data(BookAbstract.getText(), ContentTxt, Book.ApprovalStatus.PENDING, "", null,0);
+	        var data = new Book.Data(BookAbstract.getText(), ContentTxt, Book.ApprovalStatus.PENDING, null, null, 0);
             try {
                 repository.bookOps.create(book, data);
                 Alerts.showInfoDialog("Book is awaiting approval.");

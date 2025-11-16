@@ -34,7 +34,7 @@ class RepositoryBookOpsTest {
 	void create_successful() {
 		final var book = new Book("testTitle", new Author.ByName("author"));
 		final var data = new Book.Data("summary", "content",
-				Book.ApprovalStatus.PENDING, null, 42);
+				Book.ApprovalStatus.PENDING, null, null, 42);
 
 		// No exception means the book was persisted
 		assertDoesNotThrow(() -> ops.create(book, data));
@@ -45,7 +45,7 @@ class RepositoryBookOpsTest {
 	void create_duplicateThrows() {
 		final var book = new Book("dupTitle", new Author.ByName("author"));
 		final var data = new Book.Data("s", "c",
-				Book.ApprovalStatus.PENDING, null, 1);
+				Book.ApprovalStatus.PENDING, null, null, 1);
 
 		assertDoesNotThrow(() -> ops.create(book, data));
 		// second insertion must fail
@@ -57,7 +57,7 @@ class RepositoryBookOpsTest {
 	void read_existing() throws TransactionException {
 		final var book = new Book("readTitle", new Author.ByName("author"));
 		final var data = new Book.Data("s", "c",
-				Book.ApprovalStatus.PENDING, null, 1);
+				Book.ApprovalStatus.PENDING, null, null, 1);
 
 		ops.create(book, data);
 		final var result = assertDoesNotThrow(() -> ops.read(book));
@@ -77,7 +77,7 @@ class RepositoryBookOpsTest {
 	void update_existing() throws TransactionException {
 		final var book = new Book("updTitle", new Author.ByName("author"));
 		final var data1 = new Book.Data("s1", "c1",
-				Book.ApprovalStatus.PENDING, null, 10);
+				Book.ApprovalStatus.PENDING, null, null, 10);
 		ops.create(book, data1);
 
 		// Update only the approval status
@@ -98,7 +98,7 @@ class RepositoryBookOpsTest {
 	void delete_existing() throws TransactionException {
 		final var book = new Book("delTitle", new Author.ByName("author"));
 		final var data = new Book.Data("s", "c",
-				Book.ApprovalStatus.PENDING, null, 5);
+				Book.ApprovalStatus.PENDING, null, null, 5);
 		ops.create(book, data);
 
 		assertDoesNotThrow(() -> ops.delete(book));

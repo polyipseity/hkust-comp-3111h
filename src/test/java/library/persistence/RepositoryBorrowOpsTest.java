@@ -30,8 +30,8 @@ class RepositoryBorrowOpsTest {
 
 		final var book = new Book("book", new Author.ByRef(author));
 		final var book2 = new Book("book", new Author.ByName("author"));
-		data.books().put(book, new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, null, 42));
-		data.books().put(book2, new Book.Data("summary", "content", Book.ApprovalStatus.REJECTED, null, 42));
+		data.books().put(book, new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, Dates.nowZoned(), null, 42));
+		data.books().put(book2, new Book.Data("summary", "content", Book.ApprovalStatus.REJECTED, null, null, 42));
 
 		data.borrows().put(new Object[]{reader, book}, new Borrow(Dates.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42])));
 

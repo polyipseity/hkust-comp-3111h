@@ -62,7 +62,7 @@ public record BookRequest(
 			@NotNull ZonedDateTime requestDate
 	) {
 		@RequiredArgsConstructor
-		public static class S extends GroupSerializerObjectArray<Data> {
+		public static final class S extends GroupSerializerObjectArray<Data> {
 			/**
 			 * Serializes the content of the given value into the given
 			 * {@link DataOutput2}.
@@ -99,7 +99,7 @@ public record BookRequest(
 	}
 
 	@RequiredArgsConstructor
-	public static class S extends GroupSerializerObjectArray<BookRequest> {
+	public static final class S extends GroupSerializerObjectArray<BookRequest> {
 		/**
 		 * Serializes the content of the given value into the given
 		 * {@link DataOutput2}.

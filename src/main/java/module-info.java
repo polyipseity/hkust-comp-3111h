@@ -1,31 +1,31 @@
 @SuppressWarnings("Java9RedundantRequiresStatement")
 module library {
+	requires java.sql;
+	requires javafx.base;
 	requires javafx.controls;
 	requires javafx.fxml;
-	requires mapdb;
-	requires org.jetbrains.annotations;
-	requires static lombok;
-	requires org.eclipse.collections.api;
 	requires javafx.graphics;
 	requires kotlin.stdlib;
-    requires java.sql;
-    requires javafx.base;
+	requires mapdb;
+	requires org.eclipse.collections.api;
+	requires org.jetbrains.annotations;
+	requires static lombok;
 
-    exports library;
+	exports library;
 	exports library.controllers;
+	exports library.controllers.author;
+	exports library.controllers.student_staff;
 	exports library.controls;
 	exports library.models;
 	exports library.persistence;
 	exports library.utils;
-	exports library.controllers.student_staff;
-    exports library.controllers.author;
 
 	opens library;
 	opens library.controllers;
+	opens library.controllers.author;
+	opens library.controllers.student_staff;
 	opens library.controls;
 	opens library.models;
 	opens library.persistence;
 	opens library.utils;
-	opens library.controllers.student_staff;
-    opens library.controllers.author;
 }
