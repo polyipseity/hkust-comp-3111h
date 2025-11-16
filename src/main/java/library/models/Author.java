@@ -60,8 +60,11 @@ public sealed interface Author extends Comparable<Author> {
 			};
 		}
 
-		@Override @NotNull
-		public String toString() { return value.username(); }
+		@Override
+		@NotNull
+		public String toString() {
+			return value.username();
+		}
 	}
 
 	record ByName(@NotNull String value) implements Author {
@@ -112,8 +115,11 @@ public sealed interface Author extends Comparable<Author> {
 			};
 		}
 
-		@Override @NotNull
-		public String toString() { return value; }
+		@Override
+		@NotNull
+		public String toString() {
+			return value;
+		}
 	}
 
 	@RequiredArgsConstructor
