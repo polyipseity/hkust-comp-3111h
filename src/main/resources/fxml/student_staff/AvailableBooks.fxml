@@ -27,7 +27,7 @@
 					<Insets bottom="8.0" />
 				</VBox.margin>
 			</Text>
-			<Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Borrow Selected Book">
+			<Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#borrowButtonAction" text="Borrow Selected Book">
 				<VBox.margin>
 					<Insets bottom="8.0" />
 				</VBox.margin>
