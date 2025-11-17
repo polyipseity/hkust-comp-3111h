@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Optional;
 
@@ -50,6 +51,8 @@ public class AvailableBooksController {
     public record dialogResult(String minutes, String seconds) {
     }
 
+    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
     @FXML
     public void initialize() {
         titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
@@ -77,8 +80,10 @@ public class AvailableBooksController {
         for (var entry : availableBooks.entrySet()) {
             Book book = entry.getKey();
             Book.Data bookData = entry.getValue();
+            String publishDateString =
+                    bookData.publishDate() == null ? "N/A" : bookData.publishDate().format(dateTimeFormatter);
             data.add(new tableRow(book.title(), book.author().toString(),
-                    "TEST DATE", bookData.summary(), book));
+                    publishDateString, bookData.summary(), book));
         }
         table.setItems(data);
         table.getSelectionModel().selectFirst();
