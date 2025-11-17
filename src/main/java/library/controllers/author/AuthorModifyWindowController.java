@@ -4,8 +4,19 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import library.Main;
+import library.models.Author;
+import library.models.Book;
+import library.persistence.Repository;
+import library.persistence.TransactionException;
+import library.utils.Alerts;
+
+import java.util.Optional;
 
 public class AuthorModifyWindowController {
+    Repository repository = Main.getContext().getRepository();
+    private Book selectedBook;
+
     private String initialTitle, initalSummary, currentTitle, currentSummary;
 
     @FXML
@@ -17,11 +28,12 @@ public class AuthorModifyWindowController {
     @FXML
     private TextField TitleField;
 
-    public void setData(String title, String summary) {
+    public void setData(String title, String summary,Book book) {
         initialTitle = title;
         initalSummary = summary;
         TitleField.setText(title);
         SummaryArea.setText(summary);
+        selectedBook = book;
     }
 
     @FXML
@@ -43,6 +55,26 @@ public class AuthorModifyWindowController {
         }else{
             saveButton.setDisable(false);
         }
+    }
+
+    @FXML
+    private void saveModification() throws TransactionException {
+        var book = new Book(currentTitle, new Author.ByRef(Main.getContext().getLoggedInUser()._1()), true);
+        if(currentTitle != initialTitle){
+            Optional<Book.Data> opt = repository.bookOps.read(book);
+            if(opt.isPresent()) {
+                Alerts.showErrorDialog("Duplicated Book Title.");
+                return;
+            }
+        }
+        var Olddata = repository.bookOps.read(selectedBook).get();
+        var data = new Book.Data(currentSummary,Olddata.content(), Book.ApprovalStatus.PENDING ,Olddata.publishDate(),selectedBook,Olddata.timesBorrowed());
+        repository.bookOps.create(book, data);
+        repository.bookOps.update(selectedBook, old -> old.withOriginalOrModified(book));
+
+        //Close the current window
+        Stage currentStage = (Stage) TitleField.getScene().getWindow();
+        currentStage.close();
     }
 
     @FXML

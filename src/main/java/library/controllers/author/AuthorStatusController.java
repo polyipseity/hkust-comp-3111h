@@ -19,6 +19,7 @@ import library.utils.Dates;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 public class AuthorStatusController {
     private Repository repository = Main.getContext().getRepository();
     private final User user = Main.getContext().getLoggedInUser()._1();
-    private Map<Book, Book.Data> authorBooks = repository.bookOps.read(new Author.ByRef(user));
+    private Map<Book, Book.Data> authorBooks;
 
     private int pendingBooks = 0;
     private int approvedBooks = 0;
@@ -36,8 +37,13 @@ public class AuthorStatusController {
 
     @FXML
     public void initialize() {
+        refreshStatus();
         loadPieChartData();
         loadBarChartData();
+    }
+
+    private void refreshStatus(){
+        authorBooks = repository.bookOps.read(new Author.ByRef(user));
     }
 
     @FXML
@@ -47,6 +53,8 @@ public class AuthorStatusController {
 
     private void loadPieChartData() {
         // Get books by status for the current author
+        approvedBooks = 0;
+        pendingBooks = 0;
 
         for (final var bookEntry : authorBooks.entrySet()) {
             final var data = bookEntry.getValue();
@@ -65,32 +73,28 @@ public class AuthorStatusController {
         BooksStatusPieChart.setData(pieChartData);
     }
     private void loadBarChartData() {
-        // Get books by status for the current author
-        List<Book> allApprovedBooks = new ArrayList<>(authorBooks.keySet());
+        // Get all approved books for the current author
+        Map<Book, Book.Data> allApprovedBook = authorBooks.entrySet().stream().filter(book ->
+            book.getValue().approvalStatus() == Book.ApprovalStatus.APPROVED
+        ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        List<Book> topBooks = allApprovedBooks.stream()
-                .sorted((b1, b2) -> {
-                    long count1 = repository.bookOps.read(b1).map(Book.Data::timesBorrowed).orElse(0L);
-                    long count2 = repository.bookOps.read(b2).map(Book.Data::timesBorrowed).orElse(0L);
-                    return Long.compare(count2, count1); // Descending order
-                })
-                .limit(5)
-                .collect(Collectors.toList());
+        //Sort the approved books by times borrowed
+        List<Map.Entry<Book, Book.Data>> sortedByReaders = allApprovedBook.entrySet().stream()
+                .sorted(Comparator.comparingLong(entry -> -entry.getValue().timesBorrowed())) // Negative for descending
+                .limit(5) // Take top 5 only
+                .toList();
 
         XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Times Borrowed");
 
-        for (Book book : topBooks) {
-            Book.Data data = repository.bookOps.read(book).orElse(null);
-            if (data != null) {
-                String bookTitle = book.title().length() > 20 ?
-                        book.title().substring(0, 17) + "..." : book.title();
+        for (Map.Entry<Book, Book.Data> entry : sortedByReaders) {
+            Book book = entry.getKey();
+            Book.Data data = entry.getValue();
 
-                series.getData().add(new XYChart.Data<>(
-                        bookTitle,
-                        data.timesBorrowed()
-                ));
-            }
+            series.getData().add(new XYChart.Data<>(book.title(), data.timesBorrowed()));
         }
+
+        // Clear existing data and add new series
+        PopularBooksBarChart.getData().clear();
+        PopularBooksBarChart.getData().add(series);
     }
 }

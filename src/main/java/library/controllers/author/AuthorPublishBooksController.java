@@ -62,13 +62,6 @@ public class AuthorPublishBooksController {
             Alerts.showErrorDialog("Missing information of the book.");
             return;
         }
-        if(ContentTxt.isEmpty()){
-            Alerts.showErrorDialog("Use text file for the content of the book.");
-            return;
-        }else if(!BookContent.getText().equals(ContentTxt.replaceAll("\n",""))){
-            Alerts.showErrorDialog("Different content. Please upload the text file again.");
-            return;
-        }
         assert Main.getContext().getLoggedInUser() != null;
         var book = new Book(BookTitle.getText(), new Author.ByRef(Main.getContext().getLoggedInUser()._1()), false);
         Optional<Book.Data> opt = repository.bookOps.read(book);
@@ -79,10 +72,6 @@ public class AuthorPublishBooksController {
             try {
                 repository.bookOps.create(book, data);
                 Alerts.showInfoDialog("Book is awaiting approval.");
-                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/author/AuthorMyBooks.fxml"));
-                Parent root = fxmlLoader.load();
-                AuthorMyBooksController controller = fxmlLoader.getController();
-                controller.reload();
             } catch (TransactionException e) {
                 throw new RuntimeException(e);
             }

@@ -40,7 +40,7 @@ fx:controller="library.controllers.author.AuthorModifyWindowController">
             <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                <children>
                   <Button onAction="#cancelModification" mnemonicParsing="false" prefWidth="60.0" text="Cancel" />
-                  <Button fx:id="saveButton" defaultButton="true" disable="true" mnemonicParsing="false" prefWidth="60.0" text="Save" />
+                  <Button onAction="#saveModification" fx:id="saveButton" defaultButton="true" disable="true" mnemonicParsing="false" prefWidth="60.0" text="Save" />
                </children>
                <GridPane.margin>
                   <Insets top="15.0" />

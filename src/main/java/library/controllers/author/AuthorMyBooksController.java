@@ -6,6 +6,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -21,6 +23,7 @@ import library.utils.Dates;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class AuthorMyBooksController {
     private final Repository repository = Main.getContext().getRepository();
@@ -135,6 +138,14 @@ public class AuthorMyBooksController {
             return;
         }
         try {
+            if(selected.book.temporary()){
+                Alerts.showErrorDialog("Selected book is temporary. Please select the original book");
+                return;
+            }
+            if(repository.bookOps.read(selected.book).get().originalOrModified() != null){
+                Alerts.showErrorDialog("Already modified book, delete the modified version to make new modifications.");
+                return;
+            }
             // Load the FXML file for the new window's content
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/author/AuthorModifyWindow.fxml"));
             Parent root = fxmlLoader.load();
@@ -142,7 +153,7 @@ public class AuthorMyBooksController {
             //Passing content to new window
             AuthorModifyWindowController controller = fxmlLoader.getController();
             Book.Data data = repository.bookOps.read(selected.book).get();
-            controller.setData(selected.book.title(),data.summary());
+            controller.setData(selected.book.title(),data.summary(),selected.book);
 
             // Create a new Stage (window)
             Stage newStage = new Stage();
@@ -162,6 +173,12 @@ public class AuthorMyBooksController {
     private void AuthorDeleteBook() throws TransactionException {
         BookRecord selected = BooksTable.getSelectionModel().getSelectedItem();
 
+        Optional<ButtonType> result = Alerts.showConfirmDialog("Delete \"" + selected.title + "\"?");
+        if (result.isPresent() && result.get() == ButtonType.CANCEL) {
+            return;
+            // Perform the action if confirmed
+        }
+
         if (selected == null) {
             Alerts.showErrorDialog("Please select a book first.");
             return;
@@ -179,7 +196,19 @@ public class AuthorMyBooksController {
 
         //Drop selected book in db
         for (Book book : selectedBook) {
-            repository.bookOps.delete(book);
+            var data = repository.bookOps.read(book).get();
+            if(data.summary().equals(selected.getSummary())){
+                if(book.temporary()){
+                    repository.bookOps.delete(book);
+                }else{
+                    //Can't delete originalBook
+                    if(data.originalOrModified() == null){
+                        repository.bookOps.delete(book);
+                    }else{
+                        Alerts.showErrorDialog("Delete the modified version to delete the original book");
+                    }
+                }
+            }
         }
 
         //Reload table after deleting a book
