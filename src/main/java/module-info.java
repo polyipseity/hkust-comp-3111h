@@ -9,8 +9,9 @@ module library {
 	requires mapdb;
 	requires org.jetbrains.annotations;
 	requires static lombok;
+	requires com.github.librepdf.openpdf;
 
-    exports library;
+	exports library;
 	exports library.controllers;
 	exports library.controllers.author;
 	exports library.controllers.librarian;

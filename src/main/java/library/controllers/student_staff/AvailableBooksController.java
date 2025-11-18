@@ -16,10 +16,15 @@ import library.models.User;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
-import library.utils.ByteArray;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.openpdf.text.Document;
+import org.openpdf.text.Element;
+import org.openpdf.text.PageSize;
+import org.openpdf.text.Paragraph;
+import org.openpdf.text.pdf.PdfWriter;
 
+import java.io.FileOutputStream;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -141,11 +146,10 @@ public class AvailableBooksController {
             break; // Exit loop when valid duration obtained
         }
 
-        Borrow borrowData = new Borrow(
-                ZonedDateTime.now(),
-                Duration.ofSeconds(durationSeconds),
-                new ByteArray(new byte[0])
-        );
+        String pdfPath = generatePdfPath(selectedBook);
+        Borrow borrowData = new Borrow(ZonedDateTime.now(), Duration.ofSeconds(durationSeconds), pdfPath);
+        if (!generatePdf(selectedBookData.get().content(), pdfPath)) return;
+
         try {
             repository.borrowOps.create(user, selectedBook, borrowData);
         } catch (TransactionException e) {
@@ -187,5 +191,38 @@ public class AvailableBooksController {
         });
 
         return dialog;
+    }
+
+    private String generatePdfPath(Book book) {
+        String filteredBookTitle = book.title().replaceAll("[-+.^:,]", "");
+        return user.username() + "__" + filteredBookTitle + ".pdf";
+    }
+
+    /**
+     * Generates a PDF when the user first borrows a book.
+     * @param content The content of the book as a string.
+     * @param pdfPath The path where the PDF is to be generated.
+     * @return True if PDF is generated successfully, false otherwise.
+     */
+    private boolean generatePdf(String content, String pdfPath) {
+        try {
+            Document outputDoc = new Document(PageSize.A4, 50, 50, 50, 50);
+            FileOutputStream os = new FileOutputStream(pdfPath);
+
+            PdfWriter.getInstance(outputDoc, os);
+            outputDoc.open();
+
+            for (String line: content.split("\\r?\\n")) {
+                Paragraph p = new Paragraph(line);
+                p.setAlignment(Element.ALIGN_JUSTIFIED);
+                outputDoc.add(p);
+            }
+
+            outputDoc.close();
+            return true;
+        } catch (Exception e) {
+            Alerts.showErrorDialog("Error while generating PDF: " + e.getMessage());
+            return false;
+        }
     }
 }
