@@ -51,7 +51,7 @@ public class LoginController implements DependsOnRole, RequiresLoggedOut {
 			case ManageProfileControl.LoginResult.Success(final var user, final var data) -> {
 				context.setLoggedInUser(new Tuple2<>(user, data));
 				Main.getContext().setScene((switch (getRole()) {
-					case STUDENT_STAFF -> FXMLs.STUDENT_DASHBOARD;
+					case STUDENT_STAFF -> FXMLs.STUDENT_STAFF_DASHBOARD;
 					case AUTHOR -> FXMLs.AUTHOR_DASHBOARD;
 					case LIBRARIAN -> FXMLs.LIBRARIAN_DASHBOARD;
 				}).load());
