@@ -22,6 +22,6 @@ public enum TimeUtil {
 
 	@NotNull
 	public static String toStringDuration(@NotNull Duration duration) {
-		return "%dd %d:%02d:%02d".formatted(duration.toDaysPart(), duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart());
+		return "%dd %02d:%02d:%02d".formatted(duration.toDaysPart(), duration.toHoursPart(), duration.toMinutesPart(), duration.toSecondsPart());
 	}
 }
