@@ -3,12 +3,26 @@ package library.persistence;
 import library.models.User;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public record RepositoryUserOps(Repository repository) {
 	public void create(@NotNull User user, @NotNull User.Data data) throws TransactionException {
 		repository.transact(tx -> tx.users().put(user, data) == null);
+	}
+
+	@NotNull
+	public Map<User, User.Data> read() {
+		return Collections.unmodifiableMap(repository.users);
+	}
+
+	@NotNull
+	public Map<User, User.Data> read(@NotNull Predicate<? super Map.@NotNull Entry<User, User.Data>> filter) {
+		return repository.users.entrySet().stream().filter(filter).collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
 	@NotNull

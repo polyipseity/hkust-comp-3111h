@@ -3,14 +3,26 @@ package library.persistence;
 import library.models.Book;
 import library.models.Borrow;
 import library.models.User;
+import library.utils.Tuple2;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public record RepositoryBorrowOps(Repository repository) {
+	@NotNull
+	public Map<Tuple2<User, Book>, Borrow> read() {
+		return read(_ -> true);
+	}
+
+	@NotNull
+	public Map<Tuple2<User, Book>, Borrow> read(@NotNull Predicate<? super Map.@NotNull Entry<Tuple2<User, Book>, Borrow>> filter) {
+		return repository.borrows.entrySet().stream().map(entry -> Map.entry(new Tuple2<>((User) entry.getKey()[0], (Book) entry.getKey()[1]), entry.getValue())).filter(filter).collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
+	}
+
 	@NotNull
 	public Optional<Borrow> read(@NotNull User user, @NotNull Book book) {
 		return Optional.ofNullable(repository.borrows.get(new Object[]{user, book}));

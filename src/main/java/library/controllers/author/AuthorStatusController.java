@@ -6,26 +6,19 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.ScrollBar;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextArea;
-import javafx.scene.text.Font;
 import library.Main;
 import library.models.Author;
 import library.models.Book;
 import library.models.User;
 import library.persistence.Repository;
-import library.utils.Dates;
 
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class AuthorStatusController {
-    private Repository repository = Main.getContext().getRepository();
+    private final Repository repository = Main.getContext().getRepository();
     private final User user = Main.getContext().getLoggedInUser()._1();
     private Map<Book, Book.Data> authorBooks;
 
@@ -43,7 +36,8 @@ public class AuthorStatusController {
     }
 
     private void refreshStatus(){
-        authorBooks = repository.bookOps.read(new Author.ByRef(user));
+	    final var author = new Author.ByRef(user);
+	    authorBooks = repository.bookOps.read(entry -> author.equals(entry.getKey().author()));
     }
 
     @FXML

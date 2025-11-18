@@ -1,9 +1,9 @@
 package library.persistence;
 
-import library.models.Author;
 import library.models.Book;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -17,18 +17,18 @@ public record RepositoryBookOps(Repository repository) {
 	}
 
 	@NotNull
-	public Optional<Book.Data> read(@NotNull Book book) {
-		return Optional.ofNullable(repository.books.get(book));
+	public Map<Book, Book.Data> read() {
+		return Collections.unmodifiableMap(repository.books);
 	}
 
 	@NotNull
-	public Map<Book, Book.Data> read(@NotNull Predicate<? super Map.Entry<Book, Book.Data>> filter) {
+	public Map<Book, Book.Data> read(@NotNull Predicate<? super Map.@NotNull Entry<Book, Book.Data>> filter) {
 		return repository.books.entrySet().stream().filter(filter).collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
 	@NotNull
-	public Map<Book, Book.Data> read(@NotNull Author author) {
-		return read(entry -> author.equals(entry.getKey().author()));
+	public Optional<Book.Data> read(@NotNull Book book) {
+		return Optional.ofNullable(repository.books.get(book));
 	}
 
 	public void update(@NotNull Book book, @NotNull Function<Book.@NotNull Data, Book.@NotNull Data> callback) throws TransactionException {

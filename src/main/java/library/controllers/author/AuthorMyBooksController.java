@@ -6,7 +6,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -83,7 +82,8 @@ public class AuthorMyBooksController {
 
     public void reload(){
         //Get book authorized by the current author
-	    authorBooks = repository.bookOps.read(new Author.ByRef(Main.getContext().getLoggedInUser()._1()));
+	    final var author = new Author.ByRef(Main.getContext().getLoggedInUser()._1());
+	    authorBooks = repository.bookOps.read(entry -> author.equals(entry.getKey().author()));
 
         ObservableList<BookRecord> tableData = FXCollections.observableArrayList();
 

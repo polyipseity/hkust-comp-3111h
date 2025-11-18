@@ -3,6 +3,7 @@ package library.persistence;
 import library.models.BookRequest;
 import library.models.User;
 import library.utils.Dates;
+import library.utils.Tuple2;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,118 @@ class RepositoryBookRequestOpsTest {
 			ops = null;
 			repository = null;
 		}
+	}
+
+	@Test
+	void create_successful() throws TransactionException {
+		final var user = new User("u1");
+		final var userData = new User.Data(User.Role.STUDENT_STAFF, true, "password", "full name");
+		repository.userOps.create(user, userData);
+
+		final var req = new BookRequest("title", "author");
+		final var data = new BookRequest.Data(Dates.nowZoned());
+
+		assertDoesNotThrow(() -> ops.create(user, req, data));
+		assertEquals(data, repository.userBookRequests.get(new Object[]{user, req}));
+	}
+
+	@Test
+	void create_duplicateThrows() throws TransactionException {
+		final var user = new User("u1");
+		final var userData = new User.Data(User.Role.STUDENT_STAFF, true, "password", "full name");
+		repository.userOps.create(user, userData);
+
+		final var req = new BookRequest("title", "author");
+		assertDoesNotThrow(() -> ops.create(user, req, new BookRequest.Data(Dates.nowZoned())));
+
+		assertThrows(TransactionException.class,
+				() -> ops.create(user, req, new BookRequest.Data(Dates.nowZoned())));
+	}
+
+	@Test
+	void read_allEntries_unfiltered() throws TransactionException {
+		// set up two different users with a single request each
+		final var uA = new User("alice");
+		repository.userOps.create(uA, new User.Data(User.Role.STUDENT_STAFF, true,
+				"pw", "Alice"));
+
+		final var rA = new BookRequest("a1", "a2");
+		ops.create(uA, rA, new BookRequest.Data(Dates.nowZoned()));
+
+		final var uB = new User("bob");
+		repository.userOps.create(uB, new User.Data(User.Role.STUDENT_STAFF, true,
+				"pw", "Bob"));
+
+		final var rB = new BookRequest("b1", "b2");
+		ops.create(uB, rB, new BookRequest.Data(Dates.nowZoned()));
+
+		// fetch all and verify that both are present
+		final var all = assertDoesNotThrow(() -> ops.read());
+		assertEquals(2, all.size(), "Both user‑request pairs should be returned");
+
+		// sanity check that the keys really contain the expected tuple
+		assertTrue(all.containsKey(new Tuple2<>(uA, rA)));
+		assertTrue(all.containsKey(new Tuple2<>(uB, rB)));
+
+		// and that the map is unmodifiable
+		assertThrows(
+				UnsupportedOperationException.class,
+				() -> all.put(new Tuple2<>(new User("c"), new BookRequest("x", "y")),
+						new BookRequest.Data(Dates.nowZoned())),
+				"Returned map must be immutable");
+	}
+
+	@Test
+	void read_filteredByTitle() throws TransactionException {
+		final var u = new User("filterUser");
+		repository.userOps.create(u, new User.Data(User.Role.STUDENT_STAFF, true,
+				"pw", "Filter"));
+
+		// two requests with different titles
+		final var r1 = new BookRequest("unique-title", "authorX");
+		ops.create(u, r1, new BookRequest.Data(Dates.nowZoned()));
+
+		final var r2 = new BookRequest("common", "authorY");
+		ops.create(u, r2, new BookRequest.Data(Dates.nowZoned()));
+
+		// keep only the one whose title contains “unique”
+		final var filtered = assertDoesNotThrow(() ->
+				ops.read(entry -> "unique-title".equals(entry.getKey()._2().title())));
+
+		assertEquals(1, filtered.size());
+		assertTrue(filtered.containsKey(new Tuple2<>(u, r1)));
+		assertFalse(filtered.containsKey(new Tuple2<>(u, r2)));
+	}
+
+	@Test
+	void read_byUser_whenNoRequests() throws TransactionException {
+		final var lonely = new User("lonely");
+		repository.userOps.create(lonely,
+				new User.Data(User.Role.STUDENT_STAFF, true, "pw", "Lonely"));
+
+		// no requests yet – should return an empty map
+		final var result = assertDoesNotThrow(() -> ops.read(lonely));
+		assertTrue(result.isEmpty(), "A user with no requests must get an empty map");
+	}
+
+
+	@Test
+	void read_byUser_returnsUnmodifiableMap() throws TransactionException {
+		final var u = new User("immutable");
+		repository.userOps.create(u,
+				new User.Data(User.Role.STUDENT_STAFF, true, "pw", "Immutable"));
+
+		final var req = new BookRequest("i1", "a1");
+		ops.create(u, req, new BookRequest.Data(Dates.nowZoned()));
+
+		final var map = assertDoesNotThrow(() -> ops.read(u));
+		assertFalse(map.isEmpty());
+
+		// attempt to modify – should fail
+		assertThrows(
+				UnsupportedOperationException.class,
+				() -> map.put(req, new BookRequest.Data(Dates.nowZoned())),
+				"Map returned by read(User) must be immutable");
 	}
 
 	@Test
@@ -78,32 +191,6 @@ class RepositoryBookRequestOpsTest {
 		repository.userOps.create(user, userData);
 
 		assertTrue(assertDoesNotThrow(() -> ops.read(user)).isEmpty());
-	}
-
-	@Test
-	void create_successful() throws TransactionException {
-		final var user = new User("u1");
-		final var userData = new User.Data(User.Role.STUDENT_STAFF, true, "password", "full name");
-		repository.userOps.create(user, userData);
-
-		final var req = new BookRequest("title", "author");
-		final var data = new BookRequest.Data(Dates.nowZoned());
-
-		assertDoesNotThrow(() -> ops.create(user, req, data));
-		assertEquals(data, repository.userBookRequests.get(new Object[]{user, req}));
-	}
-
-	@Test
-	void create_duplicateThrows() throws TransactionException {
-		final var user = new User("u1");
-		final var userData = new User.Data(User.Role.STUDENT_STAFF, true, "password", "full name");
-		repository.userOps.create(user, userData);
-
-		final var req = new BookRequest("title", "author");
-		assertDoesNotThrow(() -> ops.create(user, req, new BookRequest.Data(Dates.nowZoned())));
-
-		assertThrows(TransactionException.class,
-				() -> ops.create(user, req, new BookRequest.Data(Dates.nowZoned())));
 	}
 
 	@Test

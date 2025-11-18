@@ -3,13 +3,22 @@ package library.persistence;
 import library.models.User;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public record RepositoryUserNotificationOps(Repository repository) {
+	@NotNull
+	public Map<User, String[]> read() {
+		return Collections.unmodifiableMap(repository.userNotifications);
+	}
+
+	@NotNull
+	public Map<User, String[]> read(@NotNull Predicate<? super Map.@NotNull Entry<User, String[]>> filter) {
+		return repository.userNotifications.entrySet().stream().filter(filter).collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
+	}
+
 	@NotNull
 	public Optional<String[]> read(@NotNull User user) {
 		return Optional.ofNullable(repository.userNotifications.get(user));
