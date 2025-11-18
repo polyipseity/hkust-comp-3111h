@@ -16,7 +16,8 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
-public class BookRequestsController extends DynamicTableController<String, BookRequestsController.Data> implements RequiresLoggedIn {
+public class BookRequestsController extends DynamicTableController<BookRequestsController.Keys, BookRequestsController.Data> implements RequiresLoggedIn {
+
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
@@ -24,40 +25,58 @@ public class BookRequestsController extends DynamicTableController<String, BookR
 	}
 
 	@Override
-	protected @NotNull Map<String, TableColumn<@NotNull Data, @NotNull Data>> getKeys() {
+	protected @NotNull Map<Keys, TableColumn<@NotNull Data, @NotNull Data>> getKeys() {
 		return Map.of(
-				"title", new TableColumn<>("Title"),
-				"author", new TableColumn<>("Author"),
-				"user", new TableColumn<>("Requested By"),
-				"requestDate", new TableColumn<>("Request Date"),
-				"actions", new TableColumn<>("Actions")
+				Keys.TITLE, new TableColumn<>("Title"),
+				Keys.AUTHOR, new TableColumn<>("Author"),
+				Keys.USER, new TableColumn<>("Requested By"),
+				Keys.REQUEST_DATE, new TableColumn<>("Request Date"),
+				Keys.ACTIONS, new TableColumn<>("Actions")
 		);
 	}
 
 	@Override
 	protected @NotNull Collection<@NotNull Data> getData() {
-		return Main.getContext().getRepository().userBookRequestOps.read().entrySet().stream().map(entry -> new Data(entry.getKey()._1(), entry.getKey()._2(), entry.getValue())).toList();
+		return Main.getContext()
+				.getRepository()
+				.userBookRequestOps
+				.read()
+				.entrySet()
+				.stream()
+				.map(entry -> new Data(
+						entry.getKey()._1(),
+						entry.getKey()._2(),
+						entry.getValue()))
+				.toList();
 	}
 
-	public record Data(@NotNull User user, @NotNull BookRequest bookRequest,
-	                   @NotNull BookRequest.Data bookRequestData) implements Function<@NotNull String, DynamicTableController.@NotNull Data> {
+	public enum Keys {
+		TITLE,
+		AUTHOR,
+		USER,
+		REQUEST_DATE,
+		ACTIONS
+	}
 
+	public record Data(@NotNull User user,
+	                   @NotNull BookRequest bookRequest,
+	                   @NotNull BookRequest.Data bookRequestData)
+			implements Function<@NotNull Keys, DynamicTableController.@NotNull Data> {
 		/**
 		 * Applies this function to the given argument.
 		 *
-		 * @param s the function argument
+		 * @param key the function argument
 		 * @return the function result
 		 */
 		@Override
-		public DynamicTableController.@NotNull Data apply(@NotNull String s) {
-			return switch (s) {
-				case "title" -> new DynamicTableController.Data.Value(bookRequest.title());
-				case "author" -> new DynamicTableController.Data.Value(bookRequest.author());
-				case "user" -> new DynamicTableController.Data.Value(user.username());
-				case "requestDate" ->
-						new DynamicTableController.Data.Value(TimeUtil.toStringZonedLocal(bookRequestData.requestDate()));
-				case "actions" -> new DynamicTableController.Data.Value("confirm reject");
-				default -> throw new IllegalArgumentException("Unexpected value: %s".formatted(s));
+		public DynamicTableController.@NotNull Data apply(@NotNull Keys key) {
+			return switch (key) {
+				case TITLE -> new DynamicTableController.Data.Value(bookRequest.title());
+				case AUTHOR -> new DynamicTableController.Data.Value(bookRequest.author());
+				case USER -> new DynamicTableController.Data.Value(user.username());
+				case REQUEST_DATE -> new DynamicTableController.Data.Value(
+						TimeUtil.toStringZonedLocal(bookRequestData.requestDate()));
+				case ACTIONS -> new DynamicTableController.Data.Value("confirm reject");
 			};
 		}
 	}

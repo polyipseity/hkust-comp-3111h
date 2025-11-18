@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
-public class BookDownloadController extends DynamicTableController<String, BookDownloadController.Data> implements RequiresLoggedIn {
+public class BookDownloadController extends DynamicTableController<BookDownloadController.Keys, BookDownloadController.Data> implements RequiresLoggedIn {
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
@@ -21,11 +21,11 @@ public class BookDownloadController extends DynamicTableController<String, BookD
 	}
 
 	@Override
-	protected @NotNull Map<String, TableColumn<@NotNull Data, @NotNull Data>> getKeys() {
+	protected @NotNull Map<Keys, TableColumn<@NotNull Data, @NotNull Data>> getKeys() {
 		return Map.of(
-				"title", new TableColumn<>("Title"),
-				"author", new TableColumn<>("Author"),
-				"bookshelves", new TableColumn<>("Bookshelves")
+				Keys.TITLE, new TableColumn<>("Title"),
+				Keys.AUTHOR, new TableColumn<>("Author"),
+				Keys.BOOKSHELVES, new TableColumn<>("Bookshelves")
 		);
 	}
 
@@ -34,21 +34,26 @@ public class BookDownloadController extends DynamicTableController<String, BookD
 		return List.of();
 	}
 
-	public record Data() implements Function<@NotNull String, DynamicTableController.@NotNull Data> {
+	public enum Keys {
+		TITLE,
+		AUTHOR,
+		BOOKSHELVES,
+	}
+
+	public record Data() implements Function<@NotNull Keys, DynamicTableController.@NotNull Data> {
 
 		/**
 		 * Applies this function to the given argument.
 		 *
-		 * @param s the function argument
+		 * @param key the function argument
 		 * @return the function result
 		 */
 		@Override
-		public DynamicTableController.@NotNull Data apply(@NotNull String s) {
-			return switch (s) {
-				case "title" -> new DynamicTableController.Data.Value("title");
-				case "author" -> new DynamicTableController.Data.Value("author");
-				case "bookshelves" -> new DynamicTableController.Data.Value("bookshelves");
-				default -> throw new IllegalArgumentException("Unexpected value: %s".formatted(s));
+		public DynamicTableController.@NotNull Data apply(@NotNull Keys key) {
+			return switch (key) {
+				case TITLE -> new DynamicTableController.Data.Value("title");
+				case AUTHOR -> new DynamicTableController.Data.Value("author");
+				case BOOKSHELVES -> new DynamicTableController.Data.Value("bookshelves");
 			};
 		}
 	}

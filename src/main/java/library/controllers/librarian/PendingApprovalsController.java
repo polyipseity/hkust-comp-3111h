@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
-public class PendingApprovalsController extends DynamicTableController<String, PendingApprovalsController.Data> implements RequiresLoggedIn {
+public class PendingApprovalsController extends DynamicTableController<PendingApprovalsController.Keys, PendingApprovalsController.Data> implements RequiresLoggedIn {
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
@@ -22,37 +22,52 @@ public class PendingApprovalsController extends DynamicTableController<String, P
 	}
 
 	@Override
-	protected @NotNull Map<String, TableColumn<@NotNull Data, @NotNull Data>> getKeys() {
+	protected @NotNull Map<Keys, TableColumn<@NotNull Data, @NotNull Data>> getKeys() {
 		return Map.of(
-				"title", new TableColumn<>("Title"),
-				"author", new TableColumn<>("Author"),
-				"summary", new TableColumn<>("Summary"),
-				"actions", new TableColumn<>("Actions")
+				Keys.TITLE, new TableColumn<>("Title"),
+				Keys.AUTHOR, new TableColumn<>("Author"),
+				Keys.SUMMARY, new TableColumn<>("Summary"),
+				Keys.ACTIONS, new TableColumn<>("Actions")
 		);
 	}
 
 	@Override
 	protected @NotNull Collection<@NotNull Data> getData() {
-		return Main.getContext().getRepository().bookOps.read(entry -> entry.getValue().approvalStatus() == Book.ApprovalStatus.PENDING).entrySet().stream().map(entry -> new Data(entry.getKey(), entry.getValue())).toList();
+		return Main.getContext()
+				.getRepository()
+				.bookOps
+				.read(entry -> entry.getValue().approvalStatus() == Book.ApprovalStatus.PENDING)
+				.entrySet()
+				.stream()
+				.map(entry -> new Data(
+						entry.getKey(),
+						entry.getValue()))
+				.toList();
+	}
+
+	public enum Keys {
+		TITLE,
+		AUTHOR,
+		SUMMARY,
+		ACTIONS
 	}
 
 	public record Data(@NotNull Book book,
-	                   @NotNull Book.Data bookData) implements Function<@NotNull String, DynamicTableController.@NotNull Data> {
-
+	                   @NotNull Book.Data bookData)
+			implements Function<@NotNull Keys, DynamicTableController.@NotNull Data> {
 		/**
 		 * Applies this function to the given argument.
 		 *
-		 * @param s the function argument
+		 * @param key the function argument
 		 * @return the function result
 		 */
 		@Override
-		public DynamicTableController.@NotNull Data apply(@NotNull String s) {
-			return switch (s) {
-				case "title" -> new DynamicTableController.Data.Value(book.title());
-				case "author" -> new DynamicTableController.Data.Value(book.author().toString());
-				case "summary" -> new DynamicTableController.Data.Value(bookData.summary());
-				case "actions" -> new DynamicTableController.Data.Value("view approve reject");
-				default -> throw new IllegalArgumentException("Unexpected value: %s".formatted(s));
+		public DynamicTableController.@NotNull Data apply(@NotNull Keys key) {
+			return switch (key) {
+				case TITLE -> new DynamicTableController.Data.Value(book.title());
+				case AUTHOR -> new DynamicTableController.Data.Value(book.author().toString());
+				case SUMMARY -> new DynamicTableController.Data.Value(bookData.summary());
+				case ACTIONS -> new DynamicTableController.Data.Value("view approve reject");
 			};
 		}
 	}

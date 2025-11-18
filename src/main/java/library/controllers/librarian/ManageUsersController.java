@@ -14,7 +14,8 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
-public class ManageUsersController extends DynamicTableController<String, ManageUsersController.Data> implements RequiresLoggedIn {
+public class ManageUsersController extends DynamicTableController<ManageUsersController.Keys, ManageUsersController.Data> implements RequiresLoggedIn {
+
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
@@ -22,39 +23,56 @@ public class ManageUsersController extends DynamicTableController<String, Manage
 	}
 
 	@Override
-	protected @NotNull Map<String, TableColumn<@NotNull Data, @NotNull Data>> getKeys() {
+	protected @NotNull Map<Keys, TableColumn<@NotNull Data, @NotNull Data>> getKeys() {
 		return Map.of(
-				"username", new TableColumn<>("Username"),
-				"role", new TableColumn<>("Role"),
-				"name", new TableColumn<>("Name"),
-				"active", new TableColumn<>("Active"),
-				"actions", new TableColumn<>("Actions")
+				Keys.USERNAME, new TableColumn<>("Username"),
+				Keys.ROLE, new TableColumn<>("Role"),
+				Keys.NAME, new TableColumn<>("Name"),
+				Keys.ACTIVE, new TableColumn<>("Active"),
+				Keys.ACTIONS, new TableColumn<>("Actions")
 		);
 	}
 
 	@Override
 	protected @NotNull Collection<@NotNull Data> getData() {
-		return Main.getContext().getRepository().userOps.read().entrySet().stream().map(entry -> new Data(entry.getKey(), entry.getValue())).toList();
+		return Main.getContext()
+				.getRepository()
+				.userOps
+				.read()
+				.entrySet()
+				.stream()
+				.map(entry -> new Data(
+						entry.getKey(),
+						entry.getValue()))
+				.toList();
+	}
+
+	public enum Keys {
+		USERNAME,
+		ROLE,
+		NAME,
+		ACTIVE,
+		ACTIONS
 	}
 
 	public record Data(@NotNull User user,
-	                   @NotNull User.Data userData) implements Function<@NotNull String, DynamicTableController.@NotNull Data> {
+	                   @NotNull User.Data userData)
+			implements Function<@NotNull Keys, DynamicTableController.@NotNull Data> {
 
 		/**
 		 * Applies this function to the given argument.
 		 *
-		 * @param s the function argument
+		 * @param key the function argument
 		 * @return the function result
 		 */
 		@Override
-		public DynamicTableController.@NotNull Data apply(@NotNull String s) {
-			return switch (s) {
-				case "username" -> new DynamicTableController.Data.Value(user.username());
-				case "role" -> new DynamicTableController.Data.Value(userData.role().name);
-				case "name" -> new DynamicTableController.Data.Value(userData.fullName());
-				case "active" -> new DynamicTableController.Data.Value(String.valueOf(userData.active()));
-				case "actions" -> new DynamicTableController.Data.Value("activate/deactivate");
-				default -> throw new IllegalArgumentException("Unexpected value: %s".formatted(s));
+		public DynamicTableController.@NotNull Data apply(@NotNull Keys key) {
+			return switch (key) {
+				case USERNAME -> new DynamicTableController.Data.Value(user.username());
+				case ROLE -> new DynamicTableController.Data.Value(userData.role().name);
+				case NAME -> new DynamicTableController.Data.Value(userData.fullName());
+				case ACTIVE -> new DynamicTableController.Data.Value(String.valueOf(userData.active()));
+				case ACTIONS -> new DynamicTableController.Data.Value("activate/deactivate");
 			};
 		}
 	}
