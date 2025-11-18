@@ -9,6 +9,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BorrowTest {
 	@Test
@@ -61,6 +62,6 @@ class BorrowTest {
 
 		// The default method should return a duration close to the remaining period.
 		final var result = borrow.durationLeft();
-		assertEquals(1, result.toHours());
+		assertTrue(59 <= result.toMinutes() && result.toMinutes() <= 60);
 	}
 }
