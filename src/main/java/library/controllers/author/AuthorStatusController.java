@@ -7,19 +7,21 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import library.Main;
+import library.controllers.common.RequiresLoggedIn;
 import library.models.Author;
 import library.models.Book;
-import library.models.User;
 import library.persistence.Repository;
+import org.jetbrains.annotations.Nullable;
 
+import java.net.URL;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-public class AuthorStatusController {
+public class AuthorStatusController implements RequiresLoggedIn {
     private final Repository repository = Main.getContext().getRepository();
-    private final User user = Main.getContext().getLoggedInUser()._1();
     private Map<Book, Book.Data> authorBooks;
 
     private int pendingBooks = 0;
@@ -28,21 +30,23 @@ public class AuthorStatusController {
     @FXML private PieChart BooksStatusPieChart;
     @FXML private BarChart<String, Number> PopularBooksBarChart;
 
-    @FXML
-    public void initialize() {
-        refreshStatus();
-        loadPieChartData();
-        loadBarChartData();
-    }
+	@Override
+	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+		RequiresLoggedIn.super.initialize(location, resources);
+
+		refresh();
+	}
 
     private void refreshStatus(){
-	    final var author = new Author.ByRef(user);
+	    final var author = new Author.ByRef(getLoggedInUser()._1());
 	    authorBooks = repository.bookOps.read(entry -> author.equals(entry.getKey().author()));
     }
 
     @FXML
     private void refresh(){
-        initialize();
+	    refreshStatus();
+	    loadPieChartData();
+	    loadBarChartData();
     }
 
     private void loadPieChartData() {

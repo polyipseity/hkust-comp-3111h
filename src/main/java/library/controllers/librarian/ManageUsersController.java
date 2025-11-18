@@ -2,6 +2,7 @@ package library.controllers.librarian;
 
 import library.Main;
 import library.controllers.common.DynamicTableController;
+import library.controllers.common.RequiresLoggedIn;
 import library.models.User;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,7 +10,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
 
-public class ManageUsersController extends DynamicTableController<ManageUsersController.Data> {
+public class ManageUsersController extends DynamicTableController<ManageUsersController.Data> implements RequiresLoggedIn {
 	@Override
 	protected @NotNull Map<@NotNull String, @NotNull Header> getKeys() {
 		return Map.of(

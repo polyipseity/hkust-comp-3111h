@@ -7,6 +7,7 @@ import javafx.scene.control.TextField;
 import library.FXMLs;
 import library.Main;
 import library.controllers.common.DependsOnRole;
+import library.controllers.common.RequiresLoggedOut;
 import library.controls.ManageProfileControl;
 import library.models.User;
 import library.utils.Alerts;
@@ -18,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Objects;
 
-public class LoginController implements DependsOnRole {
+public class LoginController implements DependsOnRole, RequiresLoggedOut {
 	@FXML
 	private Label headerLabel;
 	@FXML
@@ -28,11 +29,6 @@ public class LoginController implements DependsOnRole {
 
 	@Nullable
 	private User.Role role;
-
-	@FXML
-	private void initialize() {
-		Main.getContext().setLoggedInUser(null);
-	}
 
 	@Override
 	public @NotNull User.Role getRole() {

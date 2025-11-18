@@ -2,6 +2,7 @@ package library.controllers.librarian;
 
 import library.Main;
 import library.controllers.common.DynamicTableController;
+import library.controllers.common.RequiresLoggedIn;
 import library.models.BookRequest;
 import library.models.User;
 import library.utils.TimeUtil;
@@ -11,7 +12,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
 
-public class BookRequestsController extends DynamicTableController<BookRequestsController.Data> {
+public class BookRequestsController extends DynamicTableController<BookRequestsController.Data> implements RequiresLoggedIn {
 	@Override
 	protected @NotNull Map<@NotNull String, @NotNull Header> getKeys() {
 		return Map.of(

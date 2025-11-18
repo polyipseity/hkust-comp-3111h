@@ -1,19 +1,24 @@
 package library.controllers.author;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.text.Font;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import library.Main;
+import library.controllers.common.RequiresLoggedIn;
 import library.models.Author;
 import library.models.Book;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
+import org.jetbrains.annotations.Nullable;
 
+import java.net.URL;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
-public class AuthorModifyWindowController {
+public class AuthorModifyWindowController implements RequiresLoggedIn {
     Repository repository = Main.getContext().getRepository();
     private Book selectedBook;
 
@@ -36,30 +41,28 @@ public class AuthorModifyWindowController {
         selectedBook = book;
     }
 
-    @FXML
-    private void initialize() {
-        TitleField.textProperty().addListener((observable, oldValue, newValue) -> {
-            currentTitle = newValue;
-            checkSaveCondition(newValue, currentSummary);
-        });
+	@Override
+	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+		RequiresLoggedIn.super.initialize(location, resources);
 
-        SummaryArea.textProperty().addListener((observable, oldValue, newValue) -> {
-            currentSummary = newValue;
-            checkSaveCondition(currentTitle, newValue);
-        });
-    }
+		TitleField.textProperty().addListener((observable, oldValue, newValue) -> {
+			currentTitle = newValue;
+			checkSaveCondition(newValue, currentSummary);
+		});
+
+		SummaryArea.textProperty().addListener((observable, oldValue, newValue) -> {
+			currentSummary = newValue;
+			checkSaveCondition(currentTitle, newValue);
+		});
+	}
 
     private void checkSaveCondition(String title, String summary) {
-        if (initialTitle.equals(title) && initalSummary.equals(summary)) {
-            saveButton.setDisable(true);
-        }else{
-            saveButton.setDisable(false);
-        }
+	    saveButton.setDisable(initialTitle.equals(title) && initalSummary.equals(summary));
     }
 
     @FXML
     private void saveModification() throws TransactionException {
-        var book = new Book(currentTitle, new Author.ByRef(Main.getContext().getLoggedInUser()._1()), true);
+	    var book = new Book(currentTitle, new Author.ByRef(getLoggedInUser()._1()), true);
         if(currentTitle != initialTitle){
             Optional<Book.Data> opt = repository.bookOps.read(book);
             if(opt.isPresent()) {

@@ -10,21 +10,25 @@ import library.models.User;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
+import org.jetbrains.annotations.Nullable;
 
-public class MyProfileController {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class MyProfileController implements RequiresLoggedIn {
 	private final Context context = Main.getContext();
 	private final Repository repository = context.getRepository();
-	private final User user = Main.getContext().getLoggedInUser()._1();
-	private final User.Data userData = Main.getContext().getLoggedInUser()._2();
 
 	@FXML
 	public Text usernameText;
 	@FXML
 	public TextField newNameField, newPasswordField;
 
-	@FXML
-	private void initialize() {
-		usernameText.setText(user.username());
+	@Override
+	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+		RequiresLoggedIn.super.initialize(location, resources);
+
+		usernameText.setText(getLoggedInUser()._1().username());
 	}
 
 	@FXML
@@ -35,16 +39,16 @@ public class MyProfileController {
 			Alerts.showErrorDialog("Both input fields are empty");
 			return;
 		}
-		String newPassword = enteredPassword.isEmpty() ? userData.password() : enteredPassword;
-		String newFullName = enteredFullName.isEmpty() ? userData.fullName() : enteredFullName;
-		UserValidator.Result result = UserValidator.DEFAULT.apply(user.username(), newPassword, newFullName);
+		String newPassword = enteredPassword.isEmpty() ? getLoggedInUser()._2().password() : enteredPassword;
+		String newFullName = enteredFullName.isEmpty() ? getLoggedInUser()._2().fullName() : enteredFullName;
+		UserValidator.Result result = UserValidator.DEFAULT.apply(getLoggedInUser()._1().username(), newPassword, newFullName);
 		switch (result) {
 			case UserValidator.Result.Success() -> {
-				User.Data newUserData = userData
+				User.Data newUserData = getLoggedInUser()._2()
 						.withPassword(newPassword)
 						.withFullName(newFullName);
 				try {
-					repository.userOps.update(user, (_) -> newUserData);
+					repository.userOps.update(getLoggedInUser()._1(), (_) -> newUserData);
 					Alerts.showInfoDialog("Updated successfully");
 				} catch (TransactionException e) {
 					Alerts.showErrorDialog("Update Failed: " + e.getMessage());

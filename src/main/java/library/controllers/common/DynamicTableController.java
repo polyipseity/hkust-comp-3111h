@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -14,20 +15,18 @@ import library.utils.Tuple2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.net.URL;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public abstract class DynamicTableController<E extends Function<@NotNull String, DynamicTableController.@NotNull Data>> {
+public abstract class DynamicTableController<E extends Function<@NotNull String, DynamicTableController.@NotNull Data>> implements Initializable {
 	protected final Map<String, TableColumn<@NotNull E, @NotNull E>> columnMap = new HashMap<>();
 	@FXML
 	private TableView<@NotNull E> table;
 
-	@FXML
-	protected void initialize() {
+	@Override
+	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		loadTable();
 	}
 

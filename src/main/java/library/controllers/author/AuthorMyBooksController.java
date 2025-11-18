@@ -12,19 +12,23 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import library.Main;
+import library.controllers.common.RequiresLoggedIn;
 import library.models.Author;
 import library.models.Book;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.TimeUtil;
+import org.jetbrains.annotations.Nullable;
 
+import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
-public class AuthorMyBooksController {
+public class AuthorMyBooksController implements RequiresLoggedIn {
     private final Repository repository = Main.getContext().getRepository();
 	Map<Book, Book.Data> authorBooks;
 
@@ -62,18 +66,20 @@ public class AuthorMyBooksController {
     @FXML
     private TableColumn<BookRecord, Long> Readers;
 
-    @FXML
-    private void initialize(){
-        //Binding Table Column
-        Title.setCellValueFactory(new PropertyValueFactory<>("title"));
-        Status.setCellValueFactory(new PropertyValueFactory<>("status"));
-        Date.setCellValueFactory(new PropertyValueFactory<>("date"));
-        Readers.setCellValueFactory(new PropertyValueFactory<>("readers"));
-        Abstract.setCellValueFactory(new PropertyValueFactory<>("summary"));
+	@Override
+	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+		RequiresLoggedIn.super.initialize(location, resources);
 
-        //LoadTable
-        reload();
-    }
+		//Binding Table Column
+		Title.setCellValueFactory(new PropertyValueFactory<>("title"));
+		Status.setCellValueFactory(new PropertyValueFactory<>("status"));
+		Date.setCellValueFactory(new PropertyValueFactory<>("date"));
+		Readers.setCellValueFactory(new PropertyValueFactory<>("readers"));
+		Abstract.setCellValueFactory(new PropertyValueFactory<>("summary"));
+
+		//LoadTable
+		reload();
+	}
 
     @FXML
     private void refresh(){
@@ -82,7 +88,7 @@ public class AuthorMyBooksController {
 
     public void reload(){
         //Get book authorized by the current author
-	    final var author = new Author.ByRef(Main.getContext().getLoggedInUser()._1());
+	    final var author = new Author.ByRef(getLoggedInUser()._1());
 	    authorBooks = repository.bookOps.read(entry -> author.equals(entry.getKey().author()));
 
         ObservableList<BookRecord> tableData = FXCollections.observableArrayList();

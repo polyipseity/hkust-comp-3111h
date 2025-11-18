@@ -6,7 +6,7 @@ import library.Main;
 
 import java.io.IOException;
 
-public abstract class DashboardController {
+public abstract class DashboardController implements RequiresLoggedOut {
 	/**
 	 * Log out back to the Home screen.
 	 */

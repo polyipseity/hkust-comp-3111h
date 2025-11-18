@@ -9,23 +9,24 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import library.Context;
 import library.Main;
+import library.controllers.common.RequiresLoggedIn;
 import library.models.Book;
 import library.models.Borrow;
-import library.models.User;
 import library.persistence.Repository;
 import library.utils.TimeUtil;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.net.URL;
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.ResourceBundle;
 
-public class BorrowedBooksController {
+public class BorrowedBooksController implements RequiresLoggedIn {
 	private final Context context = Main.getContext();
 	private final Repository repository = context.getRepository();
-	private final User user = context.getLoggedInUser()._1();
-	private final User.Data userData = context.getLoggedInUser()._2();
 
 	@FXML
 	private TableView<tableRow> table;
@@ -45,8 +46,11 @@ public class BorrowedBooksController {
 
 	DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-	@FXML
-	private void initialize() {
+
+	@Override
+	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+		RequiresLoggedIn.super.initialize(location, resources);
+
 		titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
 		authorCol.setCellValueFactory(new PropertyValueFactory<>("author"));
 		borrowedOnCol.setCellValueFactory(new PropertyValueFactory<>("borrowedOn"));
@@ -57,7 +61,7 @@ public class BorrowedBooksController {
 
 	private void reload() {
 		ObservableList<tableRow> data = FXCollections.observableArrayList();
-		Map<Book, Borrow> borrowedBooksMap = repository.borrowOps.read(user);
+		Map<Book, Borrow> borrowedBooksMap = repository.borrowOps.read(getLoggedInUser()._1());
 		for (var entry: borrowedBooksMap.entrySet()) {
 			Book book = entry.getKey();
 			Borrow borrow = entry.getValue();
