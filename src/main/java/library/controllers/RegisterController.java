@@ -45,7 +45,7 @@ public class RegisterController implements DependsOnRole {
 	}
 
 	@FXML
-	private void handleRegistration() throws IOException {
+	private void register() throws IOException {
 		String username = usernameField.getText();
 		String password = passwordField.getText();
 		String fullName = fullNameField.getText();

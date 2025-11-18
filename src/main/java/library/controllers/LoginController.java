@@ -45,7 +45,7 @@ public class LoginController implements DependsOnRole {
 	}
 
 	@FXML
-	private void handleLogin() throws IOException {
+	private void login() throws IOException {
 		String username = usernameField.getText();
 		String password = passwordField.getText();
 
