@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -21,7 +22,7 @@ class TimeUtilTest {
 	@DisplayName("nowZoned() should use UTC zone")
 	void nowZoned_utcZone() {
 		final var zdt = TimeUtil.nowZoned();
-		assertEquals(ZoneId.of("UTC"), zdt.getZone(), "nowZoned() did not return UTC zone");
+		assertEquals(ZoneOffset.UTC, zdt.getZone(), "nowZoned() did not return UTC zone");
 	}
 
 	@Test
@@ -41,7 +42,7 @@ class TimeUtilTest {
 	void zonedLocalToString_utcToSystemDefault() {
 		// Arrange: a fixed instant in UTC
 		final var utcInstant =
-				ZonedDateTime.of(2023, 5, 15, 12, 0, 0, 0, ZoneId.of("UTC"));
+				ZonedDateTime.of(2023, 5, 15, 12, 0, 0, 0, ZoneOffset.UTC);
 
 		// Act
 		final var result = TimeUtil.zonedLocalToString(utcInstant);

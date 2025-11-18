@@ -3,17 +3,15 @@ package library.utils;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public enum TimeUtil {
 	;
 	@NotNull
-	public static final ZoneId UTC = ZoneId.of("UTC");
-
-	@NotNull
 	public static ZonedDateTime nowZoned() {
-		return ZonedDateTime.now(UTC);
+		return ZonedDateTime.now(ZoneOffset.UTC);
 	}
 
 	@NotNull
