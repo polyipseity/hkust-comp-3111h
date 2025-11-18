@@ -10,9 +10,10 @@ module library {
 	requires org.jetbrains.annotations;
 	requires static lombok;
 
-    exports library;
+	exports library;
 	exports library.controllers;
 	exports library.controllers.author;
+	exports library.controllers.common;
 	exports library.controllers.librarian;
 	exports library.controllers.student_staff;
 	exports library.controls;
@@ -23,6 +24,7 @@ module library {
 	opens library;
 	opens library.controllers;
 	opens library.controllers.author;
+	opens library.controllers.common;
 	opens library.controllers.librarian;
 	opens library.controllers.student_staff;
 	opens library.controls;

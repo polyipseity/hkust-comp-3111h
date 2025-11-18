@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 public enum FXMLs {
 	AUTHOR_DASHBOARD("/fxml/author/AuthorDashboard.fxml"),
 	HOME("/fxml/Home.fxml"),
-	LIBRARIAN_DASHBOARD("/fxml/LibrarianDashboard.fxml"),
+	LIBRARIAN_DASHBOARD("/fxml/librarian/LibrarianDashboard.fxml"),
 	LOGIN("/fxml/Login.fxml"),
 	REGISTER("/fxml/Register.fxml"),
 	STUDENT_DASHBOARD("/fxml/student_staff/StudentDashboard.fxml"),

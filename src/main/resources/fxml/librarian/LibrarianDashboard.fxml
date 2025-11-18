@@ -2,8 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.*?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="600" prefWidth="900"
             xmlns="http://javafx.com/javafx/17.0.12"
             fx:controller="library.controllers.librarian.LibrarianDashboardController">
@@ -19,22 +18,51 @@
 
 			<!-- 1) Pending Approvals -->
 			<Tab text="Pending Approvals">
+				<StackPane>
+					<fx:include source="PendingApprovals.fxml"/>
+				</StackPane>
 			</Tab>
 
 			<!-- 2) Manage Users -->
 			<Tab text="Manage Users">
+				<StackPane>
+					<fx:include source="ManageUsers.fxml"/>
+				</StackPane>
 			</Tab>
 
 			<!-- 3) My Profile -->
 			<Tab text="My Profile">
+				<StackPane>
+					<fx:include source="../MyProfile.fxml"/>
+				</StackPane>
 			</Tab>
 
 			<!-- 4) Borrowed Books Report -->
 			<Tab text="Borrowed Books">
+				<StackPane>
+					<fx:include source="BorrowedBooks.fxml"/>
+				</StackPane>
 			</Tab>
 
 			<!-- 5) Published Books Report -->
 			<Tab text="Published Books">
+				<StackPane>
+					<fx:include source="PublishedBooks.fxml"/>
+				</StackPane>
+			</Tab>
+
+			<!-- 6) Book Requests -->
+			<Tab text="Book Requests">
+				<StackPane>
+					<fx:include source="BookRequests.fxml"/>
+				</StackPane>
+			</Tab>
+
+			<!-- 7) Book Download -->
+			<Tab text="Book Download">
+				<StackPane>
+					<fx:include source="BookDownload.fxml"/>
+				</StackPane>
 			</Tab>
 
 		</TabPane>
