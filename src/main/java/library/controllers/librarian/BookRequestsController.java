@@ -1,5 +1,6 @@
 package library.controllers.librarian;
 
+import javafx.scene.control.TableColumn;
 import library.Main;
 import library.controllers.common.DynamicTableController;
 import library.controllers.common.RequiresLoggedIn;
@@ -23,13 +24,13 @@ public class BookRequestsController extends DynamicTableController<BookRequestsC
 	}
 
 	@Override
-	protected @NotNull Map<@NotNull String, @NotNull Header> getKeys() {
+	protected @NotNull Map<@NotNull String, @NotNull TableColumn<Data, Data>> getKeys() {
 		return Map.of(
-				"title", new DynamicTableController.Header("Title"),
-				"author", new DynamicTableController.Header("Author"),
-				"user", new DynamicTableController.Header("Requested By"),
-				"requestDate", new DynamicTableController.Header("Request Date"),
-				"actions", new DynamicTableController.Header("Actions")
+				"title", new TableColumn<>("Title"),
+				"author", new TableColumn<>("Author"),
+				"user", new TableColumn<>("Requested By"),
+				"requestDate", new TableColumn<>("Request Date"),
+				"actions", new TableColumn<>("Actions")
 		);
 	}
 

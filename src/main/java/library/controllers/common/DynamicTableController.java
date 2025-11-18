@@ -30,7 +30,7 @@ public abstract class DynamicTableController<E extends Function<@NotNull String,
 		loadTable();
 	}
 
-	protected abstract @NotNull Map<@NotNull String, @NotNull Header> getKeys();
+	protected abstract @NotNull Map<@NotNull String, @NotNull TableColumn<@NotNull E, @NotNull E>> getKeys();
 
 	protected abstract @NotNull Collection<@NotNull E> getData();
 
@@ -47,7 +47,7 @@ public abstract class DynamicTableController<E extends Function<@NotNull String,
 		// Add new keys
 		for (final var keyEntry : keys.entrySet()) {
 			columnMap.computeIfAbsent(keyEntry.getKey(), key -> {
-				final var col = makeColumn(key, keyEntry.getValue());
+				final var col = configureColumn(key, keyEntry.getValue());
 				columns.add(col);
 				return col;
 			});
@@ -58,9 +58,8 @@ public abstract class DynamicTableController<E extends Function<@NotNull String,
 		items.addAll(getData());
 	}
 
-	protected @NotNull TableColumn<@NotNull E, @NotNull E> makeColumn(@NotNull String key, @NotNull Header header) {
-		final var col = new TableColumn<@NotNull E, @NotNull E>(header.text);
-		col.setCellValueFactory(new Callback<>() {
+	protected @NotNull TableColumn<@NotNull E, @NotNull E> configureColumn(@NotNull String key, @NotNull TableColumn<@NotNull E, @NotNull E> column) {
+		column.setCellValueFactory(new Callback<>() {
 			/**
 			 * The <code>call</code> method is called when required, and is given a
 			 * single argument of type P, with a requirement that an object of type R
@@ -77,7 +76,7 @@ public abstract class DynamicTableController<E extends Function<@NotNull String,
 				return new SimpleObjectProperty<>(param.getValue());
 			}
 		});
-		col.setCellFactory(new Callback<>() {
+		column.setCellFactory(new Callback<>() {
 			/**
 			 * The <code>call</code> method is called when required, and is given a
 			 * single argument of type P, with a requirement that an object of type R
@@ -168,7 +167,7 @@ public abstract class DynamicTableController<E extends Function<@NotNull String,
 				};
 			}
 		});
-		return col;
+		return column;
 	}
 
 	public sealed interface Data {
@@ -178,8 +177,5 @@ public abstract class DynamicTableController<E extends Function<@NotNull String,
 		record Buttons(@NotNull List<Tuple2<@NotNull String, @NotNull Consumer<ActionEvent>>> values)
 				implements Data {
 		}
-	}
-
-	public record Header(@NotNull String text) {
 	}
 }

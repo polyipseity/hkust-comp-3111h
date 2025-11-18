@@ -1,5 +1,6 @@
 package library.controllers.librarian;
 
+import javafx.scene.control.TableColumn;
 import library.Main;
 import library.controllers.common.DynamicTableController;
 import library.controllers.common.RequiresLoggedIn;
@@ -21,12 +22,12 @@ public class PendingApprovalsController extends DynamicTableController<PendingAp
 	}
 
 	@Override
-	protected @NotNull Map<@NotNull String, @NotNull Header> getKeys() {
+	protected @NotNull Map<@NotNull String, @NotNull TableColumn<Data, Data>> getKeys() {
 		return Map.of(
-				"title", new Header("Title"),
-				"author", new Header("Author"),
-				"summary", new Header("Summary"),
-				"actions", new Header("Actions")
+				"title", new TableColumn<>("Title"),
+				"author", new TableColumn<>("Author"),
+				"summary", new TableColumn<>("Summary"),
+				"actions", new TableColumn<>("Actions")
 		);
 	}
 

@@ -1,5 +1,6 @@
 package library.controllers.librarian;
 
+import javafx.scene.control.TableColumn;
 import library.Main;
 import library.controllers.common.DynamicTableController;
 import library.controllers.common.RequiresLoggedIn;
@@ -21,13 +22,13 @@ public class ManageUsersController extends DynamicTableController<ManageUsersCon
 	}
 
 	@Override
-	protected @NotNull Map<@NotNull String, @NotNull Header> getKeys() {
+	protected @NotNull Map<@NotNull String, @NotNull TableColumn<Data, Data>> getKeys() {
 		return Map.of(
-				"username", new DynamicTableController.Header("Username"),
-				"role", new DynamicTableController.Header("Role"),
-				"name", new DynamicTableController.Header("Name"),
-				"active", new DynamicTableController.Header("Active"),
-				"actions", new DynamicTableController.Header("Actions")
+				"username", new TableColumn<>("Username"),
+				"role", new TableColumn<>("Role"),
+				"name", new TableColumn<>("Name"),
+				"active", new TableColumn<>("Active"),
+				"actions", new TableColumn<>("Actions")
 		);
 	}
 

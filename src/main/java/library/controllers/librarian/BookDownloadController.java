@@ -1,5 +1,6 @@
 package library.controllers.librarian;
 
+import javafx.scene.control.TableColumn;
 import library.controllers.common.DynamicTableController;
 import library.controllers.common.RequiresLoggedIn;
 import org.jetbrains.annotations.NotNull;
@@ -20,11 +21,11 @@ public class BookDownloadController extends DynamicTableController<BookDownloadC
 	}
 
 	@Override
-	protected @NotNull Map<@NotNull String, @NotNull Header> getKeys() {
+	protected @NotNull Map<@NotNull String, @NotNull TableColumn<Data, Data>> getKeys() {
 		return Map.of(
-				"title", new DynamicTableController.Header("Title"),
-				"author", new DynamicTableController.Header("Author"),
-				"bookshelves", new DynamicTableController.Header("Bookshelves")
+				"title", new TableColumn<>("Title"),
+				"author", new TableColumn<>("Author"),
+				"bookshelves", new TableColumn<>("Bookshelves")
 		);
 	}
 
