@@ -1,6 +1,7 @@
 package library.models;
 
 import library.utils.ByteArray;
+import library.utils.Dates;
 import library.utils.DurationSerializer;
 import library.utils.ZonedDateTimeSerializer;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,31 @@ public record Borrow(
 		@NotNull Duration duration,
 		@NotNull ByteArray pdfContent
 ) {
+	/**
+	 * How much time is left until the book is due, relative to {@code reference}.
+	 *
+	 * @param reference the point in time from which we want to measure the remaining period
+	 * @return a {@link Duration} that is zero if the due date has already passed,
+	 * otherwise the duration between {@code reference} and the due date
+	 */
+	@NotNull
+	public Duration durationLeft(@NotNull ZonedDateTime reference) {
+		final var due = borrowDate.plus(duration);
+		return reference.isAfter(due)
+				? Duration.ZERO
+				: Duration.between(reference, due);
+	}
+
+	/**
+	 * Convenience overload that uses the current instant in UTC.
+	 *
+	 * @return the remaining duration until the book is due (or zero if overdue)
+	 */
+	@NotNull
+	public Duration durationLeft() {
+		return durationLeft(Dates.nowZoned());
+	}
+
 	@RequiredArgsConstructor
 	public static final class S extends GroupSerializerObjectArray<Borrow> {
 		/**
