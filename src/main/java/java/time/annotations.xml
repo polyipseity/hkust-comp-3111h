@@ -1,0 +1,5 @@
+<root>
+	<item name='java.time.ZonedDateTime java.time.ZonedDateTime now()'>
+		<annotation name='java.lang.Deprecated'/>
+	</item>
+</root>

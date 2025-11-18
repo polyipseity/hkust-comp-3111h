@@ -17,11 +17,11 @@ import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.ByteArray;
+import library.utils.Dates;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Optional;
@@ -142,7 +142,7 @@ public class AvailableBooksController {
         }
 
         Borrow borrowData = new Borrow(
-                ZonedDateTime.now(),
+		        Dates.nowZoned(),
                 Duration.ofSeconds(durationSeconds),
                 new ByteArray(new byte[0])
         );

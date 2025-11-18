@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.mapdb.DBMaker;
 
 import java.time.Duration;
-import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -147,7 +146,7 @@ class RepositoryBorrowOpsTest {
 		final var user = new User("author");
 		final var book = new Book("book", new Author.ByRef(new User("author")));
 		final var borrow = new Borrow(
-				ZonedDateTime.now(),
+				Dates.nowZoned(),
 				Duration.ofHours(1),
 				new ByteArray(new byte[10])
 		);
@@ -165,7 +164,7 @@ class RepositoryBorrowOpsTest {
 		final var user = new User("reader");
 		final var book = new Book("book", new Author.ByName("author")); // `ByName` instead of `ByRef` is intentional
 		final var borrow = new Borrow(
-				ZonedDateTime.now(),
+				Dates.nowZoned(),
 				Duration.ofHours(1),
 				new ByteArray(new byte[10])
 		);
