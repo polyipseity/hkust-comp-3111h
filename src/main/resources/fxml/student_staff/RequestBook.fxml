@@ -17,8 +17,8 @@
 		</rowConstraints>
 		<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Book Title:"/>
 		<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Book Author:" GridPane.rowIndex="1"/>
-		<TextField GridPane.columnIndex="1"/>
-		<TextField GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+		<TextField fx:id="titleField" GridPane.columnIndex="1"/>
+		<TextField fx:id="authorField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 	</GridPane>
-	<Button mnemonicParsing="false" text="Submit Request"/>
+	<Button onAction="#requestBookButtonAction" mnemonicParsing="false" text="Submit Request"/>
 </VBox>
