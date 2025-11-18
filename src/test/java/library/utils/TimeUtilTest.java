@@ -39,13 +39,13 @@ class TimeUtilTest {
 
 	@Test
 	@DisplayName("Should convert UTC time to system default zone")
-	void zonedLocalToString_utcToSystemDefault() {
+	void toSystemDefaultZonedLocal() {
 		// Arrange: a fixed instant in UTC
 		final var utcInstant =
 				ZonedDateTime.of(2023, 5, 15, 12, 0, 0, 0, ZoneOffset.UTC);
 
 		// Act
-		final var result = TimeUtil.zonedLocalToString(utcInstant);
+		final var result = TimeUtil.toStringZonedLocal(utcInstant);
 
 		// Assert: the string contains the system default zone id
 		assertTrue(result.contains(ZoneId.systemDefault().getId()),
@@ -63,14 +63,14 @@ class TimeUtilTest {
 
 	@Test
 	@DisplayName("Should preserve the instant when already in system default zone")
-	void zonedLocalToString_alreadyInSystemDefault() {
+	void toString_ZonedLocal_alreadyInSystemDefault() {
 		// Arrange: a ZonedDateTime that is already in the system default zone
 		final var sys = ZoneId.systemDefault();
 		final var localInstant =
 				ZonedDateTime.of(2024, 1, 1, 8, 30, 0, 0, sys);
 
 		// Act
-		final var result = TimeUtil.zonedLocalToString(localInstant);
+		final var result = TimeUtil.toStringZonedLocal(localInstant);
 
 		// Assert: the string is identical to the original formatted value
 		final var expected = DateTimeFormatter.ISO_ZONED_DATE_TIME.format(localInstant);

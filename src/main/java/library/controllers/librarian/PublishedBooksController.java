@@ -49,7 +49,7 @@ public class PublishedBooksController extends DynamicTableController<PublishedBo
 				case "title" -> new DynamicTableController.Data.Value(book.title());
 				case "authorFullName" -> new DynamicTableController.Data.Value(authorFullName);
 				case "publishDate" ->
-						new DynamicTableController.Data.Value(bookData.publishDate() == null ? "" : TimeUtil.zonedLocalToString(bookData.publishDate()));
+						new DynamicTableController.Data.Value(bookData.publishDate() == null ? "" : TimeUtil.toStringZonedLocal(bookData.publishDate()));
 				case "timesBorrowed" -> new DynamicTableController.Data.Value(String.valueOf(bookData.timesBorrowed()));
 				case "actions" -> new DynamicTableController.Data.Value("view delete");
 				default -> throw new IllegalArgumentException("Unexpected value: %s".formatted(s));

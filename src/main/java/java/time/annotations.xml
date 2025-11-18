@@ -1,4 +1,7 @@
 <root>
+	<item name='java.time.Duration java.lang.String toString()'>
+		<annotation name='java.lang.Deprecated'/>
+	</item>
 	<item name='java.time.ZonedDateTime java.time.ZonedDateTime now()'>
 		<annotation name='java.lang.Deprecated'/>
 	</item>

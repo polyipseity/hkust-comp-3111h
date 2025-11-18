@@ -42,8 +42,8 @@ public class BorrowedBooksController extends DynamicTableController<BorrowedBook
 			return switch (s) {
 				case "title" -> new DynamicTableController.Data.Value(book.title());
 				case "borrower" -> new DynamicTableController.Data.Value(user.username());
-				case "borrowDate" -> new DynamicTableController.Data.Value(TimeUtil.zonedLocalToString(borrow.borrowDate()));
-				case "durationLeft" -> new DynamicTableController.Data.Value(borrow.durationLeft().toString());
+				case "borrowDate" -> new DynamicTableController.Data.Value(TimeUtil.toStringZonedLocal(borrow.borrowDate()));
+				case "durationLeft" -> new DynamicTableController.Data.Value(TimeUtil.toStringDuration(borrow.durationLeft()));
 				default -> throw new IllegalArgumentException("Unexpected value: %s".formatted(s));
 			};
 		}

@@ -92,7 +92,7 @@ public class AuthorMyBooksController {
 		    final var book = bookEntry.getKey();
 		    final var data = bookEntry.getValue();
 	        var date = switch (data.publishDate()) {
-		        case ZonedDateTime val -> TimeUtil.zonedLocalToString(val);
+		        case ZonedDateTime val -> TimeUtil.toStringZonedLocal(val);
 		        case null -> data.approvalStatus().toString();
             };
             var record = new BookRecord(book, book.title(),data.approvalStatus().toString(), date, data.timesBorrowed(),data.summary());

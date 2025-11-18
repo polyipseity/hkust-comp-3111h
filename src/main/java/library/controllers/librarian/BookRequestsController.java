@@ -44,7 +44,7 @@ public class BookRequestsController extends DynamicTableController<BookRequestsC
 				case "author" -> new DynamicTableController.Data.Value(bookRequest.author());
 				case "user" -> new DynamicTableController.Data.Value(user.username());
 				case "requestDate" ->
-						new DynamicTableController.Data.Value(TimeUtil.zonedLocalToString(bookRequestData.requestDate()));
+						new DynamicTableController.Data.Value(TimeUtil.toStringZonedLocal(bookRequestData.requestDate()));
 				case "actions" -> new DynamicTableController.Data.Value("confirm reject");
 				default -> throw new IllegalArgumentException("Unexpected value: %s".formatted(s));
 			};
