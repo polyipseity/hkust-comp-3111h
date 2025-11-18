@@ -1,7 +1,7 @@
 package library.models;
 
 import library.utils.ByteArray;
-import library.utils.Dates;
+import library.utils.TimeUtil;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -53,7 +53,7 @@ class BorrowTest {
 
 	@Test
 	void durationLeft_defaultUsesCurrentUTC() {
-		final var now = Dates.nowZoned();              // helper that returns UTC instant
+		final var now = TimeUtil.nowZoned();              // helper that returns UTC instant
 		final var borrowDate = now.minusHours(1);
 		final var dur = Duration.ofHours(2);          // due 1 hour from now
 		final var borrow = new Borrow(borrowDate, dur,

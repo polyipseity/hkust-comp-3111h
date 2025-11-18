@@ -17,7 +17,7 @@ import library.models.Book;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
-import library.utils.Dates;
+import library.utils.TimeUtil;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -92,7 +92,7 @@ public class AuthorMyBooksController {
 		    final var book = bookEntry.getKey();
 		    final var data = bookEntry.getValue();
 	        var date = switch (data.publishDate()) {
-		        case ZonedDateTime val -> Dates.zonedLocalToString(val);
+		        case ZonedDateTime val -> TimeUtil.zonedLocalToString(val);
 		        case null -> data.approvalStatus().toString();
             };
             var record = new BookRecord(book, book.title(),data.approvalStatus().toString(), date, data.timesBorrowed(),data.summary());

@@ -2,7 +2,7 @@ package library.persistence;
 
 import library.models.BookRequest;
 import library.models.User;
-import library.utils.Dates;
+import library.utils.TimeUtil;
 import library.utils.Tuple2;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +39,7 @@ class RepositoryUserBookRequestOpsTest {
 		repository.userOps.create(user, userData);
 
 		final var req = new BookRequest("title", "author");
-		final var data = new BookRequest.Data(Dates.nowZoned());
+		final var data = new BookRequest.Data(TimeUtil.nowZoned());
 
 		assertDoesNotThrow(() -> ops.create(user, req, data));
 		assertEquals(data, repository.userBookRequests.get(new Object[]{user, req}));
@@ -52,10 +52,10 @@ class RepositoryUserBookRequestOpsTest {
 		repository.userOps.create(user, userData);
 
 		final var req = new BookRequest("title", "author");
-		assertDoesNotThrow(() -> ops.create(user, req, new BookRequest.Data(Dates.nowZoned())));
+		assertDoesNotThrow(() -> ops.create(user, req, new BookRequest.Data(TimeUtil.nowZoned())));
 
 		assertThrows(TransactionException.class,
-				() -> ops.create(user, req, new BookRequest.Data(Dates.nowZoned())));
+				() -> ops.create(user, req, new BookRequest.Data(TimeUtil.nowZoned())));
 	}
 
 	@Test
@@ -66,14 +66,14 @@ class RepositoryUserBookRequestOpsTest {
 				"pw", "Alice"));
 
 		final var rA = new BookRequest("a1", "a2");
-		ops.create(uA, rA, new BookRequest.Data(Dates.nowZoned()));
+		ops.create(uA, rA, new BookRequest.Data(TimeUtil.nowZoned()));
 
 		final var uB = new User("bob");
 		repository.userOps.create(uB, new User.Data(User.Role.STUDENT_STAFF, true,
 				"pw", "Bob"));
 
 		final var rB = new BookRequest("b1", "b2");
-		ops.create(uB, rB, new BookRequest.Data(Dates.nowZoned()));
+		ops.create(uB, rB, new BookRequest.Data(TimeUtil.nowZoned()));
 
 		// fetch all and verify that both are present
 		final var all = assertDoesNotThrow(() -> ops.read());
@@ -87,7 +87,7 @@ class RepositoryUserBookRequestOpsTest {
 		assertThrows(
 				UnsupportedOperationException.class,
 				() -> all.put(new Tuple2<>(new User("c"), new BookRequest("x", "y")),
-						new BookRequest.Data(Dates.nowZoned())),
+						new BookRequest.Data(TimeUtil.nowZoned())),
 				"Returned map must be immutable");
 	}
 
@@ -99,10 +99,10 @@ class RepositoryUserBookRequestOpsTest {
 
 		// two requests with different titles
 		final var r1 = new BookRequest("unique-title", "authorX");
-		ops.create(u, r1, new BookRequest.Data(Dates.nowZoned()));
+		ops.create(u, r1, new BookRequest.Data(TimeUtil.nowZoned()));
 
 		final var r2 = new BookRequest("common", "authorY");
-		ops.create(u, r2, new BookRequest.Data(Dates.nowZoned()));
+		ops.create(u, r2, new BookRequest.Data(TimeUtil.nowZoned()));
 
 		// keep only the one whose title contains “unique”
 		final var filtered = assertDoesNotThrow(() ->
@@ -132,7 +132,7 @@ class RepositoryUserBookRequestOpsTest {
 				new User.Data(User.Role.STUDENT_STAFF, true, "pw", "Immutable"));
 
 		final var req = new BookRequest("i1", "a1");
-		ops.create(u, req, new BookRequest.Data(Dates.nowZoned()));
+		ops.create(u, req, new BookRequest.Data(TimeUtil.nowZoned()));
 
 		final var map = assertDoesNotThrow(() -> ops.read(u));
 		assertFalse(map.isEmpty());
@@ -140,7 +140,7 @@ class RepositoryUserBookRequestOpsTest {
 		// attempt to modify – should fail
 		assertThrows(
 				UnsupportedOperationException.class,
-				() -> map.put(req, new BookRequest.Data(Dates.nowZoned())),
+				() -> map.put(req, new BookRequest.Data(TimeUtil.nowZoned())),
 				"Map returned by read(User) must be immutable");
 	}
 
@@ -152,7 +152,7 @@ class RepositoryUserBookRequestOpsTest {
 
 		// Persist the request first
 		final var req = new BookRequest("title", "author");
-		final var data = new BookRequest.Data(Dates.nowZoned());
+		final var data = new BookRequest.Data(TimeUtil.nowZoned());
 		ops.create(user, req, data);
 
 		final var result = assertDoesNotThrow(() -> ops.read(user, req));
@@ -175,8 +175,8 @@ class RepositoryUserBookRequestOpsTest {
 
 		final var r1 = new BookRequest("title1", "author1");
 		final var r2 = new BookRequest("title2", "author2");
-		ops.create(user, r1, new BookRequest.Data(Dates.nowZoned()));
-		ops.create(user, r2, new BookRequest.Data(Dates.nowZoned()));
+		ops.create(user, r1, new BookRequest.Data(TimeUtil.nowZoned()));
+		ops.create(user, r2, new BookRequest.Data(TimeUtil.nowZoned()));
 
 		final var all = assertDoesNotThrow(() -> ops.read(user));
 		assertEquals(2, all.size());
@@ -200,7 +200,7 @@ class RepositoryUserBookRequestOpsTest {
 		repository.userOps.create(user, userData);
 
 		final var req = new BookRequest("title", "author");
-		final var oldData = new BookRequest.Data(Dates.nowZoned());
+		final var oldData = new BookRequest.Data(TimeUtil.nowZoned());
 
 		ops.create(user, req, oldData);
 		assertDoesNotThrow(() -> ops.update(user, req, d -> d.withRequestDate(d.requestDate().plusDays(1))));
@@ -228,7 +228,7 @@ class RepositoryUserBookRequestOpsTest {
 		repository.userOps.create(user, userData);
 
 		final var req = new BookRequest("title", "author");
-		ops.create(user, req, new BookRequest.Data(Dates.nowZoned()));
+		ops.create(user, req, new BookRequest.Data(TimeUtil.nowZoned()));
 
 		assertDoesNotThrow(() -> ops.delete(user, req));
 		assertNull(repository.userBookRequests.get(new Object[]{user, req}));
@@ -252,8 +252,8 @@ class RepositoryUserBookRequestOpsTest {
 
 		final var r1 = new BookRequest("t1", "a1");
 		final var r2 = new BookRequest("t2", "a2");
-		ops.create(user, r1, new BookRequest.Data(Dates.nowZoned()));
-		ops.create(user, r2, new BookRequest.Data(Dates.nowZoned()));
+		ops.create(user, r1, new BookRequest.Data(TimeUtil.nowZoned()));
+		ops.create(user, r2, new BookRequest.Data(TimeUtil.nowZoned()));
 
 		assertDoesNotThrow(() -> ops.delete(user)); // delete all requests of the user
 		assertTrue(repository.userBookRequests.prefixSubMap(new Object[]{user}).isEmpty());

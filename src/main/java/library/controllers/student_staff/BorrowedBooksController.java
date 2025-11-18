@@ -13,7 +13,7 @@ import library.models.Book;
 import library.models.Borrow;
 import library.models.User;
 import library.persistence.Repository;
-import library.utils.Dates;
+import library.utils.TimeUtil;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -61,7 +61,7 @@ public class BorrowedBooksController {
 		for (var entry: borrowedBooksMap.entrySet()) {
 			Book book = entry.getKey();
 			Borrow borrow = entry.getValue();
-			long s = Duration.between(borrow.borrowDate(), Dates.nowZoned()).getSeconds();
+			long s = Duration.between(borrow.borrowDate(), TimeUtil.nowZoned()).getSeconds();
 			data.add(new tableRow(
 					book.title(),
 					book.author().toString(),

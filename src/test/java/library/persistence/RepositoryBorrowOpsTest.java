@@ -5,7 +5,7 @@ import library.models.Book;
 import library.models.Borrow;
 import library.models.User;
 import library.utils.ByteArray;
-import library.utils.Dates;
+import library.utils.TimeUtil;
 import library.utils.Tuple2;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
@@ -30,10 +30,10 @@ class RepositoryBorrowOpsTest {
 
 		final var book = new Book("book", new Author.ByRef(author));
 		final var book2 = new Book("book", new Author.ByName("author"));
-		data.books().put(book, new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, Dates.nowZoned(), null, 42));
+		data.books().put(book, new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, TimeUtil.nowZoned(), null, 42));
 		data.books().put(book2, new Book.Data("summary", "content", Book.ApprovalStatus.REJECTED, null, null, 42));
 
-		data.borrows().put(new Object[]{reader, book}, new Borrow(Dates.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42])));
+		data.borrows().put(new Object[]{reader, book}, new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42])));
 
 		return true;
 	}
@@ -64,9 +64,9 @@ class RepositoryBorrowOpsTest {
 		final var book2 = new Book("book2", new Author.ByName("author"));
 		repository.bookOps.create(book2,
 				new Book.Data("s", "c",
-						Book.ApprovalStatus.APPROVED, Dates.nowZoned(), null, 10));
+						Book.ApprovalStatus.APPROVED, TimeUtil.nowZoned(), null, 10));
 
-		ops.create(reader2, book2, new Borrow(Dates.nowZoned(),
+		ops.create(reader2, book2, new Borrow(TimeUtil.nowZoned(),
 				Duration.ofDays(7), new ByteArray(new byte[7])));
 
 		// now there should be two borrows in the repo
@@ -77,7 +77,7 @@ class RepositoryBorrowOpsTest {
 		assertThrows(
 				UnsupportedOperationException.class,
 				() -> all.put(new Tuple2<>(reader2, book2),
-						new Borrow(Dates.nowZoned(),
+						new Borrow(TimeUtil.nowZoned(),
 								Duration.ofDays(3), new ByteArray(new byte[3]))),
 				"Returned map must be unmodifiable");
 	}
@@ -90,9 +90,9 @@ class RepositoryBorrowOpsTest {
 		final var bookLong = new Book("longBook", new Author.ByName("author"));
 		repository.bookOps.create(bookLong,
 				new Book.Data("s", "c",
-						Book.ApprovalStatus.APPROVED, Dates.nowZoned(), null, 5));
+						Book.ApprovalStatus.APPROVED, TimeUtil.nowZoned(), null, 5));
 
-		ops.create(reader, bookLong, new Borrow(Dates.nowZoned(),
+		ops.create(reader, bookLong, new Borrow(TimeUtil.nowZoned(),
 				Duration.ofHours(1), new ByteArray(new byte[10])));
 
 		// keep only borrows that last longer than 42 nanoseconds
@@ -146,7 +146,7 @@ class RepositoryBorrowOpsTest {
 		final var user = new User("author");
 		final var book = new Book("book", new Author.ByRef(new User("author")));
 		final var borrow = new Borrow(
-				Dates.nowZoned(),
+				TimeUtil.nowZoned(),
 				Duration.ofHours(1),
 				new ByteArray(new byte[10])
 		);
@@ -164,7 +164,7 @@ class RepositoryBorrowOpsTest {
 		final var user = new User("reader");
 		final var book = new Book("book", new Author.ByName("author")); // `ByName` instead of `ByRef` is intentional
 		final var borrow = new Borrow(
-				Dates.nowZoned(),
+				TimeUtil.nowZoned(),
 				Duration.ofHours(1),
 				new ByteArray(new byte[10])
 		);

@@ -1,8 +1,8 @@
 package library.models;
 
 import library.utils.ByteArray;
-import library.utils.Dates;
 import library.utils.DurationSerializer;
+import library.utils.TimeUtil;
 import library.utils.ZonedDateTimeSerializer;
 import lombok.RequiredArgsConstructor;
 import lombok.With;
@@ -43,7 +43,7 @@ public record Borrow(
 	 */
 	@NotNull
 	public Duration durationLeft() {
-		return durationLeft(Dates.nowZoned());
+		return durationLeft(TimeUtil.nowZoned());
 	}
 
 	@RequiredArgsConstructor

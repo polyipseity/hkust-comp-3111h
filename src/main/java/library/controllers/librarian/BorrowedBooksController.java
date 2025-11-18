@@ -5,7 +5,7 @@ import library.controllers.common.DynamicTableController;
 import library.models.Book;
 import library.models.Borrow;
 import library.models.User;
-import library.utils.Dates;
+import library.utils.TimeUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -42,7 +42,7 @@ public class BorrowedBooksController extends DynamicTableController<BorrowedBook
 			return switch (s) {
 				case "title" -> new DynamicTableController.Data.Value(book.title());
 				case "borrower" -> new DynamicTableController.Data.Value(user.username());
-				case "borrowDate" -> new DynamicTableController.Data.Value(Dates.zonedLocalToString(borrow.borrowDate()));
+				case "borrowDate" -> new DynamicTableController.Data.Value(TimeUtil.zonedLocalToString(borrow.borrowDate()));
 				case "durationLeft" -> new DynamicTableController.Data.Value(borrow.durationLeft().toString());
 				default -> throw new IllegalArgumentException("Unexpected value: %s".formatted(s));
 			};

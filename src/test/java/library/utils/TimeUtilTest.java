@@ -9,28 +9,28 @@ import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DatesTest {
+class TimeUtilTest {
 	@Test
 	@DisplayName("nowZoned() should not return null")
 	void nowZoned_notNull() {
-		final var zdt = Dates.nowZoned();
+		final var zdt = TimeUtil.nowZoned();
 		assertNotNull(zdt, "nowZoned() returned null");
 	}
 
 	@Test
 	@DisplayName("nowZoned() should use UTC zone")
 	void nowZoned_utcZone() {
-		final var zdt = Dates.nowZoned();
+		final var zdt = TimeUtil.nowZoned();
 		assertEquals(ZoneId.of("UTC"), zdt.getZone(), "nowZoned() did not return UTC zone");
 	}
 
 	@Test
 	@DisplayName("Two successive calls to nowZoned() should be in chronological order")
 	void nowZoned_increasingTimes() throws InterruptedException {
-		final var first = Dates.nowZoned();
+		final var first = TimeUtil.nowZoned();
 		// Small pause to guarantee a measurable difference
 		Thread.sleep(1);
-		final var second = Dates.nowZoned();
+		final var second = TimeUtil.nowZoned();
 
 		assertTrue(second.isAfter(first),
 				"Second call did not return a later time than the first");
@@ -44,7 +44,7 @@ class DatesTest {
 				ZonedDateTime.of(2023, 5, 15, 12, 0, 0, 0, ZoneId.of("UTC"));
 
 		// Act
-		final var result = Dates.zonedLocalToString(utcInstant);
+		final var result = TimeUtil.zonedLocalToString(utcInstant);
 
 		// Assert: the string contains the system default zone id
 		assertTrue(result.contains(ZoneId.systemDefault().getId()),
@@ -69,7 +69,7 @@ class DatesTest {
 				ZonedDateTime.of(2024, 1, 1, 8, 30, 0, 0, sys);
 
 		// Act
-		final var result = Dates.zonedLocalToString(localInstant);
+		final var result = TimeUtil.zonedLocalToString(localInstant);
 
 		// Assert: the string is identical to the original formatted value
 		final var expected = DateTimeFormatter.ISO_ZONED_DATE_TIME.format(localInstant);

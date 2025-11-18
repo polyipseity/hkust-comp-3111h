@@ -6,7 +6,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-public enum Dates {
+public enum TimeUtil {
 	;
 	@NotNull
 	public static final ZoneId UTC = ZoneId.of("UTC");

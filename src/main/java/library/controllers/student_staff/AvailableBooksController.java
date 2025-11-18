@@ -17,7 +17,7 @@ import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.ByteArray;
-import library.utils.Dates;
+import library.utils.TimeUtil;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
@@ -142,7 +142,7 @@ public class AvailableBooksController {
         }
 
         Borrow borrowData = new Borrow(
-		        Dates.nowZoned(),
+		        TimeUtil.nowZoned(),
                 Duration.ofSeconds(durationSeconds),
                 new ByteArray(new byte[0])
         );
