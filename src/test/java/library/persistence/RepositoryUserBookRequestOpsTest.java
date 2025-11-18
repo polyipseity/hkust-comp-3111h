@@ -13,15 +13,15 @@ import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class RepositoryBookRequestOpsTest {
+class RepositoryUserBookRequestOpsTest {
 	private Repository repository;
-	private RepositoryBookRequestOps ops;
+	private RepositoryUserBookRequestOps ops;
 
 	@BeforeEach
 	void setUp() {
 		// Fresh in‑memory DB for every test
 		repository = new Repository(DBMaker::memoryDirectDB);
-		ops = new RepositoryBookRequestOps(repository);
+		ops = new RepositoryUserBookRequestOps(repository);
 	}
 
 	@AfterEach

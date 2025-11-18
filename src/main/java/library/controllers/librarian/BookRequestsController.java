@@ -25,7 +25,7 @@ public class BookRequestsController extends DynamicTableController<BookRequestsC
 
 	@Override
 	protected @NotNull Collection<@NotNull Data> getData() {
-		return Main.getContext().getRepository().bookRequestOps.read().entrySet().stream().map(entry -> new Data(entry.getKey()._1(), entry.getKey()._2(), entry.getValue())).toList();
+		return Main.getContext().getRepository().userBookRequestOps.read().entrySet().stream().map(entry -> new Data(entry.getKey()._1(), entry.getKey()._2(), entry.getValue())).toList();
 	}
 
 	public record Data(@NotNull User user, @NotNull BookRequest bookRequest,

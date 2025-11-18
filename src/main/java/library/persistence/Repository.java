@@ -18,7 +18,7 @@ public final class Repository implements Closeable {
 	@NotNull
 	public final RepositoryUserNotificationOps userNotificationOps = new RepositoryUserNotificationOps(this);
 	@NotNull
-	public final RepositoryBookRequestOps bookRequestOps = new RepositoryBookRequestOps(this);
+	public final RepositoryUserBookRequestOps userBookRequestOps = new RepositoryUserBookRequestOps(this);
 	@NotNull
 	public final RepositoryBorrowOps borrowOps = new RepositoryBorrowOps(this);
 	@NotNull

@@ -11,7 +11,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public record RepositoryBookRequestOps(Repository repository) {
+public record RepositoryUserBookRequestOps(Repository repository) {
 	public void create(@NotNull User user, @NotNull BookRequest bookRequest, @NotNull BookRequest.Data data) throws TransactionException {
 		repository.transact(tx -> tx.userBookRequests().put(new Object[]{user, bookRequest}, data) == null);
 	}
