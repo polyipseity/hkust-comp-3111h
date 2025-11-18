@@ -19,7 +19,7 @@ import java.time.ZonedDateTime;
 public record Borrow(
 		@NotNull ZonedDateTime borrowDate,
 		@NotNull Duration duration,
-		@NotNull ByteArray pdfContent
+		@NotNull String pdfPath
 ) {
 	/**
 	 * How much time is left until the book is due, relative to {@code reference}.
@@ -60,7 +60,7 @@ public record Borrow(
 		public void serialize(@NotNull DataOutput2 out, @NotNull Borrow value) throws IOException {
 			ZonedDateTimeSerializer.INSTANCE.serialize(out, value.borrowDate());
 			DurationSerializer.INSTANCE.serialize(out, value.duration());
-			ByteArray.SERIALIZER.serialize(out, value.pdfContent());
+			out.writeUTF(value.pdfPath);
 		}
 
 		/**
@@ -77,8 +77,8 @@ public record Borrow(
 		public Borrow deserialize(@NotNull DataInput2 input, int available) throws IOException {
 			final var borrowDate = ZonedDateTimeSerializer.INSTANCE.deserialize(input, available);
 			final var duration = DurationSerializer.INSTANCE.deserialize(input, available);
-			final var pdfContent = ByteArray.SERIALIZER.deserialize(input, available);
-			return new Borrow(borrowDate, duration, pdfContent);
+			final var pdfPath = input.readUTF();
+			return new Borrow(borrowDate, duration, pdfPath);
 		}
 	}
 }

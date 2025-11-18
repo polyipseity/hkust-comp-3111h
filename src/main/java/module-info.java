@@ -9,6 +9,12 @@ module library {
 	requires mapdb;
 	requires org.jetbrains.annotations;
 	requires static lombok;
+	requires com.github.librepdf.openpdf;
+	requires org.icepdf.ri.viewer;
+	requires java.desktop;
+	requires javafx.swing;
+	requires org.icepdf.core;
+	requires java.prefs;
 
 	exports library;
 	exports library.controllers;
