@@ -1,23 +1,19 @@
 package library.persistence;
 
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class TransactionExceptionTest {
-	@Nested
-	class ConstructorTests {
-
 		@Test
-		void defaultConstructor() {
+		void constructor_default() {
 			final var ex = new TransactionException();
 			assertEquals("Database transaction exception", ex.getMessage());
 			assertNull(ex.getCause());
 		}
 
 		@Test
-		void constructorWithMessage() {
+		void constructor_withMessage() {
 			final var msg = "Specific error";
 			final var ex = new TransactionException(msg);
 			assertEquals("Database transaction exception: %s".formatted(msg), ex.getMessage());
@@ -25,7 +21,7 @@ class TransactionExceptionTest {
 		}
 
 		@Test
-		void constructorWithMessageAndCause() {
+		void constructor_withMessageAndCause() {
 			final var cause = new IllegalStateException("inner");
 			final var ex = new TransactionException("Outer", cause);
 			assertEquals("Database transaction exception: Outer", ex.getMessage());
@@ -33,34 +29,30 @@ class TransactionExceptionTest {
 		}
 
 		@Test
-		void constructorWithCauseOnly() {
+		void constructor_withCauseOnly() {
 			final var cause = new IllegalStateException("inner");
 			final var ex = new TransactionException(cause);
 			// When no message is supplied, the default message from Exception is used.
 			assertEquals("Database transaction exception: %s".formatted(cause), ex.getMessage());
 			assertSame(cause, ex.getCause());
 		}
-	}
 
-	@Nested
-	class GetMessageTests {
 		@Test
-		void getMessageWithNullDetail() {
+		void getMessage_withNullDetail() {
 			final var ex = new TransactionException((String) null);
 			assertEquals("Database transaction exception", ex.getMessage());
 		}
 
 		@Test
-		void getMessageWithEmptyDetail() {
+		void getMessage_withEmptyDetail() {
 			final var ex = new TransactionException("");
 			assertEquals("Database transaction exception", ex.getMessage());
 		}
 
 		@Test
-		void getMessageWithNonEmptyDetail() {
+		void getMessage_withNonEmptyDetail() {
 			final var detail = "Connection lost";
 			TransactionException ex = new TransactionException(detail);
 			assertEquals("Database transaction exception: %s".formatted(detail), ex.getMessage());
 		}
-	}
 }
