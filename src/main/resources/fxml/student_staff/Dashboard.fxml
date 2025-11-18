@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25"
-            fx:controller="library.controllers.student_staff.StudentDashboardController">
+            fx:controller="library.controllers.student_staff.DashboardController">
 
 	<top>
 		<Label style="-fx-font-size:24px; -fx-padding:10" text="Student/Staff Dashboard" BorderPane.alignment="CENTER"/>
@@ -23,10 +23,10 @@
 				<fx:include source="RequestBook.fxml"/>
 			</Tab>
 			<Tab text="My Profile">
-				<fx:include source="../MyProfile.fxml"/>
+				<fx:include source="../common/MyProfile.fxml"/>
 			</Tab>
 			<Tab text="Inform Board">
-				<fx:include source="../InformBoard.fxml"/>
+				<fx:include source="../common/InformBoard.fxml"/>
 			</Tab>
 		</TabPane>
 	</center>

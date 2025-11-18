@@ -1,4 +1,4 @@
-package library.controllers;
+package library.controllers.common;
 
 import javafx.fxml.FXML;
 import library.FXMLs;
@@ -6,7 +6,7 @@ import library.Main;
 
 import java.io.IOException;
 
-public abstract class DashboardController {
+public abstract class CommonDashboardController implements RequiresLoggedOut {
 	/**
 	 * Log out back to the Home screen.
 	 */

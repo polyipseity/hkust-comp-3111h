@@ -5,7 +5,8 @@ import library.models.Book;
 import library.models.Borrow;
 import library.models.User;
 import library.utils.ByteArray;
-import library.utils.Dates;
+import library.utils.TimeUtil;
+import library.utils.Tuple2;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.mapdb.DBMaker;
 
 import java.time.Duration;
-import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,10 +30,10 @@ class RepositoryBorrowOpsTest {
 
 		final var book = new Book("book", new Author.ByRef(author));
 		final var book2 = new Book("book", new Author.ByName("author"));
-		data.books().put(book, new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, Dates.nowZoned(), null, 42));
+		data.books().put(book, new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, TimeUtil.nowZoned(), null, 42));
 		data.books().put(book2, new Book.Data("summary", "content", Book.ApprovalStatus.REJECTED, null, null, 42));
 
-		data.borrows().put(new Object[]{reader, book}, new Borrow(Dates.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42])));
+		data.borrows().put(new Object[]{reader, book}, new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42])));
 
 		return true;
 	}
@@ -55,7 +55,59 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@Test
-	void readExistingBorrow() {
+	void read_allBorrows_unfiltered() throws TransactionException {
+		// populate a second user + book so that we have two entries
+		final var reader2 = new User("reader2");
+		repository.userOps.create(reader2,
+				new User.Data(User.Role.STUDENT_STAFF, true, "pw", "Reader 2"));
+
+		final var book2 = new Book("book2", new Author.ByName("author"));
+		repository.bookOps.create(book2,
+				new Book.Data("s", "c",
+						Book.ApprovalStatus.APPROVED, TimeUtil.nowZoned(), null, 10));
+
+		ops.create(reader2, book2, new Borrow(TimeUtil.nowZoned(),
+				Duration.ofDays(7), new ByteArray(new byte[7])));
+
+		// now there should be two borrows in the repo
+		final var all = assertDoesNotThrow(() -> ops.read());
+		assertEquals(2, all.size(), "Both user‑book pairs must be returned");
+
+		// check that the map is immutable
+		assertThrows(
+				UnsupportedOperationException.class,
+				() -> all.put(new Tuple2<>(reader2, book2),
+						new Borrow(TimeUtil.nowZoned(),
+								Duration.ofDays(3), new ByteArray(new byte[3]))),
+				"Returned map must be unmodifiable");
+	}
+
+	@Test
+	void read_filteredByDuration() throws TransactionException {
+		// the fixture created in populate() has a duration of 42 nanoseconds.
+		// create another borrow with a longer duration so that we can filter
+		final var reader = new User("reader");
+		final var bookLong = new Book("longBook", new Author.ByName("author"));
+		repository.bookOps.create(bookLong,
+				new Book.Data("s", "c",
+						Book.ApprovalStatus.APPROVED, TimeUtil.nowZoned(), null, 5));
+
+		ops.create(reader, bookLong, new Borrow(TimeUtil.nowZoned(),
+				Duration.ofHours(1), new ByteArray(new byte[10])));
+
+		// keep only borrows that last longer than 42 nanoseconds
+		final var filtered = assertDoesNotThrow(() ->
+				ops.read(entry -> entry.getValue().duration().toNanos() > 42));
+
+		// we should have exactly the long borrow in the result
+		assertEquals(1, filtered.size());
+		assertTrue(filtered.containsKey(new Tuple2<>(reader, bookLong)));
+		assertFalse(filtered.containsKey(new Tuple2<>(reader,
+				new Book("book", new Author.ByRef(new User("author"))))));
+	}
+
+	@Test
+	void read_existingBorrow() {
 		final var user = new User("reader");
 		final var book = new Book("book", new Author.ByRef(new User("author")));
 		final var opt = assertDoesNotThrow(() -> ops.read(user, book));
@@ -64,7 +116,7 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@Test
-	void readNonExistingBorrow() {
+	void read_nonExistingBorrow() {
 		final var user = new User("reader");
 		final var book = new Book("nonexistent", new Author.ByRef(new User("author")));
 		final var opt = assertDoesNotThrow(() -> ops.read(user, book));
@@ -72,7 +124,7 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@Test
-	void readAllBorrowsForUser() {
+	void read_byUser_allBorrows() {
 		final var user = new User("reader");
 		final var map = assertDoesNotThrow(() -> ops.read(user));
 		// reader has one borrow in populateRepository()
@@ -81,7 +133,7 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@Test
-	void readAllBorrowsForBook() {
+	void read_byBook_AllBorrows() {
 		final var book = new Book("book", new Author.ByRef(new User("author")));
 		final var map = assertDoesNotThrow(() -> ops.read(book));
 		// book has one borrow (by reader)
@@ -90,11 +142,11 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@Test
-	void createBorrowSucceeds() {
+	void create_borrowSucceeds() {
 		final var user = new User("author");
 		final var book = new Book("book", new Author.ByRef(new User("author")));
 		final var borrow = new Borrow(
-				ZonedDateTime.now(),
+				TimeUtil.nowZoned(),
 				Duration.ofHours(1),
 				new ByteArray(new byte[10])
 		);
@@ -108,11 +160,11 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@Test
-	void createDuplicateBorrowFails() {
+	void create_duplicateBorrowFails() {
 		final var user = new User("reader");
 		final var book = new Book("book", new Author.ByName("author")); // `ByName` instead of `ByRef` is intentional
 		final var borrow = new Borrow(
-				ZonedDateTime.now(),
+				TimeUtil.nowZoned(),
 				Duration.ofHours(1),
 				new ByteArray(new byte[10])
 		);
@@ -122,7 +174,7 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@Test
-	void updateBorrowSucceeds() {
+	void update_borrowSucceeds() {
 		final var user = new User("reader");
 		final var book = new Book("book", new Author.ByRef(new User("author")));
 
@@ -135,7 +187,7 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@Test
-	void updateNonExistingBorrowFails() {
+	void update_nonExistingBorrowFails() {
 		final var user = new User("reader");
 		final var book = new Book("missing", new Author.ByRef(new User("author")));
 
@@ -144,7 +196,7 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@Test
-	void deleteBorrowSucceeds() {
+	void delete_borrowSucceeds() {
 		final var user = new User("reader");
 		final var book = new Book("book", new Author.ByRef(new User("author")));
 
@@ -153,7 +205,7 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@Test
-	void deleteNonExistingBorrow() {
+	void delete_nonExistingBorrowFails() {
 		final var user = new User("reader");
 		final var book = new Book("missing", new Author.ByRef(new User("author")));
 
@@ -162,7 +214,7 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@Test
-	void deleteAllBorrowsForUser() {
+	void delete_allBorrowsForUserSucceeds() {
 		final var user = new User("reader");
 
 		assertDoesNotThrow(() -> ops.delete(user));
@@ -170,7 +222,7 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@Test
-	void deleteAllBorrowsForNonExistingUser() {
+	void delete_allBorrowsForNonExistingUserFails() {
 		final var user = new User("missing");
 
 		// should throw, nothing to remove

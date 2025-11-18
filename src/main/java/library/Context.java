@@ -7,6 +7,7 @@ import library.models.User;
 import library.persistence.Repository;
 import library.utils.Tuple2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Closeable;
 
@@ -19,9 +20,10 @@ public interface Context extends Closeable {
 
 	@NotNull ManageProfileControl getManageProfile();
 
+	@Nullable
 	Tuple2<User, User.Data> getLoggedInUser();
 
-	void setLoggedInUser(Tuple2<library.models.User, library.models.User.Data> loggedInUser);
+	void setLoggedInUser(@Nullable Tuple2<library.models.User, library.models.User.Data> loggedInUser);
 
 	/**
 	 * Closes this stream and releases any system resources associated

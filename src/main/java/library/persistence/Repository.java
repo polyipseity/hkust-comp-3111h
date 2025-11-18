@@ -18,7 +18,7 @@ public final class Repository implements Closeable {
 	@NotNull
 	public final RepositoryUserNotificationOps userNotificationOps = new RepositoryUserNotificationOps(this);
 	@NotNull
-	public final RepositoryBookRequestOps bookRequestOps = new RepositoryBookRequestOps(this);
+	public final RepositoryUserBookRequestOps userBookRequestOps = new RepositoryUserBookRequestOps(this);
 	@NotNull
 	public final RepositoryBorrowOps borrowOps = new RepositoryBorrowOps(this);
 	@NotNull
@@ -114,16 +114,8 @@ public final class Repository implements Closeable {
 		}).createOrOpen();
 
 		this.userNotifications = db.hashMap("userNotifications", userS, new SerializerArray<>(Serializer.STRING, String.class)).valueLoader(key -> users.containsKey(key) ? new String[0] : null).modificationListener((key, oldValue, newValue, triggered) -> {
-			if (oldValue == null) {
-				if (newValue == null) {
-					if (triggered) {
-						this2.userNotifications.remove(key);
-					}
-				} else {
-					if (!users.containsKey(key)) {
+			if (oldValue == null && newValue != null && !users.containsKey(key)) {
 						throw new IllegalStateException("User not found");
-					}
-				}
 			}
 		}).createOrOpen();
 		this.userBookRequests = db.treeMap("userBookRequests", new SerializerArrayTuple(userS, bookRequestS), bookRequestDataS).modificationListener((key, oldValue, newValue, _) -> {

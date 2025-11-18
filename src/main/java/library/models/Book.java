@@ -79,6 +79,25 @@ public record Book(
 			@Nullable Book originalOrModified,
 			long timesBorrowed
 	) {
+		/**
+		 * Indicates whether this book data represents a publicly available, published edition.
+		 *
+		 * <p>A {@code Data} instance is considered published when the following conditions are met:
+		 * <ul>
+		 *   <li>The {@link ApprovalStatus#APPROVED} status has been granted.</li>
+		 *   <li>It is not an edited or derived copy of another book
+		 *       (i.e. {@code originalOrModified == null}).</li>
+		 * </ul>
+		 *
+		 * <p>Both conditions must hold simultaneously; if either fails, the method returns {@code false}.
+		 *
+		 * @return {@code true} when the data is approved and not a modification of an existing book,
+		 * otherwise {@code false}
+		 */
+		public boolean published() {
+			return approvalStatus == ApprovalStatus.APPROVED && originalOrModified == null;
+		}
+
 		@RequiredArgsConstructor
 		public static final class S extends GroupSerializerObjectArray<Data> {
 			private final Serializer<Book> bookSerializer;

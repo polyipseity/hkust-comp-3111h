@@ -1,4 +1,6 @@
 package library.controllers.student_staff;
 
-public class RequestBookController {
+import library.controllers.common.RequiresLoggedIn;
+
+public class RequestBookController implements RequiresLoggedIn {
 }

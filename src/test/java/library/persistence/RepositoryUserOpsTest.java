@@ -52,7 +52,92 @@ class RepositoryUserOpsTest {
 	}
 
 	@Test
-	void read() throws TransactionException {
+	void read_allReturnsUnmodifiableMap() {
+		final var user = new User("john");
+		final var user2 = new User("charlie");
+		final var data = new User.Data(User.Role.STUDENT_STAFF, true, "pwd", "John Doe");
+		final var data2 = new User.Data(User.Role.AUTHOR, true, "pwd", "Charlie");
+
+		// initially absent
+		assertNull(repository.users.get(user));
+		assertNull(repository.users.get(user2));
+		assertDoesNotThrow(() -> ops.create(user, data));
+		assertDoesNotThrow(() -> ops.create(user2, data2));
+		// after create it is present in the underlying map
+		assertEquals(data, repository.users.get(user));
+		assertEquals(data2, repository.users.get(user2));
+
+		final var map = assertDoesNotThrow(() -> ops.read());          // no filter
+		// verify that the map is indeed unmodifiable
+		assertThrows(UnsupportedOperationException.class,
+				() -> map.put(new User("charlie"),
+						new User.Data(User.Role.STUDENT_STAFF, true, "pwd", "Charlie")));
+	}
+
+	@Test
+	void read_filterMatchesAll() {
+		final var user = new User("john");
+		final var user2 = new User("charlie");
+		final var data = new User.Data(User.Role.STUDENT_STAFF, true, "pwd", "John Doe");
+		final var data2 = new User.Data(User.Role.AUTHOR, true, "pwd", "Charlie");
+
+		// initially absent
+		assertNull(repository.users.get(user));
+		assertNull(repository.users.get(user2));
+		assertDoesNotThrow(() -> ops.create(user, data));
+		assertDoesNotThrow(() -> ops.create(user2, data2));
+		// after create it is present in the underlying map
+		assertEquals(data, repository.users.get(user));
+		assertEquals(data2, repository.users.get(user2));
+
+		final var map = assertDoesNotThrow(() -> ops.read(_ -> true));
+		assertEquals(2, map.size());
+	}
+
+	@Test
+	void read_filterMatchesNone() {
+		final var user = new User("john");
+		final var user2 = new User("charlie");
+		final var data = new User.Data(User.Role.STUDENT_STAFF, true, "pwd", "John Doe");
+		final var data2 = new User.Data(User.Role.AUTHOR, true, "pwd", "Charlie");
+
+		// initially absent
+		assertNull(repository.users.get(user));
+		assertNull(repository.users.get(user2));
+		assertDoesNotThrow(() -> ops.create(user, data));
+		assertDoesNotThrow(() -> ops.create(user2, data2));
+		// after create it is present in the underlying map
+		assertEquals(data, repository.users.get(user));
+		assertEquals(data2, repository.users.get(user2));
+
+		final var map = assertDoesNotThrow(() -> ops.read(e -> e.getKey().username().equals("nonexistent")));
+		assertTrue(map.isEmpty());
+	}
+
+	@Test
+	void read_filterMatchesSome() {
+		final var user = new User("john");
+		final var user2 = new User("charlie");
+		final var data = new User.Data(User.Role.STUDENT_STAFF, true, "pwd", "John Doe");
+		final var data2 = new User.Data(User.Role.AUTHOR, true, "pwd", "Charlie");
+
+		// initially absent
+		assertNull(repository.users.get(user));
+		assertNull(repository.users.get(user2));
+		assertDoesNotThrow(() -> ops.create(user, data));
+		assertDoesNotThrow(() -> ops.create(user2, data2));
+		// after create it is present in the underlying map
+		assertEquals(data, repository.users.get(user));
+		assertEquals(data2, repository.users.get(user2));
+
+		final var map = assertDoesNotThrow(() -> ops.read(e -> e.getValue().role() == User.Role.AUTHOR));
+		assertEquals(1, map.size());
+		assertTrue(map.containsKey(new User("charlie")));
+	}
+
+
+	@Test
+	void read_existing() throws TransactionException {
 		final var user = new User("alice");
 		final var data = new User.Data(User.Role.AUTHOR, true, "pass", "Alice");
 

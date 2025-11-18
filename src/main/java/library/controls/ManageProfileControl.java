@@ -51,7 +51,7 @@ public record ManageProfileControl(Repository repository) {
 		record WrongRole(User.Role actualRole) implements LoginResult, HasMessage {
 			@Override
 			public @NotNull String getMessage() {
-				return "Wrong role: %s".formatted(actualRole.name);
+				return "Logging in as wrong role: %s".formatted(actualRole.name);
 			}
 		}
 

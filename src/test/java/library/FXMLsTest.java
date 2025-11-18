@@ -10,6 +10,7 @@ import library.persistence.TransactionException;
 import library.utils.Tuple2;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -42,6 +43,7 @@ class FXMLsTest {
 			private final ManageProfileControl manageProfile = new ManageProfileControl(repository);
 
 			@Getter
+			@NotNull
 			private final Tuple2<User, User.Data> loggedInUser = new Tuple2<>(new User("username"), new User.Data(User.Role.values()[0], true, "password", "full name"));
 
 			{
@@ -59,7 +61,7 @@ class FXMLsTest {
 			}
 
 			@Override
-			public void setLoggedInUser(Tuple2<User, User.Data> loggedInUser) {
+			public void setLoggedInUser(@Nullable Tuple2<User, User.Data> loggedInUser) {
 				// noop
 			}
 

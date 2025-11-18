@@ -3,16 +3,13 @@ package library.controllers;
 import javafx.fxml.FXML;
 import library.FXMLs;
 import library.Main;
+import library.controllers.common.DependsOnRole;
+import library.controllers.common.RequiresLoggedOut;
 import library.models.User;
 
 import java.io.IOException;
 
-public class HomeController {
-	@FXML
-	private void initialize() {
-		Main.getContext().setLoggedInUser(null);
-	}
-
+public class HomeController implements RequiresLoggedOut {
 	@FXML
 	private void handleStudentStaff() throws IOException {
 		navigateToLogin(User.Role.STUDENT_STAFF);

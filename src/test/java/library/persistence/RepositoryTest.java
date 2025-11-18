@@ -2,7 +2,7 @@ package library.persistence;
 
 import library.models.*;
 import library.utils.ByteArray;
-import library.utils.Dates;
+import library.utils.TimeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,22 +30,22 @@ class RepositoryTest {
 		final var book2 = new Book("book", new Author.ByName("author"));
 		final var oldBook = new Book("book2", new Author.ByRef(author));
 		final var newBook = new Book("book2", new Author.ByRef(author), true);
-		data.books().put(book, new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, Dates.nowZoned(), null, 42));
+		data.books().put(book, new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, TimeUtil.nowZoned(), null, 42));
 		data.books().put(book2, new Book.Data("summary", "content", Book.ApprovalStatus.REJECTED, null, null, 42));
-		data.books().put(oldBook, new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, Dates.nowZoned(), null, 42)); // `originalOrModified`: newBook
+		data.books().put(oldBook, new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, TimeUtil.nowZoned(), null, 42)); // `originalOrModified`: newBook
 		data.books().put(newBook, new Book.Data("summary", "content", Book.ApprovalStatus.PENDING, null, oldBook, 42));
 
 		data.userNotifications().put(reader, new String[]{"notification", "notification2"});
 		data.userNotifications().put(author, new String[]{"notification"});
 		data.userNotifications().put(librarian, new String[]{});
 
-		data.userBookRequests().put(new Object[]{reader, new BookRequest("title", "author")}, new BookRequest.Data(Dates.nowZoned()));
-		data.userBookRequests().put(new Object[]{author, new BookRequest("title", "author")}, new BookRequest.Data(Dates.nowZoned()));
-		data.userBookRequests().put(new Object[]{librarian, new BookRequest("title", "author")}, new BookRequest.Data(Dates.nowZoned()));
+		data.userBookRequests().put(new Object[]{reader, new BookRequest("title", "author")}, new BookRequest.Data(TimeUtil.nowZoned()));
+		data.userBookRequests().put(new Object[]{author, new BookRequest("title", "author")}, new BookRequest.Data(TimeUtil.nowZoned()));
+		data.userBookRequests().put(new Object[]{librarian, new BookRequest("title", "author")}, new BookRequest.Data(TimeUtil.nowZoned()));
 
-		data.borrows().put(new Object[]{reader, book}, new Borrow(Dates.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42])));
-		data.borrows().put(new Object[]{author, book2}, new Borrow(Dates.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42])));
-		data.borrows().put(new Object[]{librarian, oldBook}, new Borrow(Dates.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42])));
+		data.borrows().put(new Object[]{reader, book}, new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42])));
+		data.borrows().put(new Object[]{author, book2}, new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42])));
+		data.borrows().put(new Object[]{librarian, oldBook}, new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42])));
 
 		return true;
 	}
@@ -122,7 +122,7 @@ class RepositoryTest {
 		final var existingBook = new Book("book", new Author.ByName("author"));
 		final var missingUser = new User("missing user");
 		assertThrows(TransactionException.class, () -> repository.transact(tx -> {
-			tx.books().put(new Book("title", new Author.ByRef(missingUser)), new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, Dates.nowZoned(), null, 42));
+			tx.books().put(new Book("title", new Author.ByRef(missingUser)), new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, TimeUtil.nowZoned(), null, 42));
 			return true;
 		}));
 		assertThrows(TransactionException.class, () -> repository.transact(tx -> {
@@ -130,11 +130,11 @@ class RepositoryTest {
 			return true;
 		}));
 		assertThrows(TransactionException.class, () -> repository.transact(tx -> {
-			tx.userBookRequests().put(new Object[]{missingUser, new BookRequest("title", "author")}, new BookRequest.Data(Dates.nowZoned()));
+			tx.userBookRequests().put(new Object[]{missingUser, new BookRequest("title", "author")}, new BookRequest.Data(TimeUtil.nowZoned()));
 			return true;
 		}));
 		assertThrows(TransactionException.class, () -> repository.transact(tx -> {
-			tx.borrows().put(new Object[]{missingUser, existingBook}, new Borrow(Dates.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42])));
+			tx.borrows().put(new Object[]{missingUser, existingBook}, new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42])));
 			return true;
 		}));
 
@@ -148,7 +148,7 @@ class RepositoryTest {
 		final var existingUser = new User("reader");
 		final var missingBook = new Book("missing book", new Author.ByName("author"), true);
 		assertThrows(TransactionException.class, () -> repository.transact(tx -> {
-			tx.borrows().put(new Object[]{existingUser, missingBook}, new Borrow(Dates.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42])));
+			tx.borrows().put(new Object[]{existingUser, missingBook}, new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42])));
 			return true;
 		}));
 	}
@@ -166,7 +166,7 @@ class RepositoryTest {
 		assertEquals(newUserData, repository.users.get(newUser));
 
 		final var newBookToRemove = new Book("title", new Author.ByRef(newUser));
-		final var newBookToRemoveData = new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, Dates.nowZoned(), null, 42);
+		final var newBookToRemoveData = new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, TimeUtil.nowZoned(), null, 42);
 		assertDoesNotThrow(() -> repository.transact(tx -> tx.books().put(newBookToRemove, newBookToRemoveData) == null));
 		assertEquals(newBookToRemoveData, repository.books.get(newBookToRemove));
 
@@ -175,11 +175,11 @@ class RepositoryTest {
 		assertArrayEquals(newUserNotificationsToRemove, repository.userNotifications.get(newUser));
 
 		final var newBookRequestToRemove = new BookRequest("title", "author");
-		final var newBookRequestToRemoveData = new BookRequest.Data(Dates.nowZoned());
+		final var newBookRequestToRemoveData = new BookRequest.Data(TimeUtil.nowZoned());
 		assertDoesNotThrow(() -> repository.transact(tx -> tx.userBookRequests().put(new Object[]{newUser, newBookRequestToRemove}, newBookRequestToRemoveData) == null));
 		assertEquals(newBookRequestToRemoveData, repository.userBookRequests.get(new Object[]{newUser, newBookRequestToRemove}));
 
-		final var borrowToRemove = new Borrow(Dates.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42]));
+		final var borrowToRemove = new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42]));
 		assertDoesNotThrow(() -> repository.transact(tx -> tx.borrows().put(new Object[]{newUser, existingBook}, borrowToRemove) == null));
 		assertEquals(borrowToRemove, repository.borrows.get(new Object[]{newUser, existingBook}));
 
@@ -198,12 +198,12 @@ class RepositoryTest {
 		// remove book
 		final var existingUser = new User("reader");
 		final var newBook = new Book("new book", new Author.ByRef(existingUser));
-		final var newBookData = new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, Dates.nowZoned(), null, 42);
+		final var newBookData = new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, TimeUtil.nowZoned(), null, 42);
 
 		assertDoesNotThrow(() -> repository.transact(tx -> tx.books().put(newBook, newBookData) == null));
 		assertEquals(newBookData, repository.books.get(newBook));
 
-		final var newBorrowToRemove = new Borrow(Dates.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42]));
+		final var newBorrowToRemove = new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42]));
 		assertDoesNotThrow(() -> repository.transact(tx -> tx.borrows().put(new Object[]{existingUser, newBook}, newBorrowToRemove) == null));
 		assertEquals(newBorrowToRemove, repository.borrows.get(new Object[]{existingUser, newBook}));
 

@@ -10,9 +10,9 @@ import javafx.scene.text.Text;
 import javafx.util.Callback;
 import library.Context;
 import library.Main;
+import library.controllers.common.RequiresLoggedIn;
 import library.models.Book;
 import library.models.Borrow;
-import library.models.User;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
@@ -25,17 +25,22 @@ import org.openpdf.text.Paragraph;
 import org.openpdf.text.pdf.PdfWriter;
 
 import java.io.FileOutputStream;
+import library.utils.ByteArray;
+import library.utils.TimeUtil;
+import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.net.URL;
 import java.time.Duration;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
-public class AvailableBooksController {
+public class AvailableBooksController implements RequiresLoggedIn {
     private final Context context = Main.getContext();
     private final Repository repository = context.getRepository();
-    private final User user = context.getLoggedInUser()._1();
-    private final User.Data userData = context.getLoggedInUser()._2();
 
     @FXML
     private Text titleText, authorText, publishDateText, summaryText;
@@ -58,28 +63,30 @@ public class AvailableBooksController {
 
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    @FXML
-    public void initialize() {
-        titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
-        authorCol.setCellValueFactory(new PropertyValueFactory<>("author"));
-        publishDateCol.setCellValueFactory(new PropertyValueFactory<>("publishDate"));
-        summaryCol.setCellValueFactory(new PropertyValueFactory<>("summary"));
+	@Override
+	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+		RequiresLoggedIn.super.initialize(location, resources);
 
-        table.getSelectionModel().selectedItemProperty().addListener(
-                (_, _, newValue) -> {
-                    if (newValue != null) {
-                        titleText.setText(newValue.getTitle());
-                        authorText.setText(newValue.getAuthor());
-                        publishDateText.setText(newValue.getPublishDate());
-                        summaryText.setText(newValue.getSummary());
-                    }
-                }
-        );
+		titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
+		authorCol.setCellValueFactory(new PropertyValueFactory<>("author"));
+		publishDateCol.setCellValueFactory(new PropertyValueFactory<>("publishDate"));
+		summaryCol.setCellValueFactory(new PropertyValueFactory<>("summary"));
 
-        reload();
-    }
+		table.getSelectionModel().selectedItemProperty().addListener(
+				(_, _, newValue) -> {
+					if (newValue != null) {
+						titleText.setText(newValue.getTitle());
+						authorText.setText(newValue.getAuthor());
+						publishDateText.setText(newValue.getPublishDate());
+						summaryText.setText(newValue.getSummary());
+					}
+				}
+		);
 
-    private void reload() {
+		reload();
+	}
+
+	private void reload() {
         ObservableList<tableRow> data = FXCollections.observableArrayList();
         Map<Book, Book.Data> availableBooks = repository.bookOps.read(this::checkBorrowable);
         for (var entry : availableBooks.entrySet()) {
@@ -97,7 +104,7 @@ public class AvailableBooksController {
     private boolean checkBorrowable(Map.Entry<Book, Book.Data> entry) {
         Book book = entry.getKey();
         Book.Data bookData = entry.getValue();
-        return repository.borrowOps.read(user, book).isEmpty();
+	    return repository.borrowOps.read(getLoggedInUser()._1(), book).isEmpty();
     }
 
     /**
@@ -151,7 +158,7 @@ public class AvailableBooksController {
         if (!generatePdf(selectedBookData.get().content(), pdfPath)) return;
 
         try {
-            repository.borrowOps.create(user, selectedBook, borrowData);
+	        repository.borrowOps.create(getLoggedInUser()._1(), selectedBook, borrowData);
         } catch (TransactionException e) {
             throw new RuntimeException(e);
         }

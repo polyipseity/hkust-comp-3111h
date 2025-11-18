@@ -14,14 +14,20 @@ class RepositoryUserNotificationOpsTest {
 
 	@SuppressWarnings("SameReturnValue")
 	private static boolean populate(@NotNull Repository.TransactData data) {
-		// initialise a user with some notifications
+		// initialise users with some notifications and no notifications
 		final var reader = new User("reader");
+		final var reader2 = new User("reader2");
 		data.users().put(reader, new User.Data(User.Role.STUDENT_STAFF,
 				true,
 				"pwd",
 				"full name"));
-		// start with two notifications
+		data.users().put(reader2, new User.Data(User.Role.STUDENT_STAFF,
+				true,
+				"pwd",
+				"full name"));
+		// start with two notifications and no notifications
 		data.userNotifications().put(reader, new String[]{"n1", "n2"});
+		data.userNotifications().put(reader2, new String[]{});
 		return true;
 	}
 
@@ -32,6 +38,31 @@ class RepositoryUserNotificationOpsTest {
 		ops = new RepositoryUserNotificationOps(repository);
 
 		repository.transact(RepositoryUserNotificationOpsTest::populate);
+	}
+
+	@Test
+	void read_allNotifications_unfiltered() {
+		// we already have a few users in the fixture; fetch everything
+		final var all = assertDoesNotThrow(() -> ops.read());
+		assertEquals(2, all.size(), "All two users should be present");
+
+		// verify that each entry is immutable (the value array is returned as‑is,
+		// but we can still check that the map itself cannot be modified)
+		assertThrows(
+				UnsupportedOperationException.class,
+				() -> all.put(new User("tmp"), new String[]{"x"}),
+				"Returned map must be unmodifiable");
+	}
+
+	@Test
+	void read_filteredByNonEmptyNotifications() {
+		// keep only users that are authors
+		final var filtered = assertDoesNotThrow(() ->
+				ops.read(entry -> entry.getValue().length > 0));
+
+		// we know the fixture contains exactly one author (the “reader” user)
+		assertEquals(1, filtered.size(), "Only one reader should be returned");
+		assertTrue(filtered.containsKey(new User("reader")));
 	}
 
 	@Test

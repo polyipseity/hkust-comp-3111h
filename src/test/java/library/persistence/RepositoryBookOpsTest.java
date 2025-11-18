@@ -54,6 +54,61 @@ class RepositoryBookOpsTest {
 	}
 
 	@Test
+	void read_all_returnsUnmodifiableMap() throws TransactionException {
+		// prepare a couple of entries
+		final var bookA = new Book("a", new Author.ByName("A"));
+		final var dataA = new Book.Data("s", "c",
+				Book.ApprovalStatus.PENDING, null, null, 1);
+		ops.create(bookA, dataA);
+
+		// fetch the map and verify that it contains the entry
+		final var all = assertDoesNotThrow(() -> ops.read());
+		assertEquals(1, all.size());
+		assertTrue(all.containsKey(bookA));
+
+		// try to modify – should throw UnsupportedOperationException
+		assertThrows(
+				UnsupportedOperationException.class,
+				() -> all.put(new Book("b", new Author.ByName("B")), dataA),
+				"Returned map must be unmodifiable");
+	}
+
+	@Test
+	void read_filteredByApprovalStatus() throws TransactionException {
+		final var bookPending = new Book("pending", new Author.ByName("X"));
+		final var dataPending = new Book.Data("s", "c",
+				Book.ApprovalStatus.PENDING, null, null, 5);
+		ops.create(bookPending, dataPending);
+
+		final var bookApproved = new Book("approved", new Author.ByName("Y"));
+		final var dataApproved = new Book.Data("s", "c",
+				Book.ApprovalStatus.APPROVED, null, null, 6);
+		ops.create(bookApproved, dataApproved);
+
+		// filter only PENDING books
+		final var filtered =
+				assertDoesNotThrow(() ->
+						ops.read(entry -> entry.getValue().approvalStatus() == Book.ApprovalStatus.PENDING));
+
+		assertEquals(1, filtered.size());
+		assertTrue(filtered.containsKey(bookPending));
+		assertFalse(filtered.containsKey(bookApproved));
+	}
+
+	@Test
+	void read_byDifferentTitle_returnsEmpty() throws TransactionException {
+		final var existingBook = new Book("existing", new Author.ByName("Z"));
+		ops.create(existingBook, new Book.Data("s", "c",
+				Book.ApprovalStatus.PENDING, null, null, 1));
+
+		// a book with the same author but different title
+		final var otherBook = new Book("other", new Author.ByName("Z"));
+
+		final var result = assertDoesNotThrow(() -> ops.read(otherBook));
+		assertFalse(result.isPresent());
+	}
+
+	@Test
 	void read_existing() throws TransactionException {
 		final var book = new Book("readTitle", new Author.ByName("author"));
 		final var data = new Book.Data("s", "c",
@@ -71,36 +126,6 @@ class RepositoryBookOpsTest {
 
 		final var result = assertDoesNotThrow(() -> ops.read(book));
 		assertFalse(result.isPresent());
-	}
-
-	@Test
-	void read_byAuthor() throws TransactionException {
-		final var authorA = new Author.ByName("authorA");
-		final var authorB = new Author.ByName("authorB");
-
-		// books for authorA
-		ops.create(new Book("a1", authorA), new Book.Data("s", "c",
-				Book.ApprovalStatus.PENDING, null, null, 10));
-		ops.create(new Book("a2", authorA), new Book.Data("s", "c",
-				Book.ApprovalStatus.PENDING, null, null, 20));
-
-		// one book for authorB
-		ops.create(new Book("b1", authorB), new Book.Data("s", "c",
-				Book.ApprovalStatus.PENDING, null, null, 30));
-
-		final var result = assertDoesNotThrow(() -> ops.read(authorA));
-
-		assertEquals(2, result.size(), "Only two books should be returned");
-		result.keySet().forEach(b -> assertEquals(authorA, b.author(),
-				"Returned book must belong to the queried author"));
-	}
-
-	@Test
-	void read_byAuthor_withNoBooks() {
-		var author = new Author.ByName("lonely");
-		final var result = assertDoesNotThrow(() -> ops.read(author));
-
-		assertTrue(result.isEmpty(), "No books should be returned for an unknown author");
 	}
 
 	@Test

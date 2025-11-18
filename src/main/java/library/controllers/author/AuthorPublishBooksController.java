@@ -1,11 +1,10 @@
 package library.controllers.author;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import library.Main;
+import library.controllers.common.RequiresLoggedIn;
 import library.models.Author;
 import library.models.Book;
 import library.persistence.Repository;
@@ -17,7 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Optional;
 
-public class AuthorPublishBooksController {
+public class AuthorPublishBooksController implements RequiresLoggedIn {
     private final Repository repository = Main.getContext().getRepository();
 
     @FXML
@@ -62,8 +61,7 @@ public class AuthorPublishBooksController {
             Alerts.showErrorDialog("Missing information of the book.");
             return;
         }
-        assert Main.getContext().getLoggedInUser() != null;
-        var book = new Book(BookTitle.getText(), new Author.ByRef(Main.getContext().getLoggedInUser()._1()), false);
+	    var book = new Book(BookTitle.getText(), new Author.ByRef(getLoggedInUser()._1()), false);
         Optional<Book.Data> opt = repository.bookOps.read(book);
         if(opt.isPresent()) {
             Alerts.showErrorDialog("Duplicated Book Title.");
