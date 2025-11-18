@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
-            fx:controller="library.controllers.author.AuthorDashboardController">
+            fx:controller="library.controllers.author.DashboardController">
 
 	<top>
 		<Label style="-fx-font-size:24px; -fx-padding:10" text="Author Dashboard" BorderPane.alignment="CENTER"/>

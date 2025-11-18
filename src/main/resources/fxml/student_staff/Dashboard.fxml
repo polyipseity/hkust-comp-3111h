@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25"
-            fx:controller="library.controllers.student_staff.StudentDashboardController">
+            fx:controller="library.controllers.student_staff.DashboardController">
 
 	<top>
 		<Label style="-fx-font-size:24px; -fx-padding:10" text="Student/Staff Dashboard" BorderPane.alignment="CENTER"/>

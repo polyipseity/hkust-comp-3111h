@@ -9,12 +9,12 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 public enum FXMLs {
-	AUTHOR_DASHBOARD("/fxml/author/AuthorDashboard.fxml"),
+	AUTHOR_DASHBOARD("/fxml/author/Dashboard.fxml"),
 	HOME("/fxml/Home.fxml"),
-	LIBRARIAN_DASHBOARD("/fxml/librarian/LibrarianDashboard.fxml"),
+	LIBRARIAN_DASHBOARD("/fxml/librarian/Dashboard.fxml"),
 	LOGIN("/fxml/Login.fxml"),
 	REGISTER("/fxml/Register.fxml"),
-	STUDENT_DASHBOARD("/fxml/student_staff/StudentDashboard.fxml"),
+	STUDENT_DASHBOARD("/fxml/student_staff/Dashboard.fxml"),
 	;
 
 	@NotNull
