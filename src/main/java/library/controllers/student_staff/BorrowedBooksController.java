@@ -3,23 +3,30 @@ package library.controllers.student_staff;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 import library.Context;
 import library.Main;
 import library.models.Book;
 import library.models.Borrow;
 import library.models.User;
 import library.persistence.Repository;
+import library.utils.Alerts;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import java.util.Optional;
 
 public class BorrowedBooksController {
 	private final Context context = Main.getContext();
@@ -75,5 +82,35 @@ public class BorrowedBooksController {
 
 	@FXML
 	private void readSelectedBook() {
+		tableRow currentRow = table.getSelectionModel().getSelectedItem();
+		if (currentRow == null) {
+			Alerts.showErrorDialog("Please select a book first.");
+			return;
+		}
+
+		Book selectedBook = currentRow.book;
+		Optional<Borrow> borrowData = repository.borrowOps.read(user, selectedBook);
+		if (borrowData.isEmpty()) {
+			Alerts.showErrorDialog("Borrow data not found.");
+			return;
+		}
+		String path = borrowData.get().pdfPath();
+
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
+				"/fxml/student_staff/BookViewer.fxml"));
+		BookViewerController controller = new BookViewerController(path);
+		fxmlLoader.setController(controller);
+
+		try {
+			BorderPane borderPane = fxmlLoader.load();
+			Stage stage = new Stage();
+			stage.setScene(new Scene(borderPane));
+			stage.setTitle("Reading: " + selectedBook.title() + " by " + selectedBook.author());
+			stage.setOnShown(controller::createResizeListeners);
+			stage.setOnCloseRequest(controller::disposeController);
+			stage.show();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
