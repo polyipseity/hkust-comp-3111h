@@ -18,7 +18,7 @@ class BorrowTest {
 				ZoneOffset.UTC);
 		final var dur = Duration.ofDays(5);          // due on Jan 6
 		final var borrow = new Borrow(borrowDate, dur,
-				new ByteArray(new byte[0]));
+				"test.pdf");
 
 		final var reference = ZonedDateTime.of(2024, 1, 3, 12, 0, 0, 0,
 				ZoneOffset.UTC);
@@ -33,7 +33,7 @@ class BorrowTest {
 				ZoneOffset.UTC);
 		final var dur = Duration.ofDays(5);          // due on Jan 6
 		final var borrow = new Borrow(borrowDate, dur,
-				new ByteArray(new byte[0]));
+				"test.pdf");
 
 		final var reference = ZonedDateTime.of(2024, 1, 7, 12, 0, 0, 0,
 				ZoneOffset.UTC);
@@ -46,7 +46,7 @@ class BorrowTest {
 				ZoneOffset.UTC);
 		final var dur = Duration.ofDays(5);          // due on Jan 6
 		final var borrow = new Borrow(borrowDate, dur,
-				new ByteArray(new byte[0]));
+				"test.pdf");
 
 		final var reference = borrowDate.plus(dur);          // exactly the due date
 		assertEquals(Duration.ZERO, borrow.durationLeft(reference));
@@ -58,7 +58,7 @@ class BorrowTest {
 		final var borrowDate = now.minusHours(1);
 		final var dur = Duration.ofHours(2);          // due 1 hour from now
 		final var borrow = new Borrow(borrowDate, dur,
-				new ByteArray(new byte[0]));
+				"test.pdf");
 
 		// The default method should return a duration close to the remaining period.
 		final var result = borrow.durationLeft();

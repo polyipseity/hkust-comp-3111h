@@ -33,7 +33,7 @@ class RepositoryBorrowOpsTest {
 		data.books().put(book, new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, TimeUtil.nowZoned(), null, 42));
 		data.books().put(book2, new Book.Data("summary", "content", Book.ApprovalStatus.REJECTED, null, null, 42));
 
-		data.borrows().put(new Object[]{reader, book}, new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42])));
+		data.borrows().put(new Object[]{reader, book}, new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), "test.pdf"));
 
 		return true;
 	}
@@ -67,7 +67,7 @@ class RepositoryBorrowOpsTest {
 						Book.ApprovalStatus.APPROVED, TimeUtil.nowZoned(), null, 10));
 
 		ops.create(reader2, book2, new Borrow(TimeUtil.nowZoned(),
-				Duration.ofDays(7), new ByteArray(new byte[7])));
+				Duration.ofDays(7), "test.pdf"));
 
 		// now there should be two borrows in the repo
 		final var all = assertDoesNotThrow(() -> ops.read());
@@ -78,7 +78,7 @@ class RepositoryBorrowOpsTest {
 				UnsupportedOperationException.class,
 				() -> all.put(new Tuple2<>(reader2, book2),
 						new Borrow(TimeUtil.nowZoned(),
-								Duration.ofDays(3), new ByteArray(new byte[3]))),
+								Duration.ofDays(3), "test.pdf")),
 				"Returned map must be unmodifiable");
 	}
 
@@ -93,7 +93,7 @@ class RepositoryBorrowOpsTest {
 						Book.ApprovalStatus.APPROVED, TimeUtil.nowZoned(), null, 5));
 
 		ops.create(reader, bookLong, new Borrow(TimeUtil.nowZoned(),
-				Duration.ofHours(1), new ByteArray(new byte[10])));
+				Duration.ofHours(1), "test.pdf"));
 
 		// keep only borrows that last longer than 42 nanoseconds
 		final var filtered = assertDoesNotThrow(() ->
@@ -148,7 +148,7 @@ class RepositoryBorrowOpsTest {
 		final var borrow = new Borrow(
 				TimeUtil.nowZoned(),
 				Duration.ofHours(1),
-				new ByteArray(new byte[10])
+				"test.pdf"
 		);
 
 		assertDoesNotThrow(() -> ops.create(user, book, borrow));
@@ -166,7 +166,7 @@ class RepositoryBorrowOpsTest {
 		final var borrow = new Borrow(
 				TimeUtil.nowZoned(),
 				Duration.ofHours(1),
-				new ByteArray(new byte[10])
+				"test.pdf"
 		);
 
 		assertDoesNotThrow(() -> ops.create(user, book, borrow));
