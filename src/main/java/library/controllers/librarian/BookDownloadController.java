@@ -3,13 +3,22 @@ package library.controllers.librarian;
 import library.controllers.common.DynamicTableController;
 import library.controllers.common.RequiresLoggedIn;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.function.Function;
 
 public class BookDownloadController extends DynamicTableController<BookDownloadController.Data> implements RequiresLoggedIn {
+	@Override
+	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+		RequiresLoggedIn.super.initialize(location, resources);
+		super.initialize(location, resources);
+	}
+
 	@Override
 	protected @NotNull Map<@NotNull String, @NotNull Header> getKeys() {
 		return Map.of(

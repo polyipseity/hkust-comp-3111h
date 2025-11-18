@@ -5,12 +5,21 @@ import library.controllers.common.DynamicTableController;
 import library.controllers.common.RequiresLoggedIn;
 import library.models.Book;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.function.Function;
 
 public class PendingApprovalsController extends DynamicTableController<PendingApprovalsController.Data> implements RequiresLoggedIn {
+	@Override
+	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+		RequiresLoggedIn.super.initialize(location, resources);
+		super.initialize(location, resources);
+	}
+
 	@Override
 	protected @NotNull Map<@NotNull String, @NotNull Header> getKeys() {
 		return Map.of(
