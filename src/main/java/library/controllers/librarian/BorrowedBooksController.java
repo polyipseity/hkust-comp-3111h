@@ -13,8 +13,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
 import java.util.Collection;
-import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
+import java.util.SequencedMap;
 import java.util.function.Function;
 
 public class BorrowedBooksController extends DynamicTableController<BorrowedBooksController.Keys, BorrowedBooksController.Data> implements RequiresLoggedIn {
@@ -26,13 +27,13 @@ public class BorrowedBooksController extends DynamicTableController<BorrowedBook
 	}
 
 	@Override
-	protected @NotNull Map<Keys, TableColumn<@NotNull Data, @NotNull Data>> getKeys() {
-		return Map.of(
-				Keys.TITLE, new TableColumn<>("Title"),
-				Keys.BORROWER, new TableColumn<>("Borrower"),
-				Keys.BORROW_DATE, new TableColumn<>("Borrowed On"),
-				Keys.DURATION_LEFT, new TableColumn<>("Time Left")
-		);
+	protected @NotNull SequencedMap<Keys, TableColumn<Data, Data>> getKeys() {
+		final var keys = new LinkedHashMap<Keys, TableColumn<Data, Data>>();
+		keys.put(Keys.TITLE, new TableColumn<>("Title"));
+		keys.put(Keys.BORROWER, new TableColumn<>("Borrower"));
+		keys.put(Keys.BORROW_DATE, new TableColumn<>("Borrowed On"));
+		keys.put(Keys.DURATION_LEFT, new TableColumn<>("Time Left"));
+		return keys;
 	}
 
 	@Override

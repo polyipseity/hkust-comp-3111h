@@ -10,8 +10,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
 import java.util.Collection;
-import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
+import java.util.SequencedMap;
 import java.util.function.Function;
 
 public class ManageUsersController extends DynamicTableController<ManageUsersController.Keys, ManageUsersController.Data> implements RequiresLoggedIn {
@@ -23,14 +24,14 @@ public class ManageUsersController extends DynamicTableController<ManageUsersCon
 	}
 
 	@Override
-	protected @NotNull Map<Keys, TableColumn<@NotNull Data, @NotNull Data>> getKeys() {
-		return Map.of(
-				Keys.USERNAME, new TableColumn<>("Username"),
-				Keys.ROLE, new TableColumn<>("Role"),
-				Keys.NAME, new TableColumn<>("Name"),
-				Keys.ACTIVE, new TableColumn<>("Active"),
-				Keys.ACTIONS, new TableColumn<>("Actions")
-		);
+	protected @NotNull SequencedMap<Keys, TableColumn<Data, Data>> getKeys() {
+		final var keys = new LinkedHashMap<Keys, TableColumn<Data, Data>>();
+		keys.put(Keys.USERNAME, new TableColumn<>("Username"));
+		keys.put(Keys.ROLE, new TableColumn<>("Role"));
+		keys.put(Keys.NAME, new TableColumn<>("Name"));
+		keys.put(Keys.ACTIVE, new TableColumn<>("Active"));
+		keys.put(Keys.ACTIONS, new TableColumn<>("Actions"));
+		return keys;
 	}
 
 	@Override

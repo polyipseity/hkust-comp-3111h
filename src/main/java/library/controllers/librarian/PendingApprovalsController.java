@@ -10,8 +10,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
 import java.util.Collection;
-import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
+import java.util.SequencedMap;
 import java.util.function.Function;
 
 public class PendingApprovalsController extends DynamicTableController<PendingApprovalsController.Keys, PendingApprovalsController.Data> implements RequiresLoggedIn {
@@ -22,13 +23,13 @@ public class PendingApprovalsController extends DynamicTableController<PendingAp
 	}
 
 	@Override
-	protected @NotNull Map<Keys, TableColumn<@NotNull Data, @NotNull Data>> getKeys() {
-		return Map.of(
-				Keys.TITLE, new TableColumn<>("Title"),
-				Keys.AUTHOR, new TableColumn<>("Author"),
-				Keys.SUMMARY, new TableColumn<>("Summary"),
-				Keys.ACTIONS, new TableColumn<>("Actions")
-		);
+	protected @NotNull SequencedMap<Keys, TableColumn<Data, Data>> getKeys() {
+		final var keys = new LinkedHashMap<Keys, TableColumn<Data, Data>>();
+		keys.put(Keys.TITLE, new TableColumn<>("Title"));
+		keys.put(Keys.AUTHOR, new TableColumn<>("Author"));
+		keys.put(Keys.SUMMARY, new TableColumn<>("Summary"));
+		keys.put(Keys.ACTIONS, new TableColumn<>("Actions"));
+		return keys;
 	}
 
 	@Override

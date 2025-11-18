@@ -7,10 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.function.Function;
 
 public class BookDownloadController extends DynamicTableController<BookDownloadController.Keys, BookDownloadController.Data> implements RequiresLoggedIn {
@@ -21,12 +18,12 @@ public class BookDownloadController extends DynamicTableController<BookDownloadC
 	}
 
 	@Override
-	protected @NotNull Map<Keys, TableColumn<@NotNull Data, @NotNull Data>> getKeys() {
-		return Map.of(
-				Keys.TITLE, new TableColumn<>("Title"),
-				Keys.AUTHOR, new TableColumn<>("Author"),
-				Keys.BOOKSHELVES, new TableColumn<>("Bookshelves")
-		);
+	protected @NotNull SequencedMap<Keys, TableColumn<Data, Data>> getKeys() {
+		final var keys = new LinkedHashMap<Keys, TableColumn<Data, Data>>();
+		keys.put(Keys.TITLE, new TableColumn<>("Title"));
+		keys.put(Keys.AUTHOR, new TableColumn<>("Author"));
+		keys.put(Keys.BOOKSHELVES, new TableColumn<>("Bookshelves"));
+		return keys;
 	}
 
 	@Override

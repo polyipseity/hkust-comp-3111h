@@ -30,7 +30,7 @@ public abstract class DynamicTableController<Key, Value extends Function<@NotNul
 		loadTable();
 	}
 
-	protected abstract @NotNull Map<Key, TableColumn<@NotNull Value, @NotNull Value>> getKeys();
+	protected abstract @NotNull SequencedMap<Key, TableColumn<@NotNull Value, @NotNull Value>> getKeys();
 
 	protected abstract @NotNull Collection<@NotNull Value> getData();
 
