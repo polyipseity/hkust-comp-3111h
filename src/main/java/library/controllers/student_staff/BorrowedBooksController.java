@@ -16,6 +16,7 @@ import library.Main;
 import library.controllers.common.RequiresLoggedIn;
 import library.models.Book;
 import library.models.Borrow;
+import library.models.User;
 import library.persistence.Repository;
 import library.utils.Alerts;
 import library.utils.TimeUtil;
@@ -34,6 +35,7 @@ import java.util.ResourceBundle;
 public class BorrowedBooksController implements RequiresLoggedIn {
 	private final Context context = Main.getContext();
 	private final Repository repository = context.getRepository();
+	private final User user =  this.getLoggedInUser()._1();
 
 	@FXML
 	private TableView<tableRow> table;

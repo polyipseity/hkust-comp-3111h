@@ -13,11 +13,13 @@ import library.Main;
 import library.controllers.common.RequiresLoggedIn;
 import library.models.Book;
 import library.models.Borrow;
+import library.models.User;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.openpdf.text.Document;
 import org.openpdf.text.Element;
 import org.openpdf.text.PageSize;
@@ -25,14 +27,9 @@ import org.openpdf.text.Paragraph;
 import org.openpdf.text.pdf.PdfWriter;
 
 import java.io.FileOutputStream;
-import library.utils.ByteArray;
-import library.utils.TimeUtil;
-import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.net.URL;
 import java.time.Duration;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Optional;
@@ -41,6 +38,7 @@ import java.util.ResourceBundle;
 public class AvailableBooksController implements RequiresLoggedIn {
     private final Context context = Main.getContext();
     private final Repository repository = context.getRepository();
+    private final User user = this.getLoggedInUser()._1();
 
     @FXML
     private Text titleText, authorText, publishDateText, summaryText;
