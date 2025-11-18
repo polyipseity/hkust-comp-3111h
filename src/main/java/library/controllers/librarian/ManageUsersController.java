@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
-public class ManageUsersController extends DynamicTableController<ManageUsersController.Data> implements RequiresLoggedIn {
+public class ManageUsersController extends DynamicTableController<String, ManageUsersController.Data> implements RequiresLoggedIn {
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
@@ -22,7 +22,7 @@ public class ManageUsersController extends DynamicTableController<ManageUsersCon
 	}
 
 	@Override
-	protected @NotNull Map<@NotNull String, @NotNull TableColumn<Data, Data>> getKeys() {
+	protected @NotNull Map<String, TableColumn<@NotNull Data, @NotNull Data>> getKeys() {
 		return Map.of(
 				"username", new TableColumn<>("Username"),
 				"role", new TableColumn<>("Role"),

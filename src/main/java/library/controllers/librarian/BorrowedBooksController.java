@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
-public class BorrowedBooksController extends DynamicTableController<BorrowedBooksController.Data> implements RequiresLoggedIn {
+public class BorrowedBooksController extends DynamicTableController<String, BorrowedBooksController.Data> implements RequiresLoggedIn {
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
@@ -25,7 +25,7 @@ public class BorrowedBooksController extends DynamicTableController<BorrowedBook
 	}
 
 	@Override
-	protected @NotNull Map<@NotNull String, @NotNull TableColumn<Data, Data>> getKeys() {
+	protected @NotNull Map<String, TableColumn<@NotNull Data, @NotNull Data>> getKeys() {
 		return Map.of(
 				"title", new TableColumn<>("Title"),
 				"borrower", new TableColumn<>("Borrower"),

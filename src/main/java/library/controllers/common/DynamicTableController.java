@@ -20,19 +20,19 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public abstract class DynamicTableController<E extends Function<@NotNull String, DynamicTableController.@NotNull Data>> implements Initializable {
-	protected final Map<String, TableColumn<@NotNull E, @NotNull E>> columnMap = new HashMap<>();
+public abstract class DynamicTableController<Key, Value extends Function<@NotNull Key, DynamicTableController.@NotNull Data>> implements Initializable {
+	protected final Map<Key, TableColumn<@NotNull Value, @NotNull Value>> columnMap = new HashMap<>();
 	@FXML
-	private TableView<@NotNull E> table;
+	private TableView<@NotNull Value> table;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		loadTable();
 	}
 
-	protected abstract @NotNull Map<@NotNull String, @NotNull TableColumn<@NotNull E, @NotNull E>> getKeys();
+	protected abstract @NotNull Map<Key, TableColumn<@NotNull Value, @NotNull Value>> getKeys();
 
-	protected abstract @NotNull Collection<@NotNull E> getData();
+	protected abstract @NotNull Collection<@NotNull Value> getData();
 
 	protected void loadTable() {
 		final var keys = getKeys();
@@ -58,7 +58,7 @@ public abstract class DynamicTableController<E extends Function<@NotNull String,
 		items.addAll(getData());
 	}
 
-	protected @NotNull TableColumn<@NotNull E, @NotNull E> configureColumn(@NotNull String key, @NotNull TableColumn<@NotNull E, @NotNull E> column) {
+	protected @NotNull TableColumn<@NotNull Value, @NotNull Value> configureColumn(@NotNull Key key, @NotNull TableColumn<@NotNull Value, @NotNull Value> column) {
 		column.setCellValueFactory(new Callback<>() {
 			/**
 			 * The <code>call</code> method is called when required, and is given a
@@ -72,7 +72,7 @@ public abstract class DynamicTableController<E extends Function<@NotNull String,
 			 */
 			@Override
 			@NotNull
-			public ObservableValue<@NotNull E> call(@NotNull TableColumn.CellDataFeatures<@NotNull E, @NotNull E> param) {
+			public ObservableValue<@NotNull Value> call(@NotNull TableColumn.CellDataFeatures<@NotNull Value, @NotNull Value> param) {
 				return new SimpleObjectProperty<>(param.getValue());
 			}
 		});
@@ -89,7 +89,7 @@ public abstract class DynamicTableController<E extends Function<@NotNull String,
 			 */
 			@Override
 			@NotNull
-			public TableCell<@NotNull E, @Nullable E> call(TableColumn<@NotNull E, @Nullable E> param) {
+			public TableCell<@NotNull Value, @Nullable Value> call(TableColumn<@NotNull Value, @Nullable Value> param) {
 				return new TableCell<>() {
 					/**
 					 * The updateItem method should not be called by developers, but it is the
@@ -139,7 +139,7 @@ public abstract class DynamicTableController<E extends Function<@NotNull String,
 					 *        being used to render an "empty" row.
 					 */
 					@Override
-					protected void updateItem(@Nullable E item, boolean empty) {
+					protected void updateItem(@Nullable Value item, boolean empty) {
 						if (item == getItem()) return;
 						super.updateItem(item, empty);
 						if (empty || item == null) {

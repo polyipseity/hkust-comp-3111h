@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
-public class PendingApprovalsController extends DynamicTableController<PendingApprovalsController.Data> implements RequiresLoggedIn {
+public class PendingApprovalsController extends DynamicTableController<String, PendingApprovalsController.Data> implements RequiresLoggedIn {
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
@@ -22,7 +22,7 @@ public class PendingApprovalsController extends DynamicTableController<PendingAp
 	}
 
 	@Override
-	protected @NotNull Map<@NotNull String, @NotNull TableColumn<Data, Data>> getKeys() {
+	protected @NotNull Map<String, TableColumn<@NotNull Data, @NotNull Data>> getKeys() {
 		return Map.of(
 				"title", new TableColumn<>("Title"),
 				"author", new TableColumn<>("Author"),
