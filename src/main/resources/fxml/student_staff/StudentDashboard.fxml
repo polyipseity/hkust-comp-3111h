@@ -23,10 +23,10 @@
 				<fx:include source="RequestBook.fxml"/>
 			</Tab>
 			<Tab text="My Profile">
-				<fx:include source="../MyProfile.fxml"/>
+				<fx:include source="../common/MyProfile.fxml"/>
 			</Tab>
 			<Tab text="Inform Board">
-				<fx:include source="../InformBoard.fxml"/>
+				<fx:include source="../common/InformBoard.fxml"/>
 			</Tab>
 		</TabPane>
 	</center>

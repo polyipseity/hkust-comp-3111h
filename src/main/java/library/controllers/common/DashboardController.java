@@ -1,4 +1,4 @@
-package library.controllers;
+package library.controllers.common;
 
 import javafx.fxml.FXML;
 import library.FXMLs;

@@ -6,6 +6,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import library.FXMLs;
 import library.Main;
+import library.controllers.common.DependsOnRole;
 import library.controls.ManageProfileControl;
 import library.models.User;
 import library.utils.Alerts;

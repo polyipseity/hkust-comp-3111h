@@ -38,14 +38,14 @@
 			<!-- Update Account Tab -->
 			<Tab text="My Profile">
                 <StackPane>
-                    <fx:include source="../MyProfile.fxml"/>
+	                <fx:include source="../common/MyProfile.fxml"/>
                 </StackPane>
 			</Tab>
 
 			<!-- Inform Board -->
 			<Tab text="Inform Board">
                 <StackPane>
-                    <fx:include source="../InformBoard.fxml"/>
+	                <fx:include source="../common/InformBoard.fxml"/>
                 </StackPane>
 			</Tab>
 

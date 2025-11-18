@@ -5,6 +5,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import library.FXMLs;
 import library.Main;
+import library.controllers.common.DependsOnRole;
 import library.controls.ManageProfileControl;
 import library.controls.UserValidator;
 import library.models.User;

@@ -1,4 +1,4 @@
-package library.controllers;
+package library.controllers.common;
 
 import library.models.User;
 import org.jetbrains.annotations.NotNull;

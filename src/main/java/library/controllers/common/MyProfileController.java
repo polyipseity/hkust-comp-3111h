@@ -1,7 +1,6 @@
-package library.controllers;
+package library.controllers.common;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import library.Context;
@@ -11,8 +10,6 @@ import library.models.User;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
-
-import java.util.Objects;
 
 public class MyProfileController {
 	private final Context context = Main.getContext();

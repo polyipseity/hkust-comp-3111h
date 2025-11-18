@@ -1,6 +1,6 @@
 package library.controllers.author;
 
-import library.controllers.DashboardController;
+import library.controllers.common.DashboardController;
 
 public class AuthorDashboardController extends DashboardController {
 }

@@ -1,26 +1,14 @@
-package library.controllers;
+package library.controllers.common;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import library.Main;
 import library.models.User;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
@@ -33,7 +21,7 @@ public class InformBoardController {
     private ListView<String> NotificationList;
 
     //Storing all notifications of user
-    private ObservableList<String> notifications = FXCollections.observableArrayList();
+    private final ObservableList<String> notifications = FXCollections.observableArrayList();
 
     private final User user = Main.getContext().getLoggedInUser()._1();
     @FXML

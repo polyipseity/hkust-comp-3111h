@@ -3,6 +3,7 @@ package library.controllers;
 import javafx.fxml.FXML;
 import library.FXMLs;
 import library.Main;
+import library.controllers.common.DependsOnRole;
 import library.models.User;
 
 import java.io.IOException;

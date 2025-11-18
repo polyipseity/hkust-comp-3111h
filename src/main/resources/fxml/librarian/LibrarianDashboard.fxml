@@ -33,7 +33,7 @@
 			<!-- 3) My Profile -->
 			<Tab text="My Profile">
 				<StackPane>
-					<fx:include source="../MyProfile.fxml"/>
+					<fx:include source="../common/MyProfile.fxml"/>
 				</StackPane>
 			</Tab>
 
