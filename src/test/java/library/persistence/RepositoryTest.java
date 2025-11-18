@@ -43,9 +43,9 @@ class RepositoryTest {
 		data.userBookRequests().put(new Object[]{author, new BookRequest("title", "author")}, new BookRequest.Data(TimeUtil.nowZoned()));
 		data.userBookRequests().put(new Object[]{librarian, new BookRequest("title", "author")}, new BookRequest.Data(TimeUtil.nowZoned()));
 
-		data.borrows().put(new Object[]{reader, book}, new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42])));
-		data.borrows().put(new Object[]{author, book2}, new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42])));
-		data.borrows().put(new Object[]{librarian, oldBook}, new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42])));
+		data.borrows().put(new Object[]{reader, book}, new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), "test.pdf"));
+		data.borrows().put(new Object[]{author, book2}, new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), "test.pdf"));
+		data.borrows().put(new Object[]{librarian, oldBook}, new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), "test.pdf"));
 
 		return true;
 	}
@@ -134,7 +134,7 @@ class RepositoryTest {
 			return true;
 		}));
 		assertThrows(TransactionException.class, () -> repository.transact(tx -> {
-			tx.borrows().put(new Object[]{missingUser, existingBook}, new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42])));
+			tx.borrows().put(new Object[]{missingUser, existingBook}, new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), "test.pdf"));
 			return true;
 		}));
 
@@ -148,7 +148,7 @@ class RepositoryTest {
 		final var existingUser = new User("reader");
 		final var missingBook = new Book("missing book", new Author.ByName("author"), true);
 		assertThrows(TransactionException.class, () -> repository.transact(tx -> {
-			tx.borrows().put(new Object[]{existingUser, missingBook}, new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42])));
+			tx.borrows().put(new Object[]{existingUser, missingBook}, new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), "test.pdf"));
 			return true;
 		}));
 	}
@@ -179,7 +179,7 @@ class RepositoryTest {
 		assertDoesNotThrow(() -> repository.transact(tx -> tx.userBookRequests().put(new Object[]{newUser, newBookRequestToRemove}, newBookRequestToRemoveData) == null));
 		assertEquals(newBookRequestToRemoveData, repository.userBookRequests.get(new Object[]{newUser, newBookRequestToRemove}));
 
-		final var borrowToRemove = new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42]));
+		final var borrowToRemove = new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), "test.pdf");
 		assertDoesNotThrow(() -> repository.transact(tx -> tx.borrows().put(new Object[]{newUser, existingBook}, borrowToRemove) == null));
 		assertEquals(borrowToRemove, repository.borrows.get(new Object[]{newUser, existingBook}));
 
@@ -203,7 +203,7 @@ class RepositoryTest {
 		assertDoesNotThrow(() -> repository.transact(tx -> tx.books().put(newBook, newBookData) == null));
 		assertEquals(newBookData, repository.books.get(newBook));
 
-		final var newBorrowToRemove = new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), new ByteArray(new byte[42]));
+		final var newBorrowToRemove = new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), "test.pdf");
 		assertDoesNotThrow(() -> repository.transact(tx -> tx.borrows().put(new Object[]{existingUser, newBook}, newBorrowToRemove) == null));
 		assertEquals(newBorrowToRemove, repository.borrows.get(new Object[]{existingUser, newBook}));
 
