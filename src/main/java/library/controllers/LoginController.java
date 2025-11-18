@@ -41,7 +41,7 @@ public class LoginController implements DependsOnRole {
 	@Override
 	public void setRole(@NotNull User.Role role) {
 		this.role = role;
-		headerLabel.setText("%s Login".formatted(role.name));
+		headerLabel.setText("%s Login".formatted(role.nameCapitalized));
 	}
 
 	@FXML

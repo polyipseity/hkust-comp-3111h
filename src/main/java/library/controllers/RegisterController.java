@@ -41,7 +41,7 @@ public class RegisterController implements DependsOnRole {
 	@Override
 	public void setRole(@NotNull User.Role role) {
 		this.role = role;
-		headerLabel.setText("%s Register".formatted(role.name));
+		headerLabel.setText("%s Register".formatted(role.nameCapitalized));
 	}
 
 	@FXML

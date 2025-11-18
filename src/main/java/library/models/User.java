@@ -50,15 +50,19 @@ public record User(
 	}
 
 	public enum Role {
-		STUDENT_STAFF("Student/Staff"),
-		LIBRARIAN("Librarian"),
-		AUTHOR("Author"),
+		STUDENT_STAFF("student/staff", "Student/Staff"),
+		LIBRARIAN("librarian", "Librarian"),
+		AUTHOR("author", "Author"),
 		;
 
+		@NotNull
 		public final String name;
+		@NotNull
+		public final String nameCapitalized;
 
-		Role(String name) {
+		Role(@NotNull String name, @NotNull String nameCapitalized) {
 			this.name = name;
+			this.nameCapitalized = nameCapitalized;
 		}
 	}
 
