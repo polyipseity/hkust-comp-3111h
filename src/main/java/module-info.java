@@ -22,6 +22,8 @@ module library {
     requires reactor.core;
     requires spring.ai.azure.openai;
     requires com.azure.ai.openai;
+    requires spring.boot.autoconfigure;
+    requires reactor.netty.http;
 
     exports library;
 	exports library.controllers;
@@ -44,6 +46,6 @@ module library {
 	opens library.models;
 	opens library.persistence;
 	opens library.utils;
-    exports library.SpringApplication;
-    opens library.SpringApplication;
+    exports library.SpringApplicationPackage;
+    opens library.SpringApplicationPackage;
 }
