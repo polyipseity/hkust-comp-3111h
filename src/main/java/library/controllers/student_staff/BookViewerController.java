@@ -4,6 +4,7 @@ import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.stage.WindowEvent;
 import library.utils.Alerts;
 import org.icepdf.ri.common.SwingController;
@@ -20,11 +21,9 @@ import java.lang.reflect.InvocationTargetException;
 public class BookViewerController {
     @FXML
     private BorderPane borderPane;
-    @FXML
-    private SwingNode swingNode;
 
     private SwingController swingController;
-    private JPanel viewerPanel;
+    private JComponent viewerPanel;
 
     private final String currentPath;
 
@@ -91,24 +90,33 @@ public class BookViewerController {
                 ViewerPropertiesManager properties = ViewerPropertiesManager.getInstance();
                 properties.getPreferences().putBoolean(ViewerPropertiesManager.PROPERTY_SHOW_UTILITY_OPEN, false);
                 properties.getPreferences().putBoolean(ViewerPropertiesManager.PROPERTY_SHOW_UTILITY_SAVE, false);
+                properties.getPreferences().putBoolean(ViewerPropertiesManager.PROPERTY_SHOW_UTILITY_PRINT, false);
                 properties.getPreferences().putBoolean(ViewerPropertiesManager.PROPERTY_SHOW_STATUSBAR, false);
-                properties.getPreferences().putBoolean(ViewerPropertiesManager.PROPERTY_SHOW_TOOLBAR_ROTATE, false);
-                properties.getPreferences().putBoolean(ViewerPropertiesManager.PROPERTY_SHOW_TOOLBAR_FORMS, false);
 
                 swingController.getDocumentViewController().setAnnotationCallback(
                         new org.icepdf.ri.common.MyAnnotationCallback(swingController.getDocumentViewController()));
 
                 SwingViewBuilder factory = new SwingViewBuilder(swingController, properties);
 
-                viewerPanel = factory.buildViewerPanel();
-                viewerPanel.revalidate();
+                // add toolbar to the top.
+                FlowPane toolBarFlow = new FlowPane();
+                JToolBar mainToolbar = factory.buildCompleteToolBar(true);
+                buildJToolBar(toolBarFlow, mainToolbar);
+                borderPane.setTop(toolBarFlow);
 
                 SwingNode swingNode = new SwingNode();
+                viewerPanel = factory.buildUtilityAndDocumentSplitPane(true);
                 swingNode.setContent(viewerPanel);
                 borderPane.setCenter(swingNode);
             });
         } catch (InterruptedException | InvocationTargetException e) {
             e.printStackTrace();
         }
+    }
+
+    private void buildJToolBar(FlowPane flowPane, JToolBar jToolBar){
+        SwingNode swingNode = new SwingNode();
+        swingNode.setContent(jToolBar);
+        flowPane.getChildren().add(swingNode);
     }
 }
