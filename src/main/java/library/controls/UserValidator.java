@@ -45,7 +45,7 @@ public interface UserValidator {
 
 	@NotNull Result apply(@NotNull String username, @NotNull String password, @NotNull String fullName);
 
-	sealed interface Result {
+	sealed interface Result permits Result.BadFullName, Result.BadPassword, Result.BadUsername, Result.Success {
 		record Success() implements Result {
 		}
 

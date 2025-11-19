@@ -170,7 +170,7 @@ public abstract class DynamicTableController<Key, Value extends Function<@NotNul
 		return column;
 	}
 
-	public sealed interface Data {
+	public sealed interface Data permits Data.Buttons, Data.Value {
 		record Value(@NotNull String value) implements Data {
 		}
 
