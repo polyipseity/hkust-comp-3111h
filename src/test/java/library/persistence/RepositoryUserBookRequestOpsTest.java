@@ -226,8 +226,71 @@ class RepositoryUserBookRequestOpsTest {
 		repository.userOps.create(user, userData);
 
 		final var req = new BookRequest("title", "author");
+		final var reqData = new BookRequest.Data(TimeUtil.nowZoned());
 		assertThrows(TransactionException.class,
 				() -> ops.update(user, req, d -> d));
+		assertThrows(TransactionException.class,
+				() -> ops.update(user, req, reqData, null));
+	}
+
+	@Test
+	void update_bookRequestWithData_expectedMatches() throws TransactionException {
+		final var user = new User("u1");
+		repository.userOps.create(user,
+				new User.Data(User.Role.STUDENT_STAFF, true, "password", "full name"));
+
+		final var req = new BookRequest("title", "author");
+		final var oldData = new BookRequest.Data(TimeUtil.nowZoned());
+		ops.create(user, req, oldData);
+
+		// New data that replaces the existing one
+		final var newData = new BookRequest.Data(oldData.requestDate().plusDays(5));
+
+		assertDoesNotThrow(() ->
+				ops.update(user, req, newData,
+						new BookRequest.Data(oldData.requestDate())));
+
+		final var stored = Objects.requireNonNull(
+				repository.userBookRequests.get(new Object[]{user, req}));
+		assertEquals(newData.requestDate(), stored.requestDate());
+	}
+
+	@Test
+	void update_bookRequestWithData_expectedMismatchThrows() throws TransactionException {
+		final var user = new User("u1");
+		repository.userOps.create(user,
+				new User.Data(User.Role.STUDENT_STAFF, true, "password", "full name"));
+
+		final var req = new BookRequest("title", "author");
+		final var oldData = new BookRequest.Data(TimeUtil.nowZoned());
+		ops.create(user, req, oldData);
+
+		// Stale expected value (different date)
+		final var staleExpected = new BookRequest.Data(oldData.requestDate().minusDays(1));
+		final var newData = new BookRequest.Data(oldData.requestDate().plusDays(5));
+
+		assertThrows(TransactionException.class,
+				() -> ops.update(user, req, newData, staleExpected));
+	}
+
+	@Test
+	void update_bookRequestWithData_expectedNullWorks() throws TransactionException {
+		final var user = new User("u1");
+		repository.userOps.create(user,
+				new User.Data(User.Role.STUDENT_STAFF, true, "password", "full name"));
+
+		final var req = new BookRequest("title", "author");
+		final var oldData = new BookRequest.Data(TimeUtil.nowZoned());
+		ops.create(user, req, oldData);
+
+		final var newData = new BookRequest.Data(oldData.requestDate().plusDays(3));
+
+		assertDoesNotThrow(() ->
+				ops.update(user, req, newData, null));
+
+		final var stored = Objects.requireNonNull(
+				repository.userBookRequests.get(new Object[]{user, req}));
+		assertEquals(newData.requestDate(), stored.requestDate());
 	}
 
 	@Test
@@ -272,7 +335,7 @@ class RepositoryUserBookRequestOpsTest {
 	}
 
 	@Test
-	void delete_singleNonExistinhThrows() throws TransactionException {
+	void delete_singleNonExistingThrows() throws TransactionException {
 		final var user = new User("u1");
 		final var userData = new User.Data(User.Role.STUDENT_STAFF, true, "password", "full name");
 		repository.userOps.create(user, userData);

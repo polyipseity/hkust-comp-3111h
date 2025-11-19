@@ -62,6 +62,21 @@ public record RepositoryBorrowOps(Repository repository) {
 		}, () -> "Not found or updated concurrently: %s,  %s".formatted(user, book));
 	}
 
+	public void update(@NotNull User user,
+	                   @NotNull Book book,
+	                   @NotNull Borrow data,
+	                   @Nullable Borrow expected) throws TransactionException {
+		repository.transact(
+				tx -> {
+					final var key = new Object[]{user, book};
+					return expected == null
+							? tx.borrows().put(key, data) != null
+							: expected.equals(tx.borrows().put(key, data));
+				},
+				() -> "Not found or updated concurrently: %s,  %s".formatted(user, book)
+		);
+	}
+
 	public void delete(@NotNull User user,
 	                   @NotNull Book book,
 	                   @Nullable Borrow expected) throws TransactionException {

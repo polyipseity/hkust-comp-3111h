@@ -53,6 +53,21 @@ public record RepositoryUserBookRequestOps(Repository repository) {
 		}, () -> "Not found or updated concurrently: %s, %s".formatted(user, bookRequest));
 	}
 
+	public void update(@NotNull User user,
+	                   @NotNull BookRequest bookRequest,
+	                   BookRequest.@NotNull Data data,
+	                   BookRequest.@Nullable Data expected) throws TransactionException {
+		repository.transact(
+				tx -> {
+					final var key = new Object[]{user, bookRequest};
+					return expected == null
+							? tx.userBookRequests().put(key, data) != null
+							: expected.equals(tx.userBookRequests().put(key, data));
+				},
+				() -> "Not found or updated concurrently: %s, %s".formatted(user, bookRequest)
+		);
+	}
+
 	public void delete(@NotNull User user,
 	                   @NotNull BookRequest bookRequest,
 	                   @Nullable BookRequest.Data expected) throws TransactionException {

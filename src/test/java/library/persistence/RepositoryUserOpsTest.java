@@ -9,6 +9,7 @@ import org.mapdb.DBMaker;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -164,7 +165,7 @@ class RepositoryUserOpsTest {
 	}
 
 	@Test
-	void update() throws TransactionException {
+	void update_existing() throws TransactionException {
 		final var user = new User("bob");
 		final var data = new User.Data(User.Role.LIBRARIAN, true, "secret", "Bob");
 
@@ -183,8 +184,68 @@ class RepositoryUserOpsTest {
 	void update_missing() {
 		// update non‑existing user should throw TransactionException
 		final var unknown = new User("unknown");
+		final var data = new User.Data(User.Role.LIBRARIAN, true, "password", "full name");
 		assertThrows(TransactionException.class,
 				() -> ops.update(unknown, d -> d));
+		assertThrows(TransactionException.class,
+				() -> ops.update(unknown, data, null));
+	}
+
+	@Test
+	void update_userWithData_expectedMatches() throws TransactionException {
+		final var user = new User("bob");
+		final var original = new User.Data(User.Role.LIBRARIAN, true,
+				"secret", "Bob");
+		ops.create(user, original);
+
+		// New data that will replace the existing one
+		final var newData = original.withPassword("newSecret")
+				.withFullName("Bobby");
+
+		assertDoesNotThrow(() ->
+				ops.update(user, newData,
+						new User.Data(User.Role.LIBRARIAN, true,
+								"secret", "Bob")));
+
+		final var stored = Objects.requireNonNull(repository.users.get(user));
+		assertEquals("newSecret", stored.password());
+		assertEquals("Bobby", stored.fullName());
+	}
+
+	@Test
+	void update_userWithData_expectedMismatchThrows() throws TransactionException {
+		final var user = new User("bob");
+		final var original = new User.Data(User.Role.LIBRARIAN, true,
+				"secret", "Bob");
+		ops.create(user, original);
+
+		// Stale expected value (different password)
+		final var staleExpected = new User.Data(User.Role.LIBRARIAN, true,
+				"oldSecret", "Bob");
+
+		final var newData = original.withPassword("newSecret")
+				.withFullName("Bobby");
+
+		assertThrows(TransactionException.class,
+				() -> ops.update(user, newData, staleExpected));
+	}
+
+	@Test
+	void update_userWithData_expectedNullWorks() throws TransactionException {
+		final var user = new User("bob");
+		final var original = new User.Data(User.Role.LIBRARIAN, true,
+				"secret", "Bob");
+		ops.create(user, original);
+
+		final var newData = original.withPassword("newSecret")
+				.withFullName("Bobby");
+
+		assertDoesNotThrow(() ->
+				ops.update(user, newData, null));
+
+		final var stored = Objects.requireNonNull(repository.users.get(user));
+		assertEquals("newSecret", stored.password());
+		assertEquals("Bobby", stored.fullName());
 	}
 
 	@Test

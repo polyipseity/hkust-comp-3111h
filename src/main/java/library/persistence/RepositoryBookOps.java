@@ -35,9 +35,7 @@ public record RepositoryBookOps(Repository repository) {
 
 	@NotNull
 	public Book.Data readOrThrow(@NotNull Book book) {
-		return read(book)
-				.orElseThrow(() -> new NoSuchElementException(
-						"Not found: %s".formatted(book)));
+		return read(book).orElseThrow(() -> new NoSuchElementException("Not found: %s".formatted(book)));
 	}
 
 	public void update(@NotNull Book book, @NotNull Function<Book.@NotNull Data, Book.@NotNull Data> callback) throws TransactionException {
@@ -45,6 +43,13 @@ public record RepositoryBookOps(Repository repository) {
 			final var oldValue = tx.books().get(book);
 			return oldValue != null && oldValue.equals(tx.books().put(book, callback.apply(oldValue)));
 		}, () -> "Not found or updated concurrently: %s".formatted(book));
+	}
+
+	public void update(@NotNull Book book, Book.@NotNull Data data, Book.@Nullable Data expected) throws TransactionException {
+		repository.transact(
+				tx -> expected == null ? tx.books().put(book, data) != null : expected.equals(tx.books().put(book, data)),
+				() -> "Not found or updated concurrently: %s".formatted(book)
+		);
 	}
 
 	public void delete(@NotNull Book book, @Nullable Book.Data expected) throws TransactionException {

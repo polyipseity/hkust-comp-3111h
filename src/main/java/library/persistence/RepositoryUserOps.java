@@ -46,6 +46,17 @@ public record RepositoryUserOps(Repository repository) {
 		}, () -> "Not found or updated concurrently: %s".formatted(user));
 	}
 
+	public void update(@NotNull User user,
+	                   User.@NotNull Data data,
+	                   User.@Nullable Data expected) throws TransactionException {
+		repository.transact(
+				tx -> expected == null
+						? tx.users().put(user, data) != null
+						: expected.equals(tx.users().put(user, data)),
+				() -> "Not found or updated concurrently: %s".formatted(user)
+		);
+	}
+
 	public void delete(@NotNull User user,
 	                   @Nullable User.Data expected) throws TransactionException {
 		repository.transact(

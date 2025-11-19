@@ -26,8 +26,10 @@ class RepositoryBorrowOpsTest {
 	@SuppressWarnings("SameReturnValue")
 	private static boolean populate(@NotNull Repository.TransactData data) {
 		final var reader = new User("reader");
+		final var reader2 = new User("reader2");
 		final var author = new User("author");
 		data.users().put(reader, new User.Data(User.Role.STUDENT_STAFF, true, "reader", "reader"));
+		data.users().put(reader2, new User.Data(User.Role.STUDENT_STAFF, true, "reader2", "reader2"));
 		data.users().put(author, new User.Data(User.Role.AUTHOR, true, "author", "author"));
 
 		final var book = new Book("book", new Author.ByRef(author));
@@ -63,11 +65,7 @@ class RepositoryBorrowOpsTest {
 
 	@Test
 	void read_allBorrows_unfiltered() throws TransactionException {
-		// populate a second user + book so that we have two entries
 		final var reader2 = new User("reader2");
-		repository.userOps.create(reader2,
-				new User.Data(User.Role.STUDENT_STAFF, true, "pw", "Reader 2"));
-
 		final var book2 = new Book("book2", new Author.ByName("author"));
 		repository.bookOps.create(book2,
 				new Book.Data("s", "c",
@@ -197,11 +195,55 @@ class RepositoryBorrowOpsTest {
 
 	@Test
 	void update_nonExistingBorrowFails() {
-		final var user = new User("reader");
-		final var book = new Book("missing", new Author.ByRef(new User("author")));
+		final var user = new User("reader2");
+		final var book = new Book("book", new Author.ByRef(new User("author")));
+		final var data = new Borrow(TimeUtil.nowZoned().plusDays(1), Duration.ofDays(42), "");
 
 		assertThrows(TransactionException.class,
 				() -> ops.update(user, book, old -> old));
+		assertThrows(TransactionException.class,
+				() -> ops.update(user, book, data, null));
+	}
+
+	@Test
+	void update_borrowWithData_expectedMatches() throws TransactionException {
+		final var user = new User("reader2");
+		final var book = new Book("book", new Author.ByRef(new User("author")));
+		final var data = new Borrow(TimeUtil.nowZoned().plusDays(1), Duration.ofDays(42), "");
+		ops.create(user, book, data);
+
+		assertDoesNotThrow(() ->
+				ops.update(user, book, data.withDuration(data.duration().plusDays(1)), data));
+
+		final var opt = ops.read(user, book);
+		assertTrue(opt.isPresent());
+		assertEquals(data.duration().plusDays(1), opt.get().duration());
+	}
+
+	@Test
+	void update_borrowWithData_expectedMismatchThrows() throws TransactionException {
+		final var user = new User("reader2");
+		final var book = new Book("book", new Author.ByRef(new User("author")));
+		final var data = new Borrow(TimeUtil.nowZoned().plusDays(1), Duration.ofDays(42), "");
+		ops.create(user, book, data);
+
+		assertThrows(TransactionException.class,
+				() -> ops.update(user, book, data.withDuration(data.duration().plusDays(1)), data.withBorrowDate(data.borrowDate().plusDays(1))));
+	}
+
+	@Test
+	void update_borrowWithData_expectedNullWorks() throws TransactionException {
+		final var user = new User("reader2");
+		final var book = new Book("book", new Author.ByRef(new User("author")));
+		final var data = new Borrow(TimeUtil.nowZoned().plusDays(1), Duration.ofDays(42), "");
+		ops.create(user, book, data);
+
+		assertDoesNotThrow(() ->
+				ops.update(user, book, data.withDuration(data.duration().plusDays(1)), null));
+
+		final var opt = ops.read(user, book);
+		assertTrue(opt.isPresent());
+		assertEquals(data.duration().plusDays(1), opt.get().duration());
 	}
 
 	@Test
