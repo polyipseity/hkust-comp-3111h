@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 public record RepositoryBookOps(Repository repository) {
 
 	public void create(@NotNull Book book, @NotNull Book.Data data) throws TransactionException {
-		repository.transact(tx -> tx.books().put(book, data) == null);
+		repository.transact(tx -> tx.books().put(book, data) == null, () -> "Already created: %s".formatted(book));
 	}
 
 	@NotNull
@@ -37,10 +37,10 @@ public record RepositoryBookOps(Repository repository) {
 			if (oldValue == null) return false;
 			tx.books().put(book, callback.apply(oldValue));
 			return true;
-		});
+		}, () -> "Updated concurrently: %s".formatted(book));
 	}
 
 	public void delete(@NotNull Book book) throws TransactionException {
-		repository.transact(tx -> tx.books().remove(book) != null);
+		repository.transact(tx -> tx.books().remove(book) != null, () -> "Already deleted: %s".formatted(book));
 	}
 }

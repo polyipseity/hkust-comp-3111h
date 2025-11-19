@@ -10,6 +10,7 @@ import org.mapdb.serializer.SerializerArrayTuple;
 
 import java.io.Closeable;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 
 public final class Repository implements Closeable {
 	@NotNull
@@ -182,7 +183,7 @@ public final class Repository implements Closeable {
 		return new Tuple2<>(db, new TransactData(users, books, userNotifications, userBookRequests, borrows));
 	}
 
-	public void transact(@NotNull ThrowingFunction<@NotNull TransactData, @NotNull Boolean> action, String message) throws TransactionException {
+	public void transact(@NotNull ThrowingFunction<@NotNull TransactData, @NotNull Boolean> action, @NotNull Supplier<String> rollbackMessageSupplier) throws TransactionException {
 		transactLock.lock();
 		try {
 			if (!action.apply(new TransactData(users, books, userNotifications, userBookRequests, borrows))) {
@@ -194,7 +195,7 @@ public final class Repository implements Closeable {
 		} catch (DummyException exception) {
 			db.rollback();
 			reopen();
-			throw new TransactionException(message);
+			throw new TransactionException(rollbackMessageSupplier.get());
 		} catch (Exception exception) {
 			db.rollback();
 			reopen();
@@ -204,8 +205,8 @@ public final class Repository implements Closeable {
 		}
 	}
 
-	public void transact(@NotNull ThrowingFunction<@NotNull TransactData, @NotNull Boolean> action) throws TransactionException {
-		transact(action, "Transaction failed");
+	void transact(@NotNull ThrowingFunction<@NotNull TransactData, @NotNull Boolean> action) throws TransactionException {
+		transact(action, () -> "Transaction rolled back");
 	}
 
 	private final static class DummyException extends Exception {

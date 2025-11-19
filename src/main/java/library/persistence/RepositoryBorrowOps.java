@@ -42,7 +42,7 @@ public record RepositoryBorrowOps(Repository repository) {
 	}
 
 	public void create(@NotNull User user, @NotNull Book book, @NotNull Borrow data) throws TransactionException {
-		repository.transact(tx -> tx.borrows().put(new Object[]{user, book}, data) == null);
+		repository.transact(tx -> tx.borrows().put(new Object[]{user, book}, data) == null, () -> "Already created: %s, %s".formatted(user, book));
 	}
 
 	public void update(@NotNull User user, @NotNull Book book, @NotNull Function<@NotNull Borrow, @NotNull Borrow> callback) throws TransactionException {
@@ -54,11 +54,11 @@ public record RepositoryBorrowOps(Repository repository) {
 			}
 			tx.borrows().put(key, callback.apply(oldValue));
 			return true;
-		});
+		}, () -> "Updated concurrently: %s,  %s".formatted(user, book));
 	}
 
 	public void delete(@NotNull User user, @NotNull Book book) throws TransactionException {
-		repository.transact(tx -> tx.borrows().remove(new Object[]{user, book}) != null);
+		repository.transact(tx -> tx.borrows().remove(new Object[]{user, book}) != null, () -> "Already deleted: %s, %s".formatted(user, book));
 	}
 
 	public void delete(@NotNull User user) throws TransactionException {
@@ -66,6 +66,6 @@ public record RepositoryBorrowOps(Repository repository) {
 			if (!tx.users().containsKey(user)) return false;
 			tx.borrows().prefixSubMap(new Object[]{user}).clear();
 			return true;
-		});
+		}, () -> "User not found: %s".formatted(user));
 	}
 }

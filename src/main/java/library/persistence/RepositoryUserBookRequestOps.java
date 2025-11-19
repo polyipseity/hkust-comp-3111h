@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 public record RepositoryUserBookRequestOps(Repository repository) {
 	public void create(@NotNull User user, @NotNull BookRequest bookRequest, @NotNull BookRequest.Data data) throws TransactionException {
-		repository.transact(tx -> tx.userBookRequests().put(new Object[]{user, bookRequest}, data) == null);
+		repository.transact(tx -> tx.userBookRequests().put(new Object[]{user, bookRequest}, data) == null, () -> "Already created: %s, %s".formatted(user, bookRequest));
 	}
 
 	@NotNull
@@ -43,11 +43,11 @@ public record RepositoryUserBookRequestOps(Repository repository) {
 			if (oldValue == null) return false;
 			tx.userBookRequests().put(key, callback.apply(oldValue));
 			return true;
-		});
+		}, () -> "Updated concurrently: %s, %s".formatted(user, bookRequest));
 	}
 
 	public void delete(@NotNull User user, @NotNull BookRequest bookRequest) throws TransactionException {
-		repository.transact(tx -> tx.userBookRequests().remove(new Object[]{user, bookRequest}) != null);
+		repository.transact(tx -> tx.userBookRequests().remove(new Object[]{user, bookRequest}) != null, () -> "Already deleted: %s, %s".formatted(user, bookRequest));
 	}
 
 	public void delete(@NotNull User user) throws TransactionException {
@@ -55,6 +55,6 @@ public record RepositoryUserBookRequestOps(Repository repository) {
 			if (!tx.users().containsKey(user)) return false;
 			tx.userBookRequests().prefixSubMap(new Object[]{user}).clear();
 			return true;
-		});
+		}, () -> "User not found: %s".formatted(user));
 	}
 }

@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public record RepositoryUserOps(Repository repository) {
 	public void create(@NotNull User user, @NotNull User.Data data) throws TransactionException {
-		repository.transact(tx -> tx.users().put(user, data) == null);
+		repository.transact(tx -> tx.users().put(user, data) == null, () -> "Already created: %s".formatted(user));
 	}
 
 	@NotNull
@@ -36,10 +36,10 @@ public record RepositoryUserOps(Repository repository) {
 			if (oldValue == null) return false;
 			tx.users().put(user, callback.apply(oldValue));
 			return true;
-		});
+		}, () -> "Updated concurrently: %s".formatted(user));
 	}
 
 	public void delete(@NotNull User user) throws TransactionException {
-		repository.transact(tx -> tx.users().remove(user) != null);
+		repository.transact(tx -> tx.users().remove(user) != null, () -> "Already deleted: %s".formatted(user));
 	}
 }

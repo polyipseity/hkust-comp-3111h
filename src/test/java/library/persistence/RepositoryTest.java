@@ -166,7 +166,7 @@ class RepositoryTest {
 	@Test
 	void transact_messageUsedWhenActionReturnsFalse() {
 		final var exception = assertThrows(TransactionException.class,
-				() -> repository.transact(_ -> false, "custom message"));
+				() -> repository.transact(_ -> false, () -> "custom message"));
 		assertEquals("Database transaction exception: custom message", exception.getMessage());
 	}
 

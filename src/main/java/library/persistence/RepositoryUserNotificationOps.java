@@ -28,7 +28,7 @@ public record RepositoryUserNotificationOps(Repository repository) {
 		repository.transact(tx -> {
 			tx.userNotifications().put(user, callback.apply(tx.userNotifications().get(user)));
 			return true;
-		});
+		}, () -> "Updated concurrently: %s".formatted(user));
 	}
 
 	public void updateAsList(@NotNull User user, @NotNull Function<@NotNull List<String>, @NotNull List<String>> callback) throws TransactionException {
