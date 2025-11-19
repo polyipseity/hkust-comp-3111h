@@ -1,3 +1,4 @@
+@SuppressWarnings("Java9RedundantRequiresStatement")
 module library {
 	requires com.github.librepdf.openpdf;
 	requires java.desktop;
@@ -11,9 +12,22 @@ module library {
 	requires javafx.swing;
 	requires mapdb;
 	requires org.jetbrains.annotations;
-	requires org.icepdf.core;
-	requires org.icepdf.ri.viewer;
-	requires static lombok;
+    requires org.icepdf.core;
+    requires org.icepdf.ri.viewer;
+    requires static lombok;
+    requires spring.beans;
+    requires spring.ai.openai;
+    requires spring.ai.model;
+    requires spring.ai.client.chat;
+    requires spring.webflux;
+    requires spring.web;
+    requires java.net.http;
+    requires spring.context;
+    requires jakarta.annotation;
+    requires spring.boot;
+    requires reactor.core;
+    requires spring.ai.azure.openai;
+    requires com.azure.ai.openai;
 
 	exports library;
 	exports library.controllers;
@@ -36,4 +50,6 @@ module library {
 	opens library.models;
 	opens library.persistence;
 	opens library.utils;
+    exports library.SpringApplication;
+    opens library.SpringApplication;
 }
