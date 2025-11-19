@@ -26,9 +26,9 @@ public record RepositoryUserNotificationOps(Repository repository) {
 
 	public void update(@NotNull User user, @NotNull Function<@NotNull String[], @NotNull String[]> callback) throws TransactionException {
 		repository.transact(tx -> {
-			tx.userNotifications().put(user, callback.apply(tx.userNotifications().get(user)));
-			return true;
-		}, () -> "Updated concurrently: %s".formatted(user));
+			final var oldValue = tx.userNotifications().get(user);
+			return oldValue != null && Arrays.equals(oldValue, tx.userNotifications().put(user, callback.apply(oldValue)));
+		}, () -> "Not found or updated concurrently: %s".formatted(user));
 	}
 
 	public void updateAsList(@NotNull User user, @NotNull Function<@NotNull List<String>, @NotNull List<String>> callback) throws TransactionException {

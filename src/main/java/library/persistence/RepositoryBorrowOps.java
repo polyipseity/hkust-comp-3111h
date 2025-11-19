@@ -49,12 +49,8 @@ public record RepositoryBorrowOps(Repository repository) {
 		repository.transact(tx -> {
 			final var key = new Object[]{user, book};
 			final var oldValue = tx.borrows().get(key);
-			if (oldValue == null) {
-				return false;
-			}
-			tx.borrows().put(key, callback.apply(oldValue));
-			return true;
-		}, () -> "Updated concurrently: %s,  %s".formatted(user, book));
+			return oldValue != null && oldValue.equals(tx.borrows().put(key, callback.apply(oldValue)));
+		}, () -> "Not found or updated concurrently: %s,  %s".formatted(user, book));
 	}
 
 	public void delete(@NotNull User user, @NotNull Book book) throws TransactionException {

@@ -174,7 +174,7 @@ class RepositoryTest {
 	void transact_defaultMessageUsedWhenActionFailsWithoutMsg() {
 		final var exception = assertThrows(TransactionException.class,
 				() -> repository.transact(_ -> false));
-		assertEquals("Database transaction exception: Transaction failed", exception.getMessage());
+		assertEquals("Database transaction exception: Transaction rolled back", exception.getMessage());
 	}
 
 	@Test

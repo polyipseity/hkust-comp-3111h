@@ -40,10 +40,8 @@ public record RepositoryUserBookRequestOps(Repository repository) {
 		repository.transact(tx -> {
 			final var key = new Object[]{user, bookRequest};
 			final var oldValue = tx.userBookRequests().get(key);
-			if (oldValue == null) return false;
-			tx.userBookRequests().put(key, callback.apply(oldValue));
-			return true;
-		}, () -> "Updated concurrently: %s, %s".formatted(user, bookRequest));
+			return oldValue != null && oldValue.equals(tx.userBookRequests().put(key, callback.apply(oldValue)));
+		}, () -> "Not found or updated concurrently: %s, %s".formatted(user, bookRequest));
 	}
 
 	public void delete(@NotNull User user, @NotNull BookRequest bookRequest) throws TransactionException {

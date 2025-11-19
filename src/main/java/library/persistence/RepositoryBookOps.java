@@ -34,10 +34,8 @@ public record RepositoryBookOps(Repository repository) {
 	public void update(@NotNull Book book, @NotNull Function<Book.@NotNull Data, Book.@NotNull Data> callback) throws TransactionException {
 		repository.transact(tx -> {
 			final var oldValue = tx.books().get(book);
-			if (oldValue == null) return false;
-			tx.books().put(book, callback.apply(oldValue));
-			return true;
-		}, () -> "Updated concurrently: %s".formatted(book));
+			return oldValue != null && oldValue.equals(tx.books().put(book, callback.apply(oldValue)));
+		}, () -> "Not found or updated concurrently: %s".formatted(book));
 	}
 
 	public void delete(@NotNull Book book) throws TransactionException {

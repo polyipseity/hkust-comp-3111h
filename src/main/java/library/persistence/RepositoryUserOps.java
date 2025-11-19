@@ -33,10 +33,8 @@ public record RepositoryUserOps(Repository repository) {
 	public void update(@NotNull User user, @NotNull Function<User.@NotNull Data, User.@NotNull Data> callback) throws TransactionException {
 		repository.transact(tx -> {
 			final var oldValue = tx.users().get(user);
-			if (oldValue == null) return false;
-			tx.users().put(user, callback.apply(oldValue));
-			return true;
-		}, () -> "Updated concurrently: %s".formatted(user));
+			return oldValue != null && oldValue.equals(tx.users().put(user, callback.apply(oldValue)));
+		}, () -> "Not found or updated concurrently: %s".formatted(user));
 	}
 
 	public void delete(@NotNull User user) throws TransactionException {
