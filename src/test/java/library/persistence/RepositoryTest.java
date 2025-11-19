@@ -1,7 +1,6 @@
 package library.persistence;
 
 import library.models.*;
-import library.utils.ByteArray;
 import library.utils.TimeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
@@ -9,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapdb.DBMaker;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.util.Objects;
 
@@ -51,8 +52,12 @@ class RepositoryTest {
 	}
 
 	@BeforeEach
-	void setUp() {
-		repository = new Repository(DBMaker::memoryDirectDB);
+	void setUp() throws IOException {
+		final var file = Files.createTempFile(null, null);
+		Files.deleteIfExists(file);
+		final var file2 = file.toFile();
+		file2.deleteOnExit();
+		repository = new Repository(() -> DBMaker.fileDB(file2));
 	}
 
 	@AfterEach
@@ -63,23 +68,112 @@ class RepositoryTest {
 	}
 
 	@Test
-	void transact() {
+	void transact_basicSuccess() {
 		assertDoesNotThrow(() -> repository.transact(_ -> true));
+	}
 
+	@Test
+	void transact_basicFailureReturnsFalse() {
 		assertThrows(TransactionException.class, () -> repository.transact(_ -> false));
+	}
 
-		assertThrows(TransactionException.class, () -> repository.transact(_ -> {
-			throw new RuntimeException();
-		}));
+	@Test
+	void transact_exceptionDuringActionPropagates() {
+		assertThrows(TransactionException.class,
+				() -> repository.transact(_ -> {
+					throw new RuntimeException();
+				}));
+	}
 
+	@Test
+	void transact_errorDuringActionPropagates() {
 		assertThrows(Error.class, () -> repository.transact(_ -> {
 			throw new Error();
 		}));
+	}
 
+	@Test
+	void transact_populateDataSucceeds() {
+		// populate() is a helper that returns true after writing data
 		assertDoesNotThrow(() -> repository.transact(RepositoryTest::populate));
+	}
 
+	@Test
+	void transact_closedRepositoryThrowsIllegalAccessError() {
 		repository.close();
-		assertThrows(IllegalAccessError.class, () -> repository.transact(RepositoryTest::populate));
+		assertThrows(IllegalAccessError.class,
+				() -> repository.transact(_ -> true));
+	}
+
+	@Test
+	void transact_commitOnSuccess() throws TransactionException {
+		repository.transact(RepositoryTest::populate);
+		assertFalse(repository.users.isEmpty(), "commit should be called on successful transaction");
+	}
+
+	@Test
+	void transact_rollbackOnFailureWhenActionReturnsFalse() {
+		assertThrows(TransactionException.class,
+				() -> repository.transact(tx -> {
+					RepositoryTest.populate(tx);
+					return false;
+				}));
+		assertTrue(repository.users.isEmpty(), "rollback should be called when action returns false");
+	}
+
+	@Test
+	void transact_rollbackOnFailureWhenActionThrows() {
+		assertThrows(TransactionException.class,
+				() -> repository.transact(_ -> {
+					throw new Exception();
+				}));
+		assertTrue(repository.users.isEmpty(), "rollback should be called when action throws");
+	}
+
+	@Test
+	void transact_rollbackOnCommitFailure() {
+		assertThrows(TransactionException.class,
+				() -> repository.transact(tx -> {
+					RepositoryTest.populate(tx);
+					throw new Exception();
+				}));
+		assertTrue(repository.users.isEmpty(), "rollback should be called if commit throws");
+	}
+
+	@Test
+	void transact_nestedTransactComposesCorrectly() {
+		// outer transaction will succeed, inner one fails
+		assertThrows(TransactionException.class,
+				() -> repository.transact(tx -> {
+					RepositoryTest.populate(tx);
+					return false;
+				}));
+		// The outer transaction should have been rolled back because the inner failed
+		assertTrue(repository.users.isEmpty(), "outer rollback should happen when nested fails");
+	}
+
+	@Test
+	void transact_nestedTransactSuccessAll() throws TransactionException {
+		// both outer and inner succeed
+		repository.transact(_ -> {
+			repository.transact(RepositoryTest::populate);
+			return true;
+		});
+		assertFalse(repository.users.isEmpty(), "commit should be called once after successful nested transact");
+	}
+
+	@Test
+	void transact_messageUsedWhenActionReturnsFalse() {
+		final var exception = assertThrows(TransactionException.class,
+				() -> repository.transact(_ -> false, "custom message"));
+		assertEquals("Database transaction exception: custom message", exception.getMessage());
+	}
+
+	@Test
+	void transact_defaultMessageUsedWhenActionFailsWithoutMsg() {
+		final var exception = assertThrows(TransactionException.class,
+				() -> repository.transact(_ -> false));
+		assertEquals("Database transaction exception: Transaction failed", exception.getMessage());
 	}
 
 	@Test
@@ -111,7 +205,6 @@ class RepositoryTest {
 		assertEquals(existingBookData.withOriginalOrModified(newBookToLink), repository.books.get(existingBook));
 		assertDoesNotThrow(() -> repository.transact(tx -> tx.books().remove(newBookToLink) != null));
 		assertEquals(existingBookData, repository.books.get(existingBook));
-
 	}
 
 	@Test

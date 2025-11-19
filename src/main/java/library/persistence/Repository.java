@@ -1,13 +1,14 @@
 package library.persistence;
 
 import library.models.*;
+import library.utils.ThrowingFunction;
 import org.jetbrains.annotations.NotNull;
 import org.mapdb.*;
 import org.mapdb.serializer.SerializerArray;
 import org.mapdb.serializer.SerializerArrayTuple;
 
 import java.io.Closeable;
-import java.util.function.Function;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
 public final class Repository implements Closeable {
@@ -33,6 +34,8 @@ public final class Repository implements Closeable {
 	final BTreeMap<Object[], BookRequest.Data> userBookRequests; // key: (User, BookRequest)
 	@NotNull
 	final BTreeMap<Object[], Borrow> borrows; // key: (User, Book)
+	@NotNull
+	final ReentrantLock transactLock = new ReentrantLock();
 
 	@SuppressWarnings("SwitchStatementWithTooFewBranches")
 	public Repository(@NotNull Supplier<DBMaker.Maker> dbMaker) {
@@ -140,29 +143,31 @@ public final class Repository implements Closeable {
 		}).createOrOpen();
 	}
 
-	public void transact(@NotNull Function<@NotNull TransactData, @NotNull Boolean> action) throws TransactionException {
+	public void transact(@NotNull ThrowingFunction<@NotNull TransactData, @NotNull Boolean> action, String message) throws TransactionException {
+		transactLock.lock();
 		try {
-			var ok = false;
-			try {
-				ok = action.apply(new TransactData(users, books, userNotifications, userBookRequests, borrows));
-			} finally {
-				if (!ok) {
-					db.rollback();
-				}
+			if (!action.apply(new TransactData(users, books, userNotifications, userBookRequests, borrows))) {
+				throw new DummyException();
 			}
-			if (ok) {
-				try {
-					db.commit();
-					return;
-				} catch (Exception exception) {
-					db.rollback();
-					throw exception;
-				}
+			if (transactLock.getHoldCount() == 1) {
+				db.commit();
 			}
+		} catch (DummyException exception) {
+			db.rollback();
+			throw new TransactionException(message);
 		} catch (Exception exception) {
+			db.rollback();
 			throw new TransactionException(exception);
+		} finally {
+			transactLock.unlock();
 		}
-		throw new TransactionException();
+	}
+
+	public void transact(@NotNull ThrowingFunction<@NotNull TransactData, @NotNull Boolean> action) throws TransactionException {
+		transact(action, "Transaction failed");
+	}
+
+	private final static class DummyException extends Exception {
 	}
 
 	@Override
