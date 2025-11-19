@@ -39,7 +39,6 @@ import java.util.ResourceBundle;
 
 public class AvailableBooksController implements RequiresLoggedIn {
     private final Context context = Main.getContext();
-    private final Repository repository = context.getRepository();
     private final User user = this.getLoggedInUser()._1();
 
     @FXML
@@ -157,15 +156,8 @@ public class AvailableBooksController implements RequiresLoggedIn {
         ButtonType buttonTypeOk = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
         ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
         dialog.getDialogPane().getButtonTypes().addAll(buttonTypeOk, buttonTypeCancel);
-
-        dialog.setResultConverter(new Callback<>() {
-            @Override
-            public dialogResult call(ButtonType b) {
-                if (b == buttonTypeOk)
-                    return new dialogResult(minutesTextField.getText(), secondsTextField.getText());
-                else return null;
-            }
-        });
+        dialog.setResultConverter(b ->
+                b == buttonTypeOk ? new dialogResult(minutesTextField.getText(), secondsTextField.getText()) : null);
 
         return dialog;
     }
