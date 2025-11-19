@@ -164,4 +164,37 @@ public record BorrowBooksControl(Repository repository) {
 			}
 		}
 	}
+
+	/**
+	 * Checks if a book is being borrowed by a user.
+	 * @return True if the book is being borrowed by the user, false otherwise.
+	 */
+	public boolean checkBorrowed(User user, Book book) {
+		return repository.borrowOps.read(user, book).isPresent();
+	}
+
+	/**
+	 * Returns a book being borrowed by a user.
+	 * @param user The user whose book will be returned.
+	 * @param book The book to be returned.
+	 */
+	@NotNull
+	public ReturnResult returnBook(User user, Book book) throws TransactionException {
+		if (!checkBorrowed(user, book)) return new ReturnResult.BookNotBorrowed();
+		else {
+			Borrow borrowData = repository.borrowOps.read(user, book).get();
+			repository.borrowOps.delete(user, book, borrowData);
+			return new ReturnResult.Success();
+		}
+	}
+
+	public sealed interface ReturnResult {
+		record Success() implements ReturnResult {
+		}
+
+		record BookNotBorrowed() implements ReturnResult, HasMessage {
+			@Override
+			public @NotNull String getMessage() { return "The book was not borrowed, so it cannot be returned"; }
+		}
+	}
 }

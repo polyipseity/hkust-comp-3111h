@@ -20,6 +20,7 @@ import library.models.Book;
 import library.models.Borrow;
 import library.models.User;
 import library.persistence.Repository;
+import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.HasMessage;
 import library.utils.TimeUtil;
@@ -55,7 +56,7 @@ public class BorrowedBooksController implements RequiresLoggedIn {
 
 	DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-	static class returnBtnCell extends TableCell<tableRow, String>{
+	class returnBtnCell extends TableCell<tableRow, String>{
 		final Button btn = new Button("Return");
 		@Override
 		public void updateItem(String item, boolean empty) {
@@ -63,7 +64,8 @@ public class BorrowedBooksController implements RequiresLoggedIn {
 			setText(null);
 			if (empty) setGraphic(null);
 			else {
-				btn.setOnAction(_ -> { /* TODO: return book on button click */ });
+				Book book = getTableRow().getItem().book();
+				btn.setOnAction(_ -> returnButtonAction(book));
 				setGraphic(btn);
 			}
 		}
@@ -137,5 +139,24 @@ public class BorrowedBooksController implements RequiresLoggedIn {
 		stage.setOnShown(controller::createResizeListeners);
 		stage.setOnCloseRequest(controller::disposeController);
 		stage.show();
+	}
+
+	/**
+	 * Executes when the "Return" button of the table in the "My Borrowed Books" tab is pressed.
+	 * @param book The book to be returned by the current user,
+	 *                which should be the book pointed to by the button's table row.
+	 */
+	private void returnButtonAction(Book book) {
+		BorrowBooksControl.ReturnResult result;
+		try {
+			result = context.getBorrowBooksControl().returnBook(user, book);
+		} catch (TransactionException e) {
+			Alerts.showErrorDialog("Unknown error occurred: " + e.getMessage());
+			return;
+		}
+		switch (result) {
+			case BorrowBooksControl.ReturnResult.Success _ -> Alerts.showInfoDialog("Book returned successfully");
+			case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
+		}
 	}
 }
