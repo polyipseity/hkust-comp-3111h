@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapdb.DBMaker;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -17,9 +19,13 @@ class RepositoryBookOpsTest {
 	private RepositoryBookOps ops;
 
 	@BeforeEach
-	void setUp() {
-		// Create a fresh in‑memory DB for every test
-		repository = new Repository(DBMaker.memoryDirectDB());
+	void setUp() throws IOException {
+		final var file = Files.createTempFile(null, null);
+		Files.deleteIfExists(file);
+		final var file2 = file.toFile();
+		file2.deleteOnExit();
+		// Requires persistence across rollbacks
+		repository = new Repository(DBMaker.fileDB(file2));
 		ops = new RepositoryBookOps(repository);
 	}
 
@@ -161,6 +167,28 @@ class RepositoryBookOpsTest {
 
 		assertDoesNotThrow(() -> ops.delete(book));
 		assertNull(repository.books.get(book));
+	}
+
+	@Test
+	void delete_existing_expected() throws TransactionException {
+		final var book = new Book("delTitle", new Author.ByName("author"));
+		final var data = new Book.Data("s", "c",
+				Book.ApprovalStatus.PENDING, null, null, 5);
+		ops.create(book, data);
+
+		assertDoesNotThrow(() -> ops.delete(book, data));
+		assertNull(repository.books.get(book));
+	}
+
+	@Test
+	void delete_existing_unexpected() throws TransactionException {
+		final var book = new Book("delTitle", new Author.ByName("author"));
+		final var data = new Book.Data("s", "c",
+				Book.ApprovalStatus.PENDING, null, null, 5);
+		ops.create(book, data);
+
+		assertThrows(TransactionException.class, () -> ops.delete(book, data.withContent("%sc".formatted(data.content()))));
+		assertNotNull(repository.books.get(book));
 	}
 
 	@Test

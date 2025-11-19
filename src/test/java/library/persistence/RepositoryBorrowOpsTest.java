@@ -12,6 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapdb.DBMaker;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.util.NoSuchElementException;
 
@@ -39,8 +41,13 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@BeforeEach
-	void setUp() throws TransactionException {
-		repository = new Repository(DBMaker.memoryDirectDB());
+	void setUp() throws IOException, TransactionException {
+		final var file = Files.createTempFile(null, null);
+		Files.deleteIfExists(file);
+		final var file2 = file.toFile();
+		file2.deleteOnExit();
+		// Requires persistence across rollbacks
+		repository = new Repository(DBMaker.fileDB(file2));
 		ops = new RepositoryBorrowOps(repository);
 
 		repository.transact(RepositoryBorrowOpsTest::populate);
@@ -198,7 +205,7 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@Test
-	void delete_borrowSucceeds() {
+	void delete_singleExisting() {
 		final var user = new User("reader");
 		final var book = new Book("book", new Author.ByRef(new User("author")));
 
@@ -207,7 +214,27 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@Test
-	void delete_nonExistingBorrowFails() {
+	void delete_singleExisting_expected() {
+		final var user = new User("reader");
+		final var book = new Book("book", new Author.ByRef(new User("author")));
+		final var data = ops.readOrThrow(user, book);
+
+		assertDoesNotThrow(() -> ops.delete(user, book, data));
+		assertFalse(ops.read(user, book).isPresent());
+	}
+
+	@Test
+	void delete_singleExisting_unexpected() {
+		final var user = new User("reader");
+		final var book = new Book("book", new Author.ByRef(new User("author")));
+		final var data = ops.readOrThrow(user, book);
+
+		assertThrows(TransactionException.class, () -> ops.delete(user, book, data.withDuration(data.duration().plusDays(1))));
+		assertTrue(ops.read(user, book).isPresent());
+	}
+
+	@Test
+	void delete_singleNonExisting() {
 		final var user = new User("reader");
 		final var book = new Book("missing", new Author.ByRef(new User("author")));
 

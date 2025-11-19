@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapdb.DBMaker;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,9 +36,13 @@ class RepositoryUserNotificationOpsTest {
 	}
 
 	@BeforeEach
-	void setUp() throws TransactionException {
-		// use an in‑memory MapDB instance – the same as used in RepositoryTest
-		repository = new Repository(DBMaker.memoryDirectDB());
+	void setUp() throws IOException, TransactionException {
+		final var file = Files.createTempFile(null, null);
+		Files.deleteIfExists(file);
+		final var file2 = file.toFile();
+		file2.deleteOnExit();
+		// Requires persistence across rollbacks
+		repository = new Repository(DBMaker.fileDB(file2));
 		ops = new RepositoryUserNotificationOps(repository);
 
 		repository.transact(RepositoryUserNotificationOpsTest::populate);
@@ -111,6 +117,17 @@ class RepositoryUserNotificationOpsTest {
 		final var stored = ops.read(reader);
 		assertTrue(stored.isPresent());
 		assertArrayEquals(new String[]{"n1", "n2", "new"}, stored.get());
+	}
+
+	@Test
+	void update_missing() {
+		final var reader = new User("missing");
+
+		// add a new notification via the callback
+		assertThrows(TransactionException.class, () -> ops.update(reader, old -> {
+			assertArrayEquals(new String[]{"n1", "n2"}, old);
+			return new String[]{"n1", "n2", "new"};
+		}));
 	}
 
 	@Test

@@ -6,19 +6,24 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapdb.DBMaker;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class RepositoryUserOpsTest {
-
 	private Repository repository;
 	private RepositoryUserOps ops;
 
 	@BeforeEach
-	void setUp() {
-		// create an in-memory MapDB instance for each test
-		repository = new Repository(DBMaker.memoryDirectDB());
+	void setUp() throws IOException {
+		final var file = Files.createTempFile(null, null);
+		Files.deleteIfExists(file);
+		final var file2 = file.toFile();
+		file2.deleteOnExit();
+		// Requires persistence across rollbacks
+		repository = new Repository(DBMaker.fileDB(file2));
 		ops = new RepositoryUserOps(repository);
 	}
 
@@ -183,7 +188,7 @@ class RepositoryUserOpsTest {
 	}
 
 	@Test
-	void delete() throws TransactionException {
+	void delete_existing() throws TransactionException {
 		final var user = new User("eve");
 		final var data = new User.Data(User.Role.STUDENT_STAFF, true, "pwd", "Eve");
 
@@ -194,6 +199,32 @@ class RepositoryUserOpsTest {
 
 		// after deletion, it is no longer present
 		assertNull(repository.users.get(user));
+	}
+
+	@Test
+	void delete_existing_expected() throws TransactionException {
+		final var user = new User("eve");
+		final var data = new User.Data(User.Role.STUDENT_STAFF, true, "pwd", "Eve");
+
+		ops.create(user, data);
+		assertEquals(data, repository.users.get(user));
+
+		assertDoesNotThrow(() -> ops.delete(user, data));
+
+		// after deletion, it is no longer present
+		assertNull(repository.users.get(user));
+	}
+
+	@Test
+	void delete_existing_unexpected() throws TransactionException {
+		final var user = new User("eve");
+		final var data = new User.Data(User.Role.STUDENT_STAFF, true, "pwd", "Eve");
+
+		ops.create(user, data);
+		assertEquals(data, repository.users.get(user));
+
+		assertThrows(TransactionException.class, () -> ops.delete(user, data.withActive(!data.active())));
+		assertNotNull(repository.users.get(user));
 	}
 
 	@Test

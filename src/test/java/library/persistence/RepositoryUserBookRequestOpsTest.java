@@ -9,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapdb.DBMaker;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -19,9 +21,13 @@ class RepositoryUserBookRequestOpsTest {
 	private RepositoryUserBookRequestOps ops;
 
 	@BeforeEach
-	void setUp() {
-		// Fresh in‑memory DB for every test
-		repository = new Repository(DBMaker.memoryDirectDB());
+	void setUp() throws IOException {
+		final var file = Files.createTempFile(null, null);
+		Files.deleteIfExists(file);
+		final var file2 = file.toFile();
+		file2.deleteOnExit();
+		// Requires persistence across rollbacks
+		repository = new Repository(DBMaker.fileDB(file2));
 		ops = new RepositoryUserBookRequestOps(repository);
 	}
 
@@ -238,7 +244,35 @@ class RepositoryUserBookRequestOpsTest {
 	}
 
 	@Test
-	void delete_singleNonExistingDoesNothing() throws TransactionException {
+	void delete_singleExisting_expected() throws TransactionException {
+		final var user = new User("u1");
+		final var userData = new User.Data(User.Role.STUDENT_STAFF, true, "password", "full name");
+		repository.userOps.create(user, userData);
+
+		final var req = new BookRequest("title", "author");
+		final var data = new BookRequest.Data(TimeUtil.nowZoned());
+		ops.create(user, req, data);
+
+		assertDoesNotThrow(() -> ops.delete(user, req, data));
+		assertNull(repository.userBookRequests.get(new Object[]{user, req}));
+	}
+
+	@Test
+	void delete_singleExisting_unexpected() throws TransactionException {
+		final var user = new User("u1");
+		final var userData = new User.Data(User.Role.STUDENT_STAFF, true, "password", "full name");
+		repository.userOps.create(user, userData);
+
+		final var req = new BookRequest("title", "author");
+		final var data = new BookRequest.Data(TimeUtil.nowZoned());
+		ops.create(user, req, data);
+
+		assertThrows(TransactionException.class, () -> ops.delete(user, req, data.withRequestDate(data.requestDate().plusDays(1))));
+		assertNotNull(repository.userBookRequests.get(new Object[]{user, req}));
+	}
+
+	@Test
+	void delete_singleNonExistinhThrows() throws TransactionException {
 		final var user = new User("u1");
 		final var userData = new User.Data(User.Role.STUDENT_STAFF, true, "password", "full name");
 		repository.userOps.create(user, userData);
