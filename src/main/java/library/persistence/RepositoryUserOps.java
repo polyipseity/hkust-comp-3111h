@@ -2,6 +2,7 @@ package library.persistence;
 
 import library.models.User;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Map;
@@ -45,7 +46,15 @@ public record RepositoryUserOps(Repository repository) {
 		}, () -> "Not found or updated concurrently: %s".formatted(user));
 	}
 
-	public void delete(@NotNull User user) throws TransactionException {
-		repository.transact(tx -> tx.users().remove(user) != null, () -> "Already deleted: %s".formatted(user));
+	public void delete(@NotNull User user,
+	                   @Nullable User.Data expected) throws TransactionException {
+		repository.transact(
+				tx -> expected == null ? tx.users().remove(user) != null : tx.users().remove(user, expected),
+				() -> "Already deleted: %s".formatted(user)
+		);
+	}
+
+	void delete(@NotNull User user) throws TransactionException {
+		delete(user, null);
 	}
 }

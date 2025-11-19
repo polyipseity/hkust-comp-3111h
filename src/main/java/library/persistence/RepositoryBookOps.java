@@ -2,6 +2,7 @@ package library.persistence;
 
 import library.models.Book;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Map;
@@ -46,7 +47,11 @@ public record RepositoryBookOps(Repository repository) {
 		}, () -> "Not found or updated concurrently: %s".formatted(book));
 	}
 
-	public void delete(@NotNull Book book) throws TransactionException {
-		repository.transact(tx -> tx.books().remove(book) != null, () -> "Already deleted: %s".formatted(book));
+	public void delete(@NotNull Book book, @Nullable Book.Data expected) throws TransactionException {
+		repository.transact(tx -> expected == null ? tx.books().remove(book) != null : tx.books().remove(book, expected), () -> "Already deleted: %s".formatted(book));
+	}
+
+	void delete(@NotNull Book book) throws TransactionException {
+		delete(book, null);
 	}
 }

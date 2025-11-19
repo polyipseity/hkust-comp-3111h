@@ -4,6 +4,7 @@ import library.models.BookRequest;
 import library.models.User;
 import library.utils.Tuple2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -39,7 +40,6 @@ public record RepositoryUserBookRequestOps(Repository repository) {
 						"Not found: %s, %s".formatted(user, bookRequest)));
 	}
 
-
 	@NotNull
 	public Map<BookRequest, BookRequest.Data> read(@NotNull User user) {
 		return repository.userBookRequests.prefixSubMap(new Object[]{user}).entrySet().stream().collect(Collectors.toUnmodifiableMap(entry -> (BookRequest) entry.getKey()[1], Map.Entry::getValue));
@@ -53,8 +53,17 @@ public record RepositoryUserBookRequestOps(Repository repository) {
 		}, () -> "Not found or updated concurrently: %s, %s".formatted(user, bookRequest));
 	}
 
-	public void delete(@NotNull User user, @NotNull BookRequest bookRequest) throws TransactionException {
-		repository.transact(tx -> tx.userBookRequests().remove(new Object[]{user, bookRequest}) != null, () -> "Already deleted: %s, %s".formatted(user, bookRequest));
+	public void delete(@NotNull User user,
+	                   @NotNull BookRequest bookRequest,
+	                   @Nullable BookRequest.Data expected) throws TransactionException {
+		repository.transact(
+				tx -> expected == null ? tx.userBookRequests().remove(new Object[]{user, bookRequest}) != null : tx.userBookRequests().remove(new Object[]{user, bookRequest}, expected),
+				() -> "Already deleted: %s, %s".formatted(user, bookRequest)
+		);
+	}
+
+	void delete(@NotNull User user, @NotNull BookRequest bookRequest) throws TransactionException {
+		delete(user, bookRequest, null);
 	}
 
 	public void delete(@NotNull User user) throws TransactionException {

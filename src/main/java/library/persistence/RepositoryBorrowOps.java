@@ -5,6 +5,7 @@ import library.models.Borrow;
 import library.models.User;
 import library.utils.Tuple2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -61,8 +62,17 @@ public record RepositoryBorrowOps(Repository repository) {
 		}, () -> "Not found or updated concurrently: %s,  %s".formatted(user, book));
 	}
 
-	public void delete(@NotNull User user, @NotNull Book book) throws TransactionException {
-		repository.transact(tx -> tx.borrows().remove(new Object[]{user, book}) != null, () -> "Already deleted: %s, %s".formatted(user, book));
+	public void delete(@NotNull User user,
+	                   @NotNull Book book,
+	                   @Nullable Borrow expected) throws TransactionException {
+		repository.transact(
+				tx -> expected == null ? tx.borrows().remove(new Object[]{user, book}) != null : tx.borrows().remove(new Object[]{user, book}, expected),
+				() -> "Already deleted: %s, %s".formatted(user, book)
+		);
+	}
+
+	void delete(@NotNull User user, @NotNull Book book) throws TransactionException {
+		delete(user, book, null);
 	}
 
 	public void delete(@NotNull User user) throws TransactionException {
