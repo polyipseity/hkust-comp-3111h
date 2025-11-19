@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 import library.controls.ManageProfileControl;
+import library.controls.ManageRequestControl;
 import library.models.User;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
@@ -41,6 +42,8 @@ class FXMLsTest {
 			private final Repository repository = new Repository(DBMaker::memoryDirectDB);
 			@Getter
 			private final ManageProfileControl manageProfile = new ManageProfileControl(repository);
+			@Getter
+			private final ManageRequestControl manageRequests = new ManageRequestControl(repository);
 
 			@Getter
 			@NotNull
