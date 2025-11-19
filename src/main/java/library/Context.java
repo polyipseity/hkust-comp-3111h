@@ -2,6 +2,7 @@ package library;
 
 import javafx.scene.Parent;
 import javafx.stage.Stage;
+import library.controls.ManageBooksControl;
 import library.controls.ManageProfileControl;
 import library.models.User;
 import library.persistence.Repository;
@@ -19,6 +20,8 @@ public interface Context extends Closeable {
 	@NotNull Repository getRepository();
 
 	@NotNull ManageProfileControl getManageProfile();
+
+	@NotNull ManageBooksControl getManageBooks();
 
 	@Nullable
 	Tuple2<User, User.Data> getLoggedInUser();

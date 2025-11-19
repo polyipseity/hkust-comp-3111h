@@ -3,6 +3,7 @@ package library;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import library.controls.ManageBooksControl;
 import library.controls.ManageProfileControl;
 import library.models.User;
 import library.persistence.Repository;
@@ -21,6 +22,9 @@ public final class ContextImpl implements Context {
 	private final Repository repository;
 	@Getter
 	@NotNull
+	private final ManageBooksControl manageBooks;
+	@Getter
+	@NotNull
 	private final ManageProfileControl manageProfile;
 
 	@Setter
@@ -31,6 +35,7 @@ public final class ContextImpl implements Context {
 	public ContextImpl(@NotNull Stage primaryStage, @NotNull Repository repository) {
 		this.primaryStage = primaryStage;
 		this.repository = repository;
+		this.manageBooks = new ManageBooksControl(repository);
 		this.manageProfile = new ManageProfileControl(repository);
 	}
 

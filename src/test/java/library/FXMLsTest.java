@@ -3,6 +3,7 @@ package library;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
+import library.controls.ManageBooksControl;
 import library.controls.ManageProfileControl;
 import library.models.User;
 import library.persistence.Repository;
@@ -39,6 +40,8 @@ class FXMLsTest {
 		final var context = new Context() {
 			@Getter
 			private final Repository repository = new Repository(DBMaker.memoryDirectDB());
+			@Getter
+			private final ManageBooksControl manageBooks = new ManageBooksControl(repository);
 			@Getter
 			private final ManageProfileControl manageProfile = new ManageProfileControl(repository);
 

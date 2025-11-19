@@ -4,15 +4,16 @@ import javafx.scene.control.TableColumn;
 import library.Main;
 import library.controllers.common.DynamicTableController;
 import library.controllers.common.RequiresLoggedIn;
+import library.controls.ManageBooksControl;
 import library.models.Book;
+import library.persistence.TransactionException;
+import library.utils.Alerts;
+import library.utils.Tuple2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.ResourceBundle;
-import java.util.SequencedMap;
+import java.util.*;
 import java.util.function.Function;
 
 public class PendingApprovalsController extends DynamicTableController<PendingApprovalsController.Keys, PendingApprovalsController.Data> implements RequiresLoggedIn {
@@ -68,7 +69,32 @@ public class PendingApprovalsController extends DynamicTableController<PendingAp
 				case TITLE -> new DynamicTableController.Data.Value(book.title());
 				case AUTHOR -> new DynamicTableController.Data.Value(book.author().toString());
 				case SUMMARY -> new DynamicTableController.Data.Value(bookData.summary());
-				case ACTIONS -> new DynamicTableController.Data.Value("view approve reject");
+				case ACTIONS -> new DynamicTableController.Data.Buttons(List.of(
+						new Tuple2<>("View", _ -> {
+
+						}),
+						new Tuple2<>("Approve", _ -> {
+							try {
+								switch (Main.getContext().getManageBooks().approveBook(book)) {
+									case ManageBooksControl.ApproveResult.Success _ -> {
+									}
+								}
+							} catch (TransactionException e) {
+								Alerts.showErrorDialog(e.getMessage());
+							}
+						}),
+						new Tuple2<>("Reject", _ -> {
+							try {
+								switch (Main.getContext().getManageBooks().rejectBook(book)) {
+									case ManageBooksControl.RejectResult.Success _ -> {
+
+									}
+								}
+							} catch (TransactionException e) {
+								Alerts.showErrorDialog(e.getMessage());
+							}
+						})
+				));
 			};
 		}
 	}
