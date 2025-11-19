@@ -2,6 +2,7 @@ package library;
 
 import javafx.scene.Parent;
 import javafx.stage.Stage;
+import library.controls.ManageBorrowControl;
 import library.controls.ManageProfileControl;
 import library.controls.ManageRequestControl;
 import library.models.User;
@@ -22,6 +23,8 @@ public interface Context extends Closeable {
 	@NotNull ManageProfileControl getManageProfile();
 
 	@NotNull ManageRequestControl getManageRequests();
+
+	@NotNull ManageBorrowControl getManageBorrows();
 
 	@Nullable
 	Tuple2<User, User.Data> getLoggedInUser();

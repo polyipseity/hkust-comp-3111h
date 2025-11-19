@@ -3,6 +3,7 @@ package library;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
+import library.controls.ManageBorrowControl;
 import library.controls.ManageProfileControl;
 import library.controls.ManageRequestControl;
 import library.models.User;
@@ -44,6 +45,8 @@ class FXMLsTest {
 			private final ManageProfileControl manageProfile = new ManageProfileControl(repository);
 			@Getter
 			private final ManageRequestControl manageRequests = new ManageRequestControl(repository);
+			@Getter
+			private final ManageBorrowControl manageBorrows = new ManageBorrowControl(repository);
 
 			@Getter
 			@NotNull

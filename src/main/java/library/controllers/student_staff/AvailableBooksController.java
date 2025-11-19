@@ -11,12 +11,14 @@ import javafx.util.Callback;
 import library.Context;
 import library.Main;
 import library.controllers.common.RequiresLoggedIn;
+import library.controls.ManageBorrowControl;
 import library.models.Book;
 import library.models.Borrow;
 import library.models.User;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
+import library.utils.HasMessage;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -86,7 +88,7 @@ public class AvailableBooksController implements RequiresLoggedIn {
 
 	private void reload() {
         ObservableList<tableRow> data = FXCollections.observableArrayList();
-        Map<Book, Book.Data> availableBooks = repository.bookOps.read(this::checkBorrowable);
+        Map<Book, Book.Data> availableBooks = context.getManageBorrows().availableBooks(user);
         for (var entry : availableBooks.entrySet()) {
             Book book = entry.getKey();
             Book.Data bookData = entry.getValue();
@@ -99,66 +101,36 @@ public class AvailableBooksController implements RequiresLoggedIn {
         table.getSelectionModel().selectFirst();
     }
 
-    private boolean checkBorrowable(Map.Entry<Book, Book.Data> entry) {
-        Book book = entry.getKey();
-        Book.Data bookData = entry.getValue();
-	    return repository.borrowOps.read(getLoggedInUser()._1(), book).isEmpty();
-    }
-
     /**
      * Runs each time the "Borrow Book" button is pressed.
      */
     @FXML
-    private void borrowButtonAction() {
+    private void borrowButtonAction() throws TransactionException {
         tableRow currentRow = table.getSelectionModel().getSelectedItem();
         if (currentRow == null) {
             Alerts.showErrorDialog("Please select a book first.");
             return;
         }
         Book selectedBook = currentRow.book;
-        Optional<Book.Data> selectedBookData = repository.bookOps.read(selectedBook);
 
         // Try to get the borrow duration for the book
         Dialog<dialogResult> dialog = createDialog();
-        int minutes, seconds, durationSeconds;
-        int durationUpperBound = 1 + 14 * 24 * 60 * 60;
-        int durationLowerBound = 1;
+        Optional<dialogResult> result = dialog.showAndWait();
+        if (result.isEmpty()) return; // Exit if user clicks "Cancel"
 
-        while (true) {
-            Optional<dialogResult> result = dialog.showAndWait();
-            if (result.isEmpty()) return; // Exit loop if user clicks "Cancel"
-
-            try {
-                minutes = Integer.parseInt(result.get().minutes);
-                seconds = Integer.parseInt(result.get().seconds);
-            } catch (NumberFormatException e) {
-                Alerts.showErrorDialog("Entered values could not be parsed correctly.");
-                continue;
-            }
-            if (minutes < 0 || seconds < 0) {
-                Alerts.showErrorDialog("At least one of the entered values are negative.");
-                continue;
-            }
-            durationSeconds = minutes * 60 + seconds;
-            if (durationSeconds > durationUpperBound) {
-                Alerts.showErrorDialog("Entered duration exceeds upper limit of 14 days.");
-                continue;
-            }
-            if (durationSeconds < durationLowerBound) {
-                Alerts.showErrorDialog("Entered duration exceeds lower limit of 1 second.");
-                continue;
-            }
-            break; // Exit loop when valid duration obtained
+        // Parse results from input dialog
+        int minutes, seconds;
+        try {
+            minutes = Integer.parseInt(result.get().minutes);
+            seconds = Integer.parseInt(result.get().seconds);
+        } catch (NumberFormatException e) {
+            Alerts.showErrorDialog("Entered values could not be parsed correctly.");
+            return;
         }
 
-        String pdfPath = generatePdfPath(selectedBook);
-        Borrow borrowData = new Borrow(ZonedDateTime.now(), Duration.ofSeconds(durationSeconds), pdfPath);
-        if (!generatePdf(selectedBookData.get().content(), pdfPath)) return;
-
-        try {
-	        repository.borrowOps.create(getLoggedInUser()._1(), selectedBook, borrowData);
-        } catch (TransactionException e) {
-            throw new RuntimeException(e);
+        switch (context.getManageBorrows().borrowBook(user, selectedBook, minutes, seconds)) {
+            case ManageBorrowControl.BorrowResult.Success _ -> Alerts.showInfoDialog("Book borrowed successfully");
+            case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
         }
     }
 
@@ -196,38 +168,5 @@ public class AvailableBooksController implements RequiresLoggedIn {
         });
 
         return dialog;
-    }
-
-    private String generatePdfPath(Book book) {
-        String filteredBookTitle = book.title().replaceAll("[-+.^:,]", "");
-        return user.username() + "__" + filteredBookTitle + ".pdf";
-    }
-
-    /**
-     * Generates a PDF when the user first borrows a book.
-     * @param content The content of the book as a string.
-     * @param pdfPath The path where the PDF is to be generated.
-     * @return True if PDF is generated successfully, false otherwise.
-     */
-    private boolean generatePdf(String content, String pdfPath) {
-        try {
-            Document outputDoc = new Document(PageSize.A4, 50, 50, 50, 50);
-            FileOutputStream os = new FileOutputStream(pdfPath);
-
-            PdfWriter.getInstance(outputDoc, os);
-            outputDoc.open();
-
-            for (String line: content.split("\\r?\\n")) {
-                Paragraph p = new Paragraph(line);
-                p.setAlignment(Element.ALIGN_JUSTIFIED);
-                outputDoc.add(p);
-            }
-
-            outputDoc.close();
-            return true;
-        } catch (Exception e) {
-            Alerts.showErrorDialog("Error while generating PDF: " + e.getMessage());
-            return false;
-        }
     }
 }

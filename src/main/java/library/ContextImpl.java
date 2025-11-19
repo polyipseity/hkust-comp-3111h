@@ -3,6 +3,7 @@ package library;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import library.controls.ManageBorrowControl;
 import library.controls.ManageProfileControl;
 import library.controls.ManageRequestControl;
 import library.models.User;
@@ -26,6 +27,9 @@ public final class ContextImpl implements Context {
 	@Getter
 	@NotNull
 	private final ManageRequestControl manageRequests;
+	@Getter
+	@NotNull
+	private final ManageBorrowControl manageBorrows;
 
 	@Setter
 	@Getter
@@ -37,6 +41,7 @@ public final class ContextImpl implements Context {
 		this.repository = repository;
 		this.manageProfile = new ManageProfileControl(repository);
 		this.manageRequests = new ManageRequestControl(repository);
+		this.manageBorrows = new ManageBorrowControl(repository);
 	}
 
 	/**
