@@ -41,7 +41,7 @@ public class InformBoardController implements RequiresLoggedIn {
             HBox.setHgrow(pane, Priority.ALWAYS);
             button.setOnAction(_ -> {
                 try {
-                    CloseNotif(label.getText());
+                    CloseNotif(getIndex());
                 } catch (TransactionException e) {
                     throw new RuntimeException(e);
                 }
@@ -94,12 +94,12 @@ public class InformBoardController implements RequiresLoggedIn {
         updateNotificationList();
     }
 
-    private void CloseNotif(String notificationText) throws TransactionException {
+    private void CloseNotif(int index) throws TransactionException {
         repository.userNotificationOps.update(
                 getLoggedInUser()._1(),
                 current -> {
                     List<String> newNotifList = new ArrayList<>(Arrays.asList(current));
-                    newNotifList.remove(notificationText);
+                    newNotifList.remove(index);
                     return newNotifList.toArray(new String[0]);
                 });
         updateNotificationList();
