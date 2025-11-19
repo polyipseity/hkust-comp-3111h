@@ -24,7 +24,7 @@ class RepositoryBorrowOpsTest {
 	private RepositoryBorrowOps ops;
 
 	@SuppressWarnings("SameReturnValue")
-	private static boolean populate(@NotNull Repository.TransactData data) {
+	private static boolean populate(@NotNull Repository.Data data) {
 		final var reader = new User("reader");
 		final var reader2 = new User("reader2");
 		final var author = new User("author");

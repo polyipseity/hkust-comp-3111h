@@ -17,7 +17,7 @@ class RepositoryUserNotificationOpsTest {
 	private RepositoryUserNotificationOps ops;
 
 	@SuppressWarnings("SameReturnValue")
-	private static boolean populate(@NotNull Repository.TransactData data) {
+	private static boolean populate(@NotNull Repository.Data data) {
 		// initialise users with some notifications and no notifications
 		final var reader = new User("reader");
 		final var reader2 = new User("reader2");

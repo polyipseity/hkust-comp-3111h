@@ -167,10 +167,10 @@ public final class Repository implements Closeable {
 		return new Tuple6<>(db, users, books, userNotifications, userBookRequests, borrows);
 	}
 
-	public void transact(@NotNull ThrowingFunction<@NotNull TransactData, @NotNull Boolean> action, @NotNull Supplier<String> rollbackMessageSupplier) throws TransactionException {
+	public void transact(@NotNull ThrowingFunction<@NotNull Data, @NotNull Boolean> action, @NotNull Supplier<String> rollbackMessageSupplier) throws TransactionException {
 		transactLock.lock();
 		try {
-			if (!action.apply(new TransactData())) {
+			if (!action.apply(new Data())) {
 				throw new DummyException();
 			}
 			if (transactLock.getHoldCount() == 1) {
@@ -189,7 +189,7 @@ public final class Repository implements Closeable {
 		}
 	}
 
-	void transact(@NotNull ThrowingFunction<@NotNull TransactData, @NotNull Boolean> action) throws TransactionException {
+	void transact(@NotNull ThrowingFunction<@NotNull Data, @NotNull Boolean> action) throws TransactionException {
 		transact(action, () -> "Transaction rolled back");
 	}
 
@@ -201,7 +201,7 @@ public final class Repository implements Closeable {
 	private final static class DummyException extends Exception {
 	}
 
-	public final class TransactData {
+	public final class Data {
 		public @NotNull HTreeMap<User, User.Data> users() {
 			return users;
 		}

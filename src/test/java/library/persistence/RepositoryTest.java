@@ -19,7 +19,7 @@ class RepositoryTest {
 	private Repository repository;
 
 	@SuppressWarnings("SameReturnValue")
-	private static boolean populate(@NotNull Repository.TransactData data) {
+	private static boolean populate(@NotNull Repository.Data data) {
 		final var reader = new User("reader");
 		final var author = new User("author");
 		final var librarian = new User("librarian");
