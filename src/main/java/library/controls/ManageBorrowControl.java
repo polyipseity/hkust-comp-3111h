@@ -38,6 +38,10 @@ public record ManageBorrowControl(Repository repository) {
         Optional<Book.Data> selectedBookData = repository.bookOps.read(book);
         if (selectedBookData.isEmpty()) return new BorrowResult.BookDataNotFound();
 
+        // Check if book has been borrowed by user before
+        if (repository.borrowOps.read(user, book).isPresent())
+            return new BorrowResult.BookAlreadyBorrowed();
+
         // Execute borrow after everything else is successful
         Borrow borrowData = new Borrow(
                 ZonedDateTime.now(),
@@ -76,6 +80,13 @@ public record ManageBorrowControl(Repository repository) {
             @Override
             public @NotNull String getMessage() {
                 return "The data for the selected book cannot be found";
+            }
+        }
+
+        record BookAlreadyBorrowed() implements BorrowResult, HasMessage {
+            @Override
+            public @NotNull String getMessage() {
+                return "The user has already borrowed the book";
             }
         }
     }

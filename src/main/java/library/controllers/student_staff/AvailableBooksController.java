@@ -131,6 +131,8 @@ public class AvailableBooksController implements RequiresLoggedIn {
             case ManageBorrowControl.BorrowResult.Success _ -> Alerts.showInfoDialog("Book borrowed successfully");
             case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
         }
+
+        reload();
     }
 
     /**
