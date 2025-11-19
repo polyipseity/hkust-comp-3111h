@@ -23,7 +23,7 @@ import java.util.function.Function;
 public abstract class DynamicTableController<Key, Value extends Function<@NotNull Key, DynamicTableController.@NotNull Data>> implements Initializable {
 	protected final Map<Key, TableColumn<@NotNull Value, @NotNull Value>> columnMap = new HashMap<>();
 	@FXML
-	private TableView<@NotNull Value> table;
+	protected TableView<@NotNull Value> table;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
@@ -34,7 +34,7 @@ public abstract class DynamicTableController<Key, Value extends Function<@NotNul
 
 	protected abstract @NotNull Collection<@NotNull Value> getData();
 
-	protected void loadTable() {
+	public void loadTable() {
 		final var keys = getKeys();
 
 		// Remove obsolete keys
@@ -170,7 +170,7 @@ public abstract class DynamicTableController<Key, Value extends Function<@NotNul
 		return column;
 	}
 
-	public sealed interface Data {
+	public sealed interface Data permits Data.Buttons, Data.Value {
 		record Value(@NotNull String value) implements Data {
 		}
 

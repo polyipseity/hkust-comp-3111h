@@ -17,16 +17,16 @@
 		<TabPane tabClosingPolicy="UNAVAILABLE">
 
 			<!-- 1) Pending Approvals -->
-			<Tab text="Pending Approvals">
+			<Tab text="Pending Approvals" onSelectionChanged="#loadPendingApprovals">
 				<StackPane>
-					<fx:include source="PendingApprovals.fxml"/>
+					<fx:include source="PendingApprovals.fxml" fx:id="pendingApprovals"/>
 				</StackPane>
 			</Tab>
 
 			<!-- 2) Manage Users -->
-			<Tab text="Manage Users">
+			<Tab text="Manage Users" onSelectionChanged="#loadManageUsers">
 				<StackPane>
-					<fx:include source="ManageUsers.fxml"/>
+					<fx:include source="ManageUsers.fxml" fx:id="manageUsers"/>
 				</StackPane>
 			</Tab>
 
@@ -38,23 +38,23 @@
 			</Tab>
 
 			<!-- 4) Borrowed Books Report -->
-			<Tab text="Borrowed Books">
+			<Tab text="Borrowed Books" onSelectionChanged="#loadBorrowedBooks">
 				<StackPane>
-					<fx:include source="BorrowedBooks.fxml"/>
+					<fx:include source="BorrowedBooks.fxml" fx:id="borrowedBooks"/>
 				</StackPane>
 			</Tab>
 
 			<!-- 5) Published Books Report -->
-			<Tab text="Published Books">
+			<Tab text="Published Books" onSelectionChanged="#loadPublishedBooks">
 				<StackPane>
-					<fx:include source="PublishedBooks.fxml"/>
+					<fx:include source="PublishedBooks.fxml" fx:id="publishedBooks"/>
 				</StackPane>
 			</Tab>
 
 			<!-- 6) Book Requests -->
-			<Tab text="Book Requests">
+			<Tab text="Book Requests" onSelectionChanged="#loadBookRequests">
 				<StackPane>
-					<fx:include source="BookRequests.fxml"/>
+					<fx:include source="BookRequests.fxml" fx:id="bookRequests"/>
 				</StackPane>
 			</Tab>
 

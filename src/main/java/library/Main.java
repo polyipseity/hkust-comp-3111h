@@ -24,7 +24,7 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		context = new ContextImpl(stage, new Repository(() -> DBMaker.fileDB("repository.db")));
+		context = new ContextImpl(stage, new Repository(DBMaker.fileDB("repository.db")));
 		// Show the Home (role‐select) first, not the Login screen directly:
 		stage.setScene(new Scene(FXMLs.HOME.load(), 640, 480));
 		stage.setTitle("Library Management System");

@@ -4,7 +4,6 @@ import library.models.Author;
 import library.models.Book;
 import library.models.Borrow;
 import library.models.User;
-import library.utils.ByteArray;
 import library.utils.TimeUtil;
 import library.utils.Tuple2;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +12,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapdb.DBMaker;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.time.Duration;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,10 +24,12 @@ class RepositoryBorrowOpsTest {
 	private RepositoryBorrowOps ops;
 
 	@SuppressWarnings("SameReturnValue")
-	private static boolean populate(@NotNull Repository.TransactData data) {
+	private static boolean populate(@NotNull Repository.Data data) {
 		final var reader = new User("reader");
+		final var reader2 = new User("reader2");
 		final var author = new User("author");
 		data.users().put(reader, new User.Data(User.Role.STUDENT_STAFF, true, "reader", "reader"));
+		data.users().put(reader2, new User.Data(User.Role.STUDENT_STAFF, true, "reader2", "reader2"));
 		data.users().put(author, new User.Data(User.Role.AUTHOR, true, "author", "author"));
 
 		final var book = new Book("book", new Author.ByRef(author));
@@ -39,8 +43,13 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@BeforeEach
-	void setUp() throws TransactionException {
-		repository = new Repository(DBMaker::memoryDirectDB);
+	void setUp() throws IOException, TransactionException {
+		final var file = Files.createTempFile(null, null);
+		Files.deleteIfExists(file);
+		final var file2 = file.toFile();
+		file2.deleteOnExit();
+		// Requires persistence across rollbacks
+		repository = new Repository(DBMaker.fileDB(file2));
 		ops = new RepositoryBorrowOps(repository);
 
 		repository.transact(RepositoryBorrowOpsTest::populate);
@@ -56,11 +65,7 @@ class RepositoryBorrowOpsTest {
 
 	@Test
 	void read_allBorrows_unfiltered() throws TransactionException {
-		// populate a second user + book so that we have two entries
 		final var reader2 = new User("reader2");
-		repository.userOps.create(reader2,
-				new User.Data(User.Role.STUDENT_STAFF, true, "pw", "Reader 2"));
-
 		final var book2 = new Book("book2", new Author.ByName("author"));
 		repository.bookOps.create(book2,
 				new Book.Data("s", "c",
@@ -113,6 +118,7 @@ class RepositoryBorrowOpsTest {
 		final var opt = assertDoesNotThrow(() -> ops.read(user, book));
 		assertTrue(opt.isPresent());
 		assertNotNull(opt.get());
+		assertDoesNotThrow(() -> ops.readOrThrow(user, book));
 	}
 
 	@Test
@@ -121,6 +127,7 @@ class RepositoryBorrowOpsTest {
 		final var book = new Book("nonexistent", new Author.ByRef(new User("author")));
 		final var opt = assertDoesNotThrow(() -> ops.read(user, book));
 		assertFalse(opt.isPresent());
+		assertThrows(NoSuchElementException.class, () -> ops.readOrThrow(user, book));
 	}
 
 	@Test
@@ -188,15 +195,59 @@ class RepositoryBorrowOpsTest {
 
 	@Test
 	void update_nonExistingBorrowFails() {
-		final var user = new User("reader");
-		final var book = new Book("missing", new Author.ByRef(new User("author")));
+		final var user = new User("reader2");
+		final var book = new Book("book", new Author.ByRef(new User("author")));
+		final var data = new Borrow(TimeUtil.nowZoned().plusDays(1), Duration.ofDays(42), "");
 
 		assertThrows(TransactionException.class,
 				() -> ops.update(user, book, old -> old));
+		assertThrows(TransactionException.class,
+				() -> ops.update(user, book, data, null));
 	}
 
 	@Test
-	void delete_borrowSucceeds() {
+	void update_borrowWithData_expectedMatches() throws TransactionException {
+		final var user = new User("reader2");
+		final var book = new Book("book", new Author.ByRef(new User("author")));
+		final var data = new Borrow(TimeUtil.nowZoned().plusDays(1), Duration.ofDays(42), "");
+		ops.create(user, book, data);
+
+		assertDoesNotThrow(() ->
+				ops.update(user, book, data.withDuration(data.duration().plusDays(1)), data));
+
+		final var opt = ops.read(user, book);
+		assertTrue(opt.isPresent());
+		assertEquals(data.duration().plusDays(1), opt.get().duration());
+	}
+
+	@Test
+	void update_borrowWithData_expectedMismatchThrows() throws TransactionException {
+		final var user = new User("reader2");
+		final var book = new Book("book", new Author.ByRef(new User("author")));
+		final var data = new Borrow(TimeUtil.nowZoned().plusDays(1), Duration.ofDays(42), "");
+		ops.create(user, book, data);
+
+		assertThrows(TransactionException.class,
+				() -> ops.update(user, book, data.withDuration(data.duration().plusDays(1)), data.withBorrowDate(data.borrowDate().plusDays(1))));
+	}
+
+	@Test
+	void update_borrowWithData_expectedNullWorks() throws TransactionException {
+		final var user = new User("reader2");
+		final var book = new Book("book", new Author.ByRef(new User("author")));
+		final var data = new Borrow(TimeUtil.nowZoned().plusDays(1), Duration.ofDays(42), "");
+		ops.create(user, book, data);
+
+		assertDoesNotThrow(() ->
+				ops.update(user, book, data.withDuration(data.duration().plusDays(1)), null));
+
+		final var opt = ops.read(user, book);
+		assertTrue(opt.isPresent());
+		assertEquals(data.duration().plusDays(1), opt.get().duration());
+	}
+
+	@Test
+	void delete_singleExisting() {
 		final var user = new User("reader");
 		final var book = new Book("book", new Author.ByRef(new User("author")));
 
@@ -205,7 +256,27 @@ class RepositoryBorrowOpsTest {
 	}
 
 	@Test
-	void delete_nonExistingBorrowFails() {
+	void delete_singleExisting_expected() {
+		final var user = new User("reader");
+		final var book = new Book("book", new Author.ByRef(new User("author")));
+		final var data = ops.readOrThrow(user, book);
+
+		assertDoesNotThrow(() -> ops.delete(user, book, data));
+		assertFalse(ops.read(user, book).isPresent());
+	}
+
+	@Test
+	void delete_singleExisting_unexpected() {
+		final var user = new User("reader");
+		final var book = new Book("book", new Author.ByRef(new User("author")));
+		final var data = ops.readOrThrow(user, book);
+
+		assertThrows(TransactionException.class, () -> ops.delete(user, book, data.withDuration(data.duration().plusDays(1))));
+		assertTrue(ops.read(user, book).isPresent());
+	}
+
+	@Test
+	void delete_singleNonExisting() {
 		final var user = new User("reader");
 		final var book = new Book("missing", new Author.ByRef(new User("author")));
 

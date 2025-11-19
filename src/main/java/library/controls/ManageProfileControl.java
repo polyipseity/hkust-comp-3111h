@@ -6,7 +6,7 @@ import library.persistence.TransactionException;
 import library.utils.HasMessage;
 import org.jetbrains.annotations.NotNull;
 
-public record ManageProfileControl(Repository repository) {
+public record ManageProfileControl(@NotNull Repository repository) {
 	@NotNull
 	public LoginResult login(@NotNull User.Role role, @NotNull String username, @NotNull String password) {
 		final var user = new User(username);
@@ -37,7 +37,7 @@ public record ManageProfileControl(Repository repository) {
 		};
 	}
 
-	public sealed interface LoginResult {
+	public sealed interface LoginResult permits LoginResult.DeactivatedAccount, LoginResult.InvalidPassword, LoginResult.InvalidUsername, LoginResult.Success, LoginResult.WrongRole {
 		record Success(User user, User.Data data) implements LoginResult {
 		}
 
@@ -70,7 +70,7 @@ public record ManageProfileControl(Repository repository) {
 		}
 	}
 
-	public sealed interface RegisterResult {
+	public sealed interface RegisterResult permits RegisterResult.InvalidDetails, RegisterResult.Success, RegisterResult.UsernameExists {
 		record Success(@NotNull User user, @NotNull User.Data data) implements RegisterResult, HasMessage {
 			@Override
 			public @NotNull String getMessage() {

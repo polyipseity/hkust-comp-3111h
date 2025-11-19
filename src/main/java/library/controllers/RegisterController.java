@@ -49,7 +49,7 @@ public class RegisterController implements DependsOnRole, RequiresLoggedOut {
 
 		final var context = Main.getContext();
 		try {
-			switch (context.getManageProfile().register(UserValidator.DEFAULT, getRole(), username, password, fullName)) {
+			switch (context.getManageProfileControl().register(UserValidator.DEFAULT, getRole(), username, password, fullName)) {
 				case ManageProfileControl.RegisterResult.Success val -> {
 					Alerts.showInfoDialog(val.getMessage());
 					goToLogin();

@@ -16,7 +16,10 @@ import library.persistence.TransactionException;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
 public class InformBoardController implements RequiresLoggedIn {
     Repository repository = Main.getContext().getRepository();
@@ -41,7 +44,7 @@ public class InformBoardController implements RequiresLoggedIn {
             HBox.setHgrow(pane, Priority.ALWAYS);
             button.setOnAction(_ -> {
                 try {
-                    CloseNotif(getIndex());
+	                CloseNotif(getIndex());
                 } catch (TransactionException e) {
                     throw new RuntimeException(e);
                 }
@@ -95,13 +98,9 @@ public class InformBoardController implements RequiresLoggedIn {
     }
 
     private void CloseNotif(int index) throws TransactionException {
-        repository.userNotificationOps.update(
+	    repository.userNotificationOps.updateAsList(
                 getLoggedInUser()._1(),
-                current -> {
-                    List<String> newNotifList = new ArrayList<>(Arrays.asList(current));
-                    newNotifList.remove(index);
-                    return newNotifList.toArray(new String[0]);
-                });
+			    current -> { current.remove(index); });
         updateNotificationList();
     }
 }

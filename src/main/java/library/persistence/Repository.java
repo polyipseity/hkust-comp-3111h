@@ -1,13 +1,15 @@
 package library.persistence;
 
 import library.models.*;
+import library.utils.ThrowingFunction;
+import library.utils.Tuple6;
 import org.jetbrains.annotations.NotNull;
 import org.mapdb.*;
 import org.mapdb.serializer.SerializerArray;
 import org.mapdb.serializer.SerializerArrayTuple;
 
 import java.io.Closeable;
-import java.util.function.Function;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
 public final class Repository implements Closeable {
@@ -22,22 +24,46 @@ public final class Repository implements Closeable {
 	@NotNull
 	public final RepositoryBorrowOps borrowOps = new RepositoryBorrowOps(this);
 	@NotNull
-	final DB db;
+	private final DBMaker.Maker dbMaker;
 	@NotNull
-	final HTreeMap<User, User.Data> users;
+	private final ReentrantLock transactLock = new ReentrantLock();
 	@NotNull
-	final HTreeMap<Book, Book.Data> books;
+	DB db;
 	@NotNull
-	final HTreeMap<User, String[]> userNotifications;
+	HTreeMap<User, User.Data> users;
 	@NotNull
-	final BTreeMap<Object[], BookRequest.Data> userBookRequests; // key: (User, BookRequest)
+	HTreeMap<Book, Book.Data> books;
 	@NotNull
-	final BTreeMap<Object[], Borrow> borrows; // key: (User, Book)
+	HTreeMap<User, String[]> userNotifications;
+	@NotNull
+	BTreeMap<Object[], BookRequest.Data> userBookRequests; // key: (User, BookRequest)
+	@NotNull
+	BTreeMap<Object[], Borrow> borrows; // key: (User, Book)
 
-	@SuppressWarnings("SwitchStatementWithTooFewBranches")
-	public Repository(@NotNull Supplier<DBMaker.Maker> dbMaker) {
-		this.db = dbMaker.get().transactionEnable().make();
+	public Repository(@NotNull DBMaker.Maker dbMaker) {
+		this.dbMaker = dbMaker.transactionEnable();
+		final var stores = open();
+		this.db = stores._1();
+		this.users = stores._2();
+		this.books = stores._3();
+		this.userNotifications = stores._4();
+		this.userBookRequests = stores._5();
+		this.borrows = stores._6();
+	}
 
+	private void reopen() {
+		db.close();
+		final var stores = open();
+		this.db = stores._1();
+		this.users = stores._2();
+		this.books = stores._3();
+		this.userNotifications = stores._4();
+		this.userBookRequests = stores._5();
+		this.borrows = stores._6();
+	}
+
+	@NotNull
+	private Tuple6<DB, HTreeMap<User, User.Data>, HTreeMap<Book, Book.Data>, HTreeMap<User, String[]>, BTreeMap<Object[], BookRequest.Data>, BTreeMap<Object[], Borrow>> open() {
 		final var userS = new User.S();
 		final var userDataS = new User.Data.S();
 		final var authorS = new Author.S(userS);
@@ -49,23 +75,22 @@ public final class Repository implements Closeable {
 		final var bookDataS = new Book.Data.S(bookS);
 		final var borrowS = new Borrow.S();
 
+		final var db = dbMaker.make();
 		final var this2 = this;
-		this.users = db.hashMap("users", userS, userDataS).modificationListener(((key, oldValue, newValue, _) -> {
+		final var users = db.hashMap("users", userS, userDataS).modificationListener(((key, oldValue, newValue, _) -> {
 			if (oldValue != null && newValue == null) {
 				final var key2 = new Object[]{key};
-				for (final var bookKey : this2.books.getKeys()) {
-					switch (bookKey) {
-						case Book(_, Author.ByRef(final var val), _) when key.equals(val) -> this2.books.remove(bookKey);
-						default -> {
-						}
+				for (final var bookKey : books.getKeys()) {
+					if (bookKey instanceof Book(_, Author.ByRef(final var val), _) && key.equals(val)) {
+						books.remove(bookKey);
 					}
 				}
-				this2.userNotifications.remove(key);
-				this2.userBookRequests.prefixSubMap(key2).clear();
-				this2.borrows.prefixSubMap(key2).clear();
+				userNotifications.remove(key);
+				userBookRequests.prefixSubMap(key2).clear();
+				borrows.prefixSubMap(key2).clear();
 			}
 		})).createOrOpen();
-		this.books = db.hashMap("books", bookS, bookDataS).modificationListener((key, oldValue, newValue, _) -> {
+		final var books = db.hashMap("books", bookS, bookDataS).modificationListener((key, oldValue, newValue, _) -> {
 			if (oldValue == null) {
 				switch (newValue) {
 					case Book.Data(_, _, _, _, final Book original, _) -> {
@@ -101,9 +126,9 @@ public final class Repository implements Closeable {
 								case Book.Data data -> this2.books.put(other, data.withOriginalOrModified(null));
 							}
 						}
-						for (final var userBookBorrowKey : this2.borrows.getKeys()) {
+						for (final var userBookBorrowKey : borrows.getKeys()) {
 							if (key.equals(userBookBorrowKey[1])) {
-								this2.borrows.remove(userBookBorrowKey);
+								borrows.remove(userBookBorrowKey);
 							}
 						}
 					}
@@ -113,12 +138,12 @@ public final class Repository implements Closeable {
 			}
 		}).createOrOpen();
 
-		this.userNotifications = db.hashMap("userNotifications", userS, new SerializerArray<>(Serializer.STRING, String.class)).valueLoader(key -> users.containsKey(key) ? new String[0] : null).modificationListener((key, oldValue, newValue, triggered) -> {
+		final var userNotifications = db.hashMap("userNotifications", userS, new SerializerArray<>(Serializer.STRING, String.class)).valueLoader(key -> users.containsKey(key) ? new String[0] : null).modificationListener((key, oldValue, newValue, _) -> {
 			if (oldValue == null && newValue != null && !users.containsKey(key)) {
-						throw new IllegalStateException("User not found");
+				throw new IllegalStateException("User not found");
 			}
 		}).createOrOpen();
-		this.userBookRequests = db.treeMap("userBookRequests", new SerializerArrayTuple(userS, bookRequestS), bookRequestDataS).modificationListener((key, oldValue, newValue, _) -> {
+		final var userBookRequests = db.treeMap("userBookRequests", new SerializerArrayTuple(userS, bookRequestS), bookRequestDataS).modificationListener((key, oldValue, newValue, _) -> {
 			if (oldValue == null && newValue != null) {
 				@SuppressWarnings("SuspiciousMethodCalls") final var containsUser = users.containsKey(key[0]);
 				if (!containsUser) {
@@ -126,7 +151,7 @@ public final class Repository implements Closeable {
 				}
 			}
 		}).createOrOpen();
-		this.borrows = db.treeMap("borrows", new SerializerArrayTuple(userS, bookS), borrowS).modificationListener((key, oldValue, newValue, _) -> {
+		final var borrows = db.treeMap("borrows", new SerializerArrayTuple(userS, bookS), borrowS).modificationListener((key, oldValue, newValue, _) -> {
 			if (oldValue == null && newValue != null) {
 				@SuppressWarnings("SuspiciousMethodCalls") final var containsUser = users.containsKey(key[0]);
 				if (!containsUser) {
@@ -138,31 +163,34 @@ public final class Repository implements Closeable {
 				}
 			}
 		}).createOrOpen();
+
+		return new Tuple6<>(db, users, books, userNotifications, userBookRequests, borrows);
 	}
 
-	public void transact(@NotNull Function<@NotNull TransactData, @NotNull Boolean> action) throws TransactionException {
+	public void transact(@NotNull ThrowingFunction<@NotNull Data, @NotNull Boolean> action, @NotNull Supplier<String> rollbackMessageSupplier) throws TransactionException {
+		transactLock.lock();
 		try {
-			var ok = false;
-			try {
-				ok = action.apply(new TransactData(users, books, userNotifications, userBookRequests, borrows));
-			} finally {
-				if (!ok) {
-					db.rollback();
-				}
+			if (!action.apply(new Data())) {
+				throw new DummyException();
 			}
-			if (ok) {
-				try {
-					db.commit();
-					return;
-				} catch (Exception exception) {
-					db.rollback();
-					throw exception;
-				}
+			if (transactLock.getHoldCount() == 1) {
+				db.commit();
 			}
+		} catch (DummyException exception) {
+			db.rollback();
+			reopen();
+			throw new TransactionException(rollbackMessageSupplier.get());
 		} catch (Exception exception) {
+			db.rollback();
+			reopen();
 			throw new TransactionException(exception);
+		} finally {
+			transactLock.unlock();
 		}
-		throw new TransactionException();
+	}
+
+	void transact(@NotNull ThrowingFunction<@NotNull Data, @NotNull Boolean> action) throws TransactionException {
+		transact(action, () -> "Transaction rolled back");
 	}
 
 	@Override
@@ -170,9 +198,28 @@ public final class Repository implements Closeable {
 		db.close();
 	}
 
-	public record TransactData(@NotNull HTreeMap<User, User.Data> users, @NotNull HTreeMap<Book, Book.Data> books,
-	                           @NotNull HTreeMap<User, String[]> userNotifications,
-	                           @NotNull BTreeMap<Object[], BookRequest.Data> userBookRequests,
-	                           @NotNull BTreeMap<Object[], Borrow> borrows) {
+	private final static class DummyException extends Exception {
+	}
+
+	public final class Data {
+		public @NotNull HTreeMap<User, User.Data> users() {
+			return users;
+		}
+
+		public @NotNull HTreeMap<Book, Book.Data> books() {
+			return books;
+		}
+
+		public @NotNull HTreeMap<User, String[]> userNotifications() {
+			return userNotifications;
+		}
+
+		public @NotNull BTreeMap<Object[], BookRequest.Data> userBookRequests() {
+			return userBookRequests;
+		}
+
+		public @NotNull BTreeMap<Object[], Borrow> borrows() {
+			return borrows;
+		}
 	}
 }

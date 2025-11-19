@@ -7,6 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapdb.DBMaker;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,9 +19,13 @@ class RepositoryBookOpsTest {
 	private RepositoryBookOps ops;
 
 	@BeforeEach
-	void setUp() {
-		// Create a fresh in‑memory DB for every test
-		repository = new Repository(DBMaker::memoryDirectDB);
+	void setUp() throws IOException {
+		final var file = Files.createTempFile(null, null);
+		Files.deleteIfExists(file);
+		final var file2 = file.toFile();
+		file2.deleteOnExit();
+		// Requires persistence across rollbacks
+		repository = new Repository(DBMaker.fileDB(file2));
 		ops = new RepositoryBookOps(repository);
 	}
 
@@ -118,6 +125,7 @@ class RepositoryBookOpsTest {
 		final var result = assertDoesNotThrow(() -> ops.read(book));
 		assertTrue(result.isPresent());
 		assertEquals(data, result.get());
+		assertDoesNotThrow(() -> ops.readOrThrow(book));
 	}
 
 	@Test
@@ -126,6 +134,7 @@ class RepositoryBookOpsTest {
 
 		final var result = assertDoesNotThrow(() -> ops.read(book));
 		assertFalse(result.isPresent());
+		assertThrows(NoSuchElementException.class, () -> ops.readOrThrow(book));
 	}
 
 	@Test
@@ -144,9 +153,59 @@ class RepositoryBookOpsTest {
 	@Test
 	void update_nonExistingThrows() {
 		final var book = new Book("missing", new Author.ByName("author"));
+		final var data1 = new Book.Data("s1", "c1",
+				Book.ApprovalStatus.PENDING, null, null, 10);
 
 		assertThrows(TransactionException.class,
 				() -> ops.update(book, old -> old));
+		assertThrows(TransactionException.class,
+				() -> ops.update(book, data1, null));
+	}
+
+	@Test
+	void update_withData_expectedMatches() throws TransactionException {
+		final var book = new Book("matchTitle", new Author.ByName("author"));
+		final var original = new Book.Data("s1", "c1",
+				Book.ApprovalStatus.PENDING, null, null, 10);
+		ops.create(book, original);
+
+		// Update with new data where expected matches the current state
+		final var updatedData = original.withApprovalStatus(Book.ApprovalStatus.APPROVED);
+		assertDoesNotThrow(() -> ops.update(book, updatedData, original));
+
+		final var stored = Objects.requireNonNull(repository.books.get(book));
+		assertEquals(Book.ApprovalStatus.APPROVED, stored.approvalStatus());
+	}
+
+	@Test
+	void update_withData_expectedMismatchThrows() throws TransactionException {
+		final var book = new Book("mismatchTitle", new Author.ByName("author"));
+		final var original = new Book.Data("s1", "c1",
+				Book.ApprovalStatus.PENDING, null, null, 10);
+		ops.create(book, original);
+
+		// Attempt to update with an outdated expected value
+		final var staleExpected = new Book.Data("sX", "cX",
+				Book.ApprovalStatus.PENDING, null, null, 5);   // different fields
+
+		final var newData = original.withApprovalStatus(Book.ApprovalStatus.APPROVED);
+		assertThrows(TransactionException.class,
+				() -> ops.update(book, newData, staleExpected));
+	}
+
+	@Test
+	void update_withData_expectedNullWorks() throws TransactionException {
+		final var book = new Book("nullExpectedTitle", new Author.ByName("author"));
+		final var original = new Book.Data("s1", "c1",
+				Book.ApprovalStatus.PENDING, null, null, 10);
+		ops.create(book, original);
+
+		// Update with expected == null (ignore concurrency check)
+		final var newData = original.withApprovalStatus(Book.ApprovalStatus.APPROVED);
+		assertDoesNotThrow(() -> ops.update(book, newData, null));
+
+		final var stored = Objects.requireNonNull(repository.books.get(book));
+		assertEquals(Book.ApprovalStatus.APPROVED, stored.approvalStatus());
 	}
 
 	@Test
@@ -158,6 +217,28 @@ class RepositoryBookOpsTest {
 
 		assertDoesNotThrow(() -> ops.delete(book));
 		assertNull(repository.books.get(book));
+	}
+
+	@Test
+	void delete_existing_expected() throws TransactionException {
+		final var book = new Book("delTitle", new Author.ByName("author"));
+		final var data = new Book.Data("s", "c",
+				Book.ApprovalStatus.PENDING, null, null, 5);
+		ops.create(book, data);
+
+		assertDoesNotThrow(() -> ops.delete(book, data));
+		assertNull(repository.books.get(book));
+	}
+
+	@Test
+	void delete_existing_unexpected() throws TransactionException {
+		final var book = new Book("delTitle", new Author.ByName("author"));
+		final var data = new Book.Data("s", "c",
+				Book.ApprovalStatus.PENDING, null, null, 5);
+		ops.create(book, data);
+
+		assertThrows(TransactionException.class, () -> ops.delete(book, data.withContent("%sc".formatted(data.content()))));
+		assertNotNull(repository.books.get(book));
 	}
 
 	@Test

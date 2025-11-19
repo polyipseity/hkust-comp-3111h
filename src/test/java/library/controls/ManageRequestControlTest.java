@@ -3,7 +3,6 @@ package library.controls;
 import library.models.User;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
-import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapdb.DBMaker;
@@ -16,7 +15,7 @@ class ManageRequestControlTest {
 
     @BeforeEach
     void setUp() {
-        repository = new Repository(DBMaker::memoryDirectDB);
+	    repository = new Repository(DBMaker.memoryDirectDB());
         manageRequests = new ManageRequestControl(repository);
     }
 

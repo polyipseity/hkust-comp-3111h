@@ -9,7 +9,7 @@ import org.mapdb.serializer.GroupSerializerObjectArray;
 
 import java.io.IOException;
 
-public sealed interface Author extends Comparable<Author> {
+public sealed interface Author extends Comparable<Author> permits Author.ByName, Author.ByRef {
 	byte getTag();
 
 	record ByRef(@NotNull User value) implements Author {

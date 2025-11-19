@@ -4,8 +4,10 @@ import library.models.BookRequest;
 import library.models.User;
 import library.utils.Tuple2;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -13,7 +15,7 @@ import java.util.stream.Collectors;
 
 public record RepositoryUserBookRequestOps(Repository repository) {
 	public void create(@NotNull User user, @NotNull BookRequest bookRequest, @NotNull BookRequest.Data data) throws TransactionException {
-		repository.transact(tx -> tx.userBookRequests().put(new Object[]{user, bookRequest}, data) == null);
+		repository.transact(tx -> tx.userBookRequests().put(new Object[]{user, bookRequest}, data) == null, () -> "Already created: %s, %s".formatted(user, bookRequest));
 	}
 
 	@NotNull
@@ -32,6 +34,13 @@ public record RepositoryUserBookRequestOps(Repository repository) {
 	}
 
 	@NotNull
+	public BookRequest.Data readOrThrow(@NotNull User user, @NotNull BookRequest bookRequest) {
+		return read(user, bookRequest)
+				.orElseThrow(() -> new NoSuchElementException(
+						"Not found: %s, %s".formatted(user, bookRequest)));
+	}
+
+	@NotNull
 	public Map<BookRequest, BookRequest.Data> read(@NotNull User user) {
 		return repository.userBookRequests.prefixSubMap(new Object[]{user}).entrySet().stream().collect(Collectors.toUnmodifiableMap(entry -> (BookRequest) entry.getKey()[1], Map.Entry::getValue));
 	}
@@ -40,14 +49,36 @@ public record RepositoryUserBookRequestOps(Repository repository) {
 		repository.transact(tx -> {
 			final var key = new Object[]{user, bookRequest};
 			final var oldValue = tx.userBookRequests().get(key);
-			if (oldValue == null) return false;
-			tx.userBookRequests().put(key, callback.apply(oldValue));
-			return true;
-		});
+			return oldValue != null && oldValue.equals(tx.userBookRequests().put(key, callback.apply(oldValue)));
+		}, () -> "Not found or updated concurrently: %s, %s".formatted(user, bookRequest));
 	}
 
-	public void delete(@NotNull User user, @NotNull BookRequest bookRequest) throws TransactionException {
-		repository.transact(tx -> tx.userBookRequests().remove(new Object[]{user, bookRequest}) != null);
+	public void update(@NotNull User user,
+	                   @NotNull BookRequest bookRequest,
+	                   BookRequest.@NotNull Data data,
+	                   BookRequest.@Nullable Data expected) throws TransactionException {
+		repository.transact(
+				tx -> {
+					final var key = new Object[]{user, bookRequest};
+					return expected == null
+							? tx.userBookRequests().put(key, data) != null
+							: expected.equals(tx.userBookRequests().put(key, data));
+				},
+				() -> "Not found or updated concurrently: %s, %s".formatted(user, bookRequest)
+		);
+	}
+
+	public void delete(@NotNull User user,
+	                   @NotNull BookRequest bookRequest,
+	                   @Nullable BookRequest.Data expected) throws TransactionException {
+		repository.transact(
+				tx -> expected == null ? tx.userBookRequests().remove(new Object[]{user, bookRequest}) != null : tx.userBookRequests().remove(new Object[]{user, bookRequest}, expected),
+				() -> "Already deleted: %s, %s".formatted(user, bookRequest)
+		);
+	}
+
+	void delete(@NotNull User user, @NotNull BookRequest bookRequest) throws TransactionException {
+		delete(user, bookRequest, null);
 	}
 
 	public void delete(@NotNull User user) throws TransactionException {
@@ -55,6 +86,6 @@ public record RepositoryUserBookRequestOps(Repository repository) {
 			if (!tx.users().containsKey(user)) return false;
 			tx.userBookRequests().prefixSubMap(new Object[]{user}).clear();
 			return true;
-		});
+		}, () -> "User not found: %s".formatted(user));
 	}
 }

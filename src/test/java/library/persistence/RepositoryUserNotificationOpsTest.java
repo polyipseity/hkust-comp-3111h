@@ -6,6 +6,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapdb.DBMaker;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.NoSuchElementException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class RepositoryUserNotificationOpsTest {
@@ -13,7 +17,7 @@ class RepositoryUserNotificationOpsTest {
 	private RepositoryUserNotificationOps ops;
 
 	@SuppressWarnings("SameReturnValue")
-	private static boolean populate(@NotNull Repository.TransactData data) {
+	private static boolean populate(@NotNull Repository.Data data) {
 		// initialise users with some notifications and no notifications
 		final var reader = new User("reader");
 		final var reader2 = new User("reader2");
@@ -32,9 +36,13 @@ class RepositoryUserNotificationOpsTest {
 	}
 
 	@BeforeEach
-	void setUp() throws TransactionException {
-		// use an in‑memory MapDB instance – the same as used in RepositoryTest
-		repository = new Repository(DBMaker::memoryDirectDB);
+	void setUp() throws IOException, TransactionException {
+		final var file = Files.createTempFile(null, null);
+		Files.deleteIfExists(file);
+		final var file2 = file.toFile();
+		file2.deleteOnExit();
+		// Requires persistence across rollbacks
+		repository = new Repository(DBMaker.fileDB(file2));
 		ops = new RepositoryUserNotificationOps(repository);
 
 		repository.transact(RepositoryUserNotificationOpsTest::populate);
@@ -71,6 +79,7 @@ class RepositoryUserNotificationOpsTest {
 		final var opt = assertDoesNotThrow(() -> ops.read(reader));
 		assertTrue(opt.isPresent(), "Expected notifications to be present");
 		assertArrayEquals(new String[]{"n1", "n2"}, opt.get());
+		assertDoesNotThrow(() -> ops.readOrThrow(reader));
 	}
 
 	@Test
@@ -82,6 +91,7 @@ class RepositoryUserNotificationOpsTest {
 		final var opt = assertDoesNotThrow(() -> ops.read(reader));
 		assertTrue(opt.isPresent(), "Expected notifications to be present");
 		assertArrayEquals(new String[]{}, opt.get());
+		assertDoesNotThrow(() -> ops.readOrThrow(reader));
 	}
 
 	@Test
@@ -90,6 +100,7 @@ class RepositoryUserNotificationOpsTest {
 		final var opt = assertDoesNotThrow(() -> ops.read(missing));
 		assertFalse(opt.isPresent(), "Expected no notifications for unknown user");
 		assertFalse(repository.userNotifications.containsKey(missing));
+		assertThrows(NoSuchElementException.class, () -> ops.readOrThrow(missing));
 	}
 
 	@Test
@@ -109,7 +120,18 @@ class RepositoryUserNotificationOpsTest {
 	}
 
 	@Test
-	void updateAsList() {
+	void update_missing() {
+		final var reader = new User("missing");
+
+		// add a new notification via the callback
+		assertThrows(TransactionException.class, () -> ops.update(reader, old -> {
+			assertArrayEquals(new String[]{"n1", "n2"}, old);
+			return new String[]{"n1", "n2", "new"};
+		}));
+	}
+
+	@Test
+	void updateAsList_functional() {
 		final var reader = new User("reader");
 
 		// remove the first notification using a List callback
@@ -117,6 +139,22 @@ class RepositoryUserNotificationOpsTest {
 			assertEquals(2, list.size());
 			list.removeFirst();                // removes "n1"
 			return list;
+		}));
+
+		// read back and check that only the second element remains
+		final var stored = ops.read(reader);
+		assertTrue(stored.isPresent());
+		assertArrayEquals(new String[]{"n2"}, stored.get());
+	}
+
+	@Test
+	void updateAsList_imperative() {
+		final var reader = new User("reader");
+
+		// remove the first notification using a List callback
+		assertDoesNotThrow(() -> ops.updateAsList(reader, list -> {
+			assertEquals(2, list.size());
+			list.removeFirst();                // removes "n1"
 		}));
 
 		// read back and check that only the second element remains

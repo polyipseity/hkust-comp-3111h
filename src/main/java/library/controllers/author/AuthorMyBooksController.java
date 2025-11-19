@@ -205,11 +205,11 @@ public class AuthorMyBooksController implements RequiresLoggedIn {
             var data = repository.bookOps.read(book).get();
             if(data.summary().equals(selected.getSummary())){
                 if(book.temporary()){
-                    repository.bookOps.delete(book);
+	                repository.bookOps.delete(book, data);
                 }else{
                     //Can't delete originalBook
                     if(data.originalOrModified() == null){
-                        repository.bookOps.delete(book);
+	                    repository.bookOps.delete(book, data);
                     }else{
                         Alerts.showErrorDialog("Delete the modified version to delete the original book");
                     }

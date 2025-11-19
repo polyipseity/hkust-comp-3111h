@@ -4,6 +4,7 @@ import library.models.User;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -24,14 +25,28 @@ public record RepositoryUserNotificationOps(Repository repository) {
 		return Optional.ofNullable(repository.userNotifications.get(user));
 	}
 
+	@NotNull
+	public String[] readOrThrow(@NotNull User user) {
+		return read(user)
+				.orElseThrow(() -> new NoSuchElementException(
+						"Not found: %s".formatted(user)));
+	}
+
 	public void update(@NotNull User user, @NotNull Function<@NotNull String[], @NotNull String[]> callback) throws TransactionException {
 		repository.transact(tx -> {
-			tx.userNotifications().put(user, callback.apply(tx.userNotifications().get(user)));
-			return true;
-		});
+			final var oldValue = tx.userNotifications().get(user);
+			return oldValue != null && Arrays.equals(oldValue, tx.userNotifications().put(user, callback.apply(oldValue)));
+		}, () -> "Not found or updated concurrently: %s".formatted(user));
 	}
 
 	public void updateAsList(@NotNull User user, @NotNull Function<@NotNull List<String>, @NotNull List<String>> callback) throws TransactionException {
 		update(user, oldValue -> callback.apply(new ArrayList<>(Arrays.asList(oldValue))).toArray(String[]::new));
+	}
+
+	public void updateAsList(@NotNull User user, @NotNull Consumer<@NotNull List<String>> callback) throws TransactionException {
+		updateAsList(user, list -> {
+			callback.accept(list);
+			return list;
+		});
 	}
 }
