@@ -38,13 +38,12 @@ public record ManageBorrowControl(Repository repository) {
         Optional<Book.Data> selectedBookData = repository.bookOps.read(book);
         if (selectedBookData.isEmpty()) return new BorrowResult.BookDataNotFound();
 
-        // Try and create fresh PDF for the book
-        String pdfPath = generatePdfPath(user, book);
-        if (!generatePdf(selectedBookData.get().content(), pdfPath))
-            return new BorrowResult.PdfGenerationError();
-
         // Execute borrow after everything else is successful
-        Borrow borrowData = new Borrow(ZonedDateTime.now(), Duration.ofSeconds(durationSeconds), pdfPath);
+        Borrow borrowData = new Borrow(
+                ZonedDateTime.now(),
+                Duration.ofSeconds(durationSeconds),
+                generatePdfPath(user, book)
+        );
         repository.borrowOps.create(user, book, borrowData);
         return new BorrowResult.Success();
     }
@@ -62,27 +61,6 @@ public record ManageBorrowControl(Repository repository) {
         return user.username() + "__" + filteredBookTitle + ".pdf";
     }
 
-    private boolean generatePdf(String content, String pdfPath) {
-        try {
-            Document outputDoc = new Document(PageSize.A4, 50, 50, 50, 50);
-            FileOutputStream os = new FileOutputStream(pdfPath);
-
-            PdfWriter.getInstance(outputDoc, os);
-            outputDoc.open();
-
-            for (String line: content.split("\\r?\\n")) {
-                Paragraph p = new Paragraph(line);
-                p.setAlignment(Element.ALIGN_JUSTIFIED);
-                outputDoc.add(p);
-            }
-
-            outputDoc.close();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
     public sealed interface BorrowResult {
         record Success() implements BorrowResult {
         }
@@ -91,13 +69,6 @@ public record ManageBorrowControl(Repository repository) {
             @Override
             public @NotNull String getMessage() {
                 return message;
-            }
-        }
-
-        record PdfGenerationError() implements BorrowResult, HasMessage {
-            @Override
-            public @NotNull String getMessage() {
-                return "Borrow aborted as PDF for book could not be created";
             }
         }
 

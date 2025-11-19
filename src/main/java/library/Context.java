@@ -5,6 +5,7 @@ import javafx.stage.Stage;
 import library.controls.ManageBorrowControl;
 import library.controls.ManageProfileControl;
 import library.controls.ManageRequestControl;
+import library.controls.ManageUserReadControl;
 import library.models.User;
 import library.persistence.Repository;
 import library.utils.Tuple2;
@@ -25,6 +26,8 @@ public interface Context extends Closeable {
 	@NotNull ManageRequestControl getManageRequests();
 
 	@NotNull ManageBorrowControl getManageBorrows();
+
+	@NotNull ManageUserReadControl getManageUserReads();
 
 	@Nullable
 	Tuple2<User, User.Data> getLoggedInUser();

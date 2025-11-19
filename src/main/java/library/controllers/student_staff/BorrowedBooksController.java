@@ -16,11 +16,13 @@ import javafx.util.Callback;
 import library.Context;
 import library.Main;
 import library.controllers.common.RequiresLoggedIn;
+import library.controls.ManageUserReadControl;
 import library.models.Book;
 import library.models.Borrow;
 import library.models.User;
 import library.persistence.Repository;
 import library.utils.Alerts;
+import library.utils.HasMessage;
 import library.utils.TimeUtil;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -103,7 +105,7 @@ public class BorrowedBooksController implements RequiresLoggedIn {
 	}
 
 	@FXML
-	private void readSelectedBook() {
+	private void readSelectedBook() throws IOException {
 		tableRow currentRow = table.getSelectionModel().getSelectedItem();
 		if (currentRow == null) {
 			Alerts.showErrorDialog("Please select a book first.");
@@ -111,28 +113,31 @@ public class BorrowedBooksController implements RequiresLoggedIn {
 		}
 
 		Book selectedBook = currentRow.book;
-		Optional<Borrow> borrowData = repository.borrowOps.read(user, selectedBook);
-		if (borrowData.isEmpty()) {
-			Alerts.showErrorDialog("Borrow data not found.");
-			return;
-		}
-		String path = borrowData.get().pdfPath();
+		String title = currentRow.title;
+		String author = currentRow.author;
 
+		switch (context.getManageUserReads().readBook(user, selectedBook)) {
+			case ManageUserReadControl.ReadResult.Success(String path) -> displayPdfFile(path, title, author);
+			case ManageUserReadControl.ReadResult.NewPdfGenerated(String path) -> {
+				Alerts.showInfoDialog("PDF file not found, generating a new one...");
+				displayPdfFile(path, title, author);
+			}
+			case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
+		}
+	}
+
+	private void displayPdfFile(String path, String title, String author) throws IOException {
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
 				"/fxml/student_staff/BookViewer.fxml"));
 		BookViewerController controller = new BookViewerController(path);
 		fxmlLoader.setController(controller);
-
-		try {
-			BorderPane borderPane = fxmlLoader.load();
-			Stage stage = new Stage();
-			stage.setScene(new Scene(borderPane));
-			stage.setTitle("Reading: " + selectedBook.title() + " by " + selectedBook.author());
-			stage.setOnShown(controller::createResizeListeners);
-			stage.setOnCloseRequest(controller::disposeController);
-			stage.show();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		BorderPane borderPane = fxmlLoader.load();
+		
+		Stage stage = new Stage();
+		stage.setScene(new Scene(borderPane));
+		stage.setTitle("Reading: " + title + " by " + author);
+		stage.setOnShown(controller::createResizeListeners);
+		stage.setOnCloseRequest(controller::disposeController);
+		stage.show();
 	}
 }

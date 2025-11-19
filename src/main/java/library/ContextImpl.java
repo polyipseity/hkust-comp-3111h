@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 import library.controls.ManageBorrowControl;
 import library.controls.ManageProfileControl;
 import library.controls.ManageRequestControl;
+import library.controls.ManageUserReadControl;
 import library.models.User;
 import library.persistence.Repository;
 import library.utils.Tuple2;
@@ -30,6 +31,9 @@ public final class ContextImpl implements Context {
 	@Getter
 	@NotNull
 	private final ManageBorrowControl manageBorrows;
+	@Getter
+	@NotNull
+	private final ManageUserReadControl manageUserReads;
 
 	@Setter
 	@Getter
@@ -42,6 +46,7 @@ public final class ContextImpl implements Context {
 		this.manageProfile = new ManageProfileControl(repository);
 		this.manageRequests = new ManageRequestControl(repository);
 		this.manageBorrows = new ManageBorrowControl(repository);
+		this.manageUserReads = new ManageUserReadControl(repository);
 	}
 
 	/**

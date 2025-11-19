@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 import library.controls.ManageBorrowControl;
 import library.controls.ManageProfileControl;
 import library.controls.ManageRequestControl;
+import library.controls.ManageUserReadControl;
 import library.models.User;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
@@ -47,6 +48,8 @@ class FXMLsTest {
 			private final ManageRequestControl manageRequests = new ManageRequestControl(repository);
 			@Getter
 			private final ManageBorrowControl manageBorrows = new ManageBorrowControl(repository);
+			@Getter
+			private final ManageUserReadControl manageUserReads = new ManageUserReadControl(repository);
 
 			@Getter
 			@NotNull
