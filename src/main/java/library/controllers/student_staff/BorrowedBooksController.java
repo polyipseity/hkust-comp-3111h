@@ -6,11 +6,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import library.Context;
 import library.Main;
 import library.controllers.common.RequiresLoggedIn;
@@ -40,9 +42,7 @@ public class BorrowedBooksController implements RequiresLoggedIn {
 	@FXML
 	private TableView<tableRow> table;
 	@FXML
-	private TableColumn<tableRow, String> titleCol, authorCol, borrowedOnCol, timeLeftCol;
-	@FXML
-	private TableColumn<tableRow, Button> actionsCol;
+	private TableColumn<tableRow, String> titleCol, authorCol, borrowedOnCol, timeLeftCol, actionsCol;
 
 	public record tableRow(
 			@NotNull @Getter String title,
@@ -55,6 +55,19 @@ public class BorrowedBooksController implements RequiresLoggedIn {
 
 	DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
+	static class returnBtnCell extends TableCell<tableRow, String>{
+		final Button btn = new Button("Return");
+		@Override
+		public void updateItem(String item, boolean empty) {
+			super.updateItem(item, empty);
+			setText(null);
+			if (empty) setGraphic(null);
+			else {
+				btn.setOnAction(_ -> { /* TODO: return book on button click */ });
+				setGraphic(btn);
+			}
+		}
+	}
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
@@ -64,6 +77,9 @@ public class BorrowedBooksController implements RequiresLoggedIn {
 		authorCol.setCellValueFactory(new PropertyValueFactory<>("author"));
 		borrowedOnCol.setCellValueFactory(new PropertyValueFactory<>("borrowedOn"));
 		timeLeftCol.setCellValueFactory(new PropertyValueFactory<>("timeLeft"));
+
+		actionsCol.setCellValueFactory(new PropertyValueFactory<>("title"));
+		actionsCol.setCellFactory(_ -> new returnBtnCell());
 
 		reload();
 	}
