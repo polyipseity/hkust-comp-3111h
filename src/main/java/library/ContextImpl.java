@@ -3,10 +3,7 @@ package library;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import library.controls.BorrowBooksControl;
-import library.controls.ManageBooksControl;
-import library.controls.ManageProfileControl;
-import library.controls.RequestBooksControl;
+import library.controls.*;
 import library.models.User;
 import library.persistence.Repository;
 import library.utils.Tuple2;
@@ -30,10 +27,22 @@ public final class ContextImpl implements Context {
 	private final ManageBooksControl manageBooksControl;
 	@Getter
 	@NotNull
+	private final ManageNotificationsControl manageNotificationsControl;
+	@Getter
+	@NotNull
 	private final ManageProfileControl manageProfileControl;
 	@Getter
 	@NotNull
+	private final ManageUsersControl manageUsersControl;
+	@Getter
+	@NotNull
+	private final PublishBooksControl publishBooksControl;
+	@Getter
+	@NotNull
 	private final RequestBooksControl requestBooksControl;
+	@Getter
+	@NotNull
+	private final StatsControl statsControl;
 
 	@Setter
 	@Getter
@@ -45,8 +54,12 @@ public final class ContextImpl implements Context {
 		this.repository = repository;
 		this.borrowBooksControl = new BorrowBooksControl(repository);
 		this.manageBooksControl = new ManageBooksControl(repository);
+		this.manageNotificationsControl = new ManageNotificationsControl();
 		this.manageProfileControl = new ManageProfileControl(repository);
+		this.manageUsersControl = new ManageUsersControl();
+		this.publishBooksControl = new PublishBooksControl();
 		this.requestBooksControl = new RequestBooksControl(repository);
+		this.statsControl = new StatsControl();
 	}
 
 	/**
