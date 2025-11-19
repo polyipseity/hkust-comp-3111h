@@ -3,11 +3,7 @@ package library;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
-import library.controls.ManageBooksControl;
-import library.controls.ManageBorrowControl;
-import library.controls.ManageProfileControl;
-import library.controls.ManageRequestControl;
-import library.controls.ManageUserReadControl;
+import library.controls.*;
 import library.models.User;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
@@ -49,13 +45,16 @@ class FXMLsTest {
 			private final ManageBooksControl manageBooksControl = new ManageBooksControl(repository);
 			@Getter
 			@NotNull
+			private final ManageBorrowControl manageBorrowsControl = new ManageBorrowControl(repository);
+			@Getter
+			@NotNull
 			private final ManageProfileControl manageProfileControl = new ManageProfileControl(repository);
 			@Getter
-			private final ManageRequestControl manageRequests = new ManageRequestControl(repository);
+			@NotNull
+			private final ManageRequestControl manageRequestsControl = new ManageRequestControl(repository);
 			@Getter
-			private final ManageBorrowControl manageBorrows = new ManageBorrowControl(repository);
-			@Getter
-			private final ManageUserReadControl manageUserReads = new ManageUserReadControl(repository);
+			@NotNull
+			private final ManageUserReadControl manageUserReadsControl = new ManageUserReadControl(repository);
 
 			@Getter
 			@NotNull

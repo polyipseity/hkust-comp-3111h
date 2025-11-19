@@ -12,7 +12,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import library.Context;
 import library.Main;
 import library.controllers.common.RequiresLoggedIn;
@@ -33,7 +32,6 @@ import java.net.URL;
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class BorrowedBooksController implements RequiresLoggedIn {
@@ -116,7 +114,7 @@ public class BorrowedBooksController implements RequiresLoggedIn {
 		String title = currentRow.title;
 		String author = currentRow.author;
 
-		switch (context.getManageUserReads().readBook(user, selectedBook)) {
+		switch (context.getManageUserReadsControl().readBook(user, selectedBook)) {
 			case ManageUserReadControl.ReadResult.Success(String path) -> displayPdfFile(path, title, author);
 			case ManageUserReadControl.ReadResult.NewPdfGenerated(String path) -> {
 				Alerts.showInfoDialog("PDF file not found, generating a new one...");

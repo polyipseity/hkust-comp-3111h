@@ -7,31 +7,20 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
-import javafx.util.Callback;
 import library.Context;
 import library.Main;
 import library.controllers.common.RequiresLoggedIn;
 import library.controls.ManageBorrowControl;
 import library.models.Book;
-import library.models.Borrow;
 import library.models.User;
-import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.HasMessage;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.openpdf.text.Document;
-import org.openpdf.text.Element;
-import org.openpdf.text.PageSize;
-import org.openpdf.text.Paragraph;
-import org.openpdf.text.pdf.PdfWriter;
 
-import java.io.FileOutputStream;
 import java.net.URL;
-import java.time.Duration;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Optional;
@@ -87,7 +76,7 @@ public class AvailableBooksController implements RequiresLoggedIn {
 
 	private void reload() {
         ObservableList<tableRow> data = FXCollections.observableArrayList();
-        Map<Book, Book.Data> availableBooks = context.getManageBorrows().availableBooks(user);
+		Map<Book, Book.Data> availableBooks = context.getManageBorrowsControl().availableBooks(user);
         for (var entry : availableBooks.entrySet()) {
             Book book = entry.getKey();
             Book.Data bookData = entry.getValue();
@@ -127,7 +116,7 @@ public class AvailableBooksController implements RequiresLoggedIn {
             return;
         }
 
-        switch (context.getManageBorrows().borrowBook(user, selectedBook, minutes, seconds)) {
+	    switch (context.getManageBorrowsControl().borrowBook(user, selectedBook, minutes, seconds)) {
             case ManageBorrowControl.BorrowResult.Success _ -> Alerts.showInfoDialog("Book borrowed successfully");
             case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
         }

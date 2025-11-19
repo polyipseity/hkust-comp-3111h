@@ -7,7 +7,6 @@ import library.Main;
 import library.controllers.common.RequiresLoggedIn;
 import library.controls.ManageRequestControl;
 import library.models.User;
-import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.HasMessage;
@@ -32,7 +31,7 @@ public class RequestBookController implements RequiresLoggedIn {
     private void requestBookButtonAction() throws TransactionException {
         String title = titleField.getText();
         String author = authorField.getText();
-        switch (context.getManageRequests().requestBook(user, title, author)) {
+	    switch (context.getManageRequestsControl().requestBook(user, title, author)) {
             case ManageRequestControl.RequestResult.Success() -> Alerts.showInfoDialog("Book request submitted.");
             case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
         }
