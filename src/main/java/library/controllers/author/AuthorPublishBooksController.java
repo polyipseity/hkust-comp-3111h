@@ -1,8 +1,6 @@
 package library.controllers.author;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import library.Main;
@@ -11,14 +9,21 @@ import library.models.Book;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
+import library.SpringApplication.ChatController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Optional;
 
+@Component
 public class AuthorPublishBooksController {
     private final Repository repository = Main.getContext().getRepository();
+
+    @Autowired  // Spring will inject this
+    private ChatController chatController = new ChatController();
 
     @FXML
     private TextField BookTitle, BookContent, BookAbstract;
@@ -52,7 +57,14 @@ public class AuthorPublishBooksController {
     //Method for generating summary of the book based on the title
     @FXML
     private void Generate() throws IOException {
-        BookAbstract.setText("Example summary of the Book");
+        if(ContentTxt == null || BookTitle.getText() == null) {
+            Alerts.showErrorDialog("You must enter the book title and upload the book content first!");
+        }else{
+//            var input = "Base on the given title and content, generate a abstract for the book. Note you must return the abstract paragraph only and focusing on the content and title but not the author. Also, you must keep your response short that is under 30 words. title:" + BookTitle.getText() + " and content:" + ContentTxt;
+            var input = "Hi";
+            var response = chatController.getResponse(input);
+            BookAbstract.setText(response);
+        }
     }
 
     //Method for publishing the book

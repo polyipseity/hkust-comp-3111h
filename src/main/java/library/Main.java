@@ -9,6 +9,8 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mapdb.DBMaker;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import java.util.Objects;
 
@@ -16,6 +18,7 @@ public class Main extends Application {
 	@Nullable
 	@Setter(AccessLevel.PACKAGE)
 	private static Context context = null;
+    private ConfigurableApplicationContext springContext;
 
 	@NotNull
 	public static Context getContext() {
@@ -24,6 +27,7 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
+        SpringApplication.run(Main.class);
 		context = new ContextImpl(stage, new Repository(() -> DBMaker.fileDB("repository.db")));
 		// Show the Home (role‐select) first, not the Login screen directly:
 		stage.setScene(new Scene(FXMLs.HOME.load(), 640, 480));

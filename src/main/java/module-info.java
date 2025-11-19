@@ -8,9 +8,22 @@ module library {
 	requires kotlin.stdlib;
 	requires mapdb;
 	requires org.jetbrains.annotations;
-	requires static lombok;
+    requires static lombok;
+    requires spring.beans;
+    requires spring.ai.openai;
+    requires spring.ai.model;
+    requires spring.ai.client.chat;
+    requires spring.webflux;
+    requires spring.web;
+    requires java.net.http;
+    requires spring.context;
+    requires jakarta.annotation;
+    requires spring.boot;
+    requires reactor.core;
+    requires spring.ai.azure.openai;
+    requires com.azure.ai.openai;
 
-	exports library;
+    exports library;
 	exports library.controllers;
 	exports library.controllers.author;
 	exports library.controllers.common;
@@ -31,4 +44,6 @@ module library {
 	opens library.models;
 	opens library.persistence;
 	opens library.utils;
+    exports library.SpringApplication;
+    opens library.SpringApplication;
 }
