@@ -42,6 +42,7 @@ public class PendingApprovalsController extends DynamicTableController<PendingAp
 				.entrySet()
 				.stream()
 				.map(entry -> new Data(
+						this,
 						entry.getKey(),
 						entry.getValue()))
 				.toList();
@@ -54,7 +55,8 @@ public class PendingApprovalsController extends DynamicTableController<PendingAp
 		ACTIONS
 	}
 
-	public record Data(@NotNull Book book,
+	public record Data(@NotNull PendingApprovalsController controller,
+	                   @NotNull Book book,
 	                   @NotNull Book.Data bookData)
 			implements Function<@NotNull Keys, DynamicTableController.@NotNull Data> {
 		/**
@@ -77,6 +79,7 @@ public class PendingApprovalsController extends DynamicTableController<PendingAp
 							try {
 								switch (Main.getContext().getManageBooksControl().approveBook(book)) {
 									case ManageBooksControl.ApproveResult.Success _ -> {
+										controller.table.getItems().remove(this);
 									}
 								}
 							} catch (TransactionException e) {
@@ -87,7 +90,7 @@ public class PendingApprovalsController extends DynamicTableController<PendingAp
 							try {
 								switch (Main.getContext().getManageBooksControl().rejectBook(book)) {
 									case ManageBooksControl.RejectResult.Success _ -> {
-
+										controller.table.getItems().remove(this);
 									}
 								}
 							} catch (TransactionException e) {
