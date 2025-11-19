@@ -26,6 +26,8 @@ public final class Repository implements Closeable {
 	@NotNull
 	private final DBMaker.Maker dbMaker;
 	@NotNull
+	private final ReentrantLock transactLock = new ReentrantLock();
+	@NotNull
 	DB db;
 	@NotNull
 	HTreeMap<User, User.Data> users;
@@ -37,8 +39,6 @@ public final class Repository implements Closeable {
 	BTreeMap<Object[], BookRequest.Data> userBookRequests; // key: (User, BookRequest)
 	@NotNull
 	BTreeMap<Object[], Borrow> borrows; // key: (User, Book)
-	@NotNull
-	final ReentrantLock transactLock = new ReentrantLock();
 
 	@SuppressWarnings("PatternVariableHidesField")
 	public Repository(@NotNull DBMaker.Maker dbMaker) {
@@ -209,12 +209,12 @@ public final class Repository implements Closeable {
 		transact(action, () -> "Transaction rolled back");
 	}
 
-	private final static class DummyException extends Exception {
-	}
-
 	@Override
 	public void close() {
 		db.close();
+	}
+
+	private final static class DummyException extends Exception {
 	}
 
 	public record TransactData(@NotNull HTreeMap<User, User.Data> users, @NotNull HTreeMap<Book, Book.Data> books,

@@ -109,7 +109,7 @@ class RepositoryUserNotificationOpsTest {
 	}
 
 	@Test
-	void updateAsList() {
+	void updateAsList_functional() {
 		final var reader = new User("reader");
 
 		// remove the first notification using a List callback
@@ -117,6 +117,22 @@ class RepositoryUserNotificationOpsTest {
 			assertEquals(2, list.size());
 			list.removeFirst();                // removes "n1"
 			return list;
+		}));
+
+		// read back and check that only the second element remains
+		final var stored = ops.read(reader);
+		assertTrue(stored.isPresent());
+		assertArrayEquals(new String[]{"n2"}, stored.get());
+	}
+
+	@Test
+	void updateAsList_imperative() {
+		final var reader = new User("reader");
+
+		// remove the first notification using a List callback
+		assertDoesNotThrow(() -> ops.updateAsList(reader, list -> {
+			assertEquals(2, list.size());
+			list.removeFirst();                // removes "n1"
 		}));
 
 		// read back and check that only the second element remains

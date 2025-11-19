@@ -4,6 +4,7 @@ import library.models.User;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -33,5 +34,12 @@ public record RepositoryUserNotificationOps(Repository repository) {
 
 	public void updateAsList(@NotNull User user, @NotNull Function<@NotNull List<String>, @NotNull List<String>> callback) throws TransactionException {
 		update(user, oldValue -> callback.apply(new ArrayList<>(Arrays.asList(oldValue))).toArray(String[]::new));
+	}
+
+	public void updateAsList(@NotNull User user, @NotNull Consumer<@NotNull List<String>> callback) throws TransactionException {
+		updateAsList(user, list -> {
+			callback.accept(list);
+			return list;
+		});
 	}
 }
