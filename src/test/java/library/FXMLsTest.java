@@ -3,7 +3,10 @@ package library;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
-import library.controls.*;
+import library.controls.BorrowBooksControl;
+import library.controls.ManageBooksControl;
+import library.controls.ManageProfileControl;
+import library.controls.RequestBooksControl;
 import library.models.User;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
@@ -42,19 +45,16 @@ class FXMLsTest {
 			private final Repository repository = new Repository(DBMaker.memoryDirectDB());
 			@Getter
 			@NotNull
-			private final ManageBooksControl manageBooksControl = new ManageBooksControl(repository);
+			private final BorrowBooksControl borrowBooksControl = new BorrowBooksControl(repository);
 			@Getter
 			@NotNull
-			private final ManageBorrowControl manageBorrowsControl = new ManageBorrowControl(repository);
+			private final ManageBooksControl manageBooksControl = new ManageBooksControl(repository);
 			@Getter
 			@NotNull
 			private final ManageProfileControl manageProfileControl = new ManageProfileControl(repository);
 			@Getter
 			@NotNull
-			private final ManageRequestControl manageRequestsControl = new ManageRequestControl(repository);
-			@Getter
-			@NotNull
-			private final ManageUserReadControl manageUserReadsControl = new ManageUserReadControl(repository);
+			private final RequestBooksControl requestBooksControl = new RequestBooksControl(repository);
 
 			@Getter
 			@NotNull

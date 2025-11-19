@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.ZonedDateTime;
 
-public record ManageRequestControl(Repository repository) {
+public record RequestBooksControl(Repository repository) {
     @NotNull
     public RequestResult requestBook(User user, String title, String author) throws TransactionException {
         // Check if either title or author field is an empty string

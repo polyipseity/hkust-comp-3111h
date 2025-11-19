@@ -10,7 +10,7 @@ import javafx.scene.text.Text;
 import library.Context;
 import library.Main;
 import library.controllers.common.RequiresLoggedIn;
-import library.controls.ManageBorrowControl;
+import library.controls.BorrowBooksControl;
 import library.models.Book;
 import library.models.User;
 import library.persistence.TransactionException;
@@ -76,7 +76,7 @@ public class AvailableBooksController implements RequiresLoggedIn {
 
 	private void reload() {
         ObservableList<tableRow> data = FXCollections.observableArrayList();
-		Map<Book, Book.Data> availableBooks = context.getManageBorrowsControl().availableBooks(user);
+		Map<Book, Book.Data> availableBooks = context.getBorrowBooksControl().availableBooks(user);
         for (var entry : availableBooks.entrySet()) {
             Book book = entry.getKey();
             Book.Data bookData = entry.getValue();
@@ -116,8 +116,8 @@ public class AvailableBooksController implements RequiresLoggedIn {
             return;
         }
 
-	    switch (context.getManageBorrowsControl().borrowBook(user, selectedBook, minutes, seconds)) {
-            case ManageBorrowControl.BorrowResult.Success _ -> Alerts.showInfoDialog("Book borrowed successfully");
+	    switch (context.getBorrowBooksControl().borrowBook(user, selectedBook, minutes, seconds)) {
+		    case BorrowBooksControl.BorrowResult.Success _ -> Alerts.showInfoDialog("Book borrowed successfully");
             case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
         }
 

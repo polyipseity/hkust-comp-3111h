@@ -5,7 +5,7 @@ import javafx.scene.control.TextField;
 import library.Context;
 import library.Main;
 import library.controllers.common.RequiresLoggedIn;
-import library.controls.ManageRequestControl;
+import library.controls.RequestBooksControl;
 import library.models.User;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
@@ -31,8 +31,8 @@ public class RequestBookController implements RequiresLoggedIn {
     private void requestBookButtonAction() throws TransactionException {
         String title = titleField.getText();
         String author = authorField.getText();
-	    switch (context.getManageRequestsControl().requestBook(user, title, author)) {
-            case ManageRequestControl.RequestResult.Success() -> Alerts.showInfoDialog("Book request submitted.");
+	    switch (context.getRequestBooksControl().requestBook(user, title, author)) {
+		    case RequestBooksControl.RequestResult.Success() -> Alerts.showInfoDialog("Book request submitted.");
             case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
         }
     }

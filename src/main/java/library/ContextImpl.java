@@ -3,7 +3,10 @@ package library;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import library.controls.*;
+import library.controls.BorrowBooksControl;
+import library.controls.ManageBooksControl;
+import library.controls.ManageProfileControl;
+import library.controls.RequestBooksControl;
 import library.models.User;
 import library.persistence.Repository;
 import library.utils.Tuple2;
@@ -21,19 +24,16 @@ public final class ContextImpl implements Context {
 	private final Repository repository;
 	@Getter
 	@NotNull
-	private final ManageBooksControl manageBooksControl;
+	private final BorrowBooksControl borrowBooksControl;
 	@Getter
 	@NotNull
-	private final ManageBorrowControl manageBorrowsControl;
+	private final ManageBooksControl manageBooksControl;
 	@Getter
 	@NotNull
 	private final ManageProfileControl manageProfileControl;
 	@Getter
 	@NotNull
-	private final ManageRequestControl manageRequestsControl;
-	@Getter
-	@NotNull
-	private final ManageUserReadControl manageUserReadsControl;
+	private final RequestBooksControl requestBooksControl;
 
 	@Setter
 	@Getter
@@ -43,11 +43,10 @@ public final class ContextImpl implements Context {
 	public ContextImpl(@NotNull Stage primaryStage, @NotNull Repository repository) {
 		this.primaryStage = primaryStage;
 		this.repository = repository;
+		this.borrowBooksControl = new BorrowBooksControl(repository);
 		this.manageBooksControl = new ManageBooksControl(repository);
-		this.manageBorrowsControl = new ManageBorrowControl(repository);
 		this.manageProfileControl = new ManageProfileControl(repository);
-		this.manageRequestsControl = new ManageRequestControl(repository);
-		this.manageUserReadsControl = new ManageUserReadControl(repository);
+		this.requestBooksControl = new RequestBooksControl(repository);
 	}
 
 	/**

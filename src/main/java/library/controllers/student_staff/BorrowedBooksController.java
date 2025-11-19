@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 import library.Context;
 import library.Main;
 import library.controllers.common.RequiresLoggedIn;
-import library.controls.ManageUserReadControl;
+import library.controls.BorrowBooksControl;
 import library.models.Book;
 import library.models.Borrow;
 import library.models.User;
@@ -114,9 +114,9 @@ public class BorrowedBooksController implements RequiresLoggedIn {
 		String title = currentRow.title;
 		String author = currentRow.author;
 
-		switch (context.getManageUserReadsControl().readBook(user, selectedBook)) {
-			case ManageUserReadControl.ReadResult.Success(String path) -> displayPdfFile(path, title, author);
-			case ManageUserReadControl.ReadResult.NewPdfGenerated(String path) -> {
+		switch (context.getBorrowBooksControl().readBook(user, selectedBook)) {
+			case BorrowBooksControl.ReadResult.Success(String path) -> displayPdfFile(path, title, author);
+			case BorrowBooksControl.ReadResult.NewPdfGenerated(String path) -> {
 				Alerts.showInfoDialog("PDF file not found, generating a new one...");
 				displayPdfFile(path, title, author);
 			}

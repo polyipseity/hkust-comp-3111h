@@ -9,14 +9,14 @@ import org.mapdb.DBMaker;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-class ManageRequestControlTest {
+class RequestBooksControlTest {
     private Repository repository;
-    private ManageRequestControl manageRequests;
+	private RequestBooksControl manageRequests;
 
     @BeforeEach
     void setUp() {
 	    repository = new Repository(DBMaker.memoryDirectDB());
-        manageRequests = new ManageRequestControl(repository);
+	    manageRequests = new RequestBooksControl(repository);
     }
 
     @Test
@@ -27,29 +27,29 @@ class ManageRequestControlTest {
 
         var requestResult = manageRequests.requestBook(user, "", "TEST_AUTHOR");
         assertInstanceOf(
-                ManageRequestControl.RequestResult.InvalidRequest.class,
+		        RequestBooksControl.RequestResult.InvalidRequest.class,
                 requestResult, "Invalid book title"
         );
 
         requestResult = manageRequests.requestBook(user, "TEST_TITLE", "");
         assertInstanceOf(
-                ManageRequestControl.RequestResult.InvalidRequest.class,
+		        RequestBooksControl.RequestResult.InvalidRequest.class,
                 requestResult, "Invalid author name"
         );
 
         requestResult = manageRequests.requestBook(user, "TEST_TITLE", "TEST_AUTHOR");
-        assertInstanceOf(ManageRequestControl.RequestResult.Success.class, requestResult);
+	    assertInstanceOf(RequestBooksControl.RequestResult.Success.class, requestResult);
 
         requestResult = manageRequests.requestBook(user, "TEST_TITLE", "TEST_AUTHOR");
         assertInstanceOf(
-                ManageRequestControl.RequestResult.RequestRepeated.class,
+		        RequestBooksControl.RequestResult.RequestRepeated.class,
                 requestResult, "Book request repeated"
         );
 
         requestResult = manageRequests.requestBook(user, "TEST_TITLE_2", "TEST_AUTHOR");
-        assertInstanceOf(ManageRequestControl.RequestResult.Success.class, requestResult);
+	    assertInstanceOf(RequestBooksControl.RequestResult.Success.class, requestResult);
 
         requestResult = manageRequests.requestBook(user, "TEST_TITLE", "TEST_AUTHOR_2");
-        assertInstanceOf(ManageRequestControl.RequestResult.Success.class, requestResult);
+	    assertInstanceOf(RequestBooksControl.RequestResult.Success.class, requestResult);
     }
 }
