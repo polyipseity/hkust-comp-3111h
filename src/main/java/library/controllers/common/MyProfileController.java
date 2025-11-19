@@ -6,7 +6,6 @@ import javafx.scene.text.Text;
 import library.Context;
 import library.Main;
 import library.controls.UserValidator;
-import library.models.User;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
@@ -44,11 +43,10 @@ public class MyProfileController implements RequiresLoggedIn {
 		UserValidator.Result result = UserValidator.DEFAULT.apply(getLoggedInUser()._1().username(), newPassword, newFullName);
 		switch (result) {
 			case UserValidator.Result.Success() -> {
-				User.Data newUserData = getLoggedInUser()._2()
-						.withPassword(newPassword)
-						.withFullName(newFullName);
 				try {
-					repository.userOps.update(getLoggedInUser()._1(), (_) -> newUserData);
+					repository.userOps.update(getLoggedInUser()._1(), user -> user
+							.withPassword(newPassword)
+							.withFullName(newFullName));
 					Alerts.showInfoDialog("Updated successfully");
 				} catch (TransactionException e) {
 					Alerts.showErrorDialog("Update Failed: " + e.getMessage());

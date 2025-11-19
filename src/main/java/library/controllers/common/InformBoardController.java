@@ -16,7 +16,9 @@ import library.persistence.TransactionException;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
-import java.util.*;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
 public class InformBoardController implements RequiresLoggedIn {
     Repository repository = Main.getContext().getRepository();
@@ -81,27 +83,24 @@ public class InformBoardController implements RequiresLoggedIn {
 
     @FXML
     private void ClearAll() throws TransactionException {
-	    repository.userNotificationOps.update(getLoggedInUser()._1(), current -> new String[0]);
+	    repository.userNotificationOps.update(getLoggedInUser()._1(), _ -> new String[0]);
         updateNotificationList();
     }
 
     @FXML
     private void AddNotif() throws TransactionException {
-	    repository.userNotificationOps.update(getLoggedInUser()._1(), currentNotifications -> {
-            String[] updated = Arrays.copyOf(currentNotifications, currentNotifications.length + 1);
-            updated[updated.length - 1] = "New notification message " + updated.length;
-            return updated;});
+	    repository.userNotificationOps.updateAsList(getLoggedInUser()._1(), currentNotifications -> {
+		    currentNotifications.add("New notification message " + currentNotifications.size() + 1);
+	    });
         updateNotificationList();
     }
 
     private void CloseNotif(String notificationText) throws TransactionException {
-        repository.userNotificationOps.update(
+	    repository.userNotificationOps.updateAsList(
                 getLoggedInUser()._1(),
-                current -> {
-                    List<String> newNotifList = new ArrayList<>(Arrays.asList(current));
-                    newNotifList.remove(notificationText);
-                    return newNotifList.toArray(new String[0]);
-                });
+			    current -> {
+				    current.remove(notificationText);
+			    });
         updateNotificationList();
     }
 }
