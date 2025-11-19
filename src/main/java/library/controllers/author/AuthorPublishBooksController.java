@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import library.Main;
+import library.SpringApplicationPackage.ChatService;
 import library.controllers.common.RequiresLoggedIn;
 import library.models.Author;
 import library.models.Book;
@@ -21,11 +22,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Optional;
 
-public final class AuthorPublishBooksController implements RequiresLoggedIn {
+
+public class AuthorPublishBooksController {
     private final Repository repository = Main.getContext().getRepository();
 
-
-    private ChatController chatController = new ChatController();
+    private final ChatService chatService = new ChatService();
 
     @FXML
     private TextField BookTitle, BookContent, BookAbstract;
@@ -62,10 +63,8 @@ public final class AuthorPublishBooksController implements RequiresLoggedIn {
         if(ContentTxt == null || BookTitle.getText() == null) {
             Alerts.showErrorDialog("You must enter the book title and upload the book content first!");
         }else{
-            var input = "Create a professional book abstract around 30 words for the book that summarizes the main themes and content. You should avoid"+
-                    "\"In this book...\" (redundant) \"In the novel...\" (obvious) \"This story is about...\" (weak opening) \"In [Title]...\" (formulaic)" +
-                    "title:" + BookTitle.getText() + " and content:" + ContentTxt;
-            var response = chatController.getResponse(input);
+            var input = "Base on the given title and content, generate a abstract for the book. Note you must return the abstract paragraph only and focusing on the content and title but not the author. Also, you must keep your response short that is under 30 words. title:" + BookTitle.getText() + " and content:" + ContentTxt;
+            var response = chatService.getResponse(input);
             BookAbstract.setText(response);
         }
     }

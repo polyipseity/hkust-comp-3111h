@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mapdb.DBMaker;
 import org.springframework.boot.SpringApplication;
-import org.springframework.context.ConfigurableApplicationContext;
 
 import java.util.Objects;
 
@@ -18,7 +17,6 @@ public final class Main extends Application {
 	@Nullable
 	@Setter(AccessLevel.PACKAGE)
 	private static Context context = null;
-    private ConfigurableApplicationContext springContext;
 
 	@NotNull
 	public static Context getContext() {
