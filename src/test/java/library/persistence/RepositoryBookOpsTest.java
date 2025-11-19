@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapdb.DBMaker;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -118,6 +119,7 @@ class RepositoryBookOpsTest {
 		final var result = assertDoesNotThrow(() -> ops.read(book));
 		assertTrue(result.isPresent());
 		assertEquals(data, result.get());
+		assertDoesNotThrow(() -> ops.readOrThrow(book));
 	}
 
 	@Test
@@ -126,6 +128,7 @@ class RepositoryBookOpsTest {
 
 		final var result = assertDoesNotThrow(() -> ops.read(book));
 		assertFalse(result.isPresent());
+		assertThrows(NoSuchElementException.class, () -> ops.readOrThrow(book));
 	}
 
 	@Test

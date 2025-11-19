@@ -25,6 +25,14 @@ public record RepositoryUserNotificationOps(Repository repository) {
 		return Optional.ofNullable(repository.userNotifications.get(user));
 	}
 
+	@NotNull
+	public String[] readOrThrow(@NotNull User user) {
+		return read(user)
+				.orElseThrow(() -> new NoSuchElementException(
+						"Not found: %s".formatted(user)));
+	}
+
+
 	public void update(@NotNull User user, @NotNull Function<@NotNull String[], @NotNull String[]> callback) throws TransactionException {
 		repository.transact(tx -> {
 			final var oldValue = tx.userNotifications().get(user);

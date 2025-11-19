@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -29,6 +30,13 @@ public record RepositoryBookOps(Repository repository) {
 	@NotNull
 	public Optional<Book.Data> read(@NotNull Book book) {
 		return Optional.ofNullable(repository.books.get(book));
+	}
+
+	@NotNull
+	public Book.Data readOrThrow(@NotNull Book book) {
+		return read(book)
+				.orElseThrow(() -> new NoSuchElementException(
+						"Not found: %s".formatted(book)));
 	}
 
 	public void update(@NotNull Book book, @NotNull Function<Book.@NotNull Data, Book.@NotNull Data> callback) throws TransactionException {

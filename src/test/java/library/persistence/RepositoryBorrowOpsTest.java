@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mapdb.DBMaker;
 
 import java.time.Duration;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -112,6 +113,7 @@ class RepositoryBorrowOpsTest {
 		final var opt = assertDoesNotThrow(() -> ops.read(user, book));
 		assertTrue(opt.isPresent());
 		assertNotNull(opt.get());
+		assertDoesNotThrow(() -> ops.readOrThrow(user, book));
 	}
 
 	@Test
@@ -120,6 +122,7 @@ class RepositoryBorrowOpsTest {
 		final var book = new Book("nonexistent", new Author.ByRef(new User("author")));
 		final var opt = assertDoesNotThrow(() -> ops.read(user, book));
 		assertFalse(opt.isPresent());
+		assertThrows(NoSuchElementException.class, () -> ops.readOrThrow(user, book));
 	}
 
 	@Test

@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapdb.DBMaker;
 
+import java.util.NoSuchElementException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class RepositoryUserOpsTest {
@@ -146,12 +148,14 @@ class RepositoryUserOpsTest {
 		final var opt = assertDoesNotThrow(() -> ops.read(user));
 		assertTrue(opt.isPresent());
 		assertEquals(data, opt.get());
+		assertDoesNotThrow(() -> ops.readOrThrow(user));
 	}
 
 	@Test
 	void read_missing() {
 		final var unknown = new User("unknown");
 		assertFalse(ops.read(unknown).isPresent());
+		assertThrows(NoSuchElementException.class, () -> ops.readOrThrow(unknown));
 	}
 
 	@Test

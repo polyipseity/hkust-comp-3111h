@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapdb.DBMaker;
 
+import java.util.NoSuchElementException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class RepositoryUserNotificationOpsTest {
@@ -71,6 +73,7 @@ class RepositoryUserNotificationOpsTest {
 		final var opt = assertDoesNotThrow(() -> ops.read(reader));
 		assertTrue(opt.isPresent(), "Expected notifications to be present");
 		assertArrayEquals(new String[]{"n1", "n2"}, opt.get());
+		assertDoesNotThrow(() -> ops.readOrThrow(reader));
 	}
 
 	@Test
@@ -82,6 +85,7 @@ class RepositoryUserNotificationOpsTest {
 		final var opt = assertDoesNotThrow(() -> ops.read(reader));
 		assertTrue(opt.isPresent(), "Expected notifications to be present");
 		assertArrayEquals(new String[]{}, opt.get());
+		assertDoesNotThrow(() -> ops.readOrThrow(reader));
 	}
 
 	@Test
@@ -90,6 +94,7 @@ class RepositoryUserNotificationOpsTest {
 		final var opt = assertDoesNotThrow(() -> ops.read(missing));
 		assertFalse(opt.isPresent(), "Expected no notifications for unknown user");
 		assertFalse(repository.userNotifications.containsKey(missing));
+		assertThrows(NoSuchElementException.class, () -> ops.readOrThrow(missing));
 	}
 
 	@Test

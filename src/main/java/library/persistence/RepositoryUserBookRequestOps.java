@@ -6,6 +6,7 @@ import library.utils.Tuple2;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -30,6 +31,14 @@ public record RepositoryUserBookRequestOps(Repository repository) {
 	public Optional<BookRequest.Data> read(@NotNull User user, @NotNull BookRequest bookRequest) {
 		return Optional.ofNullable(repository.userBookRequests.get(new Object[]{user, bookRequest}));
 	}
+
+	@NotNull
+	public BookRequest.Data readOrThrow(@NotNull User user, @NotNull BookRequest bookRequest) {
+		return read(user, bookRequest)
+				.orElseThrow(() -> new NoSuchElementException(
+						"Not found: %s, %s".formatted(user, bookRequest)));
+	}
+
 
 	@NotNull
 	public Map<BookRequest, BookRequest.Data> read(@NotNull User user) {
