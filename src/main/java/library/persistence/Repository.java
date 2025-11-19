@@ -2,6 +2,7 @@ package library.persistence;
 
 import library.models.*;
 import library.utils.ThrowingFunction;
+import library.utils.Tuple2;
 import org.jetbrains.annotations.NotNull;
 import org.mapdb.*;
 import org.mapdb.serializer.SerializerArray;
@@ -9,7 +10,6 @@ import org.mapdb.serializer.SerializerArrayTuple;
 
 import java.io.Closeable;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Supplier;
 
 public final class Repository implements Closeable {
 	@NotNull
@@ -23,24 +23,62 @@ public final class Repository implements Closeable {
 	@NotNull
 	public final RepositoryBorrowOps borrowOps = new RepositoryBorrowOps(this);
 	@NotNull
-	final DB db;
+	private final DBMaker.Maker dbMaker;
 	@NotNull
-	final HTreeMap<User, User.Data> users;
+	DB db;
 	@NotNull
-	final HTreeMap<Book, Book.Data> books;
+	HTreeMap<User, User.Data> users;
 	@NotNull
-	final HTreeMap<User, String[]> userNotifications;
+	HTreeMap<Book, Book.Data> books;
 	@NotNull
-	final BTreeMap<Object[], BookRequest.Data> userBookRequests; // key: (User, BookRequest)
+	HTreeMap<User, String[]> userNotifications;
 	@NotNull
-	final BTreeMap<Object[], Borrow> borrows; // key: (User, Book)
+	BTreeMap<Object[], BookRequest.Data> userBookRequests; // key: (User, BookRequest)
+	@NotNull
+	BTreeMap<Object[], Borrow> borrows; // key: (User, Book)
 	@NotNull
 	final ReentrantLock transactLock = new ReentrantLock();
 
-	@SuppressWarnings("SwitchStatementWithTooFewBranches")
-	public Repository(@NotNull Supplier<DBMaker.Maker> dbMaker) {
-		this.db = dbMaker.get().transactionEnable().make();
+	@SuppressWarnings("PatternVariableHidesField")
+	public Repository(@NotNull DBMaker.Maker dbMaker) {
+		this.dbMaker = dbMaker.transactionEnable();
+		switch (open()) {
+			case Tuple2(
+					final var db, TransactData(
+					final var users, final var books, final var userNotifications, final var userBookRequests, final var borrows
+			)
+			) -> {
+				this.db = db;
+				this.users = users;
+				this.books = books;
+				this.userNotifications = userNotifications;
+				this.userBookRequests = userBookRequests;
+				this.borrows = borrows;
+			}
+		}
+	}
 
+	@SuppressWarnings("PatternVariableHidesField")
+	private void reopen() {
+		db.close();
+		switch (open()) {
+			case Tuple2(
+					final var db, TransactData(
+					final var users, final var books, final var userNotifications, final var userBookRequests, final var borrows
+			)
+			) -> {
+				this.db = db;
+				this.users = users;
+				this.books = books;
+				this.userNotifications = userNotifications;
+				this.userBookRequests = userBookRequests;
+				this.borrows = borrows;
+			}
+		}
+	}
+
+	@NotNull
+	private Tuple2<DB, TransactData> open() {
 		final var userS = new User.S();
 		final var userDataS = new User.Data.S();
 		final var authorS = new Author.S(userS);
@@ -52,23 +90,22 @@ public final class Repository implements Closeable {
 		final var bookDataS = new Book.Data.S(bookS);
 		final var borrowS = new Borrow.S();
 
+		final var db = dbMaker.make();
 		final var this2 = this;
-		this.users = db.hashMap("users", userS, userDataS).modificationListener(((key, oldValue, newValue, _) -> {
+		final var users = db.hashMap("users", userS, userDataS).modificationListener(((key, oldValue, newValue, _) -> {
 			if (oldValue != null && newValue == null) {
 				final var key2 = new Object[]{key};
-				for (final var bookKey : this2.books.getKeys()) {
-					switch (bookKey) {
-						case Book(_, Author.ByRef(final var val), _) when key.equals(val) -> this2.books.remove(bookKey);
-						default -> {
-						}
+				for (final var bookKey : books.getKeys()) {
+					if (bookKey instanceof Book(_, Author.ByRef(final var val), _) && key.equals(val)) {
+						books.remove(bookKey);
 					}
 				}
-				this2.userNotifications.remove(key);
-				this2.userBookRequests.prefixSubMap(key2).clear();
-				this2.borrows.prefixSubMap(key2).clear();
+				userNotifications.remove(key);
+				userBookRequests.prefixSubMap(key2).clear();
+				borrows.prefixSubMap(key2).clear();
 			}
 		})).createOrOpen();
-		this.books = db.hashMap("books", bookS, bookDataS).modificationListener((key, oldValue, newValue, _) -> {
+		final var books = db.hashMap("books", bookS, bookDataS).modificationListener((key, oldValue, newValue, _) -> {
 			if (oldValue == null) {
 				switch (newValue) {
 					case Book.Data(_, _, _, _, final Book original, _) -> {
@@ -104,9 +141,9 @@ public final class Repository implements Closeable {
 								case Book.Data data -> this2.books.put(other, data.withOriginalOrModified(null));
 							}
 						}
-						for (final var userBookBorrowKey : this2.borrows.getKeys()) {
+						for (final var userBookBorrowKey : borrows.getKeys()) {
 							if (key.equals(userBookBorrowKey[1])) {
-								this2.borrows.remove(userBookBorrowKey);
+								borrows.remove(userBookBorrowKey);
 							}
 						}
 					}
@@ -116,12 +153,12 @@ public final class Repository implements Closeable {
 			}
 		}).createOrOpen();
 
-		this.userNotifications = db.hashMap("userNotifications", userS, new SerializerArray<>(Serializer.STRING, String.class)).valueLoader(key -> users.containsKey(key) ? new String[0] : null).modificationListener((key, oldValue, newValue, triggered) -> {
+		final var userNotifications = db.hashMap("userNotifications", userS, new SerializerArray<>(Serializer.STRING, String.class)).valueLoader(key -> users.containsKey(key) ? new String[0] : null).modificationListener((key, oldValue, newValue, _) -> {
 			if (oldValue == null && newValue != null && !users.containsKey(key)) {
-						throw new IllegalStateException("User not found");
+				throw new IllegalStateException("User not found");
 			}
 		}).createOrOpen();
-		this.userBookRequests = db.treeMap("userBookRequests", new SerializerArrayTuple(userS, bookRequestS), bookRequestDataS).modificationListener((key, oldValue, newValue, _) -> {
+		final var userBookRequests = db.treeMap("userBookRequests", new SerializerArrayTuple(userS, bookRequestS), bookRequestDataS).modificationListener((key, oldValue, newValue, _) -> {
 			if (oldValue == null && newValue != null) {
 				@SuppressWarnings("SuspiciousMethodCalls") final var containsUser = users.containsKey(key[0]);
 				if (!containsUser) {
@@ -129,7 +166,7 @@ public final class Repository implements Closeable {
 				}
 			}
 		}).createOrOpen();
-		this.borrows = db.treeMap("borrows", new SerializerArrayTuple(userS, bookS), borrowS).modificationListener((key, oldValue, newValue, _) -> {
+		final var borrows = db.treeMap("borrows", new SerializerArrayTuple(userS, bookS), borrowS).modificationListener((key, oldValue, newValue, _) -> {
 			if (oldValue == null && newValue != null) {
 				@SuppressWarnings("SuspiciousMethodCalls") final var containsUser = users.containsKey(key[0]);
 				if (!containsUser) {
@@ -141,6 +178,8 @@ public final class Repository implements Closeable {
 				}
 			}
 		}).createOrOpen();
+
+		return new Tuple2<>(db, new TransactData(users, books, userNotifications, userBookRequests, borrows));
 	}
 
 	public void transact(@NotNull ThrowingFunction<@NotNull TransactData, @NotNull Boolean> action, String message) throws TransactionException {
@@ -154,9 +193,11 @@ public final class Repository implements Closeable {
 			}
 		} catch (DummyException exception) {
 			db.rollback();
+			reopen();
 			throw new TransactionException(message);
 		} catch (Exception exception) {
 			db.rollback();
+			reopen();
 			throw new TransactionException(exception);
 		} finally {
 			transactLock.unlock();

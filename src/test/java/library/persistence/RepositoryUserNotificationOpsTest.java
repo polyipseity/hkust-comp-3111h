@@ -34,7 +34,7 @@ class RepositoryUserNotificationOpsTest {
 	@BeforeEach
 	void setUp() throws TransactionException {
 		// use an in‑memory MapDB instance – the same as used in RepositoryTest
-		repository = new Repository(DBMaker::memoryDirectDB);
+		repository = new Repository(DBMaker.memoryDirectDB());
 		ops = new RepositoryUserNotificationOps(repository);
 
 		repository.transact(RepositoryUserNotificationOpsTest::populate);

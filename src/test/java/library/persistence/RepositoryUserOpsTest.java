@@ -16,7 +16,7 @@ class RepositoryUserOpsTest {
 	@BeforeEach
 	void setUp() {
 		// create an in-memory MapDB instance for each test
-		repository = new Repository(DBMaker::memoryDirectDB);
+		repository = new Repository(DBMaker.memoryDirectDB());
 		ops = new RepositoryUserOps(repository);
 	}
 

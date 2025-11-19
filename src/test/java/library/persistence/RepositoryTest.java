@@ -57,7 +57,8 @@ class RepositoryTest {
 		Files.deleteIfExists(file);
 		final var file2 = file.toFile();
 		file2.deleteOnExit();
-		repository = new Repository(() -> DBMaker.fileDB(file2));
+		// Requires persistence across rollbacks
+		repository = new Repository(DBMaker.fileDB(file2));
 	}
 
 	@AfterEach

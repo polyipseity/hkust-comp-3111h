@@ -20,7 +20,7 @@ class RepositoryUserBookRequestOpsTest {
 	@BeforeEach
 	void setUp() {
 		// Fresh in‑memory DB for every test
-		repository = new Repository(DBMaker::memoryDirectDB);
+		repository = new Repository(DBMaker.memoryDirectDB());
 		ops = new RepositoryUserBookRequestOps(repository);
 	}
 

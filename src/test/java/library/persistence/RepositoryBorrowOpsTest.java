@@ -4,7 +4,6 @@ import library.models.Author;
 import library.models.Book;
 import library.models.Borrow;
 import library.models.User;
-import library.utils.ByteArray;
 import library.utils.TimeUtil;
 import library.utils.Tuple2;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +39,7 @@ class RepositoryBorrowOpsTest {
 
 	@BeforeEach
 	void setUp() throws TransactionException {
-		repository = new Repository(DBMaker::memoryDirectDB);
+		repository = new Repository(DBMaker.memoryDirectDB());
 		ops = new RepositoryBorrowOps(repository);
 
 		repository.transact(RepositoryBorrowOpsTest::populate);

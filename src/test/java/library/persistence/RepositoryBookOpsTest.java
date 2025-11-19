@@ -18,7 +18,7 @@ class RepositoryBookOpsTest {
 	@BeforeEach
 	void setUp() {
 		// Create a fresh in‑memory DB for every test
-		repository = new Repository(DBMaker::memoryDirectDB);
+		repository = new Repository(DBMaker.memoryDirectDB());
 		ops = new RepositoryBookOps(repository);
 	}
 
