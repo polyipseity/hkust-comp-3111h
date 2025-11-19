@@ -75,7 +75,7 @@ public class PendingApprovalsController extends DynamicTableController<PendingAp
 						}),
 						new Tuple2<>("Approve", _ -> {
 							try {
-								switch (Main.getContext().getManageBooks().approveBook(book)) {
+								switch (Main.getContext().getManageBooksControl().approveBook(book)) {
 									case ManageBooksControl.ApproveResult.Success _ -> {
 									}
 								}
@@ -85,7 +85,7 @@ public class PendingApprovalsController extends DynamicTableController<PendingAp
 						}),
 						new Tuple2<>("Reject", _ -> {
 							try {
-								switch (Main.getContext().getManageBooks().rejectBook(book)) {
+								switch (Main.getContext().getManageBooksControl().rejectBook(book)) {
 									case ManageBooksControl.RejectResult.Success _ -> {
 
 									}

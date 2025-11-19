@@ -47,7 +47,7 @@ public class LoginController implements DependsOnRole, RequiresLoggedOut {
 		String password = passwordField.getText();
 
 		final var context = Main.getContext();
-		switch (context.getManageProfile().login(getRole(), username, password)) {
+		switch (context.getManageProfileControl().login(getRole(), username, password)) {
 			case ManageProfileControl.LoginResult.Success(final var user, final var data) -> {
 				context.setLoggedInUser(new Tuple2<>(user, data));
 				Main.getContext().setScene((switch (getRole()) {

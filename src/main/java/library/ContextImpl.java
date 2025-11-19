@@ -22,10 +22,10 @@ public final class ContextImpl implements Context {
 	private final Repository repository;
 	@Getter
 	@NotNull
-	private final ManageBooksControl manageBooks;
+	private final ManageBooksControl manageBooksControl;
 	@Getter
 	@NotNull
-	private final ManageProfileControl manageProfile;
+	private final ManageProfileControl manageProfileControl;
 
 	@Setter
 	@Getter
@@ -35,8 +35,8 @@ public final class ContextImpl implements Context {
 	public ContextImpl(@NotNull Stage primaryStage, @NotNull Repository repository) {
 		this.primaryStage = primaryStage;
 		this.repository = repository;
-		this.manageBooks = new ManageBooksControl(repository);
-		this.manageProfile = new ManageProfileControl(repository);
+		this.manageBooksControl = new ManageBooksControl(repository);
+		this.manageProfileControl = new ManageProfileControl(repository);
 	}
 
 	/**

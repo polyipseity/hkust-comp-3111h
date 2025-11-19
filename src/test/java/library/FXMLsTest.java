@@ -39,11 +39,14 @@ class FXMLsTest {
 		}
 		final var context = new Context() {
 			@Getter
+			@NotNull
 			private final Repository repository = new Repository(DBMaker.memoryDirectDB());
 			@Getter
-			private final ManageBooksControl manageBooks = new ManageBooksControl(repository);
+			@NotNull
+			private final ManageBooksControl manageBooksControl = new ManageBooksControl(repository);
 			@Getter
-			private final ManageProfileControl manageProfile = new ManageProfileControl(repository);
+			@NotNull
+			private final ManageProfileControl manageProfileControl = new ManageProfileControl(repository);
 
 			@Getter
 			@NotNull

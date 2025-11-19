@@ -19,9 +19,9 @@ public interface Context extends Closeable {
 
 	@NotNull Repository getRepository();
 
-	@NotNull ManageProfileControl getManageProfile();
+	@NotNull ManageBooksControl getManageBooksControl();
 
-	@NotNull ManageBooksControl getManageBooks();
+	@NotNull ManageProfileControl getManageProfileControl();
 
 	@Nullable
 	Tuple2<User, User.Data> getLoggedInUser();
