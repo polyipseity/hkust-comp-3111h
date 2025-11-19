@@ -2,7 +2,7 @@ package library.persistence;
 
 import library.models.*;
 import library.utils.ThrowingFunction;
-import library.utils.Tuple2;
+import library.utils.Tuple6;
 import org.jetbrains.annotations.NotNull;
 import org.mapdb.*;
 import org.mapdb.serializer.SerializerArray;
@@ -40,46 +40,30 @@ public final class Repository implements Closeable {
 	@NotNull
 	BTreeMap<Object[], Borrow> borrows; // key: (User, Book)
 
-	@SuppressWarnings("PatternVariableHidesField")
 	public Repository(@NotNull DBMaker.Maker dbMaker) {
 		this.dbMaker = dbMaker.transactionEnable();
-		switch (open()) {
-			case Tuple2(
-					final var db, TransactData(
-					final var users, final var books, final var userNotifications, final var userBookRequests, final var borrows
-			)
-			) -> {
-				this.db = db;
-				this.users = users;
-				this.books = books;
-				this.userNotifications = userNotifications;
-				this.userBookRequests = userBookRequests;
-				this.borrows = borrows;
-			}
-		}
+		final var stores = open();
+		this.db = stores._1();
+		this.users = stores._2();
+		this.books = stores._3();
+		this.userNotifications = stores._4();
+		this.userBookRequests = stores._5();
+		this.borrows = stores._6();
 	}
 
-	@SuppressWarnings("PatternVariableHidesField")
 	private void reopen() {
 		db.close();
-		switch (open()) {
-			case Tuple2(
-					final var db, TransactData(
-					final var users, final var books, final var userNotifications, final var userBookRequests, final var borrows
-			)
-			) -> {
-				this.db = db;
-				this.users = users;
-				this.books = books;
-				this.userNotifications = userNotifications;
-				this.userBookRequests = userBookRequests;
-				this.borrows = borrows;
-			}
-		}
+		final var stores = open();
+		this.db = stores._1();
+		this.users = stores._2();
+		this.books = stores._3();
+		this.userNotifications = stores._4();
+		this.userBookRequests = stores._5();
+		this.borrows = stores._6();
 	}
 
 	@NotNull
-	private Tuple2<DB, TransactData> open() {
+	private Tuple6<DB, HTreeMap<User, User.Data>, HTreeMap<Book, Book.Data>, HTreeMap<User, String[]>, BTreeMap<Object[], BookRequest.Data>, BTreeMap<Object[], Borrow>> open() {
 		final var userS = new User.S();
 		final var userDataS = new User.Data.S();
 		final var authorS = new Author.S(userS);
@@ -180,13 +164,13 @@ public final class Repository implements Closeable {
 			}
 		}).createOrOpen();
 
-		return new Tuple2<>(db, new TransactData(users, books, userNotifications, userBookRequests, borrows));
+		return new Tuple6<>(db, users, books, userNotifications, userBookRequests, borrows);
 	}
 
 	public void transact(@NotNull ThrowingFunction<@NotNull TransactData, @NotNull Boolean> action, @NotNull Supplier<String> rollbackMessageSupplier) throws TransactionException {
 		transactLock.lock();
 		try {
-			if (!action.apply(new TransactData(users, books, userNotifications, userBookRequests, borrows))) {
+			if (!action.apply(new TransactData())) {
 				throw new DummyException();
 			}
 			if (transactLock.getHoldCount() == 1) {
@@ -217,9 +201,25 @@ public final class Repository implements Closeable {
 	private final static class DummyException extends Exception {
 	}
 
-	public record TransactData(@NotNull HTreeMap<User, User.Data> users, @NotNull HTreeMap<Book, Book.Data> books,
-	                           @NotNull HTreeMap<User, String[]> userNotifications,
-	                           @NotNull BTreeMap<Object[], BookRequest.Data> userBookRequests,
-	                           @NotNull BTreeMap<Object[], Borrow> borrows) {
+	public final class TransactData {
+		public @NotNull HTreeMap<User, User.Data> users() {
+			return users;
+		}
+
+		public @NotNull HTreeMap<Book, Book.Data> books() {
+			return books;
+		}
+
+		public @NotNull HTreeMap<User, String[]> userNotifications() {
+			return userNotifications;
+		}
+
+		public @NotNull BTreeMap<Object[], BookRequest.Data> userBookRequests() {
+			return userBookRequests;
+		}
+
+		public @NotNull BTreeMap<Object[], Borrow> borrows() {
+			return borrows;
+		}
 	}
 }
