@@ -1,10 +1,14 @@
 package library.utils;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.value.ObservableBooleanValue;
+import javafx.scene.Cursor;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public enum Alerts {
 	;
@@ -17,7 +21,31 @@ public enum Alerts {
 		new Alert(Alert.AlertType.ERROR, message).showAndWait();
 	}
 
-    public static Optional<ButtonType> showConfirmDialog(String message) {
+	@NotNull
+	public static Optional<ButtonType> showConfirmDialog(@NotNull String message) {
         return new Alert(Alert.AlertType.CONFIRMATION, message).showAndWait();
-    }
+	}
+
+	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
+	public static boolean showLoadingDialog(@NotNull String message, @NotNull ObservableBooleanValue running) {
+		final var alert = new Alert(Alert.AlertType.NONE, message);
+		final var dialog = alert.getDialogPane();
+
+		dialog.getButtonTypes().add(ButtonType.CANCEL);
+		dialog.cursorProperty().bind(
+				Bindings.when(running)
+						.then(Cursor.WAIT)
+						.otherwise(Cursor.DEFAULT)
+		);
+
+		final var completed = new AtomicBoolean(false);
+		running.addListener((_, oldValue, newValue) -> {
+			if (oldValue && !newValue) {
+				completed.set(true);
+				alert.close();
+			}
+		});
+		alert.showAndWait();
+		return completed.get();
+	}
 }

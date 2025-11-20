@@ -13,8 +13,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class ContextImpl implements Context {
-	public static final int WINDOW_INITIAL_WIDTH = 640;
-	public static final int WINDOW_INITIAL_HEIGHT = 480;
+	public static final double WINDOW_INITIAL_WIDTH = 640;
+	public static final double WINDOW_INITIAL_HEIGHT = 480;
 
 	@Getter
 	@NotNull
@@ -22,6 +22,9 @@ public final class ContextImpl implements Context {
 	@Getter
 	@NotNull
 	private final Repository repository;
+	@Getter
+	@NotNull
+	private final BookDownloadControl bookDownloadControl;
 	@Getter
 	@NotNull
 	private final BorrowBooksControl borrowBooksControl;
@@ -55,12 +58,13 @@ public final class ContextImpl implements Context {
 	public ContextImpl(@NotNull Stage primaryStage, @NotNull Repository repository) {
 		this.primaryStage = primaryStage;
 		this.repository = repository;
+		this.bookDownloadControl = new BookDownloadControl();
 		this.borrowBooksControl = new BorrowBooksControl(repository);
 		this.manageBooksControl = new ManageBooksControl(repository);
 		this.manageNotificationsControl = new ManageNotificationsControl();
 		this.manageProfileControl = new ManageProfileControl(repository);
-		this.manageUsersControl = new ManageUsersControl();
-		this.publishBooksControl = new PublishBooksControl();
+		this.manageUsersControl = new ManageUsersControl(repository);
+		this.publishBooksControl = new PublishBooksControl(repository);
 		this.requestBooksControl = new RequestBooksControl(repository);
 		this.statsControl = new StatsControl();
 	}

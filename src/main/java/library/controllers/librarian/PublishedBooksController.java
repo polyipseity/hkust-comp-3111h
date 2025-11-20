@@ -1,18 +1,28 @@
 package library.controllers.librarian;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import library.FXMLs;
 import library.Main;
 import library.controllers.common.DynamicTableController;
 import library.controllers.common.RequiresLoggedIn;
+import library.controllers.common.TextViewController;
+import library.controls.ManageBooksControl;
 import library.models.Author;
 import library.models.Book;
 import library.models.User;
+import library.persistence.TransactionException;
+import library.utils.Alerts;
 import library.utils.TimeUtil;
+import library.utils.Tuple2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
@@ -45,6 +55,7 @@ public final class PublishedBooksController implements RequiresLoggedIn, Initial
 				.stream()
 				.map(entry ->
 						new Data(
+								this,
 								entry.getKey(),
 								entry.getValue(),
 								switch (entry.getKey().author()) {
@@ -65,7 +76,8 @@ public final class PublishedBooksController implements RequiresLoggedIn, Initial
 		ACTIONS
 	}
 
-	public record Data(@NotNull Book book,
+	public record Data(@NotNull PublishedBooksController controller,
+	                   @NotNull Book book,
 	                   @NotNull Book.Data bookData,
 	                   @NotNull String authorFullName)
 			implements Function<@NotNull Keys, DynamicTableController.@NotNull Data> {
@@ -78,14 +90,41 @@ public final class PublishedBooksController implements RequiresLoggedIn, Initial
 		@Override
 		public DynamicTableController.@NotNull Data apply(@NotNull Keys key) {
 			return switch (key) {
-				case TITLE -> new DynamicTableController.Data.Value(book.title());
-				case AUTHOR_FULL_NAME -> new DynamicTableController.Data.Value(authorFullName);
-				case PUBLISH_DATE -> new DynamicTableController.Data.Value(
+				case TITLE -> new DynamicTableController.Data.Text(book.title());
+				case AUTHOR_FULL_NAME -> new DynamicTableController.Data.Text(authorFullName);
+				case PUBLISH_DATE -> new DynamicTableController.Data.Text(
 						bookData.publishDate() == null
 								? ""
 								: TimeUtil.toStringZonedLocal(bookData.publishDate()));
-				case TIMES_BORROWED -> new DynamicTableController.Data.Value(String.valueOf(bookData.timesBorrowed()));
-				case ACTIONS -> new DynamicTableController.Data.Value("view delete");
+				case TIMES_BORROWED -> new DynamicTableController.Data.Text(String.valueOf(bookData.timesBorrowed()));
+				case ACTIONS -> DynamicTableController.Data.Graphic.ofButtons(
+						new Tuple2<>(new SimpleStringProperty("View"), (_, _) -> {
+							try {
+								Main.getContext().newWindow(
+										TextViewController.WINDOW_TITLE.formatted(book.title()),
+										FXMLs.COMMON_TEXT_VIEW.load(loader -> loader.<TextViewController>getController().setContent(bookData.content())),
+										null
+								).show();
+							} catch (IOException e) {
+								Alerts.showErrorDialog(e.getLocalizedMessage());
+							}
+						}),
+						new Tuple2<>(new SimpleStringProperty("Delete"), (_, _) -> {
+							if (!Alerts.showConfirmDialog("Delete '%s'? All borrowing privileges for this book will be revoked.".formatted(book.title()))
+									.map(ButtonType::getButtonData)
+									.map(ButtonBar.ButtonData::isDefaultButton)
+									.orElse(false)) {
+								return;
+							}
+							try {
+								switch (Main.getContext().getManageBooksControl().deleteBook(book)) {
+									case ManageBooksControl.DeleteResult.Success _ -> controller.tableController.removeDatum(this);
+								}
+							} catch (TransactionException e) {
+								Alerts.showErrorDialog(e.getLocalizedMessage());
+							}
+						})
+				);
 			};
 		}
 	}

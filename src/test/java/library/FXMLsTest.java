@@ -42,6 +42,9 @@ class FXMLsTest {
 			private final Repository repository = new Repository(DBMaker.memoryDirectDB());
 			@Getter
 			@NotNull
+			private final BookDownloadControl bookDownloadControl = new BookDownloadControl();
+			@Getter
+			@NotNull
 			private final BorrowBooksControl borrowBooksControl = new BorrowBooksControl(repository);
 			@Getter
 			@NotNull
@@ -54,10 +57,10 @@ class FXMLsTest {
 			private final ManageProfileControl manageProfileControl = new ManageProfileControl(repository);
 			@Getter
 			@NotNull
-			private final ManageUsersControl manageUsersControl = new ManageUsersControl();
+			private final ManageUsersControl manageUsersControl = new ManageUsersControl(repository);
 			@Getter
 			@NotNull
-			private final PublishBooksControl publishBooksControl = new PublishBooksControl();
+			private final PublishBooksControl publishBooksControl = new PublishBooksControl(repository);
 			@Getter
 			@NotNull
 			private final RequestBooksControl requestBooksControl = new RequestBooksControl(repository);

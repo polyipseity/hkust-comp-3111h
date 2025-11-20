@@ -1,14 +1,19 @@
 package library.controllers.librarian;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import library.Main;
 import library.controllers.common.DynamicTableController;
 import library.controllers.common.RequiresLoggedIn;
+import library.controls.RequestBooksControl;
 import library.models.BookRequest;
 import library.models.User;
+import library.persistence.TransactionException;
+import library.utils.Alerts;
 import library.utils.TimeUtil;
+import library.utils.Tuple2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,6 +49,7 @@ public final class BookRequestsController implements RequiresLoggedIn, Initializ
 				.entrySet()
 				.stream()
 				.map(entry -> new Data(
+						this,
 						entry.getKey()._1(),
 						entry.getKey()._2(),
 						entry.getValue()))
@@ -58,7 +64,8 @@ public final class BookRequestsController implements RequiresLoggedIn, Initializ
 		ACTIONS
 	}
 
-	public record Data(@NotNull User user,
+	public record Data(@NotNull BookRequestsController controller,
+	                   @NotNull User user,
 	                   @NotNull BookRequest bookRequest,
 	                   @NotNull BookRequest.Data bookRequestData)
 			implements Function<@NotNull Keys, DynamicTableController.@NotNull Data> {
@@ -71,12 +78,31 @@ public final class BookRequestsController implements RequiresLoggedIn, Initializ
 		@Override
 		public DynamicTableController.@NotNull Data apply(@NotNull Keys key) {
 			return switch (key) {
-				case TITLE -> new DynamicTableController.Data.Value(bookRequest.title());
-				case AUTHOR -> new DynamicTableController.Data.Value(bookRequest.author());
-				case USER -> new DynamicTableController.Data.Value(user.username());
-				case REQUEST_DATE -> new DynamicTableController.Data.Value(
+				case TITLE -> new DynamicTableController.Data.Text(bookRequest.title());
+				case AUTHOR -> new DynamicTableController.Data.Text(bookRequest.author());
+				case USER -> new DynamicTableController.Data.Text(user.username());
+				case REQUEST_DATE -> new DynamicTableController.Data.Text(
 						TimeUtil.toStringZonedLocal(bookRequestData.requestDate()));
-				case ACTIONS -> new DynamicTableController.Data.Value("confirm reject");
+				case ACTIONS -> DynamicTableController.Data.Graphic.ofButtons(
+						new Tuple2<>(new SimpleStringProperty("Confirm"), (_, _) -> {
+							try {
+								switch (Main.getContext().getRequestBooksControl().approveRequest(user, bookRequest)) {
+									case RequestBooksControl.ApproveResult.Success _ -> controller.tableController.removeDatum(this);
+								}
+							} catch (TransactionException e) {
+								Alerts.showErrorDialog(e.getLocalizedMessage());
+							}
+						}),
+						new Tuple2<>(new SimpleStringProperty("Reject"), (_, _) -> {
+							try {
+								switch (Main.getContext().getRequestBooksControl().rejectRequest(user, bookRequest)) {
+									case RequestBooksControl.RejectResult.Success _ -> controller.tableController.removeDatum(this);
+								}
+							} catch (TransactionException e) {
+								Alerts.showErrorDialog(e.getLocalizedMessage());
+							}
+						})
+				);
 			};
 		}
 	}

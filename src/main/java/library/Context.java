@@ -21,6 +21,8 @@ public interface Context extends Closeable {
 
 	@NotNull Repository getRepository();
 
+	@NotNull BookDownloadControl getBookDownloadControl();
+
 	@NotNull BorrowBooksControl getBorrowBooksControl();
 
 	@NotNull ManageBooksControl getManageBooksControl();

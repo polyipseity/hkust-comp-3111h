@@ -1,25 +1,25 @@
 package library.controllers.librarian;
 
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.Node;
 import library.controllers.common.CommonDashboardController;
 
 public final class DashboardController extends CommonDashboardController {
-	public AnchorPane pendingApprovals;
+	public Node pendingApprovals;
 	public PendingApprovalsController pendingApprovalsController;
 
-	public AnchorPane manageUsers;
+	public Node manageUsers;
 	public ManageUsersController manageUsersController;
 
-	public AnchorPane borrowedBooks;
+	public Node borrowedBooks;
 	public BorrowedBooksController borrowedBooksController;
 
-	public AnchorPane publishedBooks;
+	public Node publishedBooks;
 	public PublishedBooksController publishedBooksController;
 
-	public AnchorPane bookRequests;
+	public Node bookRequests;
 	public BookRequestsController bookRequestsController;
 
-	public AnchorPane bookDownload;
+	public Node bookDownload;
 	public BookDownloadController bookDownloadController;
 
 	public void loadPendingApprovals() {

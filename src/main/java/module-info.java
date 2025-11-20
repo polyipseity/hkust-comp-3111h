@@ -1,15 +1,18 @@
 @SuppressWarnings("Java9RedundantRequiresStatement")
 module library {
+	requires com.fasterxml.jackson.annotation;
+	requires com.fasterxml.jackson.databind;
 	requires com.github.librepdf.openpdf;
 	requires java.desktop;
+	requires java.net.http;
 	requires java.prefs;
 	requires java.sql;
 	requires javafx.base;
 	requires javafx.controls;
 	requires javafx.fxml;
 	requires javafx.graphics;
-	requires kotlin.stdlib;
 	requires javafx.swing;
+	requires kotlin.stdlib;
 	requires mapdb;
 	requires org.jetbrains.annotations;
     requires org.icepdf.core;
@@ -39,6 +42,7 @@ module library {
 	exports library.controllers.student_staff;
 	exports library.controls;
 	exports library.models;
+	exports library.models.json;
 	exports library.persistence;
 	exports library.utils;
 
@@ -50,6 +54,7 @@ module library {
 	opens library.controllers.student_staff;
 	opens library.controls;
 	opens library.models;
+	opens library.models.json;
 	opens library.persistence;
 	opens library.utils;
     exports library.SpringApplicationPackage;
