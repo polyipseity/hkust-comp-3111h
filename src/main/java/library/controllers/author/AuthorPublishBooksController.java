@@ -53,7 +53,7 @@ public final class AuthorPublishBooksController implements RequiresLoggedIn {
                 }
                 String content = Files.readString(file.toPath());
                 ContentTxt = Files.readString(file.toPath());
-                BookContent.setText(content);
+                BookContent.setText(file.getName());
             } catch (IOException e) {
                 Alerts.showErrorDialog(e.getMessage());
             }
@@ -72,11 +72,33 @@ public final class AuthorPublishBooksController implements RequiresLoggedIn {
         }
     }
 
+    public boolean isValidBookTitle(String title) {
+        if (title == null || title.trim().isEmpty()) {
+            return false;
+        }
+
+        // Allow: letters, numbers, spaces, basic punctuation
+        // Disallow: only spaces, only symbols, prohibited characters
+//        String validTitlePattern = "^(?!\\s*$)" +                   // Not only whitespace
+//                "(?!.*[$%^&*<>{}|\\\\~`])" +      // No prohibited chars
+//                "(?=.*[a-zA-Z0-9])" +             // At least one letter/number
+//                "[\\p{L}\\p{N}\\p{Zs}\\p{P}&&[^$%^&*<>{}|\\\\~`]]{1,255}$";
+//
+//        return title.trim().matches(validTitlePattern);
+
+        // Optional: Check for minimum meaningful length
+        return title.trim().length() >= 2;
+    }
+
     //Method for publishing the book
     @FXML
     private void PublishBook() {
         if(BookTitle.getText().isEmpty() || ContentTxt.isEmpty() || BookAbstract.getText().isEmpty()) {
             Alerts.showErrorDialog("Missing information of the book.");
+            return;
+        }
+        if(!isValidBookTitle(BookTitle.getText())) {
+            Alerts.showErrorDialog("The book title is invalid or too short.");
             return;
         }
 	    var book = new Book(BookTitle.getText(), new Author.ByRef(getLoggedInUser()._1()), false);

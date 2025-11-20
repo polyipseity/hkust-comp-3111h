@@ -102,7 +102,7 @@ public final class AuthorMyBooksController implements RequiresLoggedIn {
 		        case ZonedDateTime val -> TimeUtil.toStringZonedLocal(val);
 		        case null -> data.approvalStatus().toString();
             };
-            var record = new BookRecord(book, book.title(),book.temporary()?data.approvalStatus().toString():"MODIFIED", book.temporary()?date:"MODIFIED", data.timesBorrowed(),data.summary());
+            var record = new BookRecord(book, book.title(),book.temporary()?"MODIFIED":data.approvalStatus().toString(), book.temporary()?"MODIFIED":date, data.timesBorrowed(),data.summary());
             if(data.approvalStatus()!= Book.ApprovalStatus.REJECTED) {
                 tableData.add(record);
             }
@@ -203,15 +203,11 @@ public final class AuthorMyBooksController implements RequiresLoggedIn {
                 Alerts.showErrorDialog("Cannot delete the book that is rejected");
             }else if(data.approvalStatus().equals(Book.ApprovalStatus.PENDING)){
                 //Handle deleting pending book
-                if(deleteConfirmation(selected.title)) {
-                    deleteBookCondition(book, data, selected);
-                }
+                deleteBookCondition(book, data, selected);
             }else{
                 //If the book is approved
                 if(repository.borrowOps.read(book).isEmpty()){
-                    if(deleteConfirmation(selected.title)) {
-                        deleteBookCondition(book, data, selected);
-                    }
+                    deleteBookCondition(book, data, selected);
                 }else{
                     Alerts.showErrorDialog("Cannot delete the book that is already borrowed");
                 }
@@ -226,11 +222,15 @@ public final class AuthorMyBooksController implements RequiresLoggedIn {
         if(data.summary().equals(record.getSummary())){
             if(book.temporary()){
                 //Delete the modified version
-                repository.bookOps.delete(book, data);
+                if(deleteConfirmation(record.title)) {
+                    repository.bookOps.delete(book, data);
+                }
             }else{
                 //Can't delete originalBook
                 if(data.originalOrModified() == null){
-                    repository.bookOps.delete(book, data);
+                    if(deleteConfirmation(record.title)) {
+                        repository.bookOps.delete(book, data);
+                    }
                 }else{
                     Alerts.showErrorDialog("Delete the modified version to delete the original book");
                 }

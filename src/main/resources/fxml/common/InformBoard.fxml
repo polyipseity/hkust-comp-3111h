@@ -17,7 +17,6 @@
 			<Button onAction="#ClearAll" mnemonicParsing="false" text="Clear All" />
 			<Separator orientation="VERTICAL" />
 			<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Notifications" />
-            <Button onAction="#AddNotif" mnemonicParsing="false" text="Test" />
 		</HBox>
 	</top>
    <center>

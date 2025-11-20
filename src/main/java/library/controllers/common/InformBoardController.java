@@ -88,14 +88,13 @@ public final class InformBoardController implements RequiresLoggedIn {
         updateNotificationList();
     }
 
-    @FXML
-    private void AddNotif() throws TransactionException {
-	    repository.userNotificationOps.update(getLoggedInUser()._1(), currentNotifications -> {
-            String[] updated = Arrays.copyOf(currentNotifications, currentNotifications.length + 1);
-            updated[updated.length - 1] = "New notification message " + updated.length;
-            return updated;});
-        updateNotificationList();
-    }
+//    private void AddNotif() throws TransactionException {
+//	    repository.userNotificationOps.update(getLoggedInUser()._1(), currentNotifications -> {
+//            String[] updated = Arrays.copyOf(currentNotifications, currentNotifications.length + 1);
+//            updated[updated.length - 1] = "New notification message " + updated.length;
+//            return updated;});
+//        updateNotificationList();
+//    }
 
     private void CloseNotif(int index) throws TransactionException {
 	    repository.userNotificationOps.updateAsList(
