@@ -13,17 +13,13 @@ import library.models.Book;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
-import library.SpringApplication.ChatController;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Optional;
 
-
-public class AuthorPublishBooksController {
+public final class AuthorPublishBooksController implements RequiresLoggedIn {
     private final Repository repository = Main.getContext().getRepository();
 
     private final ChatService chatService = new ChatService();

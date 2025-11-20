@@ -7,7 +7,7 @@
     <option name="VM_PARAMETERS" value="--enable-native-access=ALL-UNNAMED,javafx.graphics" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="library.SpringApplicationPackage.*" />
+        <option name="PATTERN" value="library.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

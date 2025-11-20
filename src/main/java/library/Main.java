@@ -1,7 +1,6 @@
 package library;
 
 import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import library.persistence.Repository;
 import lombok.AccessLevel;
@@ -26,7 +25,7 @@ public final class Main extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
         SpringApplication.run(Main.class);
-		context = new ContextImpl(stage, new Repository(() -> DBMaker.fileDB("repository.db")));
+        context = new ContextImpl(stage, new Repository(DBMaker.fileDB("repository.db")));;
 		// Show the Home (role‐select) first, not the Login screen directly:
 		getContext().newWindow("Library Management System", FXMLs.HOME.load(), stage);
 		stage.show();
