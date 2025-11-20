@@ -26,6 +26,7 @@ public enum Alerts {
         return new Alert(Alert.AlertType.CONFIRMATION, message).showAndWait();
 	}
 
+	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	public static boolean showLoadingDialog(@NotNull String message, @NotNull ObservableBooleanValue running) {
 		final var alert = new Alert(Alert.AlertType.NONE, message);
 		final var dialog = alert.getDialogPane();
