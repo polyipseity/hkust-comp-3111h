@@ -86,7 +86,7 @@ public class BorrowedBooksController implements RequiresLoggedIn {
 		reload();
 	}
 
-	private void reload() {
+	public void reload() {
 		ObservableList<tableRow> data = FXCollections.observableArrayList();
 		Map<Book, Borrow> borrowedBooksMap = repository.borrowOps.read(getLoggedInUser()._1());
 		for (var entry: borrowedBooksMap.entrySet()) {

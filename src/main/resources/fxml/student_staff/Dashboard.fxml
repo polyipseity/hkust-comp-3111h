@@ -12,12 +12,12 @@
 	</top>
 
 	<center>
-		<TabPane>
-			<Tab text="Available Books">
-				<fx:include source="AvailableBooks.fxml"/>
+		<TabPane tabClosingPolicy="UNAVAILABLE">
+			<Tab text="Available Books" onSelectionChanged="#loadAvailableBooks">
+				<fx:include source="AvailableBooks.fxml" fx:id="availableBooks"/>
 			</Tab>
-			<Tab text="My Borrowed Books">
-				<fx:include source="BorrowedBooks.fxml"/>
+			<Tab text="My Borrowed Books" onSelectionChanged="#loadBorrowedBooks">
+				<fx:include source="BorrowedBooks.fxml" fx:id="borrowedBooks"/>
 			</Tab>
 			<Tab text="Request Book">
 				<fx:include source="RequestBook.fxml"/>

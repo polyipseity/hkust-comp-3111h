@@ -74,7 +74,7 @@ public class AvailableBooksController implements RequiresLoggedIn {
 		reload();
 	}
 
-	private void reload() {
+	public void reload() {
         ObservableList<tableRow> data = FXCollections.observableArrayList();
 		Map<Book, Book.Data> availableBooks = context.getBorrowBooksControl().availableBooks(user);
         for (var entry : availableBooks.entrySet()) {
@@ -86,7 +86,6 @@ public class AvailableBooksController implements RequiresLoggedIn {
                     publishDateString, bookData.summary(), book));
         }
         table.setItems(data);
-        table.getSelectionModel().selectFirst();
     }
 
     /**
