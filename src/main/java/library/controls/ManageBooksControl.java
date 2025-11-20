@@ -107,10 +107,8 @@ public record ManageBooksControl(@NotNull Repository repository) {
 							.withApprovalStatus(Book.ApprovalStatus.REJECTED);
 					repository.bookOps.update(pending, newData, pendingData);
 				}
-				case Book.Data(_, _, _, _, final Book original, _) -> {
-					// has an original/modified reference → delete the pending book
-					repository.bookOps.delete(pending, pendingData);
-				}
+				case Book.Data val -> // has an original/modified reference → delete the pending book
+						repository.bookOps.delete(pending, val);
 			}
 
 			// notify the author of the rejection

@@ -58,10 +58,12 @@ public class DynamicTableController<Key, Value extends Function<@NotNull Key, Dy
 		return items.addAll(data);
 	}
 
+	@SuppressWarnings("UnusedReturnValue")
 	public boolean removeDatum(@NotNull Value datum) {
 		return table.getItems().remove(datum);
 	}
 
+	@SuppressWarnings("UnusedReturnValue")
 	public boolean replaceDatum(@NotNull Value oldDatum, @NotNull Value datum) {
 		final var items = table.getItems();
 		return switch (Integer.valueOf(items.indexOf(oldDatum))) {
