@@ -10,6 +10,9 @@ import org.jetbrains.annotations.NotNull;
 import java.time.ZonedDateTime;
 
 public record RequestBooksControl(Repository repository) {
+	public static final @NotNull String NOTIFICATION_APPROVE = "Your book request for '%s' has been approved!";
+	public static final @NotNull String NOTIFICATION_REJECT = "Your book request for '%s' has been rejected!";
+
     @NotNull
     public RequestResult requestBook(User user, String title, String author) throws TransactionException {
         // Check if either title or author field is an empty string
@@ -53,4 +56,42 @@ public record RequestBooksControl(Repository repository) {
             }
         }
     }
+
+	public @NotNull ApproveResult approveRequest(@NotNull User user, @NotNull BookRequest bookRequest) throws TransactionException {
+		repository.transact(_ -> {
+			repository.userBookRequestOps.delete(user, bookRequest, null);
+			repository.userNotificationOps.updateAsList(user, list -> {
+				list.add(NOTIFICATION_APPROVE.formatted(bookRequest.title()));
+			});
+			return true;
+		}, () -> "Failed to approve book request: %s, %s".formatted(user, bookRequest));
+		return new ApproveResult.Success();
+	}
+
+	public @NotNull RejectResult rejectRequest(@NotNull User user, @NotNull BookRequest bookRequest) throws TransactionException {
+		repository.transact(_ -> {
+			repository.userBookRequestOps.delete(user, bookRequest, null);
+			repository.userNotificationOps.updateAsList(user, list -> {
+				list.add(NOTIFICATION_REJECT.formatted(bookRequest.title()));
+			});
+			return true;
+		}, () -> "Failed to reject book request: %s, %s".formatted(user, bookRequest));
+		return new RejectResult.Success();
+	}
+
+	/**
+	 * Result type for the approval operation.
+	 */
+	public sealed interface ApproveResult permits ApproveResult.Success {
+		record Success() implements ApproveResult {
+		}
+	}
+
+	/**
+	 * Result type for the rejection operation.
+	 */
+	public sealed interface RejectResult permits RejectResult.Success {
+		record Success() implements RejectResult {
+		}
+	}
 }

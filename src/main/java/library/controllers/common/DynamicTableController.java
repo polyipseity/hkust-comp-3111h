@@ -3,6 +3,7 @@ package library.controllers.common;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -14,8 +15,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class DynamicTableController<Key, Value extends Function<@NotNull Key, DynamicTableController.@NotNull Data>> {
 	public final TableView<@NotNull Value> table;
@@ -56,8 +58,21 @@ public class DynamicTableController<Key, Value extends Function<@NotNull Key, Dy
 		return items.addAll(data);
 	}
 
+	@SuppressWarnings("UnusedReturnValue")
 	public boolean removeDatum(@NotNull Value datum) {
 		return table.getItems().remove(datum);
+	}
+
+	@SuppressWarnings("UnusedReturnValue")
+	public boolean replaceDatum(@NotNull Value oldDatum, @NotNull Value datum) {
+		final var items = table.getItems();
+		return switch (Integer.valueOf(items.indexOf(oldDatum))) {
+			case -1 -> false;
+			case Integer idx -> {
+				items.set(idx, datum);
+				yield true;
+			}
+		};
 	}
 
 	protected @NotNull TableColumn<@NotNull Value, @NotNull Value> configureColumn(@NotNull Key key, @NotNull TableColumn<@NotNull Value, @NotNull Value> column) {
@@ -150,19 +165,13 @@ public class DynamicTableController<Key, Value extends Function<@NotNull Key, Dy
 							return;
 						}
 						switch (item.apply(key)) {
-							case Data.Value(final var val) -> {
+							case Data.Text(final var val) -> {
 								setText(val);
 								setGraphic(null);
 							}
-							case Data.Buttons(final var vals) -> {
+							case Data.Graphic(final var val) -> {
 								setText(null);
-								final var buttonBox = new HBox(5);
-								for (final var action : vals) {
-									final var b = new Button(action._1());
-									b.setOnAction(event -> action._2().accept(event));
-									buttonBox.getChildren().add(b);
-								}
-								setGraphic(buttonBox);
+								setGraphic(val.get());
 							}
 						}
 					}
@@ -172,12 +181,27 @@ public class DynamicTableController<Key, Value extends Function<@NotNull Key, Dy
 		return column;
 	}
 
-	public sealed interface Data permits Data.Buttons, Data.Value {
-		record Value(@NotNull String value) implements Data {
+	public sealed interface Data permits Data.Graphic, Data.Text {
+		record Text(@NotNull String value) implements Data {
 		}
 
-		record Buttons(@NotNull List<Tuple2<@NotNull String, @NotNull Consumer<ActionEvent>>> values)
+		record Graphic(@NotNull Supplier<? extends Node> value)
 				implements Data {
+			public static final double BUTTON_SPACING = 5;
+
+			@SafeVarargs
+			public static Graphic ofButtons(@NotNull Tuple2<? extends ObservableValue<? extends String>, ? extends BiConsumer<? super Button, ? super ActionEvent>>... buttonData) {
+				return new Graphic(() -> {
+					final var buttonBox = new HBox(BUTTON_SPACING);
+					for (final var buttonDatum : buttonData) {
+						final var button = new Button();
+						button.textProperty().bind(buttonDatum._1());
+						button.setOnAction(event -> buttonDatum._2().accept(button, event));
+						buttonBox.getChildren().add(button);
+					}
+					return buttonBox;
+				});
+			}
 		}
 	}
 }

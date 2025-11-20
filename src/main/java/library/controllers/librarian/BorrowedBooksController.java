@@ -71,11 +71,11 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 		@Override
 		public DynamicTableController.@NotNull Data apply(@NotNull Keys key) {
 			return switch (key) {
-				case TITLE -> new DynamicTableController.Data.Value(book.title());
-				case BORROWER -> new DynamicTableController.Data.Value(user.username());
-				case BORROW_DATE -> new DynamicTableController.Data.Value(
+				case TITLE -> new DynamicTableController.Data.Text(book.title());
+				case BORROWER -> new DynamicTableController.Data.Text(user.username());
+				case BORROW_DATE -> new DynamicTableController.Data.Text(
 						TimeUtil.toStringZonedLocal(borrow.borrowDate()));
-				case DURATION_LEFT -> new DynamicTableController.Data.Value(
+				case DURATION_LEFT -> new DynamicTableController.Data.Text(
 						TimeUtil.toStringDuration(borrow.durationLeft()));
 			};
 		}
