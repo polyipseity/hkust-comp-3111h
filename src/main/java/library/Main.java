@@ -1,6 +1,7 @@
 package library;
 
 import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 import library.persistence.Repository;
 import lombok.AccessLevel;

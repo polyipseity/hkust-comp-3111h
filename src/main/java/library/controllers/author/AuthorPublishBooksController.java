@@ -56,13 +56,7 @@ public final class AuthorPublishBooksController implements RequiresLoggedIn {
     //Method for generating summary of the book based on the title
     @FXML
     private void Generate() throws IOException {
-        if(ContentTxt == null || BookTitle.getText() == null) {
-            Alerts.showErrorDialog("You must enter the book title and upload the book content first!");
-        }else{
-            var input = "Base on the given title and content, generate a abstract for the book. Note you must return the abstract paragraph only and focusing on the content and title but not the author. Also, you must keep your response short that is under 30 words. title:" + BookTitle.getText() + " and content:" + ContentTxt;
-            var response = chatService.getResponse(input);
-            BookAbstract.setText(response);
-        }
+        BookAbstract.setText("Example summary of the Book");
     }
 
     //Method for publishing the book
