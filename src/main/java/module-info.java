@@ -11,8 +11,8 @@ module library {
 	requires javafx.controls;
 	requires javafx.fxml;
 	requires javafx.graphics;
-	requires javafx.swing;
 	requires kotlin.stdlib;
+	requires javafx.swing;
 	requires mapdb;
 	requires org.jetbrains.annotations;
     requires org.icepdf.core;
@@ -24,7 +24,6 @@ module library {
     requires spring.ai.client.chat;
     requires spring.webflux;
     requires spring.web;
-    requires java.net.http;
     requires spring.context;
     requires jakarta.annotation;
     requires spring.boot;

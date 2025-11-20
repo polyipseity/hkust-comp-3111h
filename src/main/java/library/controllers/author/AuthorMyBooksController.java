@@ -168,6 +168,8 @@ public final class AuthorMyBooksController implements RequiresLoggedIn {
 
             // Show the new window
             newStage.show();
+            newStage.setOnHidden(event -> {
+                reload();});
 
         } catch (Exception e) {
             e.printStackTrace();

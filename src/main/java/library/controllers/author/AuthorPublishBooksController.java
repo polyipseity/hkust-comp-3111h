@@ -1,8 +1,6 @@
 package library.controllers.author;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import library.Main;
@@ -30,7 +28,7 @@ public final class AuthorPublishBooksController implements RequiresLoggedIn {
 
     //Method for choosing text file
     @FXML
-    private void ChooseTextFile() throws IOException {
+    private void ChooseTextFile(){
         FileChooser fileChooser = new FileChooser();
 
         // Set file filter for .txt files
@@ -44,6 +42,9 @@ public final class AuthorPublishBooksController implements RequiresLoggedIn {
         if (file != null) {
             try {
                 // Read the file content
+                if(BookTitle.getText().isEmpty()){
+                    BookTitle.setText(file.getName().substring(0, file.getName().lastIndexOf('.')));
+                }
                 String content = Files.readString(file.toPath());
                 ContentTxt = Files.readString(file.toPath());
                 BookContent.setText(content);
@@ -55,13 +56,19 @@ public final class AuthorPublishBooksController implements RequiresLoggedIn {
 
     //Method for generating summary of the book based on the title
     @FXML
-    private void Generate() throws IOException {
-        BookAbstract.setText("Example summary of the Book");
+    private void Generate() {
+        if(ContentTxt == null || BookTitle.getText() == null) {
+            Alerts.showErrorDialog("You must enter the book title and upload the book content first!");
+        }else{
+            var input = "Create a professional book abstract under 30 words for \"$title\" that summarizes the main themes and content. You should avoid \"In this book... (redundant), In the novel... (obvious), This story is about... (weak opening), In [Title]... (formulaic)\". Title:" + BookTitle.getText() + " and content:" + ContentTxt;
+            var response = chatService.getResponse(input);
+            BookAbstract.setText(response);
+        }
     }
 
     //Method for publishing the book
     @FXML
-    private void PublishBook() throws IOException {
+    private void PublishBook() {
         if(BookTitle.getText().isEmpty() || ContentTxt.isEmpty() || BookAbstract.getText().isEmpty()) {
             Alerts.showErrorDialog("Missing information of the book.");
             return;
