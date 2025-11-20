@@ -4,7 +4,7 @@
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="MAIN_CLASS_NAME" value="library.Main" />
     <module name="LibraryManagementSystem" />
-    <option name="VM_PARAMETERS" value="--enable-native-access=ALL-UNNAMED,javafx.graphics" />
+    <option name="VM_PARAMETERS" value="--enable-native-access=ALL-UNNAMED,javafx.graphics -Djava.awt.headless=false" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="library.SpringApplicationPackage.*" />
