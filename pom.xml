@@ -86,6 +86,12 @@
 			<version>1.18.42</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- Add Jackson Databind for JSON processing -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.20.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>

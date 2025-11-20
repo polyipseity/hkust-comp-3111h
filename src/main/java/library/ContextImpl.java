@@ -24,6 +24,9 @@ public final class ContextImpl implements Context {
 	private final Repository repository;
 	@Getter
 	@NotNull
+	private final BookDownloadControl bookDownloadControl;
+	@Getter
+	@NotNull
 	private final BorrowBooksControl borrowBooksControl;
 	@Getter
 	@NotNull
@@ -55,12 +58,13 @@ public final class ContextImpl implements Context {
 	public ContextImpl(@NotNull Stage primaryStage, @NotNull Repository repository) {
 		this.primaryStage = primaryStage;
 		this.repository = repository;
+		this.bookDownloadControl = new BookDownloadControl();
 		this.borrowBooksControl = new BorrowBooksControl(repository);
 		this.manageBooksControl = new ManageBooksControl(repository);
 		this.manageNotificationsControl = new ManageNotificationsControl();
 		this.manageProfileControl = new ManageProfileControl(repository);
 		this.manageUsersControl = new ManageUsersControl(repository);
-		this.publishBooksControl = new PublishBooksControl();
+		this.publishBooksControl = new PublishBooksControl(repository);
 		this.requestBooksControl = new RequestBooksControl(repository);
 		this.statsControl = new StatsControl();
 	}
