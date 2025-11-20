@@ -79,6 +79,11 @@ class FXMLsTest {
 			}
 
 			@Override
+			public @NotNull Stage newWindow(@NotNull String title, @NotNull Parent parent, @Nullable Stage stage) {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
 			public @NotNull Stage getPrimaryStage() {
 				throw new UnsupportedOperationException();
 			}

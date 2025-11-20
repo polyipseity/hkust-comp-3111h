@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 
 public enum FXMLs {
 	AUTHOR_DASHBOARD("/fxml/author/Dashboard.fxml"),
+	COMMON_TEXT_VIEW("/fxml/common/TextView.fxml"),
 	HOME("/fxml/Home.fxml"),
 	LIBRARIAN_DASHBOARD("/fxml/librarian/Dashboard.fxml"),
 	LOGIN("/fxml/Login.fxml"),

@@ -11,8 +11,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import library.FXMLs;
 import library.Main;
 import library.controllers.common.RequiresLoggedIn;
+import library.controllers.common.TextViewController;
 import library.models.Author;
 import library.models.Book;
 import library.persistence.Repository;
@@ -116,21 +118,18 @@ public final class AuthorMyBooksController implements RequiresLoggedIn {
         }
         try {
             // Load the FXML file for the new window's content
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/author/AuthorViewWindow.fxml"));
-            Parent root = fxmlLoader.load();
-
-            //Passing content to new window
-            AuthorViewWindowController controller = fxmlLoader.getController();
-            controller.setContent(repository.bookOps.read(selected.book).get().content());
-
-            // Create a new Stage (window)
-            Stage newStage = new Stage();
-            newStage.setTitle("Reading: " + selected.title + ".txt");
-            newStage.setScene(new Scene(root));
-
-            // Show the new window
-            newStage.show();
-
+	        final var content = repository.bookOps.read(selected.book).get().content();
+	        final var root = FXMLs.COMMON_TEXT_VIEW.<Parent>load(loader -> {
+		        final var controller = loader.<TextViewController>getController();
+		        //Passing content to new window
+		        controller.setContent(content);
+	        });
+	        // Create a new Stage (window) and show it
+	        Main.getContext().newWindow(
+			        "Reading: %s.txt".formatted(selected.title),
+			        root,
+			        null
+	        ).show();
         } catch (Exception e) {
             e.printStackTrace();
         }

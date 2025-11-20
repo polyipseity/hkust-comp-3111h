@@ -14,6 +14,9 @@ import java.io.Closeable;
 public interface Context extends Closeable {
 	void setScene(@NotNull Parent value);
 
+	@NotNull
+	Stage newWindow(@NotNull String title, @NotNull Parent parent, @Nullable Stage stage);
+
 	@NotNull Stage getPrimaryStage();
 
 	@NotNull Repository getRepository();

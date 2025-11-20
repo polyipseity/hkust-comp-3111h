@@ -13,6 +13,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class ContextImpl implements Context {
+	public static final int WINDOW_INITIAL_WIDTH = 640;
+	public static final int WINDOW_INITIAL_HEIGHT = 480;
+
 	@Getter
 	@NotNull
 	private final Stage primaryStage;
@@ -82,5 +85,14 @@ public final class ContextImpl implements Context {
 	public void setScene(@NotNull Parent value) {
 		final var oldScene = getPrimaryStage().getScene();
 		getPrimaryStage().setScene(new Scene(value, oldScene.getWidth(), oldScene.getHeight()));
+	}
+
+	@Override
+	public @NotNull Stage newWindow(@NotNull String title, @NotNull Parent parent, @Nullable Stage stage) {
+		stage = stage == null ? new Stage() : stage;
+		stage.setScene(new Scene(parent, WINDOW_INITIAL_WIDTH, WINDOW_INITIAL_HEIGHT));
+		stage.setTitle(title);
+		stage.setResizable(true);
+		return stage;
 	}
 }
