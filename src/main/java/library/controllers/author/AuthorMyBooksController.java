@@ -118,7 +118,7 @@ public final class AuthorMyBooksController implements RequiresLoggedIn {
         }
         try {
             // Load the FXML file for the new window's content
-	        final var content = repository.bookOps.read(selected.book).get().content();
+	        final var content = repository.bookOps.readOrThrow(selected.book).content();
 	        final var root = FXMLs.COMMON_TEXT_VIEW.<Parent>load(loader -> {
 		        final var controller = loader.<TextViewController>getController();
 		        //Passing content to new window
@@ -126,7 +126,7 @@ public final class AuthorMyBooksController implements RequiresLoggedIn {
 	        });
 	        // Create a new Stage (window) and show it
 	        Main.getContext().newWindow(
-			        "Reading: %s.txt".formatted(selected.title),
+			        TextViewController.WINDOW_TITLE.formatted(selected.title),
 			        root,
 			        null
 	        ).show();

@@ -1,20 +1,19 @@
-@SuppressWarnings("Java9RedundantRequiresStatement")
 module library {
+	requires com.github.librepdf.openpdf;
+	requires java.desktop;
+	requires java.prefs;
 	requires java.sql;
 	requires javafx.base;
 	requires javafx.controls;
 	requires javafx.fxml;
 	requires javafx.graphics;
 	requires kotlin.stdlib;
+	requires javafx.swing;
 	requires mapdb;
 	requires org.jetbrains.annotations;
-	requires static lombok;
-	requires com.github.librepdf.openpdf;
-	requires org.icepdf.ri.viewer;
-	requires java.desktop;
-	requires javafx.swing;
 	requires org.icepdf.core;
-	requires java.prefs;
+	requires org.icepdf.ri.viewer;
+	requires static lombok;
 
 	exports library;
 	exports library.controllers;

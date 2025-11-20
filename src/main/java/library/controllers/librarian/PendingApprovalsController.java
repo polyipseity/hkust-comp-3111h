@@ -3,9 +3,11 @@ package library.controllers.librarian;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import library.FXMLs;
 import library.Main;
 import library.controllers.common.DynamicTableController;
 import library.controllers.common.RequiresLoggedIn;
+import library.controllers.common.TextViewController;
 import library.controls.ManageBooksControl;
 import library.models.Book;
 import library.persistence.TransactionException;
@@ -14,6 +16,7 @@ import library.utils.Tuple2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -77,6 +80,16 @@ public final class PendingApprovalsController implements RequiresLoggedIn, Initi
 				case SUMMARY -> new DynamicTableController.Data.Value(bookData.summary());
 				case ACTIONS -> new DynamicTableController.Data.Buttons(List.of(
 						new Tuple2<>("View", _ -> {
+							try {
+								Main.getContext().newWindow(
+										TextViewController.WINDOW_TITLE.formatted(book.title()),
+										FXMLs.COMMON_TEXT_VIEW.load(loader ->
+												loader.<TextViewController>getController().setContent(bookData.content())),
+										null
+								).show();
+							} catch (IOException e) {
+								Alerts.showErrorDialog(e.getMessage());
+							}
 						}),
 						new Tuple2<>("Approve", _ -> {
 							try {

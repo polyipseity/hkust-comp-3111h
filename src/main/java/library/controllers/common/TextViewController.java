@@ -12,6 +12,9 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public final class TextViewController implements RequiresLoggedIn, Initializable {
+	@NotNull
+	public static final String WINDOW_TITLE = "Reading: %s.txt";
+
 	public TextArea contentArea;
 	public Slider zoomSlider;
 
