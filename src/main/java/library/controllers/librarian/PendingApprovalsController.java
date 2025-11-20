@@ -1,5 +1,6 @@
 package library.controllers.librarian;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -19,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
@@ -75,11 +75,11 @@ public final class PendingApprovalsController implements RequiresLoggedIn, Initi
 		@Override
 		public DynamicTableController.@NotNull Data apply(@NotNull Keys key) {
 			return switch (key) {
-				case TITLE -> new DynamicTableController.Data.Value(book.title());
-				case AUTHOR -> new DynamicTableController.Data.Value(book.author().toString());
-				case SUMMARY -> new DynamicTableController.Data.Value(bookData.summary());
-				case ACTIONS -> new DynamicTableController.Data.Buttons(List.of(
-						new Tuple2<>("View", _ -> {
+				case TITLE -> new DynamicTableController.Data.Text(book.title());
+				case AUTHOR -> new DynamicTableController.Data.Text(book.author().toString());
+				case SUMMARY -> new DynamicTableController.Data.Text(bookData.summary());
+				case ACTIONS -> DynamicTableController.Data.Graphic.ofButtons(
+						new Tuple2<>(new SimpleStringProperty("View"), (_, _) -> {
 							try {
 								Main.getContext().newWindow(
 										TextViewController.WINDOW_TITLE.formatted(book.title()),
@@ -91,7 +91,7 @@ public final class PendingApprovalsController implements RequiresLoggedIn, Initi
 								Alerts.showErrorDialog(e.getMessage());
 							}
 						}),
-						new Tuple2<>("Approve", _ -> {
+						new Tuple2<>(new SimpleStringProperty("Approve"), (_, _) -> {
 							try {
 								switch (Main.getContext().getManageBooksControl().approveBook(book)) {
 									case ManageBooksControl.ApproveResult.Success _ -> controller.tableController.removeDatum(this);
@@ -100,7 +100,7 @@ public final class PendingApprovalsController implements RequiresLoggedIn, Initi
 								Alerts.showErrorDialog(e.getMessage());
 							}
 						}),
-						new Tuple2<>("Reject", _ -> {
+						new Tuple2<>(new SimpleStringProperty("Reject"), (_, _) -> {
 							try {
 								switch (Main.getContext().getManageBooksControl().rejectBook(book)) {
 									case ManageBooksControl.RejectResult.Success _ -> controller.tableController.removeDatum(this);
@@ -109,7 +109,7 @@ public final class PendingApprovalsController implements RequiresLoggedIn, Initi
 								Alerts.showErrorDialog(e.getMessage());
 							}
 						})
-				));
+				);
 			};
 		}
 	}

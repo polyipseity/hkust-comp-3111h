@@ -78,14 +78,14 @@ public final class PublishedBooksController implements RequiresLoggedIn, Initial
 		@Override
 		public DynamicTableController.@NotNull Data apply(@NotNull Keys key) {
 			return switch (key) {
-				case TITLE -> new DynamicTableController.Data.Value(book.title());
-				case AUTHOR_FULL_NAME -> new DynamicTableController.Data.Value(authorFullName);
-				case PUBLISH_DATE -> new DynamicTableController.Data.Value(
+				case TITLE -> new DynamicTableController.Data.Text(book.title());
+				case AUTHOR_FULL_NAME -> new DynamicTableController.Data.Text(authorFullName);
+				case PUBLISH_DATE -> new DynamicTableController.Data.Text(
 						bookData.publishDate() == null
 								? ""
 								: TimeUtil.toStringZonedLocal(bookData.publishDate()));
-				case TIMES_BORROWED -> new DynamicTableController.Data.Value(String.valueOf(bookData.timesBorrowed()));
-				case ACTIONS -> new DynamicTableController.Data.Value("view delete");
+				case TIMES_BORROWED -> new DynamicTableController.Data.Text(String.valueOf(bookData.timesBorrowed()));
+				case ACTIONS -> new DynamicTableController.Data.Text("view delete");
 			};
 		}
 	}

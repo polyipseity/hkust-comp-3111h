@@ -71,12 +71,12 @@ public final class BookRequestsController implements RequiresLoggedIn, Initializ
 		@Override
 		public DynamicTableController.@NotNull Data apply(@NotNull Keys key) {
 			return switch (key) {
-				case TITLE -> new DynamicTableController.Data.Value(bookRequest.title());
-				case AUTHOR -> new DynamicTableController.Data.Value(bookRequest.author());
-				case USER -> new DynamicTableController.Data.Value(user.username());
-				case REQUEST_DATE -> new DynamicTableController.Data.Value(
+				case TITLE -> new DynamicTableController.Data.Text(bookRequest.title());
+				case AUTHOR -> new DynamicTableController.Data.Text(bookRequest.author());
+				case USER -> new DynamicTableController.Data.Text(user.username());
+				case REQUEST_DATE -> new DynamicTableController.Data.Text(
 						TimeUtil.toStringZonedLocal(bookRequestData.requestDate()));
-				case ACTIONS -> new DynamicTableController.Data.Value("confirm reject");
+				case ACTIONS -> new DynamicTableController.Data.Text("confirm reject");
 			};
 		}
 	}

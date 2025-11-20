@@ -52,9 +52,9 @@ public final class BookDownloadController implements RequiresLoggedIn, Initializ
 		@Override
 		public DynamicTableController.@NotNull Data apply(@NotNull Keys key) {
 			return switch (key) {
-				case TITLE -> new DynamicTableController.Data.Value("title");
-				case AUTHOR -> new DynamicTableController.Data.Value("author");
-				case BOOKSHELVES -> new DynamicTableController.Data.Value("bookshelves");
+				case TITLE -> new DynamicTableController.Data.Text("title");
+				case AUTHOR -> new DynamicTableController.Data.Text("author");
+				case BOOKSHELVES -> new DynamicTableController.Data.Text("bookshelves");
 			};
 		}
 	}

@@ -1,5 +1,6 @@
 package library.controllers.librarian;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -7,6 +8,7 @@ import library.Main;
 import library.controllers.common.DynamicTableController;
 import library.controllers.common.RequiresLoggedIn;
 import library.models.User;
+import library.utils.Tuple2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -68,11 +70,15 @@ public final class ManageUsersController implements RequiresLoggedIn, Initializa
 		@Override
 		public DynamicTableController.@NotNull Data apply(@NotNull Keys key) {
 			return switch (key) {
-				case USERNAME -> new DynamicTableController.Data.Value(user.username());
-				case ROLE -> new DynamicTableController.Data.Value(userData.role().name);
-				case NAME -> new DynamicTableController.Data.Value(userData.fullName());
-				case ACTIVE -> new DynamicTableController.Data.Value(String.valueOf(userData.active()));
-				case ACTIONS -> new DynamicTableController.Data.Value("activate/deactivate");
+				case USERNAME -> new DynamicTableController.Data.Text(user.username());
+				case ROLE -> new DynamicTableController.Data.Text(userData.role().name);
+				case NAME -> new DynamicTableController.Data.Text(userData.fullName());
+				case ACTIVE -> new DynamicTableController.Data.Text(String.valueOf(userData.active()));
+				case ACTIONS -> DynamicTableController.Data.Graphic.ofButtons(
+						new Tuple2<>(new SimpleStringProperty(userData.active() ? "Deactivate" : "Activate"), (_, _) -> {
+
+						})
+				);
 			};
 		}
 	}

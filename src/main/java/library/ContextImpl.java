@@ -13,8 +13,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class ContextImpl implements Context {
-	public static final int WINDOW_INITIAL_WIDTH = 640;
-	public static final int WINDOW_INITIAL_HEIGHT = 480;
+	public static final double WINDOW_INITIAL_WIDTH = 640;
+	public static final double WINDOW_INITIAL_HEIGHT = 480;
 
 	@Getter
 	@NotNull
