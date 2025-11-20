@@ -96,7 +96,7 @@ public final class BorrowedBooksController implements RequiresLoggedIn {
 		for (var entry: borrowedBooksMap.entrySet()) {
 			Book book = entry.getKey();
 			Borrow borrow = entry.getValue();
-			long s = Duration.between(borrow.borrowDate(), TimeUtil.nowZoned()).getSeconds();
+			long s = borrow.durationLeft().getSeconds();
 			data.add(new tableRow(
 					book.title(),
 					book.author().toString(),
