@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-public class AuthorStatusController implements RequiresLoggedIn {
+public final class AuthorStatusController implements RequiresLoggedIn {
     private final Repository repository = Main.getContext().getRepository();
     private Map<Book, Book.Data> authorBooks;
 

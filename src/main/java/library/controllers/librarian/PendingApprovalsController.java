@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
-public class PendingApprovalsController implements RequiresLoggedIn, Initializable {
+public final class PendingApprovalsController implements RequiresLoggedIn, Initializable {
 	public TableView<Data> table;
 	public DynamicTableController<Keys, Data> tableController;
 

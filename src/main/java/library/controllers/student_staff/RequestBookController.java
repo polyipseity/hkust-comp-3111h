@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class RequestBookController implements RequiresLoggedIn {
+public final class RequestBookController implements RequiresLoggedIn {
     private final Context context = Main.getContext();
     private final User user = this.getLoggedInUser()._1();
 

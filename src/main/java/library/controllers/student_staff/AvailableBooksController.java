@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class AvailableBooksController implements RequiresLoggedIn {
+public final class AvailableBooksController implements RequiresLoggedIn {
     private final Context context = Main.getContext();
     private final User user = this.getLoggedInUser()._1();
 

@@ -15,7 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
-public class ManageUsersController implements RequiresLoggedIn, Initializable {
+public final class ManageUsersController implements RequiresLoggedIn, Initializable {
 	public TableView<Data> table;
 	public DynamicTableController<Keys, Data> tableController;
 

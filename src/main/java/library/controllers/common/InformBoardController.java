@@ -21,7 +21,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class InformBoardController implements RequiresLoggedIn {
+public final class InformBoardController implements RequiresLoggedIn {
     Repository repository = Main.getContext().getRepository();
 
     //Referring to fxml ListView

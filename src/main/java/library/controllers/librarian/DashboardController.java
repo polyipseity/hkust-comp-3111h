@@ -1,10 +1,9 @@
-// src/main/java/library/controllers/LibrarianDashboardController.java
 package library.controllers.librarian;
 
 import javafx.scene.layout.AnchorPane;
 import library.controllers.common.CommonDashboardController;
 
-public class DashboardController extends CommonDashboardController {
+public final class DashboardController extends CommonDashboardController {
 	public AnchorPane pendingApprovals;
 	public PendingApprovalsController pendingApprovalsController;
 

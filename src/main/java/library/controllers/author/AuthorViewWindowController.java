@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class AuthorViewWindowController implements RequiresLoggedIn {
+public final class AuthorViewWindowController implements RequiresLoggedIn {
     @FXML
     private TextArea ContentArea;
 

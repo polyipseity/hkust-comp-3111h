@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Objects;
 
-public class RegisterController implements DependsOnRole, RequiresLoggedOut {
+public final class RegisterController implements DependsOnRole, RequiresLoggedOut {
 
 	@FXML
 	private Label headerLabel;

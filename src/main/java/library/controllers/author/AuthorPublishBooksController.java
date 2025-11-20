@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Optional;
 
-public class AuthorPublishBooksController implements RequiresLoggedIn {
+public final class AuthorPublishBooksController implements RequiresLoggedIn {
     private final Repository repository = Main.getContext().getRepository();
 
     @FXML

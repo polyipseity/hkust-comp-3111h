@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class MyProfileController implements RequiresLoggedIn {
+public final class MyProfileController implements RequiresLoggedIn {
 	private final Context context = Main.getContext();
 	private final Repository repository = context.getRepository();
 
