@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public record BorrowBooksControl(Repository repository) {
     @NotNull
@@ -196,5 +197,22 @@ public record BorrowBooksControl(Repository repository) {
 			@Override
 			public @NotNull String getMessage() { return "The book was not borrowed, so it cannot be returned"; }
 		}
+	}
+
+	public Map<Book, Duration> getBorrowDurations(User user) {
+		return repository.borrowOps.read(user).entrySet().stream().collect(
+				Collectors.toMap(Map.Entry::getKey, e -> e.getValue().durationLeft()));
+	}
+
+	public void returnExpiredBooks(User user) {
+		getBorrowDurations(user).forEach((book, duration) -> {
+			if (duration.isZero()) {
+				try {
+					returnBook(user, book);
+				} catch (TransactionException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
 	}
 }

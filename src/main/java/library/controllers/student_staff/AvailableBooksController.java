@@ -17,6 +17,7 @@ import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.HasMessage;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,6 +30,9 @@ import java.util.ResourceBundle;
 public final class AvailableBooksController implements RequiresLoggedIn {
     private final Context context = Main.getContext();
     private final User user = this.getLoggedInUser()._1();
+
+    @Setter
+    private DashboardController parentController;
 
     @FXML
     private Text titleText, authorText, publishDateText, summaryText;
@@ -116,7 +120,11 @@ public final class AvailableBooksController implements RequiresLoggedIn {
         }
 
 	    switch (context.getBorrowBooksControl().borrowBook(user, selectedBook, minutes, seconds)) {
-		    case BorrowBooksControl.BorrowResult.Success _ -> Alerts.showInfoDialog("Book borrowed successfully");
+            case BorrowBooksControl.BorrowResult.Success _ -> {
+                long millis = (minutes * 60L + seconds) * 1000;
+                parentController.scheduleReturn(selectedBook, millis);
+                Alerts.showInfoDialog("Book borrowed successfully");
+            }
             case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
         }
 

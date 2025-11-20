@@ -25,6 +25,7 @@ import library.utils.Alerts;
 import library.utils.HasMessage;
 import library.utils.TimeUtil;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,6 +40,9 @@ public final class BorrowedBooksController implements RequiresLoggedIn {
 	private final Context context = Main.getContext();
 	private final Repository repository = context.getRepository();
 	private final User user =  this.getLoggedInUser()._1();
+
+	@Setter
+	private DashboardController parentController;
 
 	@FXML
 	private TableView<tableRow> table;
