@@ -1,9 +1,12 @@
 package library.controllers.author;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import library.Main;
+import library.SpringApplicationPackage.ChatService;
 import library.controllers.common.RequiresLoggedIn;
 import library.models.Author;
 import library.models.Book;
@@ -18,6 +21,8 @@ import java.util.Optional;
 
 public final class AuthorPublishBooksController implements RequiresLoggedIn {
     private final Repository repository = Main.getContext().getRepository();
+
+    private final ChatService chatService = new ChatService();
 
     @FXML
     private TextField BookTitle, BookContent, BookAbstract;

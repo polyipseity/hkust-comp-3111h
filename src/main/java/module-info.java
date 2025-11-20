@@ -1,3 +1,4 @@
+@SuppressWarnings("Java9RedundantRequiresStatement")
 module library {
 	requires com.fasterxml.jackson.annotation;
 	requires com.fasterxml.jackson.databind;
@@ -13,10 +14,25 @@ module library {
 	requires javafx.swing;
 	requires kotlin.stdlib;
 	requires mapdb;
-	requires org.icepdf.core;
-	requires org.icepdf.ri.viewer;
 	requires org.jetbrains.annotations;
-	requires static lombok;
+    requires org.icepdf.core;
+    requires org.icepdf.ri.viewer;
+    requires static lombok;
+    requires spring.beans;
+    requires spring.ai.openai;
+    requires spring.ai.model;
+    requires spring.ai.client.chat;
+    requires spring.webflux;
+    requires spring.web;
+    requires java.net.http;
+    requires spring.context;
+    requires jakarta.annotation;
+    requires spring.boot;
+    requires reactor.core;
+    requires spring.ai.azure.openai;
+    requires com.azure.ai.openai;
+    requires spring.boot.autoconfigure;
+    requires reactor.netty.http;
 
 	exports library;
 	exports library.controllers;
@@ -41,4 +57,6 @@ module library {
 	opens library.models.json;
 	opens library.persistence;
 	opens library.utils;
+    exports library.SpringApplicationPackage;
+    opens library.SpringApplicationPackage;
 }
