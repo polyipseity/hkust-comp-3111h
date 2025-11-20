@@ -20,6 +20,9 @@ public class DashboardController extends CommonDashboardController {
 	public AnchorPane bookRequests;
 	public BookRequestsController bookRequestsController;
 
+	public AnchorPane bookDownload;
+	public BookDownloadController bookDownloadController;
+
 	public void loadPendingApprovals() {
 		pendingApprovalsController.loadTable();
 	}
@@ -38,5 +41,9 @@ public class DashboardController extends CommonDashboardController {
 
 	public void loadBookRequests() {
 		bookRequestsController.loadTable();
+	}
+
+	public void loadBookDownload() {
+		bookDownloadController.loadTable();
 	}
 }
