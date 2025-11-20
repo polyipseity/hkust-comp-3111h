@@ -1,6 +1,8 @@
 package library.controllers.author;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import library.Main;
@@ -11,6 +13,7 @@ import library.models.Book;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
+import lombok.Setter;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +24,9 @@ public final class AuthorPublishBooksController implements RequiresLoggedIn {
     private final Repository repository = Main.getContext().getRepository();
 
     private final ChatService chatService = new ChatService();
+
+    @Setter
+    private DashboardController parentController;
 
     @FXML
     private TextField BookTitle, BookContent, BookAbstract;
@@ -81,7 +87,8 @@ public final class AuthorPublishBooksController implements RequiresLoggedIn {
 	        var data = new Book.Data(BookAbstract.getText(), ContentTxt, Book.ApprovalStatus.PENDING, null, null, 0);
             try {
                 repository.bookOps.create(book, data);
-                Alerts.showInfoDialog("Book is awaiting approval.");
+                Alerts.showInfoDialog("Published and awaiting approval.");
+                parentController.authorMyBooksController.reload();
             } catch (TransactionException e) {
                 throw new RuntimeException(e);
             }

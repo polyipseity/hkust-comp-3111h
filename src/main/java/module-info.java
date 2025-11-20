@@ -33,7 +33,7 @@ module library {
     requires spring.boot.autoconfigure;
     requires reactor.netty.http;
 
-	exports library;
+    exports library;
 	exports library.controllers;
 	exports library.controllers.author;
 	exports library.controllers.common;

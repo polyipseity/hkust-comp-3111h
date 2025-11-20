@@ -121,6 +121,7 @@ public final class AvailableBooksController implements RequiresLoggedIn {
 
 	    switch (context.getBorrowBooksControl().borrowBook(user, selectedBook, minutes, seconds)) {
             case BorrowBooksControl.BorrowResult.Success _ -> {
+                context.getRepository().bookOps.update(selectedBook, current->current.withTimesBorrowed(current.timesBorrowed()+1));
                 long millis = (minutes * 60L + seconds) * 1000;
                 parentController.scheduleReturn(selectedBook, millis);
                 Alerts.showInfoDialog("Book borrowed successfully");

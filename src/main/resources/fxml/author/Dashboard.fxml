@@ -16,14 +16,14 @@
 			<!-- My Books Tab -->
 			<Tab text="My Books">
                 <StackPane>
-                    <fx:include source="AuthorMyBooks.fxml"/>
+                    <fx:include source="AuthorMyBooks.fxml" fx:id="authorMyBooks"/>
                 </StackPane>
 			</Tab>
 
 			<!-- Publish New Book Tab -->
 			<Tab text="Publish New Book">
                 <StackPane>
-                    <fx:include source="AuthorPublishBooks.fxml"/>
+                    <fx:include source="AuthorPublishBooks.fxml" fx:id="authorPublishBooks"/>
                 </StackPane>
 			</Tab>
 

@@ -4,6 +4,7 @@ import com.azure.ai.openai.OpenAIClient;
 import com.azure.ai.openai.OpenAIClientBuilder;
 import com.azure.ai.openai.models.*;
 import com.azure.core.credential.AzureKeyCredential;
+import library.utils.Alerts;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -63,7 +64,8 @@ public class ChatService {
 
             return "Error: No AI response content found in the response";
         } catch (Exception e) {
-            return "Error: " + e.getMessage();
+            Alerts.showErrorDialog("Error: Could not get AI response at the moment");
+            return "";
         }
     }
 }

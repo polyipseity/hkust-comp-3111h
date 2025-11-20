@@ -21,6 +21,7 @@ import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.TimeUtil;
+import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
@@ -34,7 +35,10 @@ public final class AuthorMyBooksController implements RequiresLoggedIn {
     private final Repository repository = Main.getContext().getRepository();
 	Map<Book, Book.Data> authorBooks;
 
-	public final class BookRecord {
+    @Setter
+    private DashboardController parentController;
+
+    public final class BookRecord {
         private final Book book;
         private final String title;
         private final String status;
@@ -83,11 +87,6 @@ public final class AuthorMyBooksController implements RequiresLoggedIn {
 		reload();
 	}
 
-    @FXML
-    private void refresh(){
-        reload();
-    }
-
     public void reload(){
         //Get book authorized by the current author
 	    final var author = new Author.ByRef(getLoggedInUser()._1());
@@ -103,8 +102,10 @@ public final class AuthorMyBooksController implements RequiresLoggedIn {
 		        case ZonedDateTime val -> TimeUtil.toStringZonedLocal(val);
 		        case null -> data.approvalStatus().toString();
             };
-            var record = new BookRecord(book, book.title(),data.approvalStatus().toString(), date, data.timesBorrowed(),data.summary());
-            tableData.add(record);
+            var record = new BookRecord(book, book.title(),book.temporary()?data.approvalStatus().toString():"MODIFIED", book.temporary()?date:"MODIFIED", data.timesBorrowed(),data.summary());
+            if(data.approvalStatus()!= Book.ApprovalStatus.REJECTED) {
+                tableData.add(record);
+            }
         }
         BooksTable.setItems(tableData);
     }
@@ -144,11 +145,11 @@ public final class AuthorMyBooksController implements RequiresLoggedIn {
         }
         try {
             if(selected.book.temporary()){
-                Alerts.showErrorDialog("Selected book is temporary. Please select the original book");
+                Alerts.showErrorDialog("Selected book is temporary. Please select the original book.");
                 return;
             }
             if(repository.bookOps.read(selected.book).get().originalOrModified() != null){
-                Alerts.showErrorDialog("Already modified book, delete the modified version to make new modifications.");
+                Alerts.showErrorDialog("Already modified this book, delete the modified version to make new modifications.");
                 return;
             }
             // Load the FXML file for the new window's content
@@ -180,17 +181,10 @@ public final class AuthorMyBooksController implements RequiresLoggedIn {
     private void AuthorDeleteBook() throws TransactionException {
         BookRecord selected = BooksTable.getSelectionModel().getSelectedItem();
 
-        Optional<ButtonType> result = Alerts.showConfirmDialog("Delete \"" + selected.title + "\"?");
-        if (result.isPresent() && result.get() == ButtonType.CANCEL) {
-            return;
-            // Perform the action if confirmed
-        }
-
         if (selected == null) {
             Alerts.showErrorDialog("Please select a book first.");
             return;
         }
-
         //Get selected book from db
 	    List<Book> selectedBook = authorBooks.keySet().stream()
                 .filter(book -> selected.title.equals(book.title()))
@@ -204,21 +198,49 @@ public final class AuthorMyBooksController implements RequiresLoggedIn {
         //Drop selected book in db
         for (Book book : selectedBook) {
             var data = repository.bookOps.read(book).get();
-            if(data.summary().equals(selected.getSummary())){
-                if(book.temporary()){
-	                repository.bookOps.delete(book, data);
-                }else{
-                    //Can't delete originalBook
-                    if(data.originalOrModified() == null){
-	                    repository.bookOps.delete(book, data);
-                    }else{
-                        Alerts.showErrorDialog("Delete the modified version to delete the original book");
+            if(data.approvalStatus().equals(Book.ApprovalStatus.REJECTED)){
+                //Handle deleting rejected book
+                Alerts.showErrorDialog("Cannot delete the book that is rejected");
+            }else if(data.approvalStatus().equals(Book.ApprovalStatus.PENDING)){
+                //Handle deleting pending book
+                if(deleteConfirmation(selected.title)) {
+                    deleteBookCondition(book, data, selected);
+                }
+            }else{
+                //If the book is approved
+                if(repository.borrowOps.read(book).isEmpty()){
+                    if(deleteConfirmation(selected.title)) {
+                        deleteBookCondition(book, data, selected);
                     }
+                }else{
+                    Alerts.showErrorDialog("Cannot delete the book that is already borrowed");
                 }
             }
         }
-
         //Reload table after deleting a book
         reload();
+    }
+
+
+    private void deleteBookCondition(Book book, Book.Data data, BookRecord record) throws TransactionException {
+        if(data.summary().equals(record.getSummary())){
+            if(book.temporary()){
+                //Delete the modified version
+                repository.bookOps.delete(book, data);
+            }else{
+                //Can't delete originalBook
+                if(data.originalOrModified() == null){
+                    repository.bookOps.delete(book, data);
+                }else{
+                    Alerts.showErrorDialog("Delete the modified version to delete the original book");
+                }
+            }
+        }
+    }
+
+    private Boolean deleteConfirmation(String message) {
+        Optional<ButtonType> result = Alerts.showConfirmDialog("Delete \"" + message + "\"?");
+        // Return true if confirmed
+        return !(result.isPresent() && result.get() == ButtonType.CANCEL);
     }
 }

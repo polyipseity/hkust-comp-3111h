@@ -26,6 +26,7 @@ public final class AuthorStatusController implements RequiresLoggedIn {
 
     private int pendingBooks = 0;
     private int approvedBooks = 0;
+    private int rejectedBooks = 0;
 
     @FXML private PieChart BooksStatusPieChart;
     @FXML private BarChart<String, Number> PopularBooksBarChart;
@@ -53,6 +54,7 @@ public final class AuthorStatusController implements RequiresLoggedIn {
         // Get books by status for the current author
         approvedBooks = 0;
         pendingBooks = 0;
+        rejectedBooks = 0;
 
         for (final var bookEntry : authorBooks.entrySet()) {
             final var data = bookEntry.getValue();
@@ -60,12 +62,15 @@ public final class AuthorStatusController implements RequiresLoggedIn {
                 approvedBooks++;
             }else if(data.approvalStatus() == Book.ApprovalStatus.PENDING){
                 pendingBooks++;
+            }else if(data.approvalStatus() == Book.ApprovalStatus.REJECTED){
+                rejectedBooks++;
             }
         }
 
         ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(
                 new PieChart.Data("Pending", pendingBooks),
-                new PieChart.Data("Approved", approvedBooks)
+                new PieChart.Data("Approved", approvedBooks),
+                new PieChart.Data("Rejected", rejectedBooks)
         );
 
         BooksStatusPieChart.setData(pieChartData);
