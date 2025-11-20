@@ -1,6 +1,8 @@
 package library.controllers.librarian;
 
+import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import library.Main;
 import library.controllers.common.DynamicTableController;
 import library.controllers.common.RequiresLoggedIn;
@@ -12,33 +14,30 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
-import java.util.SequencedMap;
 import java.util.function.Function;
 
-public class BorrowedBooksController extends DynamicTableController<BorrowedBooksController.Keys, BorrowedBooksController.Data> implements RequiresLoggedIn {
+public final class BorrowedBooksController implements RequiresLoggedIn, Initializable {
+	public TableView<Data> table;
+	public DynamicTableController<Keys, Data> tableController;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
-		super.initialize(location, resources);
-	}
 
-	@Override
-	protected @NotNull SequencedMap<Keys, TableColumn<Data, Data>> getKeys() {
 		final var keys = new LinkedHashMap<Keys, TableColumn<Data, Data>>();
 		keys.put(Keys.TITLE, new TableColumn<>("Title"));
 		keys.put(Keys.BORROWER, new TableColumn<>("Borrower"));
 		keys.put(Keys.BORROW_DATE, new TableColumn<>("Borrowed On"));
 		keys.put(Keys.DURATION_LEFT, new TableColumn<>("Time Left"));
-		return keys;
+		tableController = new DynamicTableController<>(table, keys);
+
+		loadTable();
 	}
 
-	@Override
-	protected @NotNull Collection<@NotNull Data> getData() {
-		return Main.getContext()
+	public void loadTable() {
+		tableController.setData(Main.getContext()
 				.getRepository()
 				.borrowOps
 				.read()
@@ -48,7 +47,7 @@ public class BorrowedBooksController extends DynamicTableController<BorrowedBook
 						entry.getKey()._1(),
 						entry.getKey()._2(),
 						entry.getValue()))
-				.toList();
+				.toList());
 	}
 
 	public enum Keys {

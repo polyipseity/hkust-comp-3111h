@@ -9,7 +9,7 @@ import library.models.User;
 
 import java.io.IOException;
 
-public class HomeController implements RequiresLoggedOut {
+public final class HomeController implements RequiresLoggedOut {
 	@FXML
 	private void handleStudentStaff() throws IOException {
 		navigateToLogin(User.Role.STUDENT_STAFF);

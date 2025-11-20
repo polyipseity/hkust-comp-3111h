@@ -5,7 +5,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import library.controllers.common.CommonDashboardController;
 
-public class DashboardController extends CommonDashboardController {
+public final class DashboardController extends CommonDashboardController {
     @FXML
     SplitPane availableBooks;
     @FXML

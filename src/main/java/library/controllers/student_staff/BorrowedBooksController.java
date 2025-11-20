@@ -35,7 +35,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-public class BorrowedBooksController implements RequiresLoggedIn {
+public final class BorrowedBooksController implements RequiresLoggedIn {
 	private final Context context = Main.getContext();
 	private final Repository repository = context.getRepository();
 	private final User user =  this.getLoggedInUser()._1();

@@ -18,7 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-public class BookViewerController {
+public final class BookViewerController {
     @FXML
     private BorderPane borderPane;
 

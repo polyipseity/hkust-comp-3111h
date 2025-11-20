@@ -28,11 +28,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class AuthorMyBooksController implements RequiresLoggedIn {
+public final class AuthorMyBooksController implements RequiresLoggedIn {
     private final Repository repository = Main.getContext().getRepository();
 	Map<Book, Book.Data> authorBooks;
 
-    public class BookRecord{
+	public final class BookRecord {
         private final Book book;
         private final String title;
         private final String status;

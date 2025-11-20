@@ -1,6 +1,8 @@
 package library.controllers.librarian;
 
+import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import library.Main;
 import library.controllers.common.DynamicTableController;
 import library.controllers.common.RequiresLoggedIn;
@@ -13,29 +15,31 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.ResourceBundle;
 import java.util.function.Function;
 
-public class PendingApprovalsController extends DynamicTableController<PendingApprovalsController.Keys, PendingApprovalsController.Data> implements RequiresLoggedIn {
+public final class PendingApprovalsController implements RequiresLoggedIn, Initializable {
+	public TableView<Data> table;
+	public DynamicTableController<Keys, Data> tableController;
+
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
-		super.initialize(location, resources);
-	}
 
-	@Override
-	protected @NotNull SequencedMap<Keys, TableColumn<Data, Data>> getKeys() {
 		final var keys = new LinkedHashMap<Keys, TableColumn<Data, Data>>();
 		keys.put(Keys.TITLE, new TableColumn<>("Title"));
 		keys.put(Keys.AUTHOR, new TableColumn<>("Author"));
 		keys.put(Keys.SUMMARY, new TableColumn<>("Summary"));
 		keys.put(Keys.ACTIONS, new TableColumn<>("Actions"));
-		return keys;
+		tableController = new DynamicTableController<>(table, keys);
+
+		loadTable();
 	}
 
-	@Override
-	protected @NotNull Collection<@NotNull Data> getData() {
-		return Main.getContext()
+	public void loadTable() {
+		tableController.setData(Main.getContext()
 				.getRepository()
 				.bookOps
 				.read(entry -> entry.getValue().approvalStatus() == Book.ApprovalStatus.PENDING)
@@ -45,7 +49,7 @@ public class PendingApprovalsController extends DynamicTableController<PendingAp
 						this,
 						entry.getKey(),
 						entry.getValue()))
-				.toList();
+				.toList());
 	}
 
 	public enum Keys {
@@ -73,14 +77,11 @@ public class PendingApprovalsController extends DynamicTableController<PendingAp
 				case SUMMARY -> new DynamicTableController.Data.Value(bookData.summary());
 				case ACTIONS -> new DynamicTableController.Data.Buttons(List.of(
 						new Tuple2<>("View", _ -> {
-
 						}),
 						new Tuple2<>("Approve", _ -> {
 							try {
 								switch (Main.getContext().getManageBooksControl().approveBook(book)) {
-									case ManageBooksControl.ApproveResult.Success _ -> {
-										controller.table.getItems().remove(this);
-									}
+									case ManageBooksControl.ApproveResult.Success _ -> controller.tableController.removeDatum(this);
 								}
 							} catch (TransactionException e) {
 								Alerts.showErrorDialog(e.getMessage());
@@ -89,9 +90,7 @@ public class PendingApprovalsController extends DynamicTableController<PendingAp
 						new Tuple2<>("Reject", _ -> {
 							try {
 								switch (Main.getContext().getManageBooksControl().rejectBook(book)) {
-									case ManageBooksControl.RejectResult.Success _ -> {
-										controller.table.getItems().remove(this);
-									}
+									case ManageBooksControl.RejectResult.Success _ -> controller.tableController.removeDatum(this);
 								}
 							} catch (TransactionException e) {
 								Alerts.showErrorDialog(e.getMessage());

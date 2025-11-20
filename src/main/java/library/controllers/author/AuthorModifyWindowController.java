@@ -18,7 +18,7 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class AuthorModifyWindowController implements RequiresLoggedIn {
+public final class AuthorModifyWindowController implements RequiresLoggedIn {
     Repository repository = Main.getContext().getRepository();
     private Book selectedBook;
 

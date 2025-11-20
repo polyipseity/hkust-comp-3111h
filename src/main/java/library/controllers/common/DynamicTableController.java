@@ -3,8 +3,6 @@ package library.controllers.common;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
@@ -15,27 +13,25 @@ import library.utils.Tuple2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.net.URL;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public abstract class DynamicTableController<Key, Value extends Function<@NotNull Key, DynamicTableController.@NotNull Data>> implements Initializable {
+public class DynamicTableController<Key, Value extends Function<@NotNull Key, DynamicTableController.@NotNull Data>> {
+	public final TableView<@NotNull Value> table;
 	protected final Map<Key, TableColumn<@NotNull Value, @NotNull Value>> columnMap = new HashMap<>();
-	@FXML
-	protected TableView<@NotNull Value> table;
 
-	@Override
-	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
-		loadTable();
+	public DynamicTableController(TableView<@NotNull Value> table, @NotNull SequencedMap<Key, TableColumn<@NotNull Value, @NotNull Value>> keys) {
+		this(table);
+		setKeys(keys);
 	}
 
-	protected abstract @NotNull SequencedMap<Key, TableColumn<@NotNull Value, @NotNull Value>> getKeys();
+	public DynamicTableController(TableView<@NotNull Value> table) {
+		this.table = table;
+	}
 
-	protected abstract @NotNull Collection<@NotNull Value> getData();
-
-	public void loadTable() {
-		final var keys = getKeys();
+	public void setKeys(@NotNull SequencedMap<Key, TableColumn<@NotNull Value, @NotNull Value>> keys) {
+		setData(List.of());
 
 		// Remove obsolete keys
 		final var columns = table.getColumns();
@@ -52,10 +48,16 @@ public abstract class DynamicTableController<Key, Value extends Function<@NotNul
 				return col;
 			});
 		}
+	}
 
+	public boolean setData(@NotNull Collection<@NotNull Value> data) {
 		final var items = table.getItems();
 		items.clear();
-		items.addAll(getData());
+		return items.addAll(data);
+	}
+
+	public boolean removeDatum(@NotNull Value datum) {
+		return table.getItems().remove(datum);
 	}
 
 	protected @NotNull TableColumn<@NotNull Value, @NotNull Value> configureColumn(@NotNull Key key, @NotNull TableColumn<@NotNull Value, @NotNull Value> column) {

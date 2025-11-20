@@ -1,34 +1,38 @@
 package library.controllers.librarian;
 
+import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import library.controllers.common.DynamicTableController;
 import library.controllers.common.RequiresLoggedIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.ResourceBundle;
 import java.util.function.Function;
 
-public class BookDownloadController extends DynamicTableController<BookDownloadController.Keys, BookDownloadController.Data> implements RequiresLoggedIn {
+public final class BookDownloadController implements RequiresLoggedIn, Initializable {
+	public TableView<@NotNull Data> table;
+	public DynamicTableController<Keys, Data> tableController;
+
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
-		super.initialize(location, resources);
-	}
 
-	@Override
-	protected @NotNull SequencedMap<Keys, TableColumn<Data, Data>> getKeys() {
 		final var keys = new LinkedHashMap<Keys, TableColumn<Data, Data>>();
 		keys.put(Keys.TITLE, new TableColumn<>("Title"));
 		keys.put(Keys.AUTHOR, new TableColumn<>("Author"));
 		keys.put(Keys.BOOKSHELVES, new TableColumn<>("Bookshelves"));
-		return keys;
+		tableController = new DynamicTableController<>(table, keys);
+
+		loadTable();
 	}
 
-	@Override
-	protected @NotNull Collection<@NotNull Data> getData() {
-		return List.of();
+	public void loadTable() {
+		tableController.setData(List.of());
 	}
 
 	public enum Keys {

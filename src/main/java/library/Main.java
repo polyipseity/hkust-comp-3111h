@@ -12,7 +12,7 @@ import org.mapdb.DBMaker;
 
 import java.util.Objects;
 
-public class Main extends Application {
+public final class Main extends Application {
 	@Nullable
 	@Setter(AccessLevel.PACKAGE)
 	private static Context context = null;

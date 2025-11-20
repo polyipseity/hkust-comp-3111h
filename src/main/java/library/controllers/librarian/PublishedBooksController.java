@@ -1,6 +1,8 @@
 package library.controllers.librarian;
 
+import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import library.Main;
 import library.controllers.common.DynamicTableController;
 import library.controllers.common.RequiresLoggedIn;
@@ -12,35 +14,32 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
-import java.util.SequencedMap;
 import java.util.function.Function;
 
-public class PublishedBooksController extends DynamicTableController<PublishedBooksController.Keys, PublishedBooksController.Data> implements RequiresLoggedIn {
+public final class PublishedBooksController implements RequiresLoggedIn, Initializable {
+	public TableView<Data> table;
+	public DynamicTableController<Keys, Data> tableController;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
-		super.initialize(location, resources);
-	}
 
-	@Override
-	protected @NotNull SequencedMap<Keys, TableColumn<Data, Data>> getKeys() {
 		final var keys = new LinkedHashMap<Keys, TableColumn<Data, Data>>();
 		keys.put(Keys.TITLE, new TableColumn<>("Title"));
 		keys.put(Keys.AUTHOR_FULL_NAME, new TableColumn<>("Author"));
 		keys.put(Keys.PUBLISH_DATE, new TableColumn<>("Published On"));
 		keys.put(Keys.TIMES_BORROWED, new TableColumn<>("Times Borrowed"));
 		keys.put(Keys.ACTIONS, new TableColumn<>("Actions"));
-		return keys;
+		tableController = new DynamicTableController<>(table, keys);
+
+		loadTable();
 	}
 
-	@Override
-	protected @NotNull Collection<@NotNull Data> getData() {
+	public void loadTable() {
 		final var repository = Main.getContext().getRepository();
-		return repository.bookOps
+		tableController.setData(repository.bookOps
 				.read(entry -> entry.getValue().published())
 				.entrySet()
 				.stream()
@@ -55,7 +54,7 @@ public class PublishedBooksController extends DynamicTableController<PublishedBo
 											.map(User.Data::fullName)
 											.orElseGet(() -> "ERROR: %s".formatted(val.username()));
 								}))
-				.toList();
+				.toList());
 	}
 
 	public enum Keys {

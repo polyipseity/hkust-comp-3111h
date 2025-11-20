@@ -59,9 +59,9 @@
 			</Tab>
 
 			<!-- 7) Book Download -->
-			<Tab text="Book Download">
+			<Tab text="Book Download" onSelectionChanged="#loadBookDownload">
 				<StackPane>
-					<fx:include source="BookDownload.fxml"/>
+					<fx:include source="BookDownload.fxml" fx:id="bookDownload"/>
 				</StackPane>
 			</Tab>
 
