@@ -10,6 +10,8 @@ import org.jetbrains.annotations.NotNull;
 public record ManageBooksControl(@NotNull Repository repository) {
 	public static final @NotNull String NOTIFICATION_APPROVE = "Your book '%s' has been approved!";
 	public static final @NotNull String NOTIFICATION_REJECT = "Your book '%s' has been rejected!";
+	public static final @NotNull String NOTIFICATION_DELETE_BOOK = "Your book '%s' has been deleted!";
+	public static final @NotNull String NOTIFICATION_DELETE_BORROWED_BOOK = "The book '%s' you were borrowing has been deleted!";
 
 	/**
 	 * Approves a pending book and updates the database in one transaction.
@@ -31,7 +33,7 @@ public record ManageBooksControl(@NotNull Repository repository) {
 	 * notification about the approval outcome.</p>
 	 */
 	public @NotNull ApproveResult approveBook(@NotNull Book pending) throws TransactionException {
-		repository.transact(tx -> {
+		repository.transact(_ -> {
 			// read current data for the pending book
 			final var pendingData = repository.bookOps.readOrThrow(pending);
 			if (Book.ApprovalStatus.PENDING != pendingData.approvalStatus()) {
@@ -90,7 +92,7 @@ public record ManageBooksControl(@NotNull Repository repository) {
 	 * @throws TransactionException if any database operation fails during the transaction
 	 */
 	public @NotNull RejectResult rejectBook(@NotNull Book pending) throws TransactionException {
-		repository.transact(tx -> {
+		repository.transact(_ -> {
 			// read current data for the pending book
 			final var pendingData = repository.bookOps.readOrThrow(pending);
 			if (Book.ApprovalStatus.PENDING != pendingData.approvalStatus()) {
@@ -145,6 +147,59 @@ public record ManageBooksControl(@NotNull Repository repository) {
 	 */
 	public sealed interface RejectResult permits RejectResult.Success {
 		record Success() implements RejectResult {
+		}
+	}
+
+	/**
+	 * Deletes a book and notifies the author and all borrowers.
+	 *
+	 * <p>Before deleting the book, it retrieves all borrows associated with the book.
+	 * It then removes each borrow record from the database.</p>
+	 *
+	 * <p>After removing the borrows, it notifies the author and all borrowers about
+	 * the deletion of the book.</p>
+	 *
+	 * @param book the book to delete; must exist in the database
+	 * @return a {@link DeleteResult} indicating success or failure
+	 * @throws TransactionException if any database operation fails during the transaction
+	 */
+	public @NotNull DeleteResult deleteBook(@NotNull Book book) throws TransactionException {
+		repository.transact(_ -> {
+			// Read the current book data to ensure it exists
+			final var bookData = repository.bookOps.readOrThrow(book);
+
+			// Retrieve all borrows associated with the book
+			final var borrows = repository.borrowOps.read(book);
+			// Process each borrow and remove it from the database
+			for (final var borrowEntry : borrows.entrySet()) {
+				repository.borrowOps.delete(borrowEntry.getKey(), book, borrowEntry.getValue());
+			}
+			// After removing all borrows, delete the book
+			repository.bookOps.delete(book, bookData);
+
+			// Notify the author of the book deletion
+			if (book.author() instanceof Author.ByRef(final var author)) {
+				repository.userNotificationOps.updateAsList(author, notifications -> {
+					notifications.add(NOTIFICATION_DELETE_BOOK.formatted(book.title()));
+				});
+			}
+			// Notify each borrower about the deletion
+			for (final var borrower : borrows.keySet()) {
+				repository.userNotificationOps.updateAsList(borrower, notifications -> {
+					notifications.add(NOTIFICATION_DELETE_BORROWED_BOOK.formatted(book.title()));
+				});
+			}
+
+			return true;
+		}, () -> "Failed to delete book: %s".formatted(book));
+		return new DeleteResult.Success();
+	}
+
+	/**
+	 * Result type for the deletion operation.
+	 */
+	public sealed interface DeleteResult permits DeleteResult.Success {
+		record Success() implements DeleteResult {
 		}
 	}
 }

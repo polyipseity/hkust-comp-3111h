@@ -59,7 +59,7 @@ public final class ContextImpl implements Context {
 		this.manageBooksControl = new ManageBooksControl(repository);
 		this.manageNotificationsControl = new ManageNotificationsControl();
 		this.manageProfileControl = new ManageProfileControl(repository);
-		this.manageUsersControl = new ManageUsersControl();
+		this.manageUsersControl = new ManageUsersControl(repository);
 		this.publishBooksControl = new PublishBooksControl();
 		this.requestBooksControl = new RequestBooksControl(repository);
 		this.statsControl = new StatsControl();
