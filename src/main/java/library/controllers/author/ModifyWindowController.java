@@ -1,5 +1,6 @@
 package library.controllers.author;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -7,82 +8,68 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import library.Main;
 import library.controllers.common.RequiresLoggedIn;
-import library.models.Author;
+import library.controls.ManageBooksControl;
 import library.models.Book;
-import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
+import library.utils.HasMessage;
+import library.utils.Tuple2;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
-import java.net.URL;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.Objects;
 
 public final class ModifyWindowController implements RequiresLoggedIn {
-    Repository repository = Main.getContext().getRepository();
-    private Book selectedBook;
+	public Runnable modifyCallback = () -> {
+	};
+	@UnknownNullability
+	public Button saveButton;
+	@UnknownNullability
+	public TextArea SummaryArea;
+	@UnknownNullability
+	public TextField TitleField;
+	@Nullable
+	private Tuple2<Book, Book.Data> bookEntry;
 
-    private String initialTitle, initalSummary, currentTitle, currentSummary;
-
-		@FXML
-    private Button saveButton;
-
-    @FXML
-    private TextArea SummaryArea;
-
-    @FXML
-    private TextField TitleField;
-
-    public void setData(String title, String summary,Book book) {
-        initialTitle = title;
-        initalSummary = summary;
-        TitleField.setText(title);
-        SummaryArea.setText(summary);
-        selectedBook = book;
-    }
-
-	@Override
-	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
-		RequiresLoggedIn.super.initialize(location, resources);
-
-		TitleField.textProperty().addListener((observable, oldValue, newValue) -> {
-			currentTitle = newValue;
-			checkSaveCondition(newValue, currentSummary);
-		});
-
-		SummaryArea.textProperty().addListener((observable, oldValue, newValue) -> {
-			currentSummary = newValue;
-			checkSaveCondition(currentTitle, newValue);
-		});
+	public Tuple2<Book, Book.Data> getBookEntry() {
+		return Objects.requireNonNull(bookEntry);
 	}
 
-    private void checkSaveCondition(String title, String summary) {
-	    saveButton.setDisable(initialTitle.equals(title) && initalSummary.equals(summary));
-    }
+	public void setBookEntry(Tuple2<Book, Book.Data> bookEntry) {
+		final var title = bookEntry._1().title();
+		final var summary = bookEntry._2().summary();
+		TitleField.textProperty().setValue(title);
+		SummaryArea.textProperty().setValue(summary);
+		saveButton.disableProperty().bind(
+				SimpleBooleanProperty.booleanExpression(TitleField.textProperty().map(title::equals))
+						.and(SimpleBooleanProperty.booleanExpression(SummaryArea.textProperty().map(summary::equals)))
+		);
+		this.bookEntry = bookEntry;
+	}
 
     @FXML
-    private void saveModification() throws TransactionException {
-	    var book = new Book(currentTitle, new Author.ByRef(getLoggedInUser()._1()), true);
-        if(currentTitle != initialTitle){
-            Optional<Book.Data> opt = repository.bookOps.read(book);
-            if(opt.isPresent()) {
-                Alerts.showErrorDialog("Duplicated Book Title.");
-                return;
-            }
-        }
-        var Olddata = repository.bookOps.read(selectedBook).get();
-        var data = new Book.Data(currentSummary,Olddata.content(), Book.ApprovalStatus.PENDING ,Olddata.publishDate(),selectedBook,Olddata.timesBorrowed());
-        repository.bookOps.create(book, data);
-        repository.bookOps.update(selectedBook, old -> old.withOriginalOrModified(book));
-
-        //Close the current window
-        Stage currentStage = (Stage) TitleField.getScene().getWindow();
-        currentStage.close();
+    private void saveModification() {
+	    final var bookEntry = getBookEntry();
+	    final var title = TitleField.getText();
+	    final var summary = SummaryArea.getText();
+	    try {
+		    switch (Main.getContext().getManageBooksControl()
+				    .modifyBook(bookEntry._1(), title, summary)) {
+			    case ManageBooksControl.ModifyResult.Success success -> {
+				    Alerts.showInfoDialog(success.getMessage());
+				    // Close the current window
+				    ((Stage) saveButton.getScene().getWindow()).close();
+				    modifyCallback.run();
+			    }
+			    case HasMessage message -> Alerts.showErrorDialog(message.getMessage());
+		    }
+	    } catch (TransactionException e) {
+		    Alerts.showErrorDialog(e.getLocalizedMessage());
+	    }
     }
 
     @FXML
     private void cancelModification(){
-        Stage currentStage = (Stage) TitleField.getScene().getWindow();
-        currentStage.close();
+	    ((Stage) saveButton.getScene().getWindow()).close();
     }
 }

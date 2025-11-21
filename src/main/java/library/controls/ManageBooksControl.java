@@ -2,9 +2,17 @@ package library.controls;
 
 import library.models.Author;
 import library.models.Book;
+import library.models.Borrow;
+import library.models.User;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
+import library.utils.HasMessage;
 import library.utils.TimeUtil;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 public record ManageBooksControl(Repository repository) {
 	public static final String NOTIFICATION_APPROVE = "Your book '%s' has been approved!";
@@ -148,7 +156,7 @@ public record ManageBooksControl(Repository repository) {
 	}
 
 	/**
-	 * Deletes a book and notifies the author and all borrowers.
+	 * Deletes a book and notifies the author (if not deleted by author) and all borrowers.
 	 *
 	 * <p>Before deleting the book, it retrieves all borrows associated with the book.
 	 * It then removes each borrow record from the database.</p>
@@ -160,43 +168,200 @@ public record ManageBooksControl(Repository repository) {
 	 * @return a {@link DeleteResult} indicating success or failure
 	 * @throws TransactionException if any database operation fails during the transaction
 	 */
-	public DeleteResult deleteBook(Book book) throws TransactionException {
-		repository.transact(_ -> {
-			// Read the current book data to ensure it exists
-			final var bookData = repository.bookOps.readOrThrow(book);
+	public DeleteResult deleteBook(Book book, User.Role role) throws TransactionException {
+		return switch (role) {
+			case STUDENT_STAFF -> new DeleteResult.BadRole(role);
+			case AUTHOR, LIBRARIAN -> {
+				final var ret = new AtomicReference<@Nullable DeleteResult>();
+				try {
+					repository.transact(_ -> {
+						// Read the current book data to ensure it exists
+						final var bookData = repository.bookOps.readOrThrow(book);
 
-			// Retrieve all borrows associated with the book
-			final var borrows = repository.borrowOps.read(book);
-			// Process each borrow and remove it from the database
-			for (final var borrowEntry : borrows.entrySet()) {
-				repository.borrowOps.delete(borrowEntry.getKey(), book, borrowEntry.getValue());
-			}
-			// After removing all borrows, delete the book
-			repository.bookOps.delete(book, bookData);
+						// Retrieve all borrows associated with the book
+						final var borrows = repository.borrowOps.read(book);
+						if (role != User.Role.LIBRARIAN && !borrows.isEmpty()) {
+							ret.set(new DeleteResult.HasBorrows(borrows));
+							return false;
+						}
 
-			// Notify the author of the book deletion
-			if (book.author() instanceof Author.ByRef(final var author)) {
-				repository.userNotificationOps.updateAsList(author, notifications -> {
-					notifications.add(NOTIFICATION_DELETE_BOOK.formatted(book.title()));
-				});
-			}
-			// Notify each borrower about the deletion
-			for (final var borrower : borrows.keySet()) {
-				repository.userNotificationOps.updateAsList(borrower, notifications -> {
-					notifications.add(NOTIFICATION_DELETE_BORROWED_BOOK.formatted(book.title()));
-				});
-			}
+						// Process each borrow and remove it from the database
+						for (final var borrowEntry : borrows.entrySet()) {
+							repository.borrowOps.delete(borrowEntry.getKey(), book, borrowEntry.getValue());
+						}
+						// After removing all borrows, delete the book
+						repository.bookOps.delete(book, bookData);
 
-			return true;
-		}, () -> "Failed to delete book: %s".formatted(book));
-		return new DeleteResult.Success();
+
+						if (role != User.Role.AUTHOR) {
+							// Notify the author of the book deletion
+							if (book.author() instanceof Author.ByRef(final var author)) {
+								repository.userNotificationOps.updateAsList(author, notifications -> {
+									notifications.add(NOTIFICATION_DELETE_BOOK.formatted(book.title()));
+								});
+							}
+						}
+						// Notify each borrower about the deletion
+						for (final var borrower : borrows.keySet()) {
+							repository.userNotificationOps.updateAsList(borrower, notifications -> {
+								notifications.add(NOTIFICATION_DELETE_BORROWED_BOOK.formatted(book.title()));
+							});
+						}
+
+						return true;
+					}, () -> "Failed to delete book: %s".formatted(book));
+				} catch (TransactionException e) {
+					final var ret2 = ret.get();
+					if (ret2 != null) {
+						yield ret2;
+					}
+					throw e;
+				}
+				yield new DeleteResult.Success();
+			}
+		};
+	}
+
+	public ModifyResult modifyBook(Book book, String title, String summary) throws TransactionException {
+		final var ret = new AtomicReference<@Nullable ModifyResult>();
+		try {
+			repository.transact(_ -> {
+				// Read the current book data to ensure it exists
+				final var bookData = repository.bookOps.readOrThrow(book);
+
+				if (title.equals(book.title()) && summary.equals(bookData.summary())) {
+					ret.set(new ModifyResult.SameDetails(bookData));
+					return false;
+				}
+
+				// Check if the book is pending or approved
+				return switch (bookData.approvalStatus()) {
+					case PENDING -> {
+						// New book
+						final var newBook = new Book(title, book.author(), switch (bookData.originalOrModified()) {
+							case null -> false;
+							case Book(final String title2, _, _) -> title2.equals(title);
+						});
+						final var newBookData = bookData.withSummary(summary);
+
+						// Update or create it
+						if (newBook.equals(book)) {
+							// Update book in place
+							repository.bookOps.update(book, newBookData, bookData);
+						} else {
+							// Delete first to remove the original book link
+							repository.bookOps.delete(book, bookData);
+							// Add later to add the original book link
+							try {
+								repository.bookOps.create(newBook, newBookData);
+							} catch (TransactionException e) {
+								ret.set(new ModifyResult.AlreadyExists(newBook));
+								throw e;
+							}
+						}
+
+						ret.set(new ModifyResult.Success(newBook, newBookData));
+						yield true;
+					}
+					case APPROVED -> {
+						// Check if the book is borrowed by any student/staff
+						final var borrows = repository.borrowOps.read(book);
+						if (!borrows.isEmpty()) {
+							ret.set(new ModifyResult.HasBorrows(borrows));
+							yield false;
+						}
+						// New book
+						final var newBook = new Book(title, book.author(), title.equals(book.title()));
+						final var newBookData = bookData
+								.withSummary(summary)
+								.withApprovalStatus(Book.ApprovalStatus.PENDING)
+								.withOriginalOrModified(book);
+						// Create it
+						try {
+							repository.bookOps.create(newBook, newBookData);
+						} catch (TransactionException e) {
+							ret.set(new ModifyResult.AlreadyExists(newBook));
+							throw e;
+						}
+
+						ret.set(new ModifyResult.Success(newBook, newBookData));
+						yield true;
+					}
+					case REJECTED -> {
+						ret.set(new ModifyResult.AlreadyRejected(bookData));
+						yield false;
+					}
+				};
+			}, () -> "Failed to modify book: %s, %s, %s".formatted(book, title, summary));
+		} catch (TransactionException e) {
+			final var ret2 = ret.get();
+			if (ret2 != null) {
+				return ret2;
+			}
+			throw e;
+		}
+		return Objects.requireNonNull(ret.get());
 	}
 
 	/**
 	 * Result type for the deletion operation.
 	 */
-	public sealed interface DeleteResult permits DeleteResult.Success {
+	public sealed interface DeleteResult permits DeleteResult.BadRole, DeleteResult.HasBorrows, DeleteResult.Success {
 		record Success() implements DeleteResult {
+		}
+
+		record BadRole(User.Role role) implements DeleteResult, HasMessage {
+			@Override
+			public String getMessage() {
+				return "Bad role: %s".formatted(role.name);
+			}
+		}
+
+		record HasBorrows(Map<User, Borrow> borrows) implements DeleteResult, HasMessage {
+			@Override
+			public String getMessage() {
+				return "Cannot modify a book that is borrowed by students/staff";
+			}
+		}
+	}
+
+	/**
+	 * Result type for the modification operation.
+	 */
+	public sealed interface ModifyResult permits ModifyResult.HasBorrows, ModifyResult.AlreadyExists, ModifyResult.AlreadyRejected, ModifyResult.SameDetails, ModifyResult.Success {
+		record Success(Book newBook, Book.Data newBookData) implements ModifyResult, HasMessage {
+			@Override
+			public String getMessage() {
+				return "Book updated and waiting for approval";
+			}
+		}
+
+		record SameDetails(Book.Data oldBookData) implements ModifyResult, HasMessage {
+			@Override
+			public String getMessage() {
+				return "Book details are the same";
+			}
+		}
+
+		record AlreadyExists(Book conflictBook) implements ModifyResult, HasMessage {
+			@Override
+			public String getMessage() {
+				return "Book of the same title and author already exists";
+			}
+		}
+
+		record HasBorrows(Map<User, Borrow> borrows) implements ModifyResult, HasMessage {
+			@Override
+			public String getMessage() {
+				return "Cannot modify a book that is borrowed by students/staff";
+			}
+		}
+
+		record AlreadyRejected(Book.Data oldBookData) implements ModifyResult, HasMessage {
+			@Override
+			public String getMessage() {
+				return "Cannot modify a rejected book";
+			}
 		}
 	}
 }

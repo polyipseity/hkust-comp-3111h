@@ -51,7 +51,6 @@ public final class PublishBooksController implements RequiresLoggedIn {
                 if(BookTitle.getText().isEmpty()){
                     BookTitle.setText(file.getName().substring(0, file.getName().lastIndexOf('.')));
                 }
-                String content = Files.readString(file.toPath());
                 ContentTxt = Files.readString(file.toPath());
                 BookContent.setText(file.getName());
             } catch (IOException e) {
@@ -110,7 +109,7 @@ public final class PublishBooksController implements RequiresLoggedIn {
             try {
                 repository.bookOps.create(book, data);
                 Alerts.showInfoDialog("Published and awaiting approval.");
-                parentController.myBooksController.reload();
+	            parentController.myBooksController.loadTable();
             } catch (TransactionException e) {
                 throw new RuntimeException(e);
             }

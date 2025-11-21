@@ -1,246 +1,170 @@
 package library.controllers.author;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
 import library.FXMLs;
 import library.Main;
+import library.controllers.common.DynamicTableController;
 import library.controllers.common.RequiresLoggedIn;
 import library.controllers.common.TextViewController;
+import library.controls.ManageBooksControl;
 import library.models.Author;
 import library.models.Book;
-import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
+import library.utils.HasMessage;
 import library.utils.TimeUtil;
-import lombok.Setter;
+import library.utils.Tuple2;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
+import java.io.IOException;
 import java.net.URL;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.Function;
 
 public final class MyBooksController implements RequiresLoggedIn {
-    private final Repository repository = Main.getContext().getRepository();
-	Map<Book, Book.Data> authorBooks;
-
-    @Setter
-    private DashboardController parentController;
-
-    public static final class BookRecord {
-        private final Book book;
-        private final String title;
-        private final String status;
-        private final String date;
-        private final long readers;
-        private final String summary;
-
-        public BookRecord(Book book, String Title, String Status, String Date, long Readers, String Abstract) {
-            this.book = book;
-            this.title = Title;
-            this.status = Status;
-            this.date = Date;
-            this.readers = Readers;
-            this.summary = Abstract;
-        }
-
-        public Book getBook() { return book; }
-        public String getTitle() { return title; }
-        public String getStatus() { return status; }
-        public String getDate() { return date; }
-        public long getReaders() { return readers; }
-        public String getSummary() { return summary; }
-    }
+	@UnknownNullability
+	public TableView<@Nullable Data> table;
+	@UnknownNullability
+	public DynamicTableController<Keys, Data> tableController;
 
     @FXML
-    private TableView<@Nullable BookRecord> BooksTable;
-
-    @FXML
-    private TableColumn<BookRecord, @Nullable String> Title, Status, Date, Abstract;
-
-    @FXML
-    private TableColumn<BookRecord, @Nullable Long> Readers;
+    private TableColumn<Data, @Nullable Data> titleColumn, statusColumn, dateColumn, readersColumn, summaryColumn;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
 
-		//Binding Table Column
-		Title.setCellValueFactory(new PropertyValueFactory<>("title"));
-		Status.setCellValueFactory(new PropertyValueFactory<>("status"));
-		Date.setCellValueFactory(new PropertyValueFactory<>("date"));
-		Readers.setCellValueFactory(new PropertyValueFactory<>("readers"));
-		Abstract.setCellValueFactory(new PropertyValueFactory<>("summary"));
+		final var keys = new LinkedHashMap<Keys, TableColumn<Data, @Nullable Data>>();
+		keys.put(Keys.TITLE, titleColumn);
+		keys.put(Keys.STATUS, statusColumn);
+		keys.put(Keys.PUBLISH_DATE, dateColumn);
+		keys.put(Keys.TIMES_BORROWED, readersColumn);
+		keys.put(Keys.SUMMARY, summaryColumn);
+		tableController = new DynamicTableController<>(table, keys);
 
-		//LoadTable
-		reload();
+		loadTable();
 	}
 
-    public void reload(){
-        //Get book authorized by the current author
-	    final var author = new Author.ByRef(getLoggedInUser()._1());
-	    authorBooks = repository.bookOps.read(entry -> author.equals(entry.getKey().author()));
-
-        ObservableList<BookRecord> tableData = FXCollections.observableArrayList();
-
-        //For each book in the db, write it in the tableView
-	    for (final var bookEntry : authorBooks.entrySet()) {
-		    final var book = bookEntry.getKey();
-		    final var data = bookEntry.getValue();
-	        var date = switch (data.publishDate()) {
-		        case ZonedDateTime val -> TimeUtil.toStringZonedLocal(val);
-		        case null -> data.approvalStatus().toString();
-            };
-            var record = new BookRecord(book, book.title(), book.temporary() ? "MODIFIED" : data.approvalStatus().toString(), book.temporary() ? "MODIFIED" : date, data.timesBorrowed(), data.summary());
-            if(data.approvalStatus()!= Book.ApprovalStatus.REJECTED) {
-                tableData.add(record);
-            }
-        }
-        BooksTable.setItems(tableData);
-    }
+	public void loadTable() {
+		final var author = new Author.ByRef(getLoggedInUser()._1());
+		tableController.setData(Main.getContext().getRepository().bookOps
+				.read(entry -> entry.getValue().active() && author.equals(entry.getKey().author()))
+				.entrySet().stream().map(entry -> new MyBooksController.Data(this, entry.getKey(), entry.getValue()))
+				.toList());
+	}
 
     @FXML
     private void AuthorViewBook() {
-        BookRecord selected = BooksTable.getSelectionModel().getSelectedItem();
+	    final var selected = table.getSelectionModel().getSelectedItem();
         if (selected == null) {
             Alerts.showErrorDialog("Please select a book first.");
             return;
         }
-        try {
-            // Load the FXML file for the new window's content
-	        final var content = repository.bookOps.readOrThrow(selected.book).content();
-	        final var root = FXMLs.COMMON_TEXT_VIEW.<Parent>load(loader -> {
-		        final var controller = loader.<TextViewController>getController();
-		        //Passing content to new window
-		        controller.setContent(content);
-	        });
-	        // Create a new Stage (window) and show it
-	        Main.getContext().newWindow(
-			        TextViewController.WINDOW_TITLE.formatted(selected.title),
-			        root,
-			        null
-	        ).show();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+	    try {
+		    Main.getContext().newWindow(
+				    TextViewController.WINDOW_TITLE.formatted(selected.book.title()),
+				    FXMLs.COMMON_TEXT_VIEW.load(loader -> loader.<TextViewController>getController().setContent(selected.bookData.content())),
+				    null
+		    ).show();
+	    } catch (IOException e) {
+		    Alerts.showErrorDialog(e.getLocalizedMessage());
+	    }
     }
 
-    @FXML
-    private void AuthorModifyBook(){
-        BookRecord selected = BooksTable.getSelectionModel().getSelectedItem();
+	@FXML
+	private void AuthorModifyBook() throws IOException {
+		final var selected = table.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            Alerts.showErrorDialog("Please select a book first.");
-            return;
+	        Alerts.showErrorDialog("Please select a book first.");
+	        return;
         }
-        try {
-            if(selected.book.temporary()){
-                Alerts.showErrorDialog("Selected book is temporary. Please select the original book.");
-                return;
-            }
-            if(repository.bookOps.read(selected.book).get().originalOrModified() != null){
-                Alerts.showErrorDialog("Already modified this book, delete the modified version to make new modifications.");
-                return;
-            }
+
             // Load the FXML file for the new window's content
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/author/ModifyWindow.fxml"));
-            Parent root = fxmlLoader.load();
+		Parent root = fxmlLoader.load();
 
             //Passing content to new window
             ModifyWindowController controller = fxmlLoader.getController();
-            Book.Data data = repository.bookOps.read(selected.book).get();
-            controller.setData(selected.book.title(),data.summary(),selected.book);
+		controller.setBookEntry(new Tuple2<>(selected.book, selected.bookData));
+		controller.modifyCallback = this::loadTable;
 
-            // Create a new Stage (window)
-            Stage newStage = new Stage();
-            newStage.setResizable(false);
-            newStage.setTitle("Modify Book");
-            newStage.setScene(new Scene(root));
+		// Create a new Stage (window)
+		final var window = Main.getContext().newWindow(
+				"Modify Book",
+				root,
+				null
+		);
 
             // Show the new window
-            newStage.show();
-            newStage.setOnHidden(event -> {
-                reload();});
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+		window.show();
     }
 
-    @FXML
-    private void AuthorDeleteBook() throws TransactionException {
-        BookRecord selected = BooksTable.getSelectionModel().getSelectedItem();
-
+	@FXML
+	private void AuthorDeleteBook() {
+		final var selected = table.getSelectionModel().getSelectedItem();
         if (selected == null) {
             Alerts.showErrorDialog("Please select a book first.");
             return;
         }
-        //Get selected book from db
-	    List<Book> selectedBook = authorBooks.keySet().stream()
-                .filter(book -> selected.title.equals(book.title()))
-                .toList();
+		if (!deleteConfirmation(selected.book.title())) {
+			return;
+		}
 
-        if(selectedBook.isEmpty()){
-            Alerts.showErrorDialog("Selected book not found");
-            return;
-        }
+		try {
+			switch (Main.getContext().getManageBooksControl().deleteBook(selected.book, getLoggedInUser()._2().role())) {
+				//Reload table after deleting a book
+				case ManageBooksControl.DeleteResult.Success _ -> loadTable();
+				case HasMessage message -> Alerts.showErrorDialog(message.getMessage());
+			}
+		} catch (TransactionException e) {
+			Alerts.showErrorDialog(e.getLocalizedMessage());
+		}
+	}
 
-        //Drop selected book in db
-        for (Book book : selectedBook) {
-            var data = repository.bookOps.read(book).get();
-            if(data.approvalStatus().equals(Book.ApprovalStatus.REJECTED)){
-                //Handle deleting rejected book
-                Alerts.showErrorDialog("Cannot delete the book that is rejected");
-            }else if(data.approvalStatus().equals(Book.ApprovalStatus.PENDING)){
-                //Handle deleting pending book
-                deleteBookCondition(book, data, selected);
-            }else{
-                //If the book is approved
-                if(repository.borrowOps.read(book).isEmpty()){
-                    deleteBookCondition(book, data, selected);
-                }else{
-                    Alerts.showErrorDialog("Cannot delete the book that is already borrowed");
-                }
-            }
-        }
-        //Reload table after deleting a book
-        reload();
-    }
-
-
-    private void deleteBookCondition(Book book, Book.Data data, BookRecord record) throws TransactionException {
-        if(data.summary().equals(record.getSummary())){
-            if(book.temporary()){
-                //Delete the modified version
-                if(deleteConfirmation(record.title)) {
-                    repository.bookOps.delete(book, data);
-                }
-            }else{
-                //Can't delete originalBook
-                if(data.originalOrModified() == null){
-                    if(deleteConfirmation(record.title)) {
-                        repository.bookOps.delete(book, data);
-                    }
-                }else{
-                    Alerts.showErrorDialog("Delete the modified version to delete the original book");
-                }
-            }
-        }
-    }
-
-    private Boolean deleteConfirmation(String message) {
+	private boolean deleteConfirmation(String message) {
         Optional<ButtonType> result = Alerts.showConfirmDialog("Delete \"" + message + "\"?");
         // Return true if confirmed
         return !(result.isPresent() && result.get() == ButtonType.CANCEL);
     }
+
+	public enum Keys {
+		TITLE,
+		STATUS,
+		PUBLISH_DATE,
+		TIMES_BORROWED,
+		SUMMARY
+	}
+
+	public record Data(MyBooksController controller,
+	                   Book book,
+	                   Book.Data bookData)
+			implements Function<Keys, DynamicTableController.Data> {
+		/**
+		 * Applies this function to the given argument.
+		 *
+		 * @param key the function argument
+		 * @return the function result
+		 */
+		@Override
+		public DynamicTableController.Data apply(Keys key) {
+			return switch (key) {
+				case TITLE -> new DynamicTableController.Data.Text(book.title());
+				case STATUS -> new DynamicTableController.Data.Text(bookData.approvalStatus().name);
+				case PUBLISH_DATE -> new DynamicTableController.Data.Text(
+						bookData.publishDate() == null
+								? ""
+								: TimeUtil.toStringZonedLocal(bookData.publishDate()));
+				case TIMES_BORROWED -> new DynamicTableController.Data.Text(String.valueOf(bookData.timesBorrowed()));
+				case SUMMARY -> new DynamicTableController.Data.Text(bookData.summary());
+			};
+		}
+	}
 }

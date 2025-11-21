@@ -64,9 +64,16 @@ public record Book(
 	}
 
 	public enum ApprovalStatus {
-		PENDING,
-		APPROVED,
-		REJECTED
+		PENDING("pending"),
+		APPROVED("approved"),
+		REJECTED("rejected"),
+		;
+
+		public final String name;
+
+		ApprovalStatus(String name) {
+			this.name = name;
+		}
 	}
 
 	@With
@@ -94,7 +101,18 @@ public record Book(
 		 * otherwise {@code false}
 		 */
 		public boolean published() {
-			return approvalStatus == ApprovalStatus.APPROVED && originalOrModified == null;
+			return switch (approvalStatus) {
+				case PENDING, REJECTED -> false;
+				case APPROVED -> originalOrModified == null;
+			};
+		}
+
+		public boolean active() {
+			return switch (approvalStatus) {
+				case PENDING -> true;
+				case APPROVED -> originalOrModified == null;
+				case REJECTED -> false;
+			};
 		}
 
 		@RequiredArgsConstructor
@@ -110,7 +128,7 @@ public record Book(
 			 * @throws IOException in case of an I/O error
 			 */
 			@Override
-			public void serialize(DataOutput2 out, Book.Data value) throws IOException {
+			public void serialize(DataOutput2 out, Data value) throws IOException {
 				out.writeUTF(value.summary());
 				out.writeUTF(value.content());
 				out.writeInt(value.approvalStatus().ordinal());

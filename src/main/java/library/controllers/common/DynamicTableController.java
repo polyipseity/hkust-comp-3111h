@@ -46,7 +46,7 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 		for (final var keyEntry : keys.entrySet()) {
 			columnMap.computeIfAbsent(keyEntry.getKey(), key -> {
 				final var col = configureColumn(key, keyEntry.getValue());
-				columns.add(col);
+				if (!columns.contains(col)) columns.add(col);
 				return col;
 			});
 		}

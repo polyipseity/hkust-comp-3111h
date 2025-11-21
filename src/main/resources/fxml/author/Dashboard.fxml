@@ -11,10 +11,10 @@
 	</top>
 
 	<center>
-		<TabPane prefHeight="500">
+		<TabPane prefHeight="500" tabClosingPolicy="UNAVAILABLE">
 
 			<!-- My Books Tab -->
-			<Tab text="My Books">
+			<Tab text="My Books" onSelectionChanged="#loadMyBooks">
                 <StackPane>
                     <fx:include source="MyBooks.fxml" fx:id="myBooks"/>
                 </StackPane>

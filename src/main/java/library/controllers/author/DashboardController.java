@@ -22,8 +22,10 @@ public final class DashboardController extends CommonDashboardController {
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		super.initialize(location, resources);
-
-		myBooksController.setParentController(this);
 		publishBooksController.setParentController(this);
+	}
+
+	public void loadMyBooks() {
+		myBooksController.loadTable();
 	}
 }

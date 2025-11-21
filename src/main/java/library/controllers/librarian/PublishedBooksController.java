@@ -17,9 +17,11 @@ import library.models.Book;
 import library.models.User;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
+import library.utils.HasMessage;
 import library.utils.TimeUtil;
 import library.utils.Tuple2;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.io.IOException;
 import java.net.URL;
@@ -28,7 +30,9 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 
 public final class PublishedBooksController implements RequiresLoggedIn, Initializable {
+	@UnknownNullability
 	public TableView<@Nullable Data> table;
+	@UnknownNullability
 	public DynamicTableController<Keys, Data> tableController;
 
 	@Override
@@ -116,8 +120,9 @@ public final class PublishedBooksController implements RequiresLoggedIn, Initial
 								return;
 							}
 							try {
-								switch (Main.getContext().getManageBooksControl().deleteBook(book)) {
+								switch (Main.getContext().getManageBooksControl().deleteBook(book, controller.getLoggedInUser()._2().role())) {
 									case ManageBooksControl.DeleteResult.Success _ -> controller.tableController.removeDatum(this);
+									case HasMessage message -> Alerts.showErrorDialog(message.getMessage());
 								}
 							} catch (TransactionException e) {
 								Alerts.showErrorDialog(e.getLocalizedMessage());
