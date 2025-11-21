@@ -15,6 +15,7 @@ import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.Tuple2;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.io.IOException;
 import java.net.URL;
@@ -23,7 +24,9 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 
 public final class PendingApprovalsController implements RequiresLoggedIn, Initializable {
+	@UnknownNullability
 	public TableView<@Nullable Data> table;
+	@UnknownNullability
 	public DynamicTableController<Keys, Data> tableController;
 
 	@Override
@@ -75,7 +78,7 @@ public final class PendingApprovalsController implements RequiresLoggedIn, Initi
 		public DynamicTableController.Data apply(Keys key) {
 			return switch (key) {
 				case TITLE -> new DynamicTableController.Data.Text(book.title());
-				case AUTHOR -> new DynamicTableController.Data.Text(book.author().toString());
+				case AUTHOR -> new DynamicTableController.Data.Text(book.author().id());
 				case SUMMARY -> new DynamicTableController.Data.Text(bookData.summary());
 				case ACTIONS -> DynamicTableController.Data.Graphic.ofButtons(
 						new Tuple2<>(new SimpleStringProperty("View"), (_, _) -> {

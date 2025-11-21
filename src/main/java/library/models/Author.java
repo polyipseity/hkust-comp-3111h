@@ -11,12 +11,19 @@ import java.io.IOException;
 public sealed interface Author extends Comparable<Author> permits Author.ByName, Author.ByRef {
 	byte getTag();
 
+	String id();
+
 	record ByRef(User value) implements Author {
 		public static final byte TAG = 0;
 
 		@Override
 		public byte getTag() {
 			return TAG;
+		}
+
+		@Override
+		public String id() {
+			return value.username();
 		}
 
 		/**
@@ -58,11 +65,6 @@ public sealed interface Author extends Comparable<Author> permits Author.ByName,
 				case Author author -> Byte.compare(getTag(), author.getTag());
 			};
 		}
-
-		@Override
-		public String toString() {
-			return value.username();
-		}
 	}
 
 	record ByName(String value) implements Author {
@@ -71,6 +73,11 @@ public sealed interface Author extends Comparable<Author> permits Author.ByName,
 		@Override
 		public byte getTag() {
 			return TAG;
+		}
+
+		@Override
+		public String id() {
+			return value;
 		}
 
 		/**
@@ -111,11 +118,6 @@ public sealed interface Author extends Comparable<Author> permits Author.ByName,
 				case ByName(final var val) -> value.compareTo(val);
 				case Author author -> Byte.compare(getTag(), author.getTag());
 			};
-		}
-
-		@Override
-		public String toString() {
-			return value;
 		}
 	}
 
