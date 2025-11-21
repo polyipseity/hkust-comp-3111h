@@ -3,6 +3,7 @@ package library.controllers.student_staff;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
@@ -31,15 +32,12 @@ public final class AvailableBooksController implements RequiresLoggedIn {
     private final Context context = Main.getContext();
     private final User user = this.getLoggedInUser()._1();
 
-    @Setter
+	public Text titleText, authorText, publishDateText, summaryText;
+	public TableView<tableRow> table;
+	public Node sidebar;
+	public TableColumn<tableRow, String> titleCol, authorCol, publishDateCol, summaryCol;
+	@Setter
     private DashboardController parentController;
-
-    @FXML
-    private Text titleText, authorText, publishDateText, summaryText;
-    @FXML
-    private TableView<tableRow> table;
-    @FXML
-    private TableColumn<tableRow, String> titleCol, authorCol, publishDateCol, summaryCol;
 
     public record tableRow(
             @NotNull @Getter String title,

@@ -45,7 +45,7 @@
 							<Insets bottom="8.0"/>
 						</VBox.margin>
 					</Text>
-					<Button onAction="#downloadSelected" text="Download Selected">
+					<Button onAction="#downloadSelected" text="Download Selected" wrapText="true">
 						<VBox.margin>
 							<Insets bottom="8.0"/>
 						</VBox.margin>
