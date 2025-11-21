@@ -31,10 +31,7 @@ class RepositoryBookOpsTest {
 
 	@AfterEach
 	void tearDown() {
-		try (final var _ = repository) {
-			ops = null;
-			repository = null;
-		}
+		repository.close();
 	}
 
 	@Test

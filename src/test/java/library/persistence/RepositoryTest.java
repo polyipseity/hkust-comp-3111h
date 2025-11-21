@@ -2,7 +2,6 @@ package library.persistence;
 
 import library.models.*;
 import library.utils.TimeUtil;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +18,7 @@ class RepositoryTest {
 	private Repository repository;
 
 	@SuppressWarnings("SameReturnValue")
-	private static boolean populate(@NotNull Repository.Data data) {
+	private static boolean populate(Repository.Data data) {
 		final var reader = new User("reader");
 		final var author = new User("author");
 		final var librarian = new User("librarian");
@@ -63,9 +62,7 @@ class RepositoryTest {
 
 	@AfterEach
 	void tearDown() {
-		try (final var _ = repository) {
-			repository = null;
-		}
+		repository.close();
 	}
 
 	@Test

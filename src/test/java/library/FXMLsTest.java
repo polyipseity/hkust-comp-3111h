@@ -1,6 +1,7 @@
 package library;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 import library.controls.*;
@@ -9,7 +10,6 @@ import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Tuple2;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.mapdb.DBMaker;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.abort;
@@ -38,61 +39,55 @@ class FXMLsTest {
 		}
 		final var context = new Context() {
 			@Getter
-			@NotNull
 			private final Repository repository = new Repository(DBMaker.memoryDirectDB());
 			@Getter
-			@NotNull
 			private final BookDownloadControl bookDownloadControl = new BookDownloadControl();
 			@Getter
-			@NotNull
 			private final BorrowBooksControl borrowBooksControl = new BorrowBooksControl(repository);
 			@Getter
-			@NotNull
 			private final ManageBooksControl manageBooksControl = new ManageBooksControl(repository);
 			@Getter
-			@NotNull
 			private final ManageNotificationsControl manageNotificationsControl = new ManageNotificationsControl();
 			@Getter
-			@NotNull
 			private final ManageProfileControl manageProfileControl = new ManageProfileControl(repository);
 			@Getter
-			@NotNull
 			private final ManageUsersControl manageUsersControl = new ManageUsersControl(repository);
 			@Getter
-			@NotNull
 			private final PublishBooksControl publishBooksControl = new PublishBooksControl(repository);
 			@Getter
-			@NotNull
 			private final RequestBooksControl requestBooksControl = new RequestBooksControl(repository);
 			@Getter
-			@NotNull
 			private final StatsControl statsControl = new StatsControl();
 
 			@Getter
-			@NotNull
-			private final Tuple2<@NotNull User, User.@NotNull Data> loggedInUser = new Tuple2<>(new User("username"), new User.Data(User.Role.values()[0], true, "password", "full name"));
+			private final Tuple2<User, User.Data> loggedInUser = new Tuple2<>(new User("username"), new User.Data(User.Role.values()[0], true, "password", "full name"));
 
 			{
 				repository.userOps.create(loggedInUser._1(), loggedInUser._2());
 			}
 
 			@Override
-			public void setScene(@NotNull Parent value) {
+			public void setScene(Parent value) {
 				throw new UnsupportedOperationException();
 			}
 
 			@Override
-			public @NotNull Stage newWindow(@NotNull String title, @NotNull Parent parent, @Nullable Stage stage) {
+			public Stage newWindow(String title, Parent parent, @Nullable Stage stage) {
 				throw new UnsupportedOperationException();
 			}
 
 			@Override
-			public @NotNull Stage getPrimaryStage() {
+			public Stage getPrimaryStage() {
 				throw new UnsupportedOperationException();
 			}
 
 			@Override
-			public void setLoggedInUser(@Nullable Tuple2<@NotNull User, User.@NotNull Data> loggedInUser) {
+			public void addSecondTimerListener(Object key, Consumer<? super ActionEvent> listener) {
+				// noop
+			}
+
+			@Override
+			public void setLoggedInUser(@Nullable Tuple2<User, User.Data> loggedInUser) {
 				// noop
 			}
 

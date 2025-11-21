@@ -6,7 +6,6 @@ import library.models.Borrow;
 import library.models.User;
 import library.utils.TimeUtil;
 import library.utils.Tuple2;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,7 @@ class RepositoryBorrowOpsTest {
 	private RepositoryBorrowOps ops;
 
 	@SuppressWarnings("SameReturnValue")
-	private static boolean populate(@NotNull Repository.Data data) {
+	private static boolean populate(Repository.Data data) {
 		final var reader = new User("reader");
 		final var reader2 = new User("reader2");
 		final var author = new User("author");
@@ -57,10 +56,7 @@ class RepositoryBorrowOpsTest {
 
 	@AfterEach
 	void tearDown() {
-		try (final var _ = repository) {
-			ops = null;
-			repository = null;
-		}
+		repository.close();
 	}
 
 	@Test
