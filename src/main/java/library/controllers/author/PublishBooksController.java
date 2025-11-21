@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Optional;
 
-public final class AuthorPublishBooksController implements RequiresLoggedIn {
+public final class PublishBooksController implements RequiresLoggedIn {
     private final Repository repository = Main.getContext().getRepository();
 
     private final ChatService chatService = new ChatService();
@@ -110,7 +110,7 @@ public final class AuthorPublishBooksController implements RequiresLoggedIn {
             try {
                 repository.bookOps.create(book, data);
                 Alerts.showInfoDialog("Published and awaiting approval.");
-                parentController.authorMyBooksController.reload();
+                parentController.myBooksController.reload();
             } catch (TransactionException e) {
                 throw new RuntimeException(e);
             }

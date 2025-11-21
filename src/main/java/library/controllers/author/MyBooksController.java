@@ -31,7 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public final class AuthorMyBooksController implements RequiresLoggedIn {
+public final class MyBooksController implements RequiresLoggedIn {
     private final Repository repository = Main.getContext().getRepository();
 	Map<Book, Book.Data> authorBooks;
 
@@ -153,11 +153,11 @@ public final class AuthorMyBooksController implements RequiresLoggedIn {
                 return;
             }
             // Load the FXML file for the new window's content
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/author/AuthorModifyWindow.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/author/ModifyWindow.fxml"));
             Parent root = fxmlLoader.load();
 
             //Passing content to new window
-            AuthorModifyWindowController controller = fxmlLoader.getController();
+            ModifyWindowController controller = fxmlLoader.getController();
             Book.Data data = repository.bookOps.read(selected.book).get();
             controller.setData(selected.book.title(),data.summary(),selected.book);
 

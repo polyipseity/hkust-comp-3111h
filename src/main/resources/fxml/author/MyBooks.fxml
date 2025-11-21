@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox alignment="CENTER" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="library.controllers.author.AuthorMyBooksController">
+      fx:controller="library.controllers.author.MyBooksController">
    <children>
       <TableView VBox.vgrow="ALWAYS" fx:id="BooksTable">
          <columns>

@@ -1,30 +1,29 @@
 package library.controllers.author;
 
-import javafx.fxml.FXML;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.Node;
 import library.controllers.common.CommonDashboardController;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public final class DashboardController extends CommonDashboardController {
+	@UnknownNullability
+	public Node myBooks;
+	@UnknownNullability
+	public MyBooksController myBooksController;
 
-    @FXML
-    public GridPane authorPublishBooks;
+	@UnknownNullability
+	public Node publishBooks;
+	@UnknownNullability
+	public PublishBooksController publishBooksController;
 
-    @FXML
-    public VBox authorMyBooks;
+	@Override
+	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+		super.initialize(location, resources);
 
-    public AuthorMyBooksController authorMyBooksController;
-    public AuthorPublishBooksController authorPublishBooksController;
-
-    @Override
-    public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
-        super.initialize(location, resources);
-
-        authorMyBooksController.setParentController(this);
-        authorPublishBooksController.setParentController(this);
-    }
+		myBooksController.setParentController(this);
+		publishBooksController.setParentController(this);
+	}
 }
