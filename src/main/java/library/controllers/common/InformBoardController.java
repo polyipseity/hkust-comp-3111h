@@ -71,7 +71,7 @@ public final class InformBoardController implements RequiresLoggedIn {
 		RequiresLoggedIn.super.initialize(location, resources);
 
         NotificationList.setCellFactory(_ -> new NotificationCell());
-		NotificationList.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/common/Notification.css")).toExternalForm());
+		NotificationList.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/common/NotificationList.css")).toExternalForm());
 		NotificationList.setFocusTraversable(false);
 		updateNotificationList();
 	}

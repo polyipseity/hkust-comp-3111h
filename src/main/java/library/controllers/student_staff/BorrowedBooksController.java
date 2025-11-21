@@ -129,8 +129,8 @@ public final class BorrowedBooksController implements RequiresLoggedIn {
 
 	private void displayPdfFile(String path, String title, String author) throws IOException {
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
-				"/fxml/student_staff/BookViewer.fxml"));
-		BookViewerController controller = new BookViewerController(path);
+				"/fxml/student_staff/BookView.fxml"));
+		BookViewController controller = new BookViewController(path);
 		fxmlLoader.setController(controller);
 		BorderPane borderPane = fxmlLoader.load();
 		

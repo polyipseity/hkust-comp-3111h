@@ -18,7 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-public final class BookViewerController {
+public final class BookViewController {
     @FXML
     private BorderPane borderPane;
 
@@ -27,7 +27,7 @@ public final class BookViewerController {
 
     private final String currentPath;
 
-    public BookViewerController(String path) { currentPath = path; }
+    public BookViewController(String path) { currentPath = path; }
 
     @FXML
     private void initialize() {
