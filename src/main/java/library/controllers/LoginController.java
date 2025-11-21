@@ -13,7 +13,6 @@ import library.models.User;
 import library.utils.Alerts;
 import library.utils.HasMessage;
 import library.utils.Tuple2;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -31,12 +30,12 @@ public final class LoginController implements DependsOnRole, RequiresLoggedOut {
 	private User.Role role;
 
 	@Override
-	public @NotNull User.Role getRole() {
+	public User.Role getRole() {
 		return Objects.requireNonNull(role);
 	}
 
 	@Override
-	public void setRole(@NotNull User.Role role) {
+	public void setRole(User.Role role) {
 		this.role = role;
 		headerLabel.setText("%s Login".formatted(role.nameCapitalized));
 	}

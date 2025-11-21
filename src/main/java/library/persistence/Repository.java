@@ -3,7 +3,6 @@ package library.persistence;
 import library.models.*;
 import library.utils.ThrowingFunction;
 import library.utils.Tuple6;
-import org.jetbrains.annotations.NotNull;
 import org.mapdb.*;
 import org.mapdb.serializer.SerializerArray;
 import org.mapdb.serializer.SerializerArrayTuple;
@@ -13,34 +12,21 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
 public final class Repository implements Closeable {
-	@NotNull
 	public final RepositoryUserOps userOps = new RepositoryUserOps(this);
-	@NotNull
 	public final RepositoryBookOps bookOps = new RepositoryBookOps(this);
-	@NotNull
 	public final RepositoryUserNotificationOps userNotificationOps = new RepositoryUserNotificationOps(this);
-	@NotNull
 	public final RepositoryUserBookRequestOps userBookRequestOps = new RepositoryUserBookRequestOps(this);
-	@NotNull
 	public final RepositoryBorrowOps borrowOps = new RepositoryBorrowOps(this);
-	@NotNull
 	private final DBMaker.Maker dbMaker;
-	@NotNull
 	private final ReentrantLock transactLock = new ReentrantLock();
-	@NotNull
 	DB db;
-	@NotNull
 	HTreeMap<User, User.Data> users;
-	@NotNull
 	HTreeMap<Book, Book.Data> books;
-	@NotNull
 	HTreeMap<User, String[]> userNotifications;
-	@NotNull
 	BTreeMap<Object[], BookRequest.Data> userBookRequests; // key: (User, BookRequest)
-	@NotNull
 	BTreeMap<Object[], Borrow> borrows; // key: (User, Book)
 
-	public Repository(@NotNull DBMaker.Maker dbMaker) {
+	public Repository(DBMaker.Maker dbMaker) {
 		this.dbMaker = dbMaker.transactionEnable();
 		final var stores = open();
 		this.db = stores._1();
@@ -62,7 +48,6 @@ public final class Repository implements Closeable {
 		this.borrows = stores._6();
 	}
 
-	@NotNull
 	private Tuple6<DB, HTreeMap<User, User.Data>, HTreeMap<Book, Book.Data>, HTreeMap<User, String[]>, BTreeMap<Object[], BookRequest.Data>, BTreeMap<Object[], Borrow>> open() {
 		final var userS = new User.S();
 		final var userDataS = new User.Data.S();
@@ -77,6 +62,7 @@ public final class Repository implements Closeable {
 
 		final var db = dbMaker.make();
 		final var this2 = this;
+		@SuppressWarnings("ConstantValue")
 		final var users = db.hashMap("users", userS, userDataS).modificationListener(((key, oldValue, newValue, _) -> {
 			if (oldValue != null && newValue == null) {
 				final var key2 = new Object[]{key};
@@ -90,6 +76,7 @@ public final class Repository implements Closeable {
 				borrows.prefixSubMap(key2).clear();
 			}
 		})).createOrOpen();
+		@SuppressWarnings("ConstantValue")
 		final var books = db.hashMap("books", bookS, bookDataS).modificationListener((key, oldValue, newValue, _) -> {
 			if (oldValue == null) {
 				switch (newValue) {
@@ -143,6 +130,7 @@ public final class Repository implements Closeable {
 				throw new IllegalStateException("User not found");
 			}
 		}).createOrOpen();
+		@SuppressWarnings("ConstantValue")
 		final var userBookRequests = db.treeMap("userBookRequests", new SerializerArrayTuple(userS, bookRequestS), bookRequestDataS).modificationListener((key, oldValue, newValue, _) -> {
 			if (oldValue == null && newValue != null) {
 				@SuppressWarnings("SuspiciousMethodCalls") final var containsUser = users.containsKey(key[0]);
@@ -151,6 +139,7 @@ public final class Repository implements Closeable {
 				}
 			}
 		}).createOrOpen();
+		@SuppressWarnings("ConstantValue")
 		final var borrows = db.treeMap("borrows", new SerializerArrayTuple(userS, bookS), borrowS).modificationListener((key, oldValue, newValue, _) -> {
 			if (oldValue == null && newValue != null) {
 				@SuppressWarnings("SuspiciousMethodCalls") final var containsUser = users.containsKey(key[0]);
@@ -167,7 +156,7 @@ public final class Repository implements Closeable {
 		return new Tuple6<>(db, users, books, userNotifications, userBookRequests, borrows);
 	}
 
-	public void transact(@NotNull ThrowingFunction<@NotNull Data, @NotNull Boolean> action, @NotNull Supplier<String> rollbackMessageSupplier) throws TransactionException {
+	public void transact(ThrowingFunction<Data, Boolean> action, Supplier<String> rollbackMessageSupplier) throws TransactionException {
 		transactLock.lock();
 		try {
 			if (!action.apply(new Data())) {
@@ -189,7 +178,7 @@ public final class Repository implements Closeable {
 		}
 	}
 
-	void transact(@NotNull ThrowingFunction<@NotNull Data, @NotNull Boolean> action) throws TransactionException {
+	void transact(ThrowingFunction<Data, Boolean> action) throws TransactionException {
 		transact(action, () -> "Transaction rolled back");
 	}
 
@@ -202,23 +191,23 @@ public final class Repository implements Closeable {
 	}
 
 	public final class Data {
-		public @NotNull HTreeMap<User, User.Data> users() {
+		public HTreeMap<User, User.Data> users() {
 			return users;
 		}
 
-		public @NotNull HTreeMap<Book, Book.Data> books() {
+		public HTreeMap<Book, Book.Data> books() {
 			return books;
 		}
 
-		public @NotNull HTreeMap<User, String[]> userNotifications() {
+		public HTreeMap<User, String[]> userNotifications() {
 			return userNotifications;
 		}
 
-		public @NotNull BTreeMap<Object[], BookRequest.Data> userBookRequests() {
+		public BTreeMap<Object[], BookRequest.Data> userBookRequests() {
 			return userBookRequests;
 		}
 
-		public @NotNull BTreeMap<Object[], Borrow> borrows() {
+		public BTreeMap<Object[], Borrow> borrows() {
 			return borrows;
 		}
 	}

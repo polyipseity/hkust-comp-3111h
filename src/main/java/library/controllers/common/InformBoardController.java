@@ -16,7 +16,6 @@ import library.persistence.TransactionException;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -31,12 +30,13 @@ public final class InformBoardController implements RequiresLoggedIn {
     //Storing all notifications of user
     private final ObservableList<String> notifications = FXCollections.observableArrayList();
 
-    class NotificationCell extends ListCell<String> {
+    class NotificationCell extends ListCell<@Nullable String> {
         HBox hbox = new HBox();
         Label label = new Label();
         Pane pane = new Pane();
         Button button = new Button("Close");
-        String lastItem;
+	    @Nullable
+	    String lastItem;
 
         public NotificationCell() {
             super();
@@ -52,7 +52,7 @@ public final class InformBoardController implements RequiresLoggedIn {
         }
 
         @Override
-        protected void updateItem(String item, boolean empty) {
+        protected void updateItem(@Nullable String item, boolean empty) {
             super.updateItem(item, empty);
             setText(null);
             if (empty) {
@@ -88,13 +88,15 @@ public final class InformBoardController implements RequiresLoggedIn {
         updateNotificationList();
     }
 
-//    private void AddNotif() throws TransactionException {
-//	    repository.userNotificationOps.update(getLoggedInUser()._1(), currentNotifications -> {
-//            String[] updated = Arrays.copyOf(currentNotifications, currentNotifications.length + 1);
-//            updated[updated.length - 1] = "New notification message " + updated.length;
-//            return updated;});
-//        updateNotificationList();
-//    }
+		/*
+    private void AddNotif() throws TransactionException {
+	    repository.userNotificationOps.update(getLoggedInUser()._1(), currentNotifications -> {
+            String[] updated = Arrays.copyOf(currentNotifications, currentNotifications.length + 1);
+            updated[updated.length - 1] = "New notification message " + updated.length;
+            return updated;});
+        updateNotificationList();
+    }
+		 */
 
     private void CloseNotif(int index) throws TransactionException {
 	    repository.userNotificationOps.updateAsList(

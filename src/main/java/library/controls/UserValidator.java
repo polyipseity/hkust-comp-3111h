@@ -2,11 +2,10 @@ package library.controls;
 
 import library.utils.HasMessage;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 
 @FunctionalInterface
 public interface UserValidator {
-	@NotNull UserValidator DEFAULT = (username, password, fullName) -> {
+	UserValidator DEFAULT = (username, password, fullName) -> {
 		switch (username) {
 			case "" -> {
 				return new Result.BadUsername("Empty username");
@@ -43,19 +42,19 @@ public interface UserValidator {
 		return new Result.Success();
 	};
 
-	@NotNull Result apply(@NotNull String username, @NotNull String password, @NotNull String fullName);
+	Result apply(String username, String password, String fullName);
 
 	sealed interface Result permits Result.BadFullName, Result.BadPassword, Result.BadUsername, Result.Success {
 		record Success() implements Result {
 		}
 
-		record BadUsername(@Getter @NotNull String message) implements Result, HasMessage {
+		record BadUsername(@Getter String message) implements Result, HasMessage {
 		}
 
-		record BadPassword(@Getter @NotNull String message) implements Result, HasMessage {
+		record BadPassword(@Getter String message) implements Result, HasMessage {
 		}
 
-		record BadFullName(@Getter @NotNull String message) implements Result, HasMessage {
+		record BadFullName(@Getter String message) implements Result, HasMessage {
 		}
 	}
 }

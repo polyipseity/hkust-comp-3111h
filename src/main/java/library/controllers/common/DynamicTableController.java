@@ -19,20 +19,20 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class DynamicTableController<Key, Value extends Function<@NotNull Key, DynamicTableController.@NotNull Data>> {
-	public final TableView<@NotNull Value> table;
-	protected final Map<Key, TableColumn<@NotNull Value, @NotNull Value>> columnMap = new HashMap<>();
+public class DynamicTableController<Key, Value extends Function<Key, DynamicTableController.Data>> {
+	public final TableView<@Nullable Value> table;
+	protected final Map<Key, TableColumn<Value, @Nullable Value>> columnMap = new HashMap<>();
 
-	public DynamicTableController(TableView<@NotNull Value> table, @NotNull SequencedMap<Key, TableColumn<@NotNull Value, @NotNull Value>> keys) {
+	public DynamicTableController(TableView<@Nullable Value> table, SequencedMap<Key, TableColumn<Value, @Nullable Value>> keys) {
 		this(table);
 		setKeys(keys);
 	}
 
-	public DynamicTableController(TableView<@NotNull Value> table) {
+	public DynamicTableController(TableView<@Nullable Value> table) {
 		this.table = table;
 	}
 
-	public void setKeys(@NotNull SequencedMap<Key, TableColumn<@NotNull Value, @NotNull Value>> keys) {
+	public void setKeys(SequencedMap<Key, TableColumn<Value, @Nullable Value>> keys) {
 		setData(List.of());
 
 		// Remove obsolete keys
@@ -52,7 +52,8 @@ public class DynamicTableController<Key, Value extends Function<@NotNull Key, Dy
 		}
 	}
 
-	public boolean setData(@NotNull Collection<@NotNull Value> data) {
+	@SuppressWarnings("UnusedReturnValue")
+	public boolean setData(Collection<Value> data) {
 		final var items = table.getItems();
 		items.clear();
 		return items.addAll(data);
@@ -75,7 +76,7 @@ public class DynamicTableController<Key, Value extends Function<@NotNull Key, Dy
 		};
 	}
 
-	protected @NotNull TableColumn<@NotNull Value, @NotNull Value> configureColumn(@NotNull Key key, @NotNull TableColumn<@NotNull Value, @NotNull Value> column) {
+	protected TableColumn<Value, @Nullable Value> configureColumn(@NotNull Key key, TableColumn<Value, @Nullable Value> column) {
 		column.setCellValueFactory(new Callback<>() {
 			/**
 			 * The <code>call</code> method is called when required, and is given a
@@ -88,8 +89,7 @@ public class DynamicTableController<Key, Value extends Function<@NotNull Key, Dy
 			 *      parameter value.
 			 */
 			@Override
-			@NotNull
-			public ObservableValue<@NotNull Value> call(@NotNull TableColumn.CellDataFeatures<@NotNull Value, @NotNull Value> param) {
+			public ObservableValue<Value> call(TableColumn.CellDataFeatures<Value, Value> param) {
 				return new SimpleObjectProperty<>(param.getValue());
 			}
 		});
@@ -105,8 +105,7 @@ public class DynamicTableController<Key, Value extends Function<@NotNull Key, Dy
 			 *      parameter value.
 			 */
 			@Override
-			@NotNull
-			public TableCell<@NotNull Value, @Nullable Value> call(TableColumn<@NotNull Value, @Nullable Value> param) {
+			public TableCell<Value, @Nullable Value> call(TableColumn<Value, @Nullable Value> param) {
 				return new TableCell<>() {
 					/**
 					 * The updateItem method should not be called by developers, but it is the
@@ -182,15 +181,15 @@ public class DynamicTableController<Key, Value extends Function<@NotNull Key, Dy
 	}
 
 	public sealed interface Data permits Data.Graphic, Data.Text {
-		record Text(@NotNull String value) implements Data {
+		record Text(String value) implements Data {
 		}
 
-		record Graphic(@NotNull Supplier<? extends Node> value)
+		record Graphic(Supplier<? extends Node> value)
 				implements Data {
 			public static final double BUTTON_SPACING = 5;
 
 			@SafeVarargs
-			public static Graphic ofButtons(@NotNull Tuple2<? extends ObservableValue<? extends String>, ? extends BiConsumer<? super Button, ? super ActionEvent>>... buttonData) {
+			public static Graphic ofButtons(Tuple2<? extends ObservableValue<? extends String>, ? extends BiConsumer<? super Button, ? super ActionEvent>>... buttonData) {
 				return new Graphic(() -> {
 					final var buttonBox = new HBox(BUTTON_SPACING);
 					for (final var buttonDatum : buttonData) {

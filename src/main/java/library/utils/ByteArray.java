@@ -2,7 +2,6 @@ package library.utils;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.mapdb.DataInput2;
 import org.mapdb.DataOutput2;
 import org.mapdb.serializer.GroupSerializer;
@@ -12,9 +11,8 @@ import java.io.IOException;
 
 @Data
 public final class ByteArray {
-	@NotNull
 	public static GroupSerializer<ByteArray> SERIALIZER = new S(GroupSerializerObjectArray.BYTE_ARRAY);
-	private final byte @NotNull [] data;
+	private final byte[] data;
 
 	@RequiredArgsConstructor
 	public static final class S extends GroupSerializerObjectArray<ByteArray> {
@@ -29,7 +27,7 @@ public final class ByteArray {
 		 * @throws IOException in case of an I/O error
 		 */
 		@Override
-		public void serialize(@NotNull DataOutput2 out, @NotNull ByteArray value) throws IOException {
+		public void serialize(DataOutput2 out, ByteArray value) throws IOException {
 			byteArraySerializer.serialize(out, value.data);
 		}
 
@@ -43,7 +41,7 @@ public final class ByteArray {
 		 * @throws IOException in case of an I/O error
 		 */
 		@Override
-		public ByteArray deserialize(@NotNull DataInput2 input, int available) throws IOException {
+		public ByteArray deserialize(DataInput2 input, int available) throws IOException {
 			return new ByteArray(byteArraySerializer.deserialize(input, available));
 		}
 	}

@@ -2,7 +2,6 @@ package library.models;
 
 import lombok.RequiredArgsConstructor;
 import lombok.With;
-import org.jetbrains.annotations.NotNull;
 import org.mapdb.DataInput2;
 import org.mapdb.DataOutput2;
 import org.mapdb.serializer.GroupSerializerObjectArray;
@@ -10,7 +9,7 @@ import org.mapdb.serializer.GroupSerializerObjectArray;
 import java.io.IOException;
 
 public record User(
-		@NotNull String username
+		String username
 ) implements Comparable<User> {
 	/**
 	 * Compares this object with the specified object for order.  Returns a
@@ -45,7 +44,7 @@ public record User(
 	 * inconsistent with equals."
 	 */
 	@Override
-	public int compareTo(@NotNull User o) {
+	public int compareTo(User o) {
 		return username.compareTo(o.username);
 	}
 
@@ -55,12 +54,10 @@ public record User(
 		AUTHOR("author", "Author"),
 		;
 
-		@NotNull
 		public final String name;
-		@NotNull
 		public final String nameCapitalized;
 
-		Role(@NotNull String name, @NotNull String nameCapitalized) {
+		Role(String name, String nameCapitalized) {
 			this.name = name;
 			this.nameCapitalized = nameCapitalized;
 		}
@@ -68,10 +65,10 @@ public record User(
 
 	@With
 	public record Data(
-			@NotNull Role role,
+			Role role,
 			boolean active,
-			@NotNull String password,
-			@NotNull String fullName
+			String password,
+			String fullName
 	) {
 		@RequiredArgsConstructor
 		public static final class S extends GroupSerializerObjectArray<Data> {
@@ -84,7 +81,7 @@ public record User(
 			 * @throws IOException in case of an I/O error
 			 */
 			@Override
-			public void serialize(@NotNull DataOutput2 out, @NotNull Data value) throws IOException {
+			public void serialize(DataOutput2 out, Data value) throws IOException {
 				out.writeInt(value.role().ordinal());
 				out.writeBoolean(value.active());
 				out.writeUTF(value.password());
@@ -101,8 +98,7 @@ public record User(
 			 * @throws IOException in case of an I/O error
 			 */
 			@Override
-			@NotNull
-			public Data deserialize(@NotNull DataInput2 input, int available) throws IOException {
+			public Data deserialize(DataInput2 input, int available) throws IOException {
 				final var role = Role.values()[input.readInt()];
 				final var active = input.readBoolean();
 				final var password = input.readUTF();
@@ -123,7 +119,7 @@ public record User(
 		 * @throws IOException in case of an I/O error
 		 */
 		@Override
-		public void serialize(@NotNull DataOutput2 out, @NotNull User value) throws IOException {
+		public void serialize(DataOutput2 out, User value) throws IOException {
 			out.writeUTF(value.username());
 		}
 
@@ -137,8 +133,7 @@ public record User(
 		 * @throws IOException in case of an I/O error
 		 */
 		@Override
-		@NotNull
-		public User deserialize(@NotNull DataInput2 input, int available) throws IOException {
+		public User deserialize(DataInput2 input, int available) throws IOException {
 			final var username = input.readUTF();
 			return new User(username);
 		}

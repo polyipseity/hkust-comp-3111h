@@ -1,10 +1,9 @@
 package library.controllers.common;
 
 import library.models.User;
-import org.jetbrains.annotations.NotNull;
 
 public interface DependsOnRole {
-	@NotNull User.Role getRole();
+	User.Role getRole();
 
-	void setRole(@NotNull User.Role role);
+	void setRole(User.Role role);
 }

@@ -1,7 +1,6 @@
 package library.utils;
 
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.mapdb.DataInput2;
 import org.mapdb.DataOutput2;
 import org.mapdb.serializer.GroupSerializerObjectArray;
@@ -13,7 +12,6 @@ import java.time.ZonedDateTime;
 
 @RequiredArgsConstructor
 public class ZonedDateTimeSerializer extends GroupSerializerObjectArray<ZonedDateTime> {
-	@NotNull
 	public static final ZonedDateTimeSerializer INSTANCE = new ZonedDateTimeSerializer();
 
 	/**
@@ -25,7 +23,7 @@ public class ZonedDateTimeSerializer extends GroupSerializerObjectArray<ZonedDat
 	 * @throws IOException in case of an I/O error
 	 */
 	@Override
-	public void serialize(@NotNull DataOutput2 out, @NotNull ZonedDateTime value) throws IOException {
+	public void serialize(DataOutput2 out, ZonedDateTime value) throws IOException {
 		out.writeLong(value.toEpochSecond());
 		out.writeLong(value.getNano());
 		out.writeUTF(value.getZone().getId());
@@ -41,8 +39,7 @@ public class ZonedDateTimeSerializer extends GroupSerializerObjectArray<ZonedDat
 	 * @throws IOException in case of an I/O error
 	 */
 	@Override
-	@NotNull
-	public ZonedDateTime deserialize(@NotNull DataInput2 input, int available) throws IOException {
+	public ZonedDateTime deserialize(DataInput2 input, int available) throws IOException {
 		final var epochSecond = input.readLong();
 		final var nanoAdjustment = input.readLong();
 		final var zoneId = input.readUTF();

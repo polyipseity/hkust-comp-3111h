@@ -7,7 +7,6 @@ import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.HasMessage;
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
 import org.openpdf.text.Document;
 import org.openpdf.text.Element;
 import org.openpdf.text.PageSize;
@@ -23,7 +22,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public record BorrowBooksControl(Repository repository) {
-    @NotNull
     public BorrowResult borrowBook(User user, Book book, int minutes, int seconds) throws TransactionException {
         int durationUpperBound = 1 + 14 * 24 * 60 * 60;
         int durationLowerBound = 1;
@@ -74,27 +72,26 @@ public record BorrowBooksControl(Repository repository) {
 
         record InvalidDuration(String message) implements BorrowResult, HasMessage {
             @Override
-            public @NotNull String getMessage() {
+            public String getMessage() {
                 return message;
             }
         }
 
         record BookDataNotFound() implements BorrowResult, HasMessage {
             @Override
-            public @NotNull String getMessage() {
+            public String getMessage() {
                 return "The data for the selected book cannot be found";
             }
         }
 
         record BookAlreadyBorrowed() implements BorrowResult, HasMessage {
             @Override
-            public @NotNull String getMessage() {
+            public String getMessage() {
                 return "The user has already borrowed the book";
             }
         }
     }
 
-	@NotNull
 	public ReadResult readBook(User user, Book book) {
 		Optional<Borrow> borrowData = repository.borrowOps.read(user, book);
 		Optional<Book.Data> bookData = repository.bookOps.read(book);
@@ -139,28 +136,28 @@ public record BorrowBooksControl(Repository repository) {
 
 		record PdfGenerationError() implements ReadResult, HasMessage {
 			@Override
-			public @NotNull String getMessage() {
+			public String getMessage() {
 				return "Error while generating PDF";
 			}
 		}
 
 		record BookDataNotFound() implements ReadResult, HasMessage {
 			@Override
-			public @NotNull String getMessage() {
+			public String getMessage() {
 				return "The data for the book is not found";
 			}
 		}
 
 		record BorrowDataNotFound() implements ReadResult, HasMessage {
 			@Override
-			public @NotNull String getMessage() {
+			public String getMessage() {
 				return "The borrow data for the book is not found";
 			}
 		}
 
 		record BookExpired() implements ReadResult, HasMessage {
 			@Override
-			public @NotNull String getMessage() {
+			public String getMessage() {
 				return "The borrow period for the book has expired";
 			}
 		}
@@ -179,7 +176,6 @@ public record BorrowBooksControl(Repository repository) {
 	 * @param user The user whose book will be returned.
 	 * @param book The book to be returned.
 	 */
-	@NotNull
 	public ReturnResult returnBook(User user, Book book) throws TransactionException {
 		if (!checkBorrowed(user, book)) return new ReturnResult.BookNotBorrowed();
 		else {
@@ -195,7 +191,7 @@ public record BorrowBooksControl(Repository repository) {
 
 		record BookNotBorrowed() implements ReturnResult, HasMessage {
 			@Override
-			public @NotNull String getMessage() { return "The book was not borrowed, so it cannot be returned"; }
+			public String getMessage() { return "The book was not borrowed, so it cannot be returned"; }
 		}
 	}
 

@@ -19,7 +19,6 @@ import library.utils.Alerts;
 import library.utils.HasMessage;
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
@@ -33,18 +32,18 @@ public final class AvailableBooksController implements RequiresLoggedIn {
     private final User user = this.getLoggedInUser()._1();
 
 	public Text titleText, authorText, publishDateText, summaryText;
-	public TableView<tableRow> table;
+	public TableView<@Nullable tableRow> table;
 	public Node sidebar;
-	public TableColumn<tableRow, String> titleCol, authorCol, publishDateCol, summaryCol;
+	public TableColumn<tableRow, @Nullable String> titleCol, authorCol, publishDateCol, summaryCol;
 	@Setter
     private DashboardController parentController;
 
     public record tableRow(
-            @NotNull @Getter String title,
-            @NotNull @Getter String author,
-            @NotNull @Getter String publishDate,
-            @NotNull @Getter String summary,
-            @NotNull Book book
+            @Getter String title,
+            @Getter String author,
+            @Getter String publishDate,
+            @Getter String summary,
+            Book book
     ) {
     }
 
@@ -103,7 +102,7 @@ public final class AvailableBooksController implements RequiresLoggedIn {
         Book selectedBook = currentRow.book;
 
         // Try to get the borrow duration for the book
-        Dialog<dialogResult> dialog = createDialog();
+        Dialog<@Nullable dialogResult> dialog = createDialog();
         Optional<dialogResult> result = dialog.showAndWait();
         if (result.isEmpty()) return; // Exit if user clicks "Cancel"
 
@@ -133,8 +132,8 @@ public final class AvailableBooksController implements RequiresLoggedIn {
     /**
      * @return A properly configured input dialog for entering the borrowing duration.
      */
-    private Dialog<dialogResult> createDialog() {
-        Dialog<dialogResult> dialog = new Dialog<>();
+    private Dialog<@Nullable dialogResult> createDialog() {
+        Dialog<@Nullable dialogResult> dialog = new Dialog<>();
         dialog.setTitle("Borrow Duration");
         dialog.setHeaderText("Please enter the borrowing duration (minutes and seconds).");
 

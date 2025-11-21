@@ -1,12 +1,10 @@
 package library.models;
 
-import library.utils.ByteArray;
 import library.utils.DurationSerializer;
 import library.utils.TimeUtil;
 import library.utils.ZonedDateTimeSerializer;
 import lombok.RequiredArgsConstructor;
 import lombok.With;
-import org.jetbrains.annotations.NotNull;
 import org.mapdb.DataInput2;
 import org.mapdb.DataOutput2;
 import org.mapdb.serializer.GroupSerializerObjectArray;
@@ -17,9 +15,9 @@ import java.time.ZonedDateTime;
 
 @With
 public record Borrow(
-		@NotNull ZonedDateTime borrowDate,
-		@NotNull Duration duration,
-		@NotNull String pdfPath
+		ZonedDateTime borrowDate,
+		Duration duration,
+		String pdfPath
 ) {
 	/**
 	 * How much time is left until the book is due, relative to {@code reference}.
@@ -28,8 +26,7 @@ public record Borrow(
 	 * @return a {@link Duration} that is zero if the due date has already passed,
 	 * otherwise the duration between {@code reference} and the due date
 	 */
-	@NotNull
-	public Duration durationLeft(@NotNull ZonedDateTime reference) {
+	public Duration durationLeft(ZonedDateTime reference) {
 		final var due = borrowDate.plus(duration);
 		return reference.isAfter(due)
 				? Duration.ZERO
@@ -41,7 +38,6 @@ public record Borrow(
 	 *
 	 * @return the remaining duration until the book is due (or zero if overdue)
 	 */
-	@NotNull
 	public Duration durationLeft() {
 		return durationLeft(TimeUtil.nowZoned());
 	}
@@ -57,7 +53,7 @@ public record Borrow(
 		 * @throws IOException in case of an I/O error
 		 */
 		@Override
-		public void serialize(@NotNull DataOutput2 out, @NotNull Borrow value) throws IOException {
+		public void serialize(DataOutput2 out, Borrow value) throws IOException {
 			ZonedDateTimeSerializer.INSTANCE.serialize(out, value.borrowDate());
 			DurationSerializer.INSTANCE.serialize(out, value.duration());
 			out.writeUTF(value.pdfPath);
@@ -73,8 +69,7 @@ public record Borrow(
 		 * @throws IOException in case of an I/O error
 		 */
 		@Override
-		@NotNull
-		public Borrow deserialize(@NotNull DataInput2 input, int available) throws IOException {
+		public Borrow deserialize(DataInput2 input, int available) throws IOException {
 			final var borrowDate = ZonedDateTimeSerializer.INSTANCE.deserialize(input, available);
 			final var duration = DurationSerializer.INSTANCE.deserialize(input, available);
 			final var pdfPath = input.readUTF();

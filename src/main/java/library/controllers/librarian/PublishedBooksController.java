@@ -19,7 +19,6 @@ import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.TimeUtil;
 import library.utils.Tuple2;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -29,14 +28,14 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 
 public final class PublishedBooksController implements RequiresLoggedIn, Initializable {
-	public TableView<Data> table;
+	public TableView<@Nullable Data> table;
 	public DynamicTableController<Keys, Data> tableController;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
 
-		final var keys = new LinkedHashMap<Keys, TableColumn<Data, Data>>();
+		final var keys = new LinkedHashMap<Keys, TableColumn<Data, @Nullable Data>>();
 		keys.put(Keys.TITLE, new TableColumn<>("Title"));
 		keys.put(Keys.AUTHOR_FULL_NAME, new TableColumn<>("Author"));
 		keys.put(Keys.PUBLISH_DATE, new TableColumn<>("Published On"));
@@ -76,11 +75,11 @@ public final class PublishedBooksController implements RequiresLoggedIn, Initial
 		ACTIONS
 	}
 
-	public record Data(@NotNull PublishedBooksController controller,
-	                   @NotNull Book book,
-	                   @NotNull Book.Data bookData,
-	                   @NotNull String authorFullName)
-			implements Function<@NotNull Keys, DynamicTableController.@NotNull Data> {
+	public record Data(PublishedBooksController controller,
+	                   Book book,
+	                   Book.Data bookData,
+	                   String authorFullName)
+			implements Function<Keys, DynamicTableController.Data> {
 		/**
 		 * Applies this function to the given argument.
 		 *
@@ -88,7 +87,7 @@ public final class PublishedBooksController implements RequiresLoggedIn, Initial
 		 * @return the function result
 		 */
 		@Override
-		public DynamicTableController.@NotNull Data apply(@NotNull Keys key) {
+		public DynamicTableController.Data apply(Keys key) {
 			return switch (key) {
 				case TITLE -> new DynamicTableController.Data.Text(book.title());
 				case AUTHOR_FULL_NAME -> new DynamicTableController.Data.Text(authorFullName);

@@ -5,7 +5,6 @@ import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.Cursor;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -13,21 +12,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public enum Alerts {
 	;
 
-	public static void showInfoDialog(@NotNull String message) {
+	public static void showInfoDialog(String message) {
 		new Alert(Alert.AlertType.INFORMATION, message).showAndWait();
 	}
 
-	public static void showErrorDialog(@NotNull String message) {
+	public static void showErrorDialog(String message) {
 		new Alert(Alert.AlertType.ERROR, message).showAndWait();
 	}
 
-	@NotNull
-	public static Optional<ButtonType> showConfirmDialog(@NotNull String message) {
+	public static Optional<ButtonType> showConfirmDialog(String message) {
         return new Alert(Alert.AlertType.CONFIRMATION, message).showAndWait();
 	}
 
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
-	public static boolean showLoadingDialog(@NotNull String message, @NotNull ObservableBooleanValue running) {
+	public static boolean showLoadingDialog(String message, ObservableBooleanValue running) {
 		final var alert = new Alert(Alert.AlertType.NONE, message);
 		final var dialog = alert.getDialogPane();
 

@@ -14,7 +14,6 @@ import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.TimeUtil;
 import library.utils.Tuple2;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
@@ -23,7 +22,7 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 
 public final class BookRequestsController implements RequiresLoggedIn, Initializable {
-	public TableView<Data> table;
+	public TableView<@Nullable Data> table;
 	public DynamicTableController<Keys, Data> tableController;
 
 	@Override
@@ -64,11 +63,11 @@ public final class BookRequestsController implements RequiresLoggedIn, Initializ
 		ACTIONS
 	}
 
-	public record Data(@NotNull BookRequestsController controller,
-	                   @NotNull User user,
-	                   @NotNull BookRequest bookRequest,
-	                   @NotNull BookRequest.Data bookRequestData)
-			implements Function<@NotNull Keys, DynamicTableController.@NotNull Data> {
+	public record Data(BookRequestsController controller,
+	                   User user,
+	                   BookRequest bookRequest,
+	                   BookRequest.Data bookRequestData)
+			implements Function<Keys, DynamicTableController.Data> {
 		/**
 		 * Applies this function to the given argument.
 		 *
@@ -76,7 +75,7 @@ public final class BookRequestsController implements RequiresLoggedIn, Initializ
 		 * @return the function result
 		 */
 		@Override
-		public DynamicTableController.@NotNull Data apply(@NotNull Keys key) {
+		public DynamicTableController.Data apply(Keys key) {
 			return switch (key) {
 				case TITLE -> new DynamicTableController.Data.Text(bookRequest.title());
 				case AUTHOR -> new DynamicTableController.Data.Text(bookRequest.author());

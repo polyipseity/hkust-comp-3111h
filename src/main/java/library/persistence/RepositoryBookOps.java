@@ -1,7 +1,6 @@
 package library.persistence;
 
 import library.models.Book;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -14,49 +13,45 @@ import java.util.stream.Collectors;
 
 public record RepositoryBookOps(Repository repository) {
 
-	public void create(@NotNull Book book, @NotNull Book.Data data) throws TransactionException {
+	public void create(Book book, Book.Data data) throws TransactionException {
 		repository.transact(tx -> tx.books().put(book, data) == null, () -> "Already created: %s".formatted(book));
 	}
 
-	@NotNull
 	public Map<Book, Book.Data> read() {
 		return Collections.unmodifiableMap(repository.books);
 	}
 
-	@NotNull
-	public Map<Book, Book.Data> read(@NotNull Predicate<? super Map.@NotNull Entry<Book, Book.Data>> filter) {
+	public Map<Book, Book.Data> read(Predicate<? super Map.Entry<Book, Book.Data>> filter) {
 		return repository.books.entrySet().stream().filter(filter).collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
-	@NotNull
-	public Optional<Book.Data> read(@NotNull Book book) {
+	public Optional<Book.Data> read(Book book) {
 		return Optional.ofNullable(repository.books.get(book));
 	}
 
-	@NotNull
-	public Book.Data readOrThrow(@NotNull Book book) {
+	public Book.Data readOrThrow(Book book) {
 		return read(book).orElseThrow(() -> new NoSuchElementException("Not found: %s".formatted(book)));
 	}
 
-	public void update(@NotNull Book book, @NotNull Function<Book.@NotNull Data, Book.@NotNull Data> callback) throws TransactionException {
+	public void update(Book book, Function<Book.Data, Book.Data> callback) throws TransactionException {
 		repository.transact(tx -> {
 			final var oldValue = tx.books().get(book);
 			return oldValue != null && oldValue.equals(tx.books().put(book, callback.apply(oldValue)));
 		}, () -> "Not found or updated concurrently: %s".formatted(book));
 	}
 
-	public void update(@NotNull Book book, Book.@NotNull Data data, Book.@Nullable Data expected) throws TransactionException {
+	public void update(Book book, Book.Data data, Book.@Nullable Data expected) throws TransactionException {
 		repository.transact(
 				tx -> expected == null ? tx.books().put(book, data) != null : expected.equals(tx.books().put(book, data)),
 				() -> "Not found or updated concurrently: %s".formatted(book)
 		);
 	}
 
-	public void delete(@NotNull Book book, @Nullable Book.Data expected) throws TransactionException {
+	public void delete(Book book, @Nullable Book.Data expected) throws TransactionException {
 		repository.transact(tx -> expected == null ? tx.books().remove(book) != null : tx.books().remove(book, expected), () -> "Already deleted: %s".formatted(book));
 	}
 
-	void delete(@NotNull Book book) throws TransactionException {
+	void delete(Book book) throws TransactionException {
 		delete(book, null);
 	}
 }

@@ -13,7 +13,6 @@ import library.controls.PublishBooksControl;
 import library.models.json.GutendexResponse;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
@@ -22,7 +21,7 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 
 public final class BookDownloadController implements RequiresLoggedIn, Initializable {
-	public TableView<Data> table;
+	public TableView<@Nullable Data> table;
 	public DynamicTableController<Keys, Data> tableController;
 
 	public TextField searchBar;
@@ -36,7 +35,7 @@ public final class BookDownloadController implements RequiresLoggedIn, Initializ
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
 
-		final var keys = new LinkedHashMap<Keys, TableColumn<Data, Data>>();
+		final var keys = new LinkedHashMap<Keys, TableColumn<Data, @Nullable Data>>();
 		keys.put(Keys.TITLE, new TableColumn<>("Title"));
 		keys.put(Keys.AUTHOR, new TableColumn<>("Author"));
 		keys.put(Keys.BOOKSHELVES, new TableColumn<>("Bookshelves"));
@@ -52,6 +51,7 @@ public final class BookDownloadController implements RequiresLoggedIn, Initializ
 		loadTable();
 	}
 
+	@SuppressWarnings("EmptyMethod")
 	public void loadTable() {
 		// noop
 	}
@@ -133,9 +133,9 @@ public final class BookDownloadController implements RequiresLoggedIn, Initializ
 	}
 
 	public record Data(
-			@NotNull GutendexResponse.Book book) implements Function<@NotNull Keys, DynamicTableController.@NotNull Data> {
+			GutendexResponse.Book book) implements Function<Keys, DynamicTableController.Data> {
 		@Override
-		public DynamicTableController.@NotNull Data apply(@NotNull Keys key) {
+		public DynamicTableController.Data apply(Keys key) {
 			return switch (key) {
 				case TITLE -> new DynamicTableController.Data.Text(book.title());
 				case AUTHOR -> new DynamicTableController.Data.Text(book.authorString());

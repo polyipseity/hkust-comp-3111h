@@ -9,7 +9,6 @@ import library.persistence.Repository;
 import library.utils.Tuple2;
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class ContextImpl implements Context {
@@ -17,37 +16,26 @@ public final class ContextImpl implements Context {
 	public static final double WINDOW_INITIAL_HEIGHT = 480;
 
 	@Getter
-	@NotNull
 	private final Stage primaryStage;
 	@Getter
-	@NotNull
 	private final Repository repository;
 	@Getter
-	@NotNull
 	private final BookDownloadControl bookDownloadControl;
 	@Getter
-	@NotNull
 	private final BorrowBooksControl borrowBooksControl;
 	@Getter
-	@NotNull
 	private final ManageBooksControl manageBooksControl;
 	@Getter
-	@NotNull
 	private final ManageNotificationsControl manageNotificationsControl;
 	@Getter
-	@NotNull
 	private final ManageProfileControl manageProfileControl;
 	@Getter
-	@NotNull
 	private final ManageUsersControl manageUsersControl;
 	@Getter
-	@NotNull
 	private final PublishBooksControl publishBooksControl;
 	@Getter
-	@NotNull
 	private final RequestBooksControl requestBooksControl;
 	@Getter
-	@NotNull
 	private final StatsControl statsControl;
 
 	@Setter
@@ -55,7 +43,7 @@ public final class ContextImpl implements Context {
 	@Nullable
 	private Tuple2<User, User.Data> loggedInUser;
 
-	public ContextImpl(@NotNull Stage primaryStage, @NotNull Repository repository) {
+	public ContextImpl(Stage primaryStage, Repository repository) {
 		this.primaryStage = primaryStage;
 		this.repository = repository;
 		this.bookDownloadControl = new BookDownloadControl();
@@ -86,13 +74,13 @@ public final class ContextImpl implements Context {
 	}
 
 	@Override
-	public void setScene(@NotNull Parent value) {
+	public void setScene(Parent value) {
 		final var oldScene = getPrimaryStage().getScene();
 		getPrimaryStage().setScene(new Scene(value, oldScene.getWidth(), oldScene.getHeight()));
 	}
 
 	@Override
-	public @NotNull Stage newWindow(@NotNull String title, @NotNull Parent parent, @Nullable Stage stage) {
+	public Stage newWindow(String title, Parent parent, @Nullable Stage stage) {
 		stage = stage == null ? new Stage() : stage;
 		stage.setScene(new Scene(parent, WINDOW_INITIAL_WIDTH, WINDOW_INITIAL_HEIGHT));
 		stage.setTitle(title);

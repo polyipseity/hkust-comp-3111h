@@ -1,7 +1,6 @@
 package library.persistence;
 
 import library.models.User;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -13,41 +12,37 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public record RepositoryUserOps(Repository repository) {
-	public void create(@NotNull User user, @NotNull User.Data data) throws TransactionException {
+	public void create(User user, User.Data data) throws TransactionException {
 		repository.transact(tx -> tx.users().put(user, data) == null, () -> "Already created: %s".formatted(user));
 	}
 
-	@NotNull
 	public Map<User, User.Data> read() {
 		return Collections.unmodifiableMap(repository.users);
 	}
 
-	@NotNull
-	public Map<User, User.Data> read(@NotNull Predicate<? super Map.@NotNull Entry<User, User.Data>> filter) {
+	public Map<User, User.Data> read(Predicate<? super Map.Entry<User, User.Data>> filter) {
 		return repository.users.entrySet().stream().filter(filter).collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
-	@NotNull
-	public Optional<User.Data> read(@NotNull User user) {
+	public Optional<User.Data> read(User user) {
 		return Optional.ofNullable(repository.users.get(user));
 	}
 
-	@NotNull
-	public User.Data readOrThrow(@NotNull User user) {
+	public User.Data readOrThrow(User user) {
 		return read(user)
 				.orElseThrow(() -> new NoSuchElementException(
 						"Not found: %s".formatted(user)));
 	}
 
-	public void update(@NotNull User user, @NotNull Function<User.@NotNull Data, User.@NotNull Data> callback) throws TransactionException {
+	public void update(User user, Function<User.Data, User.Data> callback) throws TransactionException {
 		repository.transact(tx -> {
 			final var oldValue = tx.users().get(user);
 			return oldValue != null && oldValue.equals(tx.users().put(user, callback.apply(oldValue)));
 		}, () -> "Not found or updated concurrently: %s".formatted(user));
 	}
 
-	public void update(@NotNull User user,
-	                   User.@NotNull Data data,
+	public void update(User user,
+	                   User.Data data,
 	                   User.@Nullable Data expected) throws TransactionException {
 		repository.transact(
 				tx -> expected == null
@@ -57,7 +52,7 @@ public record RepositoryUserOps(Repository repository) {
 		);
 	}
 
-	public void delete(@NotNull User user,
+	public void delete(User user,
 	                   @Nullable User.Data expected) throws TransactionException {
 		repository.transact(
 				tx -> expected == null ? tx.users().remove(user) != null : tx.users().remove(user, expected),
@@ -65,7 +60,7 @@ public record RepositoryUserOps(Repository repository) {
 		);
 	}
 
-	void delete(@NotNull User user) throws TransactionException {
+	void delete(User user) throws TransactionException {
 		delete(user, null);
 	}
 }

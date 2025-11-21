@@ -24,7 +24,7 @@ public final class AuthorModifyWindowController implements RequiresLoggedIn {
 
     private String initialTitle, initalSummary, currentTitle, currentSummary;
 
-    @FXML
+		@FXML
     private Button saveButton;
 
     @FXML

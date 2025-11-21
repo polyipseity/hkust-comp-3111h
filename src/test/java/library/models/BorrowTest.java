@@ -1,6 +1,5 @@
 package library.models;
 
-import library.utils.ByteArray;
 import library.utils.TimeUtil;
 import org.junit.jupiter.api.Test;
 

@@ -70,7 +70,7 @@ class FXMLsTest {
 
 			@Getter
 			@NotNull
-			private final Tuple2<User, User.Data> loggedInUser = new Tuple2<>(new User("username"), new User.Data(User.Role.values()[0], true, "password", "full name"));
+			private final Tuple2<@NotNull User, User.@NotNull Data> loggedInUser = new Tuple2<>(new User("username"), new User.Data(User.Role.values()[0], true, "password", "full name"));
 
 			{
 				repository.userOps.create(loggedInUser._1(), loggedInUser._2());
@@ -92,7 +92,7 @@ class FXMLsTest {
 			}
 
 			@Override
-			public void setLoggedInUser(@Nullable Tuple2<User, User.Data> loggedInUser) {
+			public void setLoggedInUser(@Nullable Tuple2<@NotNull User, User.@NotNull Data> loggedInUser) {
 				// noop
 			}
 

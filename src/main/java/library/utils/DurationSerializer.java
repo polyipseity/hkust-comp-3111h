@@ -1,7 +1,6 @@
 package library.utils;
 
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.mapdb.DataInput2;
 import org.mapdb.DataOutput2;
 import org.mapdb.serializer.GroupSerializerObjectArray;
@@ -11,7 +10,6 @@ import java.time.Duration;
 
 @RequiredArgsConstructor
 public class DurationSerializer extends GroupSerializerObjectArray<Duration> {
-	@NotNull
 	public static final DurationSerializer INSTANCE = new DurationSerializer();
 
 	/**
@@ -23,7 +21,7 @@ public class DurationSerializer extends GroupSerializerObjectArray<Duration> {
 	 * @throws IOException in case of an I/O error
 	 */
 	@Override
-	public void serialize(@NotNull DataOutput2 out, @NotNull Duration value) throws IOException {
+	public void serialize(DataOutput2 out, Duration value) throws IOException {
 		out.writeLong(value.getSeconds());
 		out.writeInt(value.getNano());
 	}
@@ -38,8 +36,7 @@ public class DurationSerializer extends GroupSerializerObjectArray<Duration> {
 	 * @throws IOException in case of an I/O error
 	 */
 	@Override
-	@NotNull
-	public Duration deserialize(@NotNull DataInput2 input, int available) throws IOException {
+	public Duration deserialize(DataInput2 input, int available) throws IOException {
 		final var seconds = input.readLong();
 		final var nanoAdjustment = input.readInt();
 		return Duration.ofSeconds(seconds, nanoAdjustment);

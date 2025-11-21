@@ -3,7 +3,6 @@ package library.models;
 import library.utils.ZonedDateTimeSerializer;
 import lombok.RequiredArgsConstructor;
 import lombok.With;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.mapdb.DataInput2;
 import org.mapdb.DataOutput2;
@@ -15,11 +14,11 @@ import java.time.ZonedDateTime;
 import java.util.Comparator;
 
 public record Book(
-		@NotNull String title,
-		@NotNull Author author,
+		String title,
+		Author author,
 		boolean temporary
 ) implements Comparable<Book> {
-	public Book(@NotNull String title, @NotNull Author author) {
+	public Book(String title, Author author) {
 		this(title, author, false);
 	}
 
@@ -56,7 +55,7 @@ public record Book(
 	 * inconsistent with equals."
 	 */
 	@Override
-	public int compareTo(@NotNull Book o) {
+	public int compareTo(Book o) {
 		return Comparator
 				.comparing(Book::title)
 				.thenComparing(Book::author)
@@ -72,9 +71,9 @@ public record Book(
 
 	@With
 	public record Data(
-			@NotNull String summary,
-			@NotNull String content,
-			@NotNull ApprovalStatus approvalStatus,
+			String summary,
+			String content,
+			ApprovalStatus approvalStatus,
 			@Nullable ZonedDateTime publishDate,
 			@Nullable Book originalOrModified,
 			long timesBorrowed
@@ -111,7 +110,7 @@ public record Book(
 			 * @throws IOException in case of an I/O error
 			 */
 			@Override
-			public void serialize(@NotNull DataOutput2 out, @NotNull Book.Data value) throws IOException {
+			public void serialize(DataOutput2 out, Book.Data value) throws IOException {
 				out.writeUTF(value.summary());
 				out.writeUTF(value.content());
 				out.writeInt(value.approvalStatus().ordinal());
@@ -140,8 +139,7 @@ public record Book(
 			 * @throws IOException in case of an I/O error
 			 */
 			@Override
-			@NotNull
-			public Data deserialize(@NotNull DataInput2 input, int available) throws IOException {
+			public Data deserialize(DataInput2 input, int available) throws IOException {
 				final var summary = input.readUTF();
 				final var content = input.readUTF();
 				final var status = ApprovalStatus.values()[input.readInt()];
@@ -172,7 +170,7 @@ public record Book(
 		 * @throws IOException in case of an I/O error
 		 */
 		@Override
-		public void serialize(@NotNull DataOutput2 out, @NotNull Book value) throws IOException {
+		public void serialize(DataOutput2 out, Book value) throws IOException {
 			out.writeUTF(value.title());
 			authorSerializer.serialize(out, value.author());
 			out.writeBoolean(value.temporary());
@@ -188,8 +186,7 @@ public record Book(
 		 * @throws IOException in case of an I/O error
 		 */
 		@Override
-		@NotNull
-		public Book deserialize(@NotNull DataInput2 input, int available) throws IOException {
+		public Book deserialize(DataInput2 input, int available) throws IOException {
 			final var title = input.readUTF();
 			final var author = authorSerializer.deserialize(input, available);
 			final var temporary = input.readBoolean();

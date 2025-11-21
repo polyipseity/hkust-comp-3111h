@@ -22,7 +22,7 @@
               </xAxis>
               <yAxis>
                 <NumberAxis tickUnit="10.0" minorTickCount="1"
-                            minorTickVisible="true" label="Times Borrowed" side="LEFT"/>
+                            label="Times Borrowed" side="LEFT"/>
               </yAxis>
             </BarChart>
          </children>

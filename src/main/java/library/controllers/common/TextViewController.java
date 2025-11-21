@@ -4,7 +4,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextArea;
 import javafx.scene.text.Font;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
@@ -12,7 +11,6 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public final class TextViewController implements RequiresLoggedIn, Initializable {
-	@NotNull
 	public static final String WINDOW_TITLE = "Reading: %s.txt";
 
 	public TextArea contentArea;
@@ -27,7 +25,7 @@ public final class TextViewController implements RequiresLoggedIn, Initializable
 				contentArea.setFont(Font.font(contentArea.getFont().getFamily(), newValue.doubleValue())));
 	}
 
-	public void setContent(@NotNull String content) {
+	public void setContent(String content) {
 		contentArea.setText(content);
 	}
 }

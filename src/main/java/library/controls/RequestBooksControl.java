@@ -5,15 +5,13 @@ import library.models.User;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.HasMessage;
-import org.jetbrains.annotations.NotNull;
 
 import java.time.ZonedDateTime;
 
 public record RequestBooksControl(Repository repository) {
-	public static final @NotNull String NOTIFICATION_APPROVE = "Your book request for '%s' has been approved!";
-	public static final @NotNull String NOTIFICATION_REJECT = "Your book request for '%s' has been rejected!";
+	public static final String NOTIFICATION_APPROVE = "Your book request for '%s' has been approved!";
+	public static final String NOTIFICATION_REJECT = "Your book request for '%s' has been rejected!";
 
-    @NotNull
     public RequestResult requestBook(User user, String title, String author) throws TransactionException {
         // Check if either title or author field is an empty string
         if (title.isEmpty())
@@ -41,7 +39,7 @@ public record RequestBooksControl(Repository repository) {
 
         record InvalidRequest(InvalidType type) implements RequestResult, HasMessage {
             @Override
-            public @NotNull String getMessage() {
+            public String getMessage() {
                 return switch (type) {
                     case INVALID_TITLE -> "Invalid title";
                     case INVALID_AUTHOR -> "Invalid author";
@@ -51,13 +49,13 @@ public record RequestBooksControl(Repository repository) {
 
         record RequestRepeated() implements RequestResult, HasMessage {
             @Override
-            public @NotNull String getMessage() {
+            public String getMessage() {
                 return "Request has been made before";
             }
         }
     }
 
-	public @NotNull ApproveResult approveRequest(@NotNull User user, @NotNull BookRequest bookRequest) throws TransactionException {
+	public ApproveResult approveRequest(User user, BookRequest bookRequest) throws TransactionException {
 		repository.transact(_ -> {
 			repository.userBookRequestOps.delete(user, bookRequest, null);
 			repository.userNotificationOps.updateAsList(user, list -> {
@@ -68,7 +66,7 @@ public record RequestBooksControl(Repository repository) {
 		return new ApproveResult.Success();
 	}
 
-	public @NotNull RejectResult rejectRequest(@NotNull User user, @NotNull BookRequest bookRequest) throws TransactionException {
+	public RejectResult rejectRequest(User user, BookRequest bookRequest) throws TransactionException {
 		repository.transact(_ -> {
 			repository.userBookRequestOps.delete(user, bookRequest, null);
 			repository.userNotificationOps.updateAsList(user, list -> {

@@ -3,11 +3,12 @@ package library.controls;
 import library.models.User;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
-public record ManageUsersControl(@NotNull Repository repository) {
+public record ManageUsersControl(Repository repository) {
 
 	/**
 	 * Activates an already inactive user.
@@ -21,8 +22,8 @@ public record ManageUsersControl(@NotNull Repository repository) {
 	 * @return an ActivateResult indicating success or failure
 	 * @throws TransactionException if any database operation fails during the transaction
 	 */
-	public @NotNull ActivateResult activateUser(@NotNull User inactiveUser) throws TransactionException {
-		final var data = new AtomicReference<User.Data>();
+	public ActivateResult activateUser(User inactiveUser) throws TransactionException {
+		final var data = new AtomicReference<User.@Nullable Data>();
 		repository.userOps.update(inactiveUser, userData -> {
 			if (userData.active()) {
 				throw new IllegalArgumentException("User is active: %s".formatted(inactiveUser));
@@ -31,7 +32,7 @@ public record ManageUsersControl(@NotNull Repository repository) {
 			data.set(ret);
 			return ret;
 		});
-		return new ActivateResult.Success(data.get());
+		return new ActivateResult.Success(Objects.requireNonNull(data.get()));
 	}
 
 	/**
@@ -46,8 +47,8 @@ public record ManageUsersControl(@NotNull Repository repository) {
 	 * @return a DeactivateResult indicating success or failure
 	 * @throws TransactionException if any database operation fails during the transaction
 	 */
-	public @NotNull DeactivateResult deactivateUser(@NotNull User activeUser) throws TransactionException {
-		final var data = new AtomicReference<User.Data>();
+	public DeactivateResult deactivateUser(User activeUser) throws TransactionException {
+		final var data = new AtomicReference<User.@Nullable Data>();
 		repository.userOps.update(activeUser, userData -> {
 			if (!userData.active()) {
 				throw new IllegalArgumentException("User is not active: %s".formatted(activeUser));
@@ -56,14 +57,14 @@ public record ManageUsersControl(@NotNull Repository repository) {
 			data.set(ret);
 			return ret;
 		});
-		return new DeactivateResult.Success(data.get());
+		return new DeactivateResult.Success(Objects.requireNonNull(data.get()));
 	}
 
 	/**
 	 * Result type for the deactivate operation.
 	 */
 	public sealed interface DeactivateResult permits DeactivateResult.Success {
-		record Success(@NotNull User.Data data) implements DeactivateResult {
+		record Success(User.Data data) implements DeactivateResult {
 		}
 	}
 
@@ -71,7 +72,7 @@ public record ManageUsersControl(@NotNull Repository repository) {
 	 * Result type for the activate operation.
 	 */
 	public sealed interface ActivateResult permits ActivateResult.Success {
-		record Success(@NotNull User.Data data) implements ActivateResult {
+		record Success(User.Data data) implements ActivateResult {
 		}
 	}
 }

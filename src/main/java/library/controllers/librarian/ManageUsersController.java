@@ -13,7 +13,6 @@ import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.Tuple2;
 import lombok.With;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
@@ -22,14 +21,14 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 
 public final class ManageUsersController implements RequiresLoggedIn, Initializable {
-	public TableView<Data> table;
+	public TableView<@Nullable Data> table;
 	public DynamicTableController<Keys, Data> tableController;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
 
-		final var keys = new LinkedHashMap<Keys, TableColumn<Data, Data>>();
+		final var keys = new LinkedHashMap<Keys, TableColumn<Data, @Nullable Data>>();
 		keys.put(Keys.USERNAME, new TableColumn<>("Username"));
 		keys.put(Keys.ROLE, new TableColumn<>("Role"));
 		keys.put(Keys.NAME, new TableColumn<>("Name"));
@@ -63,10 +62,10 @@ public final class ManageUsersController implements RequiresLoggedIn, Initializa
 	}
 
 	@With
-	public record Data(@NotNull ManageUsersController controller,
-	                   @NotNull User user,
-	                   @NotNull User.Data userData)
-			implements Function<@NotNull Keys, DynamicTableController.@NotNull Data> {
+	public record Data(ManageUsersController controller,
+	                   User user,
+	                   User.Data userData)
+			implements Function<Keys, DynamicTableController.Data> {
 
 		/**
 		 * Applies this function to the given argument.
@@ -75,7 +74,7 @@ public final class ManageUsersController implements RequiresLoggedIn, Initializa
 		 * @return the function result
 		 */
 		@Override
-		public DynamicTableController.@NotNull Data apply(@NotNull Keys key) {
+		public DynamicTableController.Data apply(Keys key) {
 			return switch (key) {
 				case USERNAME -> new DynamicTableController.Data.Text(user.username());
 				case ROLE -> new DynamicTableController.Data.Text(userData.role().name);

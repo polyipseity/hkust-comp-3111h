@@ -10,7 +10,6 @@ import library.models.Book;
 import library.models.Borrow;
 import library.models.User;
 import library.utils.TimeUtil;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
@@ -19,14 +18,14 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 
 public final class BorrowedBooksController implements RequiresLoggedIn, Initializable {
-	public TableView<Data> table;
+	public TableView<@Nullable Data> table;
 	public DynamicTableController<Keys, Data> tableController;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
 
-		final var keys = new LinkedHashMap<Keys, TableColumn<Data, Data>>();
+		final var keys = new LinkedHashMap<Keys, TableColumn<Data, @Nullable Data>>();
 		keys.put(Keys.TITLE, new TableColumn<>("Title"));
 		keys.put(Keys.BORROWER, new TableColumn<>("Borrower"));
 		keys.put(Keys.BORROW_DATE, new TableColumn<>("Borrowed On"));
@@ -57,10 +56,10 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 		DURATION_LEFT
 	}
 
-	public record Data(@NotNull User user,
-	                   @NotNull Book book,
-	                   @NotNull Borrow borrow)
-			implements Function<@NotNull Keys, DynamicTableController.@NotNull Data> {
+	public record Data(User user,
+	                   Book book,
+	                   Borrow borrow)
+			implements Function<Keys, DynamicTableController.Data> {
 
 		/**
 		 * Applies this function to the given argument.
@@ -69,7 +68,7 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 		 * @return the function result
 		 */
 		@Override
-		public DynamicTableController.@NotNull Data apply(@NotNull Keys key) {
+		public DynamicTableController.Data apply(Keys key) {
 			return switch (key) {
 				case TITLE -> new DynamicTableController.Data.Text(book.title());
 				case BORROWER -> new DynamicTableController.Data.Text(user.username());

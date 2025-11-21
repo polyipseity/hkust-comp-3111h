@@ -4,11 +4,9 @@ import library.models.User;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.HasMessage;
-import org.jetbrains.annotations.NotNull;
 
-public record ManageProfileControl(@NotNull Repository repository) {
-	@NotNull
-	public LoginResult login(@NotNull User.Role role, @NotNull String username, @NotNull String password) {
+public record ManageProfileControl(Repository repository) {
+	public LoginResult login(User.Role role, String username, String password) {
 		final var user = new User(username);
 		return switch (repository.userOps.read(user).orElse(null)) {
 			case null -> new LoginResult.InvalidUsername();
@@ -19,8 +17,7 @@ public record ManageProfileControl(@NotNull Repository repository) {
 		};
 	}
 
-	@NotNull
-	public RegisterResult register(@NotNull UserValidator validator, @NotNull User.Role role, @NotNull String username, @NotNull String password, @NotNull String fullName) throws TransactionException {
+	public RegisterResult register(UserValidator validator, User.Role role, String username, String password, String fullName) throws TransactionException {
 		return switch (validator.apply(username, password, fullName)) {
 			case UserValidator.Result.Success _ -> {
 				final var user = new User(username);
@@ -43,51 +40,51 @@ public record ManageProfileControl(@NotNull Repository repository) {
 
 		record InvalidUsername() implements LoginResult, HasMessage {
 			@Override
-			public @NotNull String getMessage() {
+			public String getMessage() {
 				return "Invalid username";
 			}
 		}
 
 		record WrongRole(User.Role actualRole) implements LoginResult, HasMessage {
 			@Override
-			public @NotNull String getMessage() {
+			public String getMessage() {
 				return "Logging in as wrong role: %s".formatted(actualRole.name);
 			}
 		}
 
 		record InvalidPassword() implements LoginResult, HasMessage {
 			@Override
-			public @NotNull String getMessage() {
+			public String getMessage() {
 				return "Invalid password";
 			}
 		}
 
 		record DeactivatedAccount() implements LoginResult, HasMessage {
 			@Override
-			public @NotNull String getMessage() {
+			public String getMessage() {
 				return "Deactivated account";
 			}
 		}
 	}
 
 	public sealed interface RegisterResult permits RegisterResult.InvalidDetails, RegisterResult.Success, RegisterResult.UsernameExists {
-		record Success(@NotNull User user, @NotNull User.Data data) implements RegisterResult, HasMessage {
+		record Success(User user, User.Data data) implements RegisterResult, HasMessage {
 			@Override
-			public @NotNull String getMessage() {
+			public String getMessage() {
 				return "Registration successful";
 			}
 		}
 
-		record InvalidDetails(@NotNull HasMessage cause) implements RegisterResult, HasMessage {
+		record InvalidDetails(HasMessage cause) implements RegisterResult, HasMessage {
 			@Override
-			public @NotNull String getMessage() {
+			public String getMessage() {
 				return "Invalid details: %s".formatted(cause.getMessage());
 			}
 		}
 
 		record UsernameExists() implements RegisterResult, HasMessage {
 			@Override
-			public @NotNull String getMessage() {
+			public String getMessage() {
 				return "Username exists";
 			}
 		}

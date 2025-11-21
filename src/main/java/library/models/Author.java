@@ -1,7 +1,6 @@
 package library.models;
 
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.mapdb.DataInput2;
 import org.mapdb.DataOutput2;
 import org.mapdb.Serializer;
@@ -12,7 +11,7 @@ import java.io.IOException;
 public sealed interface Author extends Comparable<Author> permits Author.ByName, Author.ByRef {
 	byte getTag();
 
-	record ByRef(@NotNull User value) implements Author {
+	record ByRef(User value) implements Author {
 		public static final byte TAG = 0;
 
 		@Override
@@ -53,7 +52,7 @@ public sealed interface Author extends Comparable<Author> permits Author.ByName,
 		 * inconsistent with equals."
 		 */
 		@Override
-		public int compareTo(@NotNull Author o) {
+		public int compareTo(Author o) {
 			return switch (o) {
 				case ByRef(final var val) -> value.compareTo(val);
 				case Author author -> Byte.compare(getTag(), author.getTag());
@@ -61,13 +60,12 @@ public sealed interface Author extends Comparable<Author> permits Author.ByName,
 		}
 
 		@Override
-		@NotNull
 		public String toString() {
 			return value.username();
 		}
 	}
 
-	record ByName(@NotNull String value) implements Author {
+	record ByName(String value) implements Author {
 		public static final byte TAG = 1;
 
 		@Override
@@ -108,7 +106,7 @@ public sealed interface Author extends Comparable<Author> permits Author.ByName,
 		 * inconsistent with equals."
 		 */
 		@Override
-		public int compareTo(@NotNull Author o) {
+		public int compareTo(Author o) {
 			return switch (o) {
 				case ByName(final var val) -> value.compareTo(val);
 				case Author author -> Byte.compare(getTag(), author.getTag());
@@ -116,7 +114,6 @@ public sealed interface Author extends Comparable<Author> permits Author.ByName,
 		}
 
 		@Override
-		@NotNull
 		public String toString() {
 			return value;
 		}
@@ -135,7 +132,7 @@ public sealed interface Author extends Comparable<Author> permits Author.ByName,
 		 * @throws IOException in case of an I/O error
 		 */
 		@Override
-		public void serialize(@NotNull DataOutput2 out, @NotNull Author value) throws IOException {
+		public void serialize(DataOutput2 out, Author value) throws IOException {
 			switch (value) {
 				case ByRef(final var val) -> {
 					out.writeByte(ByRef.TAG);
@@ -158,8 +155,7 @@ public sealed interface Author extends Comparable<Author> permits Author.ByName,
 		 * @throws IOException in case of an I/O error
 		 */
 		@Override
-		@NotNull
-		public Author deserialize(@NotNull DataInput2 input, int available) throws IOException {
+		public Author deserialize(DataInput2 input, int available) throws IOException {
 			final var tag = input.readByte();
 			final var ret = switch (tag) {
 				case ByRef.TAG -> new ByRef(userSerializer.deserialize(input, available));

@@ -1,7 +1,7 @@
 package library.persistence;
 
 import library.utils.HasMessage;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class TransactionException extends Exception implements HasMessage {
 	/**
@@ -21,7 +21,7 @@ public final class TransactionException extends Exception implements HasMessage 
 	 * @param message the detail message. The detail message is saved for
 	 *                later retrieval by the {@link #getMessage()} method.
 	 */
-	public TransactionException(String message) {
+	public TransactionException(@Nullable String message) {
 		super(message);
 	}
 
@@ -39,7 +39,7 @@ public final class TransactionException extends Exception implements HasMessage 
 	 *                unknown.)
 	 * @since 1.4
 	 */
-	public TransactionException(String message, Throwable cause) {
+	public TransactionException(@Nullable String message, @Nullable Throwable cause) {
 		super(message, cause);
 	}
 
@@ -57,12 +57,12 @@ public final class TransactionException extends Exception implements HasMessage 
 	 *              unknown.)
 	 * @since 1.4
 	 */
-	public TransactionException(Throwable cause) {
+	public TransactionException(@Nullable Throwable cause) {
 		super(cause);
 	}
 
 	@Override
-	public @NotNull String getMessage() {
+	public String getMessage() {
 		return switch (super.getMessage()) {
 			case null -> "Database transaction exception";
 			case "" -> "Database transaction exception";

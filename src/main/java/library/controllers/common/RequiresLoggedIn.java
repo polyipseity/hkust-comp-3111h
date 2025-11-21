@@ -4,7 +4,6 @@ import javafx.fxml.Initializable;
 import library.Main;
 import library.models.User;
 import library.utils.Tuple2;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
@@ -17,7 +16,6 @@ public interface RequiresLoggedIn extends Initializable {
 		getLoggedInUser();
 	}
 
-	@NotNull
 	default Tuple2<User, User.Data> getLoggedInUser() {
 		return Objects.requireNonNull(Main.getContext().getLoggedInUser());
 	}

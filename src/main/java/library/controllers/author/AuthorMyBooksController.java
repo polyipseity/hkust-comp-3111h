@@ -38,7 +38,7 @@ public final class AuthorMyBooksController implements RequiresLoggedIn {
     @Setter
     private DashboardController parentController;
 
-    public final class BookRecord {
+    public static final class BookRecord {
         private final Book book;
         private final String title;
         private final String status;
@@ -64,13 +64,13 @@ public final class AuthorMyBooksController implements RequiresLoggedIn {
     }
 
     @FXML
-    private TableView<BookRecord> BooksTable;
+    private TableView<@Nullable BookRecord> BooksTable;
 
     @FXML
-    private TableColumn<BookRecord, String> Title, Status, Date, Abstract;
+    private TableColumn<BookRecord, @Nullable String> Title, Status, Date, Abstract;
 
     @FXML
-    private TableColumn<BookRecord, Long> Readers;
+    private TableColumn<BookRecord, @Nullable Long> Readers;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
@@ -102,7 +102,7 @@ public final class AuthorMyBooksController implements RequiresLoggedIn {
 		        case ZonedDateTime val -> TimeUtil.toStringZonedLocal(val);
 		        case null -> data.approvalStatus().toString();
             };
-            var record = new BookRecord(book, book.title(),book.temporary()?"MODIFIED":data.approvalStatus().toString(), book.temporary()?"MODIFIED":date, data.timesBorrowed(),data.summary());
+            var record = new BookRecord(book, book.title(), book.temporary() ? "MODIFIED" : data.approvalStatus().toString(), book.temporary() ? "MODIFIED" : date, data.timesBorrowed(), data.summary());
             if(data.approvalStatus()!= Book.ApprovalStatus.REJECTED) {
                 tableData.add(record);
             }

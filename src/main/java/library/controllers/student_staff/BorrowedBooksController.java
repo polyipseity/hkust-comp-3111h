@@ -23,15 +23,12 @@ import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.HasMessage;
-import library.utils.TimeUtil;
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -45,16 +42,16 @@ public final class BorrowedBooksController implements RequiresLoggedIn {
 	private DashboardController parentController;
 
 	@FXML
-	private TableView<tableRow> table;
+	private TableView<@Nullable tableRow> table;
 	@FXML
-	private TableColumn<tableRow, String> titleCol, authorCol, borrowedOnCol, timeLeftCol, actionsCol;
+	private TableColumn<tableRow, @Nullable String> titleCol, authorCol, borrowedOnCol, timeLeftCol, actionsCol;
 
 	public record tableRow(
-			@NotNull @Getter String title,
-			@NotNull @Getter String author,
-			@NotNull @Getter String borrowedOn,
-			@NotNull @Getter String timeLeft,
-			@NotNull Book book
+			@Getter String title,
+			@Getter String author,
+			@Getter String borrowedOn,
+			@Getter String timeLeft,
+			Book book
 	) {
 	}
 

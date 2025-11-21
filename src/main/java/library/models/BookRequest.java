@@ -2,7 +2,6 @@ package library.models;
 
 import lombok.RequiredArgsConstructor;
 import lombok.With;
-import org.jetbrains.annotations.NotNull;
 import org.mapdb.DataInput2;
 import org.mapdb.DataOutput2;
 import org.mapdb.serializer.GroupSerializerObjectArray;
@@ -14,8 +13,8 @@ import java.time.ZonedDateTime;
 import java.util.Comparator;
 
 public record BookRequest(
-		@NotNull String title,
-		@NotNull String author
+		String title,
+		String author
 ) implements Comparable<BookRequest> {
 	/**
 	 * Compares this object with the specified object for order.  Returns a
@@ -50,7 +49,7 @@ public record BookRequest(
 	 * inconsistent with equals."
 	 */
 	@Override
-	public int compareTo(@NotNull BookRequest o) {
+	public int compareTo(BookRequest o) {
 		return Comparator
 				.comparing(BookRequest::title)
 				.thenComparing(BookRequest::author)
@@ -59,7 +58,7 @@ public record BookRequest(
 
 	@With
 	public record Data(
-			@NotNull ZonedDateTime requestDate
+			ZonedDateTime requestDate
 	) {
 		@RequiredArgsConstructor
 		public static final class S extends GroupSerializerObjectArray<Data> {
@@ -72,7 +71,7 @@ public record BookRequest(
 			 * @throws IOException in case of an I/O error
 			 */
 			@Override
-			public void serialize(@NotNull DataOutput2 out, @NotNull BookRequest.Data value) throws IOException {
+			public void serialize(DataOutput2 out, BookRequest.Data value) throws IOException {
 				// `requestDate`: second, nano, zone
 				final var requestDate = value.requestDate();
 				out.writeLong(requestDate.toEpochSecond());
@@ -90,8 +89,7 @@ public record BookRequest(
 			 * @throws IOException in case of an I/O error
 			 */
 			@Override
-			@NotNull
-			public Data deserialize(@NotNull DataInput2 input, int available) throws IOException {
+			public Data deserialize(DataInput2 input, int available) throws IOException {
 				final var requestDate = ZonedDateTime.ofInstant(Instant.ofEpochSecond(input.readLong(), input.readLong()), ZoneId.of(input.readUTF()));
 				return new Data(requestDate);
 			}
@@ -109,7 +107,7 @@ public record BookRequest(
 		 * @throws IOException in case of an I/O error
 		 */
 		@Override
-		public void serialize(@NotNull DataOutput2 out, @NotNull BookRequest value) throws IOException {
+		public void serialize(DataOutput2 out, BookRequest value) throws IOException {
 			out.writeUTF(value.title());
 			out.writeUTF(value.author());
 		}
@@ -124,8 +122,7 @@ public record BookRequest(
 		 * @throws IOException in case of an I/O error
 		 */
 		@Override
-		@NotNull
-		public BookRequest deserialize(@NotNull DataInput2 input, int available) throws IOException {
+		public BookRequest deserialize(DataInput2 input, int available) throws IOException {
 			final var title = input.readUTF();
 			final var author = input.readUTF();
 			return new BookRequest(title, author);

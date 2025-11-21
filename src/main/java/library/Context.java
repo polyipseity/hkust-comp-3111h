@@ -6,42 +6,41 @@ import library.controls.*;
 import library.models.User;
 import library.persistence.Repository;
 import library.utils.Tuple2;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Closeable;
 
 public interface Context extends Closeable {
-	void setScene(@NotNull Parent value);
+	void setScene(Parent value);
 
-	@NotNull
-	Stage newWindow(@NotNull String title, @NotNull Parent parent, @Nullable Stage stage);
+	Stage newWindow(String title, Parent parent, @Nullable Stage stage);
 
-	@NotNull Stage getPrimaryStage();
+	Stage getPrimaryStage();
 
-	@NotNull Repository getRepository();
+	Repository getRepository();
 
-	@NotNull BookDownloadControl getBookDownloadControl();
+	BookDownloadControl getBookDownloadControl();
 
-	@NotNull BorrowBooksControl getBorrowBooksControl();
+	BorrowBooksControl getBorrowBooksControl();
 
-	@NotNull ManageBooksControl getManageBooksControl();
+	ManageBooksControl getManageBooksControl();
 
-	@NotNull ManageNotificationsControl getManageNotificationsControl();
+	ManageNotificationsControl getManageNotificationsControl();
 
-	@NotNull ManageProfileControl getManageProfileControl();
+	ManageProfileControl getManageProfileControl();
 
-	@NotNull ManageUsersControl getManageUsersControl();
+	ManageUsersControl getManageUsersControl();
 
-	@NotNull PublishBooksControl getPublishBooksControl();
+	PublishBooksControl getPublishBooksControl();
 
-	@NotNull RequestBooksControl getRequestBooksControl();
+	RequestBooksControl getRequestBooksControl();
 
-	@NotNull StatsControl getStatsControl();
+	StatsControl getStatsControl();
 
 	@Nullable
 	Tuple2<User, User.Data> getLoggedInUser();
 
+	@SuppressWarnings("EmptyMethod")
 	void setLoggedInUser(@Nullable Tuple2<library.models.User, library.models.User.Data> loggedInUser);
 
 	/**

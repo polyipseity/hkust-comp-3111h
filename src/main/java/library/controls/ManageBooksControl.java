@@ -5,13 +5,12 @@ import library.models.Book;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.TimeUtil;
-import org.jetbrains.annotations.NotNull;
 
-public record ManageBooksControl(@NotNull Repository repository) {
-	public static final @NotNull String NOTIFICATION_APPROVE = "Your book '%s' has been approved!";
-	public static final @NotNull String NOTIFICATION_REJECT = "Your book '%s' has been rejected!";
-	public static final @NotNull String NOTIFICATION_DELETE_BOOK = "Your book '%s' has been deleted!";
-	public static final @NotNull String NOTIFICATION_DELETE_BORROWED_BOOK = "The book '%s' you were borrowing has been deleted!";
+public record ManageBooksControl(Repository repository) {
+	public static final String NOTIFICATION_APPROVE = "Your book '%s' has been approved!";
+	public static final String NOTIFICATION_REJECT = "Your book '%s' has been rejected!";
+	public static final String NOTIFICATION_DELETE_BOOK = "Your book '%s' has been deleted!";
+	public static final String NOTIFICATION_DELETE_BORROWED_BOOK = "The book '%s' you were borrowing has been deleted!";
 
 	/**
 	 * Approves a pending book and updates the database in one transaction.
@@ -32,7 +31,7 @@ public record ManageBooksControl(@NotNull Repository repository) {
 	 * <p>The author of the book (or the original/modified book) receives a
 	 * notification about the approval outcome.</p>
 	 */
-	public @NotNull ApproveResult approveBook(@NotNull Book pending) throws TransactionException {
+	public ApproveResult approveBook(Book pending) throws TransactionException {
 		repository.transact(_ -> {
 			// read current data for the pending book
 			final var pendingData = repository.bookOps.readOrThrow(pending);
@@ -91,7 +90,7 @@ public record ManageBooksControl(@NotNull Repository repository) {
 	 * @return a {@link RejectResult} indicating success (no failure path is exposed)
 	 * @throws TransactionException if any database operation fails during the transaction
 	 */
-	public @NotNull RejectResult rejectBook(@NotNull Book pending) throws TransactionException {
+	public RejectResult rejectBook(Book pending) throws TransactionException {
 		repository.transact(_ -> {
 			// read current data for the pending book
 			final var pendingData = repository.bookOps.readOrThrow(pending);
@@ -123,7 +122,7 @@ public record ManageBooksControl(@NotNull Repository repository) {
 		return new RejectResult.Success();
 	}
 
-	public @NotNull Book.Data modifyBookData(@NotNull Book.Data oldData, @NotNull Book.Data newData, boolean newIsTemporary) {
+	public Book.Data modifyBookData(Book.Data oldData, Book.Data newData, boolean newIsTemporary) {
 		final var ret = oldData
 				.withSummary(newData.summary())
 				.withContent(newData.content())
@@ -161,7 +160,7 @@ public record ManageBooksControl(@NotNull Repository repository) {
 	 * @return a {@link DeleteResult} indicating success or failure
 	 * @throws TransactionException if any database operation fails during the transaction
 	 */
-	public @NotNull DeleteResult deleteBook(@NotNull Book book) throws TransactionException {
+	public DeleteResult deleteBook(Book book) throws TransactionException {
 		repository.transact(_ -> {
 			// Read the current book data to ensure it exists
 			final var bookData = repository.bookOps.readOrThrow(book);

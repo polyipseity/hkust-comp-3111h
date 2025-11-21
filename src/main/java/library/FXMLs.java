@@ -18,7 +18,6 @@ public enum FXMLs {
 	STUDENT_STAFF_DASHBOARD("/fxml/student_staff/Dashboard.fxml"),
 	;
 
-	@NotNull
 	public final URL resource;
 
 	FXMLs(String name) {
@@ -26,7 +25,7 @@ public enum FXMLs {
 	}
 
 	@NotNull
-	public <T> T load(@NotNull Consumer<FXMLLoader> callback) throws IOException {
+	public <T> T load(Consumer<FXMLLoader> callback) throws IOException {
 		final var loader = new FXMLLoader(resource);
 		final var ret = loader.<T>load();
 		callback.accept(loader);

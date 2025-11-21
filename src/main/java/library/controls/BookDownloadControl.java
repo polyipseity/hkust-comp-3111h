@@ -8,10 +8,8 @@ import library.models.json.GutendexErrorResponse;
 import library.models.json.GutendexResponse;
 import library.utils.TimeUtil;
 import library.utils.Tuple2;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -26,10 +24,9 @@ import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 public record BookDownloadControl(
-		@NotNull HttpClient client,
-		@NotNull ObjectMapper objectMapper
+		HttpClient client,
+		ObjectMapper objectMapper
 ) implements Closeable {
-	@NotNull
 	public static final String GUTENBERG_BOOK_API = "https://gutendex.com/books/";
 
 	/**
@@ -45,8 +42,7 @@ public record BookDownloadControl(
 	 * @param query The search query (title or author). Case-insensitive.
 	 * @return A CompletableFuture containing a list of matching books.
 	 */
-	@NotNull
-	public CompletableFuture<@NotNull List<GutendexResponse.@NotNull Book>> searchProjectGutenberg(@NotNull String query) {
+	public CompletableFuture<List<GutendexResponse.Book>> searchProjectGutenberg(String query) {
 		return CompletableFuture.supplyAsync(() -> {
 					// Build the search URL with query parameters
 					final var params = Map.of(
@@ -84,8 +80,7 @@ public record BookDownloadControl(
 				.thenApply(GutendexResponse::results);
 	}
 
-	@NotNull
-	public CompletableFuture<@NotNull String> downloadProjectGutenberg(@NotNull GutendexResponse.Book book) {
+	public CompletableFuture<String> downloadProjectGutenberg(GutendexResponse.Book book) {
 		return CompletableFuture.supplyAsync(() -> {
 					// Get the URL for the text/plain format
 					final var uri = URI.create(book.formats().entrySet().stream().filter(entry -> entry.getKey().startsWith("text/plain"))
@@ -107,8 +102,7 @@ public record BookDownloadControl(
 	 * @param content The content of the book in string form.
 	 * @return A Book with the combined data.
 	 */
-	@NotNull
-	public Tuple2<Book, Book.Data> newBook(@NotNull GutendexResponse.Book book, @NotNull String content) {
+	public Tuple2<Book, Book.Data> newBook(GutendexResponse.Book book, String content) {
 		// Extract title and author from GutendexResponse.Book
 		final var title = book.title();
 		final var author = new Author.ByName(book.authorString());
@@ -137,11 +131,9 @@ public record BookDownloadControl(
 	 * to relinquish the underlying resources and to internally
 	 * <em>mark</em> the {@code Closeable} as closed, prior to throwing
 	 * the {@code IOException}.
-	 *
-	 * @throws IOException if an I/O error occurs
 	 */
 	@Override
-	public void close() throws IOException {
+	public void close() {
 		client.close();
 	}
 }

@@ -1,8 +1,6 @@
 package library.controllers.author;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import library.Main;
@@ -14,6 +12,7 @@ import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 import lombok.Setter;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +29,7 @@ public final class AuthorPublishBooksController implements RequiresLoggedIn {
 
     @FXML
     private TextField BookTitle, BookContent, BookAbstract;
+		@Nullable
     private String ContentTxt;
 
     //Method for choosing text file
@@ -72,7 +72,7 @@ public final class AuthorPublishBooksController implements RequiresLoggedIn {
         }
     }
 
-    public boolean isValidBookTitle(String title) {
+    public boolean isValidBookTitle(@Nullable String title) {
         if (title == null || title.trim().isEmpty()) {
             return false;
         }
@@ -93,7 +93,7 @@ public final class AuthorPublishBooksController implements RequiresLoggedIn {
     //Method for publishing the book
     @FXML
     private void PublishBook() {
-        if(BookTitle.getText().isEmpty() || ContentTxt.isEmpty() || BookAbstract.getText().isEmpty()) {
+        if(BookTitle.getText().isEmpty() || ContentTxt == null || ContentTxt.isEmpty() || BookAbstract.getText().isEmpty()) {
             Alerts.showErrorDialog("Missing information of the book.");
             return;
         }
