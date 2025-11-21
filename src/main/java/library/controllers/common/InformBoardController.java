@@ -23,10 +23,10 @@ import java.util.ResourceBundle;
 public final class InformBoardController implements RequiresLoggedIn {
 	//Storing all notifications of user
 	private final ObservableList<String> notifications = FXCollections.observableArrayList();
-	Repository repository = Main.getContext().getRepository();
 	//Referring to fxml ListView
 	@UnknownNullability
 	public ListView<String> notificationList;
+	Repository repository = Main.getContext().getRepository();
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {

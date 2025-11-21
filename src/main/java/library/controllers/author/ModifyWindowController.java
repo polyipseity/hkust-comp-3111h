@@ -30,8 +30,8 @@ public final class ModifyWindowController implements RequiresLoggedIn {
 	@UnknownNullability
 	public Button saveButton;
 
-    @Setter
-    private MyBooksController myBooksController;
+	@Setter
+	private MyBooksController myBooksController;
 
 	@Nullable
 	private Tuple2<Book, Book.Data> bookEntry;
@@ -60,11 +60,11 @@ public final class ModifyWindowController implements RequiresLoggedIn {
 			switch (Main.getContext().getManageBooksControl()
 					.modifyBook(bookEntry._1(), title, summary)) {
 				case ManageBooksControl.ModifyResult.Success success -> {
-                    // Close the current window
-                    ((Stage) saveButton.getScene().getWindow()).close();
-                    //Show success response to author
+					// Close the current window
+					((Stage) saveButton.getScene().getWindow()).close();
+					//Show success response to author
 					Alerts.showInfoDialog(success.getMessage());
-                    confirmCallback.run();
+					confirmCallback.run();
 				}
 				case HasMessage message -> Alerts.showErrorDialog(message.getMessage());
 			}

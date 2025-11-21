@@ -1,7 +1,6 @@
 package library.controllers.author;
 
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
@@ -20,7 +19,6 @@ import library.utils.HasMessage;
 import library.utils.TimeUtil;
 import library.utils.Tuple2;
 import lombok.Setter;
-import org.bouncycastle.math.raw.Mod;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
@@ -39,8 +37,8 @@ public final class MyBooksController implements RequiresLoggedIn {
 	@UnknownNullability
 	public TableColumn<Data, @Nullable Data> titleCol, statusCol, dateCol, readersCol, summaryCol;
 
-    @Setter
-    private DashboardController parentController;
+	@Setter
+	private DashboardController parentController;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
@@ -104,16 +102,16 @@ public final class MyBooksController implements RequiresLoggedIn {
 				root,
 				null
 		);
-        //Set the window properties
-        window.setResizable(false);
-        window.setWidth(480);
-        window.setHeight(250);
+		//Set the window properties
+		window.setResizable(false);
+		window.setWidth(480);
+		window.setHeight(250);
 
-        //Execute the following when window closed
-        window.setOnHidden(event -> {
-            loadTable();  // This runs AFTER window closes
-            parentController.loadStatusView();
-        });
+		//Execute the following when window closed
+		window.setOnHidden(event -> {
+			loadTable();  // This runs AFTER window closes
+			parentController.loadStatusView();
+		});
 
 		// Show the new window
 		window.show();
@@ -135,14 +133,14 @@ public final class MyBooksController implements RequiresLoggedIn {
 				case ManageBooksControl.DeleteResult.Success _ -> loadTable();
 				case HasMessage message -> Alerts.showErrorDialog(message.getMessage());
 			}
-            parentController.loadStatusView();
+			parentController.loadStatusView();
 		} catch (TransactionException e) {
 			Alerts.showErrorDialog(e.getLocalizedMessage());
 		}
 	}
 
 	private boolean deleteConfirmation(String message) {
-		Optional<ButtonType> result = Alerts.showConfirmDialog("Delete \"" + message + "\"?");
+		Optional<ButtonType> result = Alerts.showConfirmDialog("Delete " + message + "?");
 		// Return true if confirmed
 		return !(result.isPresent() && result.get() == ButtonType.CANCEL);
 	}
@@ -151,7 +149,7 @@ public final class MyBooksController implements RequiresLoggedIn {
 		TITLE,
 		STATUS,
 		PUBLISH_DATE,
-        READERS,
+		READERS,
 		SUMMARY
 	}
 
@@ -167,7 +165,7 @@ public final class MyBooksController implements RequiresLoggedIn {
 		 */
 		@Override
 		public DynamicTableController.Data apply(Keys key) {
-            var borrowOfBook = Main.getContext().getRepository().borrowOps.read(book);
+			var borrowOfBook = Main.getContext().getRepository().borrowOps.read(book);
 			return switch (key) {
 				case TITLE -> new DynamicTableController.Data.Text(book.title());
 				case STATUS -> new DynamicTableController.Data.Text(bookData.approvalStatus().name);
@@ -176,7 +174,7 @@ public final class MyBooksController implements RequiresLoggedIn {
 								? ""
 								: TimeUtil.toStringZonedLocal(bookData.publishDate()));
 				case READERS ->
-                        new DynamicTableController.Data.Text(String.valueOf(borrowOfBook.isEmpty()?0:borrowOfBook.size()));
+						new DynamicTableController.Data.Text(String.valueOf(borrowOfBook.isEmpty() ? 0 : borrowOfBook.size()));
 				case SUMMARY -> new DynamicTableController.Data.Text(bookData.summary());
 			};
 		}

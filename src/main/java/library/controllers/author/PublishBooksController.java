@@ -23,12 +23,10 @@ public final class PublishBooksController implements RequiresLoggedIn {
 	private final Repository repository = Main.getContext().getRepository();
 
 	private final ChatService chatService = new ChatService();
-
-	@Setter
-	private DashboardController parentController;
-
 	@UnknownNullability
 	public TextField titleField, contentField, summaryField;
+	@Setter
+	private DashboardController parentController;
 	@Nullable
 	private String ContentTxt;
 
@@ -100,18 +98,18 @@ public final class PublishBooksController implements RequiresLoggedIn {
 		var book = new Book(titleField.getText(), new Author.ByRef(getLoggedInUser()._1()), false);
 		Optional<Book.Data> opt = repository.bookOps.read(book);
 		if (opt.isPresent()) {
-            if(opt.get().approvalStatus()== Book.ApprovalStatus.REJECTED){
-                Alerts.showErrorDialog("Rejected Book of the same title and author already exists");
-            }else {
-                Alerts.showErrorDialog("Book of the same title and author already exists");
-            }
+			if (opt.get().approvalStatus() == Book.ApprovalStatus.REJECTED) {
+				Alerts.showErrorDialog("Rejected Book of the same title and author already exists");
+			} else {
+				Alerts.showErrorDialog("Book of the same title and author already exists");
+			}
 		} else {
 			var data = new Book.Data(summaryField.getText(), ContentTxt, Book.ApprovalStatus.PENDING, null, null, 0);
 			try {
 				repository.bookOps.create(book, data);
 				Alerts.showInfoDialog("Published and awaiting approval.");
 				parentController.loadMyBooks();
-                parentController.loadStatusView();
+				parentController.loadStatusView();
 			} catch (TransactionException e) {
 				throw new RuntimeException(e);
 			}

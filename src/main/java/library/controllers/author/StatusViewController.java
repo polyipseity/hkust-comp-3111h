@@ -3,7 +3,6 @@ package library.controllers.author;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.BarChart;
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import library.Main;
@@ -24,19 +23,16 @@ import java.util.stream.Collectors;
 
 public final class StatusViewController implements RequiresLoggedIn {
 	private final Repository repository = Main.getContext().getRepository();
-	private Map<Book, Book.Data> authorBooks;
-
-	private int pendingBooks = 0;
-	private int approvedBooks = 0;
-	private int rejectedBooks = 0;
-
-    @Setter
-    private DashboardController parentController;
-
 	@UnknownNullability
 	public PieChart statusChart;
 	@UnknownNullability
 	public BarChart<String, Number> popularChart;
+	private Map<Book, Book.Data> authorBooks;
+	private int pendingBooks = 0;
+	private int approvedBooks = 0;
+	private int rejectedBooks = 0;
+	@Setter
+	private DashboardController parentController;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
@@ -45,18 +41,18 @@ public final class StatusViewController implements RequiresLoggedIn {
 		refresh();
 	}
 
-    public void refresh() {
-        refreshStatus();
-        loadPieChartData();
-        loadBarChartData();
-    }
+	public void refresh() {
+		refreshStatus();
+		loadPieChartData();
+		loadBarChartData();
+	}
 
 	private void refreshStatus() {
 		final var author = new Author.ByRef(getLoggedInUser()._1());
 		authorBooks = repository.bookOps.read(entry -> author.equals(entry.getKey().author()));
 	}
 
-    private void loadPieChartData() {
+	private void loadPieChartData() {
 		// Get books by status for the current author
 		approvedBooks = 0;
 		pendingBooks = 0;
@@ -82,7 +78,7 @@ public final class StatusViewController implements RequiresLoggedIn {
 		statusChart.setData(pieChartData);
 	}
 
-    private void loadBarChartData() {
+	private void loadBarChartData() {
 		// Get all approved books for the current author
 		Map<Book, Book.Data> allApprovedBook = authorBooks.entrySet().stream().filter(book ->
 				book.getValue().approvalStatus() == Book.ApprovalStatus.APPROVED

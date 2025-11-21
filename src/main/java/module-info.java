@@ -12,15 +12,15 @@ module library {
 	requires javafx.swing;
 	requires kotlin.stdlib;
 	requires mapdb;
+	requires org.bouncycastle.provider;
 	requires org.icepdf.core;
 	requires org.icepdf.ri.viewer;
 	requires org.jetbrains.annotations;
 	requires spring.boot;
 	requires spring.web;
 	requires static lombok;
-    requires org.bouncycastle.provider;
 
-    exports library;
+	exports library;
 	exports library.controllers;
 	exports library.controllers.author;
 	exports library.controllers.common;
