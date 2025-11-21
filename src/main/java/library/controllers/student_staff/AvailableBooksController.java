@@ -1,5 +1,6 @@
 package library.controllers.student_staff;
 
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -23,7 +24,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
-public final class AvailableBooksController implements RequiresLoggedIn {
+public final class AvailableBooksController implements RequiresLoggedIn, Initializable {
 	@UnknownNullability
 	public TableView<@Nullable Data> table;
 	@UnknownNullability

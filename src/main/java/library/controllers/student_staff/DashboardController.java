@@ -1,6 +1,7 @@
 package library.controllers.student_staff;
 
 import javafx.application.Platform;
+import javafx.fxml.Initializable;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import library.Context;
@@ -19,7 +20,7 @@ import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public final class DashboardController extends CommonDashboardController implements RequiresLoggedIn {
+public final class DashboardController extends CommonDashboardController implements RequiresLoggedIn, Initializable {
 	private final Context context = Main.getContext();
 	private final User user = this.getLoggedInUser()._1();
 	@UnknownNullability

@@ -2,6 +2,7 @@ package library.controllers.author;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.Initializable;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
@@ -21,7 +22,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-public final class StatusViewController implements RequiresLoggedIn {
+public final class StatusViewController implements RequiresLoggedIn, Initializable {
 	private final Repository repository = Main.getContext().getRepository();
 	@UnknownNullability
 	public PieChart statusChart;

@@ -1,6 +1,7 @@
 package library.controllers.student_staff;
 
 import javafx.embed.swing.SwingNode;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
@@ -22,7 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public final class BookViewController implements RequiresLoggedIn {
+public final class BookViewController implements RequiresLoggedIn, Initializable {
 	private final String currentPath;
 	@UnknownNullability
 	public BorderPane borderPane;

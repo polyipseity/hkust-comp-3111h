@@ -1,6 +1,7 @@
 package library.controllers.author;
 
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
@@ -29,7 +30,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
-public final class MyBooksController implements RequiresLoggedIn {
+public final class MyBooksController implements RequiresLoggedIn, Initializable {
 	@UnknownNullability
 	public TableView<@Nullable Data> table;
 	@UnknownNullability

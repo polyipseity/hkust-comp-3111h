@@ -1,5 +1,6 @@
 package library.controllers.common;
 
+import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import library.Context;
@@ -14,7 +15,7 @@ import org.jetbrains.annotations.UnknownNullability;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public final class MyProfileController implements RequiresLoggedIn {
+public final class MyProfileController implements RequiresLoggedIn, Initializable {
 	private final Context context = Main.getContext();
 	private final Repository repository = context.getRepository();
 

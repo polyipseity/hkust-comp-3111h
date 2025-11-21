@@ -2,6 +2,7 @@ package library.controllers.common;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -20,7 +21,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public final class InformBoardController implements RequiresLoggedIn {
+public final class InformBoardController implements RequiresLoggedIn, Initializable {
 	//Storing all notifications of user
 	private final ObservableList<String> notifications = FXCollections.observableArrayList();
 	//Referring to fxml ListView

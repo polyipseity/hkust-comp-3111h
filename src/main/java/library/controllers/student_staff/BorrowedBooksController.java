@@ -2,6 +2,7 @@ package library.controllers.student_staff;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -27,7 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
-public final class BorrowedBooksController implements RequiresLoggedIn {
+public final class BorrowedBooksController implements RequiresLoggedIn, Initializable {
 	@UnknownNullability
 	public TableView<@Nullable Data> table;
 	@UnknownNullability
