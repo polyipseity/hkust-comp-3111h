@@ -39,7 +39,7 @@ public final class DashboardController extends CommonDashboardController impleme
     }
 
     public void loadBorrowedBooks() {
-        borrowedBooksController.reload();
+	    borrowedBooksController.loadTable();
     }
 
     @Override
@@ -47,7 +47,6 @@ public final class DashboardController extends CommonDashboardController impleme
         super.initialize(location, resources);
 
         availableBooksController.setParentController(this);
-        borrowedBooksController.setParentController(this);
 
         context.getBorrowBooksControl().returnExpiredBooks(user);
         loadAvailableBooks();

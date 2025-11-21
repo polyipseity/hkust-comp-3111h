@@ -1,123 +1,88 @@
 package library.controllers.student_staff;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import library.Context;
 import library.Main;
+import library.controllers.common.DynamicTableController;
 import library.controllers.common.RequiresLoggedIn;
 import library.controls.BorrowBooksControl;
+import library.models.Author;
 import library.models.Book;
 import library.models.Borrow;
 import library.models.User;
-import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.HasMessage;
-import lombok.Getter;
-import lombok.Setter;
+import library.utils.TimeUtil;
+import library.utils.Tuple2;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.io.IOException;
 import java.net.URL;
-import java.time.format.DateTimeFormatter;
-import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
+import java.util.function.Function;
 
 public final class BorrowedBooksController implements RequiresLoggedIn {
-	private final Context context = Main.getContext();
-	private final Repository repository = context.getRepository();
-	private final User user =  this.getLoggedInUser()._1();
-
-	@Setter
-	private DashboardController parentController;
-
-	@FXML
-	private TableView<@Nullable tableRow> table;
-	@FXML
-	private TableColumn<tableRow, @Nullable String> titleCol, authorCol, borrowedOnCol, timeLeftCol, actionsCol;
-
-	public record tableRow(
-			@Getter String title,
-			@Getter String author,
-			@Getter String borrowedOn,
-			@Getter String timeLeft,
-			Book book
-	) {
-	}
-
-	DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
-	class returnBtnCell extends TableCell<tableRow, String>{
-		final Button btn = new Button("Return");
-		@Override
-		public void updateItem(String item, boolean empty) {
-			super.updateItem(item, empty);
-			setText(null);
-			if (empty) setGraphic(null);
-			else {
-				Book book = getTableRow().getItem().book();
-				btn.setOnAction(_ -> returnButtonAction(book));
-				setGraphic(btn);
-			}
-		}
-	}
+	@UnknownNullability
+	public TableView<@Nullable Data> table;
+	@UnknownNullability
+	public DynamicTableController<Keys, Data> tableController;
+	@UnknownNullability
+	public TableColumn<Data, @Nullable Data> titleCol, authorCol, borrowedOnCol, timeLeftCol, actionsCol;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
 
-		titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
-		authorCol.setCellValueFactory(new PropertyValueFactory<>("author"));
-		borrowedOnCol.setCellValueFactory(new PropertyValueFactory<>("borrowedOn"));
-		timeLeftCol.setCellValueFactory(new PropertyValueFactory<>("timeLeft"));
+		final var keys = new LinkedHashMap<Keys, TableColumn<Data, @Nullable Data>>();
+		keys.put(Keys.TITLE, titleCol);
+		keys.put(Keys.AUTHOR_FULL_NAME, authorCol);
+		keys.put(Keys.BORROW_DATE, borrowedOnCol);
+		keys.put(Keys.TIME_LEFT, timeLeftCol);
+		keys.put(Keys.ACTIONS, actionsCol);
+		tableController = new DynamicTableController<>(table, keys);
 
-		actionsCol.setCellValueFactory(new PropertyValueFactory<>("title"));
-		actionsCol.setCellFactory(_ -> new returnBtnCell());
-
-		reload();
+		loadTable();
 	}
 
-	public void reload() {
-		ObservableList<tableRow> data = FXCollections.observableArrayList();
-		Map<Book, Borrow> borrowedBooksMap = repository.borrowOps.read(getLoggedInUser()._1());
-		for (var entry: borrowedBooksMap.entrySet()) {
-			Book book = entry.getKey();
-			Borrow borrow = entry.getValue();
-			long s = borrow.durationLeft().getSeconds();
-			data.add(new tableRow(
-					book.title(),
-					book.author().toString(),
-					borrow.borrowDate().format(dateTimeFormatter),
-					String.format("%d:%02d:%02d", s / 3600, (s % 3600) / 60, (s % 60)),
-					book
-			));
-		}
-		table.setItems(data);
+	public void loadTable() {
+		final var repository = Main.getContext().getRepository();
+		tableController.setData(
+				Main.getContext().getRepository().borrowOps.read(getLoggedInUser()._1()).entrySet().stream()
+						.map(entry -> new Data(this, entry.getKey(), entry.getValue(), switch (entry.getKey().author()) {
+							case Author.ByName(final var val) -> val;
+							case Author.ByRef(final var val) -> repository.userOps
+									.read(val)
+									.map(User.Data::fullName)
+									.orElseGet(() -> "ERROR: %s".formatted(val.username()));
+						}))
+						.toList()
+		);
 	}
 
 	@FXML
 	private void readSelectedBook() throws IOException {
-		tableRow currentRow = table.getSelectionModel().getSelectedItem();
+		final var context = Main.getContext();
+
+		final var currentRow = table.getSelectionModel().getSelectedItem();
 		if (currentRow == null) {
 			Alerts.showErrorDialog("Please select a book first.");
 			return;
 		}
 
-		Book selectedBook = currentRow.book;
-		String title = currentRow.title;
-		String author = currentRow.author;
+		final var selectedBook = currentRow.book;
+		final var title = currentRow.book.title();
+		final var author = currentRow.authorFullName;
 
-		switch (context.getBorrowBooksControl().readBook(user, selectedBook)) {
+		switch (context.getBorrowBooksControl().readBook(getLoggedInUser()._1(), selectedBook)) {
 			case BorrowBooksControl.ReadResult.Success(String path) -> displayPdfFile(path, title, author);
 			case BorrowBooksControl.ReadResult.NewPdfGenerated(String path) -> {
 				Alerts.showInfoDialog("PDF file not found, generating a new one...");
@@ -125,6 +90,31 @@ public final class BorrowedBooksController implements RequiresLoggedIn {
 			}
 			case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
 		}
+	}
+
+	/**
+	 * Executes when the "Return" button of the table in the "My Borrowed Books" tab is pressed.
+	 *
+	 * @param book The book to be returned by the current user,
+	 *             which should be the book pointed to by the button's table row.
+	 */
+	private void returnButtonAction(Book book) {
+		try {
+			switch (Main.getContext().getBorrowBooksControl().returnBook(getLoggedInUser()._1(), book)) {
+				case BorrowBooksControl.ReturnResult.Success _ -> Alerts.showInfoDialog("Book returned successfully");
+				case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
+			}
+		} catch (TransactionException e) {
+			Alerts.showErrorDialog("Unknown error occurred: " + e.getMessage());
+		}
+	}
+
+	public enum Keys {
+		TITLE,
+		AUTHOR_FULL_NAME,
+		BORROW_DATE,
+		TIME_LEFT,
+		ACTIONS
 	}
 
 	private void displayPdfFile(String path, String title, String author) throws IOException {
@@ -142,22 +132,37 @@ public final class BorrowedBooksController implements RequiresLoggedIn {
 		stage.show();
 	}
 
-	/**
-	 * Executes when the "Return" button of the table in the "My Borrowed Books" tab is pressed.
-	 * @param book The book to be returned by the current user,
-	 *                which should be the book pointed to by the button's table row.
-	 */
-	private void returnButtonAction(Book book) {
-		BorrowBooksControl.ReturnResult result;
-		try {
-			result = context.getBorrowBooksControl().returnBook(user, book);
-		} catch (TransactionException e) {
-			Alerts.showErrorDialog("Unknown error occurred: " + e.getMessage());
-			return;
-		}
-		switch (result) {
-			case BorrowBooksControl.ReturnResult.Success _ -> Alerts.showInfoDialog("Book returned successfully");
-			case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
+	public record Data(BorrowedBooksController controller,
+	                   Book book,
+	                   Borrow borrow,
+	                   String authorFullName)
+			implements Function<Keys, DynamicTableController.Data> {
+		/**
+		 * Applies this function to the given argument.
+		 *
+		 * @param key the function argument
+		 * @return the function result
+		 */
+		@Override
+		public DynamicTableController.Data apply(Keys key) {
+
+			return switch (key) {
+				case TITLE -> new DynamicTableController.Data.Text(book.title());
+				case AUTHOR_FULL_NAME -> new DynamicTableController.Data.Text(authorFullName);
+				case BORROW_DATE -> new DynamicTableController.Data.Text(TimeUtil.toStringZonedLocal(borrow.borrowDate()));
+				case TIME_LEFT -> {
+					final var borrow = this.borrow; // Do not reference `this` in lambda.
+					final var prop = new SimpleStringProperty(TimeUtil.toStringDuration(borrow.durationLeft()));
+					final var ret = new DynamicTableController.Data.ObservableText(prop);
+					Main.getContext().addSecondTimerListener(ret, _ ->
+							prop.setValue(TimeUtil.toStringDuration(borrow.durationLeft())));
+					yield ret;
+				}
+				case ACTIONS -> DynamicTableController.Data.Graphic.ofButtons(
+						new Tuple2<>(new SimpleStringProperty("Return"), (_, _) ->
+								controller.returnButtonAction(book))
+				);
+			};
 		}
 	}
 }

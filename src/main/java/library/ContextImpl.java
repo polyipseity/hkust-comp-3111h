@@ -1,8 +1,13 @@
 package library;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import library.controls.*;
 import library.models.User;
 import library.persistence.Repository;
@@ -10,6 +15,9 @@ import library.utils.Tuple2;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.WeakHashMap;
+import java.util.function.Consumer;
 
 public final class ContextImpl implements Context {
 	public static final double WINDOW_INITIAL_WIDTH = 640;
@@ -37,6 +45,8 @@ public final class ContextImpl implements Context {
 	private final RequestBooksControl requestBooksControl;
 	@Getter
 	private final StatsControl statsControl;
+	private final Timeline secondTimeline;
+	private final WeakHashMap<Object, Consumer<? super ActionEvent>> secondTimerListeners = new WeakHashMap<>();
 
 	@Setter
 	@Getter
@@ -55,6 +65,12 @@ public final class ContextImpl implements Context {
 		this.publishBooksControl = new PublishBooksControl(repository);
 		this.requestBooksControl = new RequestBooksControl(repository);
 		this.statsControl = new StatsControl();
+
+		final var secondTimeline = new Timeline(new KeyFrame(Duration.seconds(1), event ->
+				secondTimerListeners.values().forEach(listener -> listener.accept(event))));
+		secondTimeline.setCycleCount(Animation.INDEFINITE);
+		secondTimeline.play();
+		this.secondTimeline = secondTimeline;
 	}
 
 	/**
@@ -70,13 +86,14 @@ public final class ContextImpl implements Context {
 	 */
 	@Override
 	public void close() {
-		getRepository().close();
+		secondTimeline.stop();
+		repository.close();
 	}
 
 	@Override
 	public void setScene(Parent value) {
-		final var oldScene = getPrimaryStage().getScene();
-		getPrimaryStage().setScene(new Scene(value, oldScene.getWidth(), oldScene.getHeight()));
+		final var oldScene = primaryStage.getScene();
+		primaryStage.setScene(new Scene(value, oldScene.getWidth(), oldScene.getHeight()));
 	}
 
 	@Override
@@ -86,5 +103,10 @@ public final class ContextImpl implements Context {
 		stage.setTitle(title);
 		stage.setResizable(true);
 		return stage;
+	}
+
+	@Override
+	public void addSecondTimerListener(Object key, Consumer<? super ActionEvent> listener) {
+		secondTimerListeners.put(key, listener);
 	}
 }

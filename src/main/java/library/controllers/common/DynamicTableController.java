@@ -1,6 +1,7 @@
 package library.controllers.common;
 
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -158,20 +159,16 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 					protected void updateItem(@Nullable Value item, boolean empty) {
 						if (item == getItem()) return;
 						super.updateItem(item, empty);
+						textProperty().unbind();
+						setText(null);
+						setGraphic(null);
 						if (empty || item == null) {
-							setText(null);
-							setGraphic(null);
 							return;
 						}
 						switch (item.apply(key)) {
-							case Data.Text(final var val) -> {
-								setText(val);
-								setGraphic(null);
-							}
-							case Data.Graphic(final var val) -> {
-								setText(null);
-								setGraphic(val.get());
-							}
+							case Data.Text(final var val) -> setText(val);
+							case Data.Graphic(final var val) -> setGraphic(val.get());
+							case Data.ObservableText(final var val) -> textProperty().bind(val);
 						}
 					}
 				};
@@ -180,7 +177,7 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 		return column;
 	}
 
-	public sealed interface Data permits Data.Graphic, Data.Text {
+	public sealed interface Data permits Data.Graphic, Data.ObservableText, Data.Text {
 		record Text(String value) implements Data {
 		}
 
@@ -201,6 +198,9 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 					return buttonBox;
 				});
 			}
+		}
+
+		record ObservableText(ObservableStringValue value) implements Data {
 		}
 	}
 }

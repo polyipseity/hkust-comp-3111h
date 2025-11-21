@@ -1,5 +1,6 @@
 package library;
 
+import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 import library.controls.*;
@@ -9,6 +10,7 @@ import library.utils.Tuple2;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Closeable;
+import java.util.function.Consumer;
 
 public interface Context extends Closeable {
 	void setScene(Parent value);
@@ -36,6 +38,8 @@ public interface Context extends Closeable {
 	RequestBooksControl getRequestBooksControl();
 
 	StatsControl getStatsControl();
+
+	void addSecondTimerListener(Object key, Consumer<? super ActionEvent> listener);
 
 	@Nullable
 	Tuple2<User, User.Data> getLoggedInUser();
