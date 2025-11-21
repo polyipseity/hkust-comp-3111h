@@ -12,10 +12,8 @@ import library.Main;
 import library.controllers.common.DynamicTableController;
 import library.controllers.common.RequiresLoggedIn;
 import library.controls.BorrowBooksControl;
-import library.models.Author;
 import library.models.Book;
 import library.models.Borrow;
-import library.models.User;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.HasMessage;
@@ -57,13 +55,8 @@ public final class BorrowedBooksController implements RequiresLoggedIn {
 		final var repository = Main.getContext().getRepository();
 		tableController.setData(
 				Main.getContext().getRepository().borrowOps.read(getLoggedInUser()._1()).entrySet().stream()
-						.map(entry -> new Data(this, entry.getKey(), entry.getValue(), switch (entry.getKey().author()) {
-							case Author.ByName(final var val) -> val;
-							case Author.ByRef(final var val) -> repository.userOps
-									.read(val)
-									.map(User.Data::fullName)
-									.orElseGet(() -> "ERROR: %s".formatted(val.username()));
-						}))
+						.map(entry ->
+								new Data(this, entry.getKey(), entry.getValue(), repository.userOps.readFullName(entry.getKey().author())))
 						.toList()
 		);
 	}

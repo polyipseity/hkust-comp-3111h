@@ -1,5 +1,6 @@
 package library.persistence;
 
+import library.models.Author;
 import library.models.User;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,6 +33,14 @@ public record RepositoryUserOps(Repository repository) {
 		return read(user)
 				.orElseThrow(() -> new NoSuchElementException(
 						"Not found: %s".formatted(user)));
+	}
+
+	public String readFullName(Author author) {
+		return switch (author) {
+			case Author.ByName(final var val) -> val;
+			case Author.ByRef(final var val) ->
+					read(val).map(User.Data::fullName).orElseGet(() -> "ERROR: %s".formatted(val.username()));
+		};
 	}
 
 	public void update(User user, Function<User.Data, User.Data> callback) throws TransactionException {

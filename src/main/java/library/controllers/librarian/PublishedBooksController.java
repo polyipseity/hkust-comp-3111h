@@ -12,9 +12,7 @@ import library.controllers.common.DynamicTableController;
 import library.controllers.common.RequiresLoggedIn;
 import library.controllers.common.TextViewController;
 import library.controls.ManageBooksControl;
-import library.models.Author;
 import library.models.Book;
-import library.models.User;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.HasMessage;
@@ -61,13 +59,7 @@ public final class PublishedBooksController implements RequiresLoggedIn, Initial
 								this,
 								entry.getKey(),
 								entry.getValue(),
-								switch (entry.getKey().author()) {
-									case Author.ByName(final var val) -> val;
-									case Author.ByRef(final var val) -> repository.userOps
-											.read(val)
-											.map(User.Data::fullName)
-											.orElseGet(() -> "ERROR: %s".formatted(val.username()));
-								}))
+								repository.userOps.readFullName(entry.getKey().author())))
 				.toList());
 	}
 
