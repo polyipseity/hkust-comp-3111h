@@ -14,6 +14,7 @@ import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.HasMessage;
 import library.utils.Tuple2;
+import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
@@ -29,6 +30,9 @@ public final class ModifyWindowController implements RequiresLoggedIn {
 	public TextArea summaryArea;
 	@UnknownNullability
 	public Button saveButton;
+
+    @Setter
+    private MyBooksController myBooksController;
 
 	@Nullable
 	private Tuple2<Book, Book.Data> bookEntry;
@@ -58,10 +62,11 @@ public final class ModifyWindowController implements RequiresLoggedIn {
 			switch (Main.getContext().getManageBooksControl()
 					.modifyBook(bookEntry._1(), title, summary)) {
 				case ManageBooksControl.ModifyResult.Success success -> {
+                    // Close the current window
+                    ((Stage) saveButton.getScene().getWindow()).close();
+                    modifyCallback.run();
+                    //Show success response to author
 					Alerts.showInfoDialog(success.getMessage());
-					// Close the current window
-					((Stage) saveButton.getScene().getWindow()).close();
-					modifyCallback.run();
 				}
 				case HasMessage message -> Alerts.showErrorDialog(message.getMessage());
 			}

@@ -103,13 +103,18 @@ public final class PublishBooksController implements RequiresLoggedIn {
 		var book = new Book(titleField.getText(), new Author.ByRef(getLoggedInUser()._1()), false);
 		Optional<Book.Data> opt = repository.bookOps.read(book);
 		if (opt.isPresent()) {
-			Alerts.showErrorDialog("Duplicated Book Title.");
+            if(opt.get().approvalStatus()== Book.ApprovalStatus.REJECTED){
+                Alerts.showErrorDialog("Rejected Book of the same title and author already exists");
+            }else {
+                Alerts.showErrorDialog("Book of the same title and author already exists");
+            }
 		} else {
 			var data = new Book.Data(summaryField.getText(), ContentTxt, Book.ApprovalStatus.PENDING, null, null, 0);
 			try {
 				repository.bookOps.create(book, data);
 				Alerts.showInfoDialog("Published and awaiting approval.");
-				parentController.myBooksController.loadTable();
+				parentController.loadMyBooks();
+                parentController.loadStatusView();
 			} catch (TransactionException e) {
 				throw new RuntimeException(e);
 			}

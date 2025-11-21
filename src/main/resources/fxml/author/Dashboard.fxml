@@ -31,7 +31,7 @@
 			<!-- Status View Tab -->
 			<Tab text="Status View">
 				<StackPane>
-					<fx:include source="StatusView.fxml"/>
+					<fx:include source="StatusView.fxml" fx:id="statusView"/>
 				</StackPane>
 			</Tab>
 

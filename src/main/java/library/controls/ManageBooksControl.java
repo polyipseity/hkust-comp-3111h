@@ -320,7 +320,7 @@ public record ManageBooksControl(Repository repository) {
 		record HasBorrows(Map<User, Borrow> borrows) implements DeleteResult, HasMessage {
 			@Override
 			public String getMessage() {
-				return "Cannot modify a book that is borrowed by students/staff";
+				return "Borrowed books cannot be modified or deleted.";
 			}
 		}
 	}
@@ -353,14 +353,14 @@ public record ManageBooksControl(Repository repository) {
 		record HasBorrows(Map<User, Borrow> borrows) implements ModifyResult, HasMessage {
 			@Override
 			public String getMessage() {
-				return "Cannot modify a book that is borrowed by students/staff";
+				return "Borrowed books cannot be modified or deleted.";
 			}
 		}
 
 		record AlreadyRejected(Book.Data oldBookData) implements ModifyResult, HasMessage {
 			@Override
 			public String getMessage() {
-				return "Cannot modify a rejected book";
+				return "Rejected books cannot be modified or deleted.";
 			}
 		}
 	}

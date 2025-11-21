@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import library.Main;
@@ -11,6 +12,7 @@ import library.controllers.common.RequiresLoggedIn;
 import library.models.Author;
 import library.models.Book;
 import library.persistence.Repository;
+import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URL;
@@ -28,6 +30,9 @@ public final class StatusViewController implements RequiresLoggedIn {
 	private int approvedBooks = 0;
 	private int rejectedBooks = 0;
 
+    @Setter
+    private DashboardController parentController;
+
 	@FXML
 	private PieChart statusChart;
 	@FXML
@@ -40,19 +45,19 @@ public final class StatusViewController implements RequiresLoggedIn {
 		refresh();
 	}
 
+    @FXML
+    public void refresh() {
+        refreshStatus();
+        loadPieChartData();
+        loadBarChartData();
+    }
+
 	private void refreshStatus() {
 		final var author = new Author.ByRef(getLoggedInUser()._1());
 		authorBooks = repository.bookOps.read(entry -> author.equals(entry.getKey().author()));
 	}
 
-	@FXML
-	private void refresh() {
-		refreshStatus();
-		loadPieChartData();
-		loadBarChartData();
-	}
-
-	private void loadPieChartData() {
+    private void loadPieChartData() {
 		// Get books by status for the current author
 		approvedBooks = 0;
 		pendingBooks = 0;
@@ -78,7 +83,7 @@ public final class StatusViewController implements RequiresLoggedIn {
 		statusChart.setData(pieChartData);
 	}
 
-	private void loadBarChartData() {
+    private void loadBarChartData() {
 		// Get all approved books for the current author
 		Map<Book, Book.Data> allApprovedBook = authorBooks.entrySet().stream().filter(book ->
 				book.getValue().approvalStatus() == Book.ApprovalStatus.APPROVED
