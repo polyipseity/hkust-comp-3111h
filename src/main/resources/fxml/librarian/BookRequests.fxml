@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml"
             xmlns="http://javafx.com/javafx"
             fx:controller="library.controllers.librarian.BookRequestsController"
             prefHeight="400.0" prefWidth="600.0">
 	<TableView fx:id="table" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
-	           AnchorPane.topAnchor="0"/>
+	           AnchorPane.topAnchor="0">
+		<!--suppress XmlUnresolvedReference -->
+		<TableColumn fx:id="titleCol" prefWidth="${table.width * 0.40}" text="Title"/>
+		<!--suppress XmlUnresolvedReference -->
+		<TableColumn fx:id="authorCol" prefWidth="${table.width * 0.20}" text="Author"/>
+		<!--suppress XmlUnresolvedReference -->
+		<TableColumn fx:id="userCol" prefWidth="${table.width * 0.15}" text="Requested By"/>
+		<!--suppress XmlUnresolvedReference -->
+		<TableColumn fx:id="requestDateCol" prefWidth="${table.width * 0.15}" text="Request Date"/>
+		<!--suppress XmlUnresolvedReference -->
+		<TableColumn fx:id="actionsCol" prefWidth="${table.width * 0.10}" text="Actions"/>
+	</TableView>
 </AnchorPane>

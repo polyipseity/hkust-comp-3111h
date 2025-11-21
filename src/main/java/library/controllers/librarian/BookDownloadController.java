@@ -14,6 +14,7 @@ import library.models.json.GutendexResponse;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.net.URL;
 import java.util.LinkedHashMap;
@@ -21,25 +22,29 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 
 public final class BookDownloadController implements RequiresLoggedIn, Initializable {
+	@UnknownNullability
 	public TableView<@Nullable Data> table;
+	@UnknownNullability
 	public DynamicTableController<Keys, Data> tableController;
+	@UnknownNullability
+	public TableColumn<Data, @Nullable Data> titleCol, authorCol, bookshelvesCol, summaryCol;
 
+	@UnknownNullability
 	public TextField searchBar;
+	@UnknownNullability
 	public Region sidebar;
-	public Text titleText;
-	public Text authorText;
-	public Text bookshelvesText;
-	public Text summaryText;
+	@UnknownNullability
+	public Text titleText, authorText, bookshelvesText, summaryText;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
 
 		final var keys = new LinkedHashMap<Keys, TableColumn<Data, @Nullable Data>>();
-		keys.put(Keys.TITLE, new TableColumn<>("Title"));
-		keys.put(Keys.AUTHOR, new TableColumn<>("Author"));
-		keys.put(Keys.BOOKSHELVES, new TableColumn<>("Bookshelves"));
-		keys.put(Keys.SUMMARY, new TableColumn<>("Summary"));
+		keys.put(Keys.TITLE, titleCol);
+		keys.put(Keys.AUTHOR, authorCol);
+		keys.put(Keys.BOOKSHELVES, bookshelvesCol);
+		keys.put(Keys.SUMMARY, summaryCol);
 		tableController = new DynamicTableController<>(table, keys);
 
 		final var selectedItem = table.getSelectionModel().selectedItemProperty();

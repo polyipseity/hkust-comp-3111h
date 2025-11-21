@@ -14,6 +14,7 @@ import library.utils.Alerts;
 import library.utils.Tuple2;
 import lombok.With;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.net.URL;
 import java.util.LinkedHashMap;
@@ -21,19 +22,23 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 
 public final class ManageUsersController implements RequiresLoggedIn, Initializable {
+	@UnknownNullability
 	public TableView<@Nullable Data> table;
+	@UnknownNullability
 	public DynamicTableController<Keys, Data> tableController;
+	@UnknownNullability
+	public TableColumn<Data, @Nullable Data> usernameCol, roleCol, nameCol, activeCol, actionsCol;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
 
 		final var keys = new LinkedHashMap<Keys, TableColumn<Data, @Nullable Data>>();
-		keys.put(Keys.USERNAME, new TableColumn<>("Username"));
-		keys.put(Keys.ROLE, new TableColumn<>("Role"));
-		keys.put(Keys.NAME, new TableColumn<>("Name"));
-		keys.put(Keys.ACTIVE, new TableColumn<>("Active"));
-		keys.put(Keys.ACTIONS, new TableColumn<>("Actions"));
+		keys.put(Keys.USERNAME, usernameCol);
+		keys.put(Keys.ROLE, roleCol);
+		keys.put(Keys.NAME, nameCol);
+		keys.put(Keys.ACTIVE, activeCol);
+		keys.put(Keys.ACTIONS, actionsCol);
 		tableController = new DynamicTableController<>(table, keys);
 
 		loadTable();

@@ -28,16 +28,18 @@ public final class PendingApprovalsController implements RequiresLoggedIn, Initi
 	public TableView<@Nullable Data> table;
 	@UnknownNullability
 	public DynamicTableController<Keys, Data> tableController;
+	@UnknownNullability
+	public TableColumn<Data, @Nullable Data> titleCol, authorCol, summaryCol, actionsCol;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
 
 		final var keys = new LinkedHashMap<Keys, TableColumn<Data, @Nullable Data>>();
-		keys.put(Keys.TITLE, new TableColumn<>("Title"));
-		keys.put(Keys.AUTHOR, new TableColumn<>("Author"));
-		keys.put(Keys.SUMMARY, new TableColumn<>("Summary"));
-		keys.put(Keys.ACTIONS, new TableColumn<>("Actions"));
+		keys.put(Keys.TITLE, titleCol);
+		keys.put(Keys.AUTHOR, authorCol);
+		keys.put(Keys.SUMMARY, summaryCol);
+		keys.put(Keys.ACTIONS, actionsCol);
 		tableController = new DynamicTableController<>(table, keys);
 
 		loadTable();

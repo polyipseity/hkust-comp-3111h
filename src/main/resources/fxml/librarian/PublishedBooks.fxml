@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml"
             xmlns="http://javafx.com/javafx"
             fx:controller="library.controllers.librarian.PublishedBooksController"
             prefHeight="400.0" prefWidth="600.0">
 	<TableView fx:id="table" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
-	           AnchorPane.topAnchor="0"/>
+	           AnchorPane.topAnchor="0">
+		<!--suppress XmlUnresolvedReference -->
+		<TableColumn fx:id="titleCol" prefWidth="${table.width * 0.50}" text="Title"/>
+		<!--suppress XmlUnresolvedReference -->
+		<TableColumn fx:id="authorFullNameCol" prefWidth="${table.width * 0.15}" text="Author"/>
+		<!--suppress XmlUnresolvedReference -->
+		<TableColumn fx:id="publishDateCol" prefWidth="${table.width * 0.15}" text="Published On"/>
+		<!--suppress XmlUnresolvedReference -->
+		<TableColumn fx:id="timesBorrowedCol" prefWidth="${table.width * 0.10}" text="Times Borrowed"/>
+		<!--suppress XmlUnresolvedReference -->
+		<TableColumn fx:id="actionsCol" prefWidth="${table.width * 0.10}" text="Actions"/>
+	</TableView>
 </AnchorPane>

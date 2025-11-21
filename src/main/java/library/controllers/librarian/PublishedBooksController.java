@@ -32,17 +32,19 @@ public final class PublishedBooksController implements RequiresLoggedIn, Initial
 	public TableView<@Nullable Data> table;
 	@UnknownNullability
 	public DynamicTableController<Keys, Data> tableController;
+	@UnknownNullability
+	public TableColumn<Data, @Nullable Data> titleCol, authorFullNameCol, publishDateCol, timesBorrowedCol, actionsCol;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
 
 		final var keys = new LinkedHashMap<Keys, TableColumn<Data, @Nullable Data>>();
-		keys.put(Keys.TITLE, new TableColumn<>("Title"));
-		keys.put(Keys.AUTHOR_FULL_NAME, new TableColumn<>("Author"));
-		keys.put(Keys.PUBLISH_DATE, new TableColumn<>("Published On"));
-		keys.put(Keys.TIMES_BORROWED, new TableColumn<>("Times Borrowed"));
-		keys.put(Keys.ACTIONS, new TableColumn<>("Actions"));
+		keys.put(Keys.TITLE, titleCol);
+		keys.put(Keys.AUTHOR_FULL_NAME, authorFullNameCol);
+		keys.put(Keys.PUBLISH_DATE, publishDateCol);
+		keys.put(Keys.TIMES_BORROWED, timesBorrowedCol);
+		keys.put(Keys.ACTIONS, actionsCol);
 		tableController = new DynamicTableController<>(table, keys);
 
 		loadTable();

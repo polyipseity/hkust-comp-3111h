@@ -9,11 +9,16 @@
 	<center>
 		<TableView fx:id="table" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
 			<columns>
-				<TableColumn fx:id="titleCol" prefWidth="75.0" text="Title"/>
-				<TableColumn fx:id="authorCol" prefWidth="75.0" text="Author"/>
-				<TableColumn fx:id="borrowedOnCol" prefWidth="75.0" text="Borrowed On"/>
-				<TableColumn fx:id="timeLeftCol" prefWidth="75.0" text="Time Left"/>
-				<TableColumn fx:id="actionsCol" prefWidth="75.0" text="Actions"/>
+				<!--suppress XmlUnresolvedReference -->
+				<TableColumn fx:id="titleCol" prefWidth="${table.width * 0.40}" text="Title"/>
+				<!--suppress XmlUnresolvedReference -->
+				<TableColumn fx:id="authorCol" prefWidth="${table.width * 0.20}" text="Author"/>
+				<!--suppress XmlUnresolvedReference -->
+				<TableColumn fx:id="borrowedOnCol" prefWidth="${table.width * 0.15}" text="Borrowed On"/>
+				<!--suppress XmlUnresolvedReference -->
+				<TableColumn fx:id="timeLeftCol" prefWidth="${table.width * 0.15}" text="Time Left"/>
+				<!--suppress XmlUnresolvedReference -->
+				<TableColumn fx:id="actionsCol" prefWidth="${table.width * 0.10}" text="Actions"/>
 			</columns>
 		</TableView>
 	</center>

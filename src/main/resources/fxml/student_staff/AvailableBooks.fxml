@@ -9,10 +9,14 @@
            fx:controller="library.controllers.student_staff.AvailableBooksController">
 	<TableView fx:id="table" minWidth="200.0">
 		<columns>
-			<TableColumn fx:id="titleCol" prefWidth="75.0" text="Title"/>
-			<TableColumn fx:id="authorCol" prefWidth="75.0" text="Author"/>
-			<TableColumn fx:id="publishDateCol" prefWidth="75.0" text="Published On"/>
-			<TableColumn fx:id="summaryCol" prefWidth="75.0" text="Summary"/>
+			<!--suppress XmlUnresolvedReference -->
+			<TableColumn fx:id="titleCol" prefWidth="${table.width * 0.30}" text="Title"/>
+			<!--suppress XmlUnresolvedReference -->
+			<TableColumn fx:id="authorCol" prefWidth="${table.width * 0.15}" text="Author"/>
+			<!--suppress XmlUnresolvedReference -->
+			<TableColumn fx:id="publishDateCol" prefWidth="${table.width * 0.15}" text="Published On"/>
+			<!--suppress XmlUnresolvedReference -->
+			<TableColumn fx:id="summaryCol" prefWidth="${table.width * 0.40}" text="Summary"/>
 		</columns>
 	</TableView>
 	<ScrollPane fx:id="sidebar" minWidth="200.0" fitToWidth="true">

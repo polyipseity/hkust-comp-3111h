@@ -15,6 +15,7 @@ import library.utils.Alerts;
 import library.utils.TimeUtil;
 import library.utils.Tuple2;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.net.URL;
 import java.util.LinkedHashMap;
@@ -22,19 +23,24 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 
 public final class BookRequestsController implements RequiresLoggedIn, Initializable {
+	@UnknownNullability
 	public TableView<@Nullable Data> table;
+	@UnknownNullability
 	public DynamicTableController<Keys, Data> tableController;
+	@UnknownNullability
+	public TableColumn<Data, @Nullable Data> titleCol, authorCol, userCol, requestDateCol, actionsCol;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
 
 		final var keys = new LinkedHashMap<Keys, TableColumn<Data, Data>>();
-		keys.put(Keys.TITLE, new TableColumn<>("Title"));
-		keys.put(Keys.AUTHOR, new TableColumn<>("Author"));
-		keys.put(Keys.USER, new TableColumn<>("Requested By"));
-		keys.put(Keys.REQUEST_DATE, new TableColumn<>("Request Date"));
-		keys.put(Keys.ACTIONS, new TableColumn<>("Actions"));
+		// This is a placeholder - the original suggestion was invalid and should not be used
+		keys.put(Keys.TITLE, titleCol);
+		keys.put(Keys.AUTHOR, authorCol);
+		keys.put(Keys.USER, userCol);
+		keys.put(Keys.REQUEST_DATE, requestDateCol);
+		keys.put(Keys.ACTIONS, actionsCol);
 		tableController = new DynamicTableController<>(table, keys);
 
 		loadTable();

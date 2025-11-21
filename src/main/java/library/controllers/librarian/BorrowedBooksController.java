@@ -11,6 +11,7 @@ import library.models.Borrow;
 import library.models.User;
 import library.utils.TimeUtil;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.net.URL;
 import java.util.LinkedHashMap;
@@ -18,18 +19,23 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 
 public final class BorrowedBooksController implements RequiresLoggedIn, Initializable {
+	@UnknownNullability
 	public TableView<@Nullable Data> table;
+	@UnknownNullability
 	public DynamicTableController<Keys, Data> tableController;
+	@UnknownNullability
+	public TableColumn<Data, @Nullable Data> titleCol, borrowerCol, borrowDateCol, durationLeftCol;
+
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
 
 		final var keys = new LinkedHashMap<Keys, TableColumn<Data, @Nullable Data>>();
-		keys.put(Keys.TITLE, new TableColumn<>("Title"));
-		keys.put(Keys.BORROWER, new TableColumn<>("Borrower"));
-		keys.put(Keys.BORROW_DATE, new TableColumn<>("Borrowed On"));
-		keys.put(Keys.DURATION_LEFT, new TableColumn<>("Time Left"));
+		keys.put(Keys.TITLE, titleCol);
+		keys.put(Keys.BORROWER, borrowerCol);
+		keys.put(Keys.BORROW_DATE, borrowDateCol);
+		keys.put(Keys.DURATION_LEFT, durationLeftCol);
 		tableController = new DynamicTableController<>(table, keys);
 
 		loadTable();

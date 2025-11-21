@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml"
             xmlns="http://javafx.com/javafx"
             fx:controller="library.controllers.librarian.ManageUsersController"
             prefHeight="400.0" prefWidth="600.0">
 	<TableView fx:id="table" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
-	           AnchorPane.topAnchor="0"/>
+	           AnchorPane.topAnchor="0">
+		<!--suppress XmlUnresolvedReference -->
+		<TableColumn fx:id="usernameCol" prefWidth="${table.width * 0.25}" text="Username"/>
+		<!--suppress XmlUnresolvedReference -->
+		<TableColumn fx:id="roleCol" prefWidth="${table.width * 0.10}" text="Role"/>
+		<!--suppress XmlUnresolvedReference -->
+		<TableColumn fx:id="nameCol" prefWidth="${table.width * 0.35}" text="Name"/>
+		<!--suppress XmlUnresolvedReference -->
+		<TableColumn fx:id="activeCol" prefWidth="${table.width * 0.10}" text="Active"/>
+		<!--suppress XmlUnresolvedReference -->
+		<TableColumn fx:id="actionsCol" prefWidth="${table.width * 0.10}" text="Actions"/>
+	</TableView>
 </AnchorPane>
