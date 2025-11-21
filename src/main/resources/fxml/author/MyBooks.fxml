@@ -12,15 +12,15 @@
 	<TableView VBox.vgrow="ALWAYS" fx:id="table">
 		<columns>
 			<!--suppress XmlUnresolvedReference -->
-			<TableColumn fx:id="titleColumn" prefWidth="${table.width * 0.25}" text="Title"/>
+			<TableColumn fx:id="titleCol" prefWidth="${table.width * 0.25}" text="Title"/>
 			<!--suppress XmlUnresolvedReference -->
-			<TableColumn fx:id="statusColumn" prefWidth="${table.width * 0.10}" text="Status"/>
+			<TableColumn fx:id="statusCol" prefWidth="${table.width * 0.10}" text="Status"/>
 			<!--suppress XmlUnresolvedReference -->
-			<TableColumn fx:id="dateColumn" prefWidth="${table.width * 0.15}" text="Publish Date"/>
+			<TableColumn fx:id="dateCol" prefWidth="${table.width * 0.15}" text="Publish Date"/>
 			<!--suppress XmlUnresolvedReference -->
-			<TableColumn fx:id="readersColumn" prefWidth="${table.width * 0.10}" text="Readers"/>
+			<TableColumn fx:id="readersCol" prefWidth="${table.width * 0.10}" text="Readers"/>
 			<!--suppress XmlUnresolvedReference -->
-			<TableColumn fx:id="summaryColumn" prefWidth="${table.width * 0.40}" text="Summary"/>
+			<TableColumn fx:id="summaryCol" prefWidth="${table.width * 0.40}" text="Summary"/>
 		</columns>
 		<columnResizePolicy>
 			<TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>

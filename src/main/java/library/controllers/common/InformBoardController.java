@@ -26,22 +26,22 @@ public final class InformBoardController implements RequiresLoggedIn {
 	Repository repository = Main.getContext().getRepository();
 	//Referring to fxml ListView
 	@FXML
-	private ListView<String> NotificationList;
+	private ListView<String> notificationList;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
 
-		NotificationList.setCellFactory(_ -> new NotificationCell());
-		NotificationList.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/common/NotificationList.css")).toExternalForm());
-		NotificationList.setFocusTraversable(false);
+		notificationList.setCellFactory(_ -> new NotificationCell());
+		notificationList.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/common/NotificationList.css")).toExternalForm());
+		notificationList.setFocusTraversable(false);
 		updateNotificationList();
 	}
 
 	private void updateNotificationList() {
 		Optional<String[]> opt = repository.userNotificationOps.read(getLoggedInUser()._1());
 		notifications.setAll(opt.get());
-		NotificationList.setItems(notifications);
+		notificationList.setItems(notifications);
 	}
 
 	@FXML

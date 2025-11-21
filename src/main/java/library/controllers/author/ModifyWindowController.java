@@ -22,12 +22,14 @@ import java.util.Objects;
 public final class ModifyWindowController implements RequiresLoggedIn {
 	public Runnable modifyCallback = () -> {
 	};
+
+	@UnknownNullability
+	public TextField titleField;
+	@UnknownNullability
+	public TextArea summaryArea;
 	@UnknownNullability
 	public Button saveButton;
-	@UnknownNullability
-	public TextArea SummaryArea;
-	@UnknownNullability
-	public TextField TitleField;
+
 	@Nullable
 	private Tuple2<Book, Book.Data> bookEntry;
 
@@ -38,11 +40,11 @@ public final class ModifyWindowController implements RequiresLoggedIn {
 	public void setBookEntry(Tuple2<Book, Book.Data> bookEntry) {
 		final var title = bookEntry._1().title();
 		final var summary = bookEntry._2().summary();
-		TitleField.textProperty().setValue(title);
-		SummaryArea.textProperty().setValue(summary);
+		titleField.textProperty().setValue(title);
+		summaryArea.textProperty().setValue(summary);
 		saveButton.disableProperty().bind(
-				SimpleBooleanProperty.booleanExpression(TitleField.textProperty().map(title::equals))
-						.and(SimpleBooleanProperty.booleanExpression(SummaryArea.textProperty().map(summary::equals)))
+				SimpleBooleanProperty.booleanExpression(titleField.textProperty().map(title::equals))
+						.and(SimpleBooleanProperty.booleanExpression(summaryArea.textProperty().map(summary::equals)))
 		);
 		this.bookEntry = bookEntry;
 	}
@@ -50,8 +52,8 @@ public final class ModifyWindowController implements RequiresLoggedIn {
 	@FXML
 	private void saveModification() {
 		final var bookEntry = getBookEntry();
-		final var title = TitleField.getText();
-		final var summary = SummaryArea.getText();
+		final var title = titleField.getText();
+		final var summary = summaryArea.getText();
 		try {
 			switch (Main.getContext().getManageBooksControl()
 					.modifyBook(bookEntry._1(), title, summary)) {

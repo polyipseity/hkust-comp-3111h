@@ -20,6 +20,6 @@
 		</HBox>
 	</top>
 	<center>
-		<ListView fx:id="NotificationList" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER"/>
+		<ListView fx:id="notificationList" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER"/>
 	</center>
 </BorderPane>

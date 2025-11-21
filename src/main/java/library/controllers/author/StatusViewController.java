@@ -29,9 +29,9 @@ public final class StatusViewController implements RequiresLoggedIn {
 	private int rejectedBooks = 0;
 
 	@FXML
-	private PieChart BooksStatusPieChart;
+	private PieChart statusChart;
 	@FXML
-	private BarChart<String, Number> PopularBooksBarChart;
+	private BarChart<String, Number> popularChart;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
@@ -75,7 +75,7 @@ public final class StatusViewController implements RequiresLoggedIn {
 				new PieChart.Data("Rejected", rejectedBooks)
 		);
 
-		BooksStatusPieChart.setData(pieChartData);
+		statusChart.setData(pieChartData);
 	}
 
 	private void loadBarChartData() {
@@ -100,7 +100,7 @@ public final class StatusViewController implements RequiresLoggedIn {
 		}
 
 		// Clear existing data and add new series
-		PopularBooksBarChart.getData().clear();
-		PopularBooksBarChart.getData().add(series);
+		popularChart.getData().clear();
+		popularChart.getData().add(series);
 	}
 }

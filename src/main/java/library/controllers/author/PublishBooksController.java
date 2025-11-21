@@ -28,7 +28,7 @@ public final class PublishBooksController implements RequiresLoggedIn {
 	private DashboardController parentController;
 
 	@FXML
-	private TextField BookTitle, BookContent, BookAbstract;
+	private TextField titleField, contentField, summaryField;
 	@Nullable
 	private String ContentTxt;
 
@@ -48,11 +48,11 @@ public final class PublishBooksController implements RequiresLoggedIn {
 		if (file != null) {
 			try {
 				// Read the file content
-				if (BookTitle.getText().isEmpty()) {
-					BookTitle.setText(file.getName().substring(0, file.getName().lastIndexOf('.')));
+				if (titleField.getText().isEmpty()) {
+					titleField.setText(file.getName().substring(0, file.getName().lastIndexOf('.')));
 				}
 				ContentTxt = Files.readString(file.toPath());
-				BookContent.setText(file.getName());
+				contentField.setText(file.getName());
 			} catch (IOException e) {
 				Alerts.showErrorDialog(e.getMessage());
 			}
@@ -62,12 +62,12 @@ public final class PublishBooksController implements RequiresLoggedIn {
 	//Method for generating summary of the book based on the title
 	@FXML
 	private void Generate() {
-		if (ContentTxt == null || BookTitle.getText() == null) {
+		if (ContentTxt == null || titleField.getText() == null) {
 			Alerts.showErrorDialog("You must enter the book title and upload the book content first!");
 		} else {
-			var input = "Create a professional book abstract under 30 words for \"$title\" that summarizes the main themes and content. You should avoid \"In this book... (redundant), In the novel... (obvious), This story is about... (weak opening), In [Title]... (formulaic)\". Title:" + BookTitle.getText() + " and content:" + ContentTxt;
+			var input = "Create a professional book abstract under 30 words for \"$title\" that summarizes the main themes and content. You should avoid \"In this book... (redundant), In the novel... (obvious), This story is about... (weak opening), In [Title]... (formulaic)\". Title:" + titleField.getText() + " and content:" + ContentTxt;
 			var response = chatService.getResponse(input);
-			BookAbstract.setText(response);
+			summaryField.setText(response);
 		}
 	}
 
@@ -92,20 +92,20 @@ public final class PublishBooksController implements RequiresLoggedIn {
 	//Method for publishing the book
 	@FXML
 	private void PublishBook() {
-		if (BookTitle.getText().isEmpty() || ContentTxt == null || ContentTxt.isEmpty() || BookAbstract.getText().isEmpty()) {
+		if (titleField.getText().isEmpty() || ContentTxt == null || ContentTxt.isEmpty() || summaryField.getText().isEmpty()) {
 			Alerts.showErrorDialog("Missing information of the book.");
 			return;
 		}
-		if (!isValidBookTitle(BookTitle.getText())) {
+		if (!isValidBookTitle(titleField.getText())) {
 			Alerts.showErrorDialog("The book title is invalid or too short.");
 			return;
 		}
-		var book = new Book(BookTitle.getText(), new Author.ByRef(getLoggedInUser()._1()), false);
+		var book = new Book(titleField.getText(), new Author.ByRef(getLoggedInUser()._1()), false);
 		Optional<Book.Data> opt = repository.bookOps.read(book);
 		if (opt.isPresent()) {
 			Alerts.showErrorDialog("Duplicated Book Title.");
 		} else {
-			var data = new Book.Data(BookAbstract.getText(), ContentTxt, Book.ApprovalStatus.PENDING, null, null, 0);
+			var data = new Book.Data(summaryField.getText(), ContentTxt, Book.ApprovalStatus.PENDING, null, null, 0);
 			try {
 				repository.bookOps.create(book, data);
 				Alerts.showInfoDialog("Published and awaiting approval.");

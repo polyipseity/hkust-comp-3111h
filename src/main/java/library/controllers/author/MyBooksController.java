@@ -35,18 +35,18 @@ public final class MyBooksController implements RequiresLoggedIn {
 	@UnknownNullability
 	public DynamicTableController<Keys, Data> tableController;
 	@UnknownNullability
-	public TableColumn<Data, @Nullable Data> titleColumn, statusColumn, dateColumn, readersColumn, summaryColumn;
+	public TableColumn<Data, @Nullable Data> titleCol, statusCol, dateCol, readersCol, summaryCol;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
 
 		final var keys = new LinkedHashMap<Keys, TableColumn<Data, @Nullable Data>>();
-		keys.put(Keys.TITLE, titleColumn);
-		keys.put(Keys.STATUS, statusColumn);
-		keys.put(Keys.PUBLISH_DATE, dateColumn);
-		keys.put(Keys.TIMES_BORROWED, readersColumn);
-		keys.put(Keys.SUMMARY, summaryColumn);
+		keys.put(Keys.TITLE, titleCol);
+		keys.put(Keys.STATUS, statusCol);
+		keys.put(Keys.PUBLISH_DATE, dateCol);
+		keys.put(Keys.TIMES_BORROWED, readersCol);
+		keys.put(Keys.SUMMARY, summaryCol);
 		tableController = new DynamicTableController<>(table, keys);
 
 		loadTable();
