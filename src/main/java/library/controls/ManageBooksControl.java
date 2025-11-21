@@ -140,22 +140,6 @@ public record ManageBooksControl(Repository repository) {
 	}
 
 	/**
-	 * Result type for the approval operation.
-	 */
-	public sealed interface ApproveResult permits ApproveResult.Success {
-		record Success() implements ApproveResult {
-		}
-	}
-
-	/**
-	 * Result type for the rejection operation.
-	 */
-	public sealed interface RejectResult permits RejectResult.Success {
-		record Success() implements RejectResult {
-		}
-	}
-
-	/**
 	 * Deletes a book and notifies the author (if not deleted by author) and all borrowers.
 	 *
 	 * <p>Before deleting the book, it retrieves all borrows associated with the book.
@@ -301,6 +285,22 @@ public record ManageBooksControl(Repository repository) {
 			throw e;
 		}
 		return Objects.requireNonNull(ret.get());
+	}
+
+	/**
+	 * Result type for the approval operation.
+	 */
+	public sealed interface ApproveResult permits ApproveResult.Success {
+		record Success() implements ApproveResult {
+		}
+	}
+
+	/**
+	 * Result type for the rejection operation.
+	 */
+	public sealed interface RejectResult permits RejectResult.Success {
+		record Success() implements RejectResult {
+		}
 	}
 
 	/**

@@ -69,48 +69,77 @@ public final class AvailableBooksController implements RequiresLoggedIn {
 				.map(entry ->
 						new Data(this, entry.getKey(), entry.getValue(), repository.userOps.readFullName(entry.getKey().author())))
 				.toList());
-    }
+	}
 
-    /**
-     * Runs each time the "Borrow Book" button is pressed.
-     */
-    @FXML
-    private void borrowButtonAction() throws TransactionException {
-	    final var context = Main.getContext();
-	    final var currentRow = table.getSelectionModel().getSelectedItem();
-        if (currentRow == null) {
-            Alerts.showErrorDialog("Please select a book first.");
-            return;
-        }
-	    final var selectedBook = currentRow.book;
+	/**
+	 * Runs each time the "Borrow Book" button is pressed.
+	 */
+	@FXML
+	private void borrowButtonAction() throws TransactionException {
+		final var context = Main.getContext();
+		final var currentRow = table.getSelectionModel().getSelectedItem();
+		if (currentRow == null) {
+			Alerts.showErrorDialog("Please select a book first.");
+			return;
+		}
+		final var selectedBook = currentRow.book;
 
-        // Try to get the borrow duration for the book
-        Dialog<@Nullable dialogResult> dialog = createDialog();
-        Optional<dialogResult> result = dialog.showAndWait();
-        if (result.isEmpty()) return; // Exit if user clicks "Cancel"
+		// Try to get the borrow duration for the book
+		Dialog<@Nullable dialogResult> dialog = createDialog();
+		Optional<dialogResult> result = dialog.showAndWait();
+		if (result.isEmpty()) return; // Exit if user clicks "Cancel"
 
-        // Parse results from input dialog
-        int minutes, seconds;
-        try {
-            minutes = Integer.parseInt(result.get().minutes);
-            seconds = Integer.parseInt(result.get().seconds);
-        } catch (NumberFormatException e) {
-            Alerts.showErrorDialog("Entered values could not be parsed correctly.");
-            return;
-        }
+		// Parse results from input dialog
+		int minutes, seconds;
+		try {
+			minutes = Integer.parseInt(result.get().minutes);
+			seconds = Integer.parseInt(result.get().seconds);
+		} catch (NumberFormatException e) {
+			Alerts.showErrorDialog("Entered values could not be parsed correctly.");
+			return;
+		}
 
-	    switch (context.getBorrowBooksControl().borrowBook(getLoggedInUser()._1(), selectedBook, minutes, seconds)) {
-            case BorrowBooksControl.BorrowResult.Success _ -> {
-                context.getRepository().bookOps.update(selectedBook, current->current.withTimesBorrowed(current.timesBorrowed()+1));
-                long millis = (minutes * 60L + seconds) * 1000;
-                parentController.scheduleReturn(selectedBook, millis);
-                Alerts.showInfoDialog("Book borrowed successfully");
-            }
-            case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
-	    }
+		switch (context.getBorrowBooksControl().borrowBook(getLoggedInUser()._1(), selectedBook, minutes, seconds)) {
+			case BorrowBooksControl.BorrowResult.Success _ -> {
+				context.getRepository().bookOps.update(selectedBook, current -> current.withTimesBorrowed(current.timesBorrowed() + 1));
+				long millis = (minutes * 60L + seconds) * 1000;
+				parentController.scheduleReturn(selectedBook, millis);
+				Alerts.showInfoDialog("Book borrowed successfully");
+			}
+			case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
+		}
 
-	    loadTable();
-    }
+		loadTable();
+	}
+
+	/**
+	 * @return A properly configured input dialog for entering the borrowing duration.
+	 */
+	private Dialog<@Nullable dialogResult> createDialog() {
+		Dialog<@Nullable dialogResult> dialog = new Dialog<>();
+		dialog.setTitle("Borrow Duration");
+		dialog.setHeaderText("Please enter the borrowing duration (minutes and seconds).");
+
+		TextField minutesTextField = new TextField();
+		TextField secondsTextField = new TextField();
+
+		GridPane grid = new GridPane();
+		grid.add(new Label("Minutes:"), 0, 0);
+		grid.add(new Label("Seconds:"), 0, 1);
+		grid.add(minutesTextField, 1, 0);
+		grid.add(secondsTextField, 1, 1);
+		grid.setHgap(10);
+		grid.setVgap(10);
+		dialog.getDialogPane().setContent(grid);
+
+		ButtonType buttonTypeOk = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+		ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+		dialog.getDialogPane().getButtonTypes().addAll(buttonTypeOk, buttonTypeCancel);
+		dialog.setResultConverter(b ->
+				b == buttonTypeOk ? new dialogResult(minutesTextField.getText(), secondsTextField.getText()) : null);
+
+		return dialog;
+	}
 
 	public enum Keys {
 		TITLE,
@@ -146,33 +175,4 @@ public final class AvailableBooksController implements RequiresLoggedIn {
 			};
 		}
 	}
-
-    /**
-     * @return A properly configured input dialog for entering the borrowing duration.
-     */
-    private Dialog<@Nullable dialogResult> createDialog() {
-        Dialog<@Nullable dialogResult> dialog = new Dialog<>();
-        dialog.setTitle("Borrow Duration");
-        dialog.setHeaderText("Please enter the borrowing duration (minutes and seconds).");
-
-        TextField minutesTextField = new TextField();
-        TextField secondsTextField = new TextField();
-
-        GridPane grid = new GridPane();
-        grid.add(new Label("Minutes:"), 0, 0);
-        grid.add(new Label("Seconds:"), 0, 1);
-        grid.add(minutesTextField, 1, 0);
-        grid.add(secondsTextField, 1, 1);
-        grid.setHgap(10);
-        grid.setVgap(10);
-        dialog.getDialogPane().setContent(grid);
-
-        ButtonType buttonTypeOk = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
-        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-        dialog.getDialogPane().getButtonTypes().addAll(buttonTypeOk, buttonTypeCancel);
-        dialog.setResultConverter(b ->
-                b == buttonTypeOk ? new dialogResult(minutesTextField.getText(), secondsTextField.getText()) : null);
-
-        return dialog;
-    }
 }

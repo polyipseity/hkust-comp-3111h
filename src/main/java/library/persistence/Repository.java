@@ -62,8 +62,7 @@ public final class Repository implements Closeable {
 
 		final var db = dbMaker.make();
 		final var this2 = this;
-		@SuppressWarnings("ConstantValue")
-		final var users = db.hashMap("users", userS, userDataS).modificationListener(((key, oldValue, newValue, _) -> {
+		@SuppressWarnings("ConstantValue") final var users = db.hashMap("users", userS, userDataS).modificationListener(((key, oldValue, newValue, _) -> {
 			if (oldValue != null && newValue == null) {
 				final var key2 = new Object[]{key};
 				for (final var bookKey : books.getKeys()) {
@@ -76,8 +75,7 @@ public final class Repository implements Closeable {
 				borrows.prefixSubMap(key2).clear();
 			}
 		})).createOrOpen();
-		@SuppressWarnings("ConstantValue")
-		final var books = db.hashMap("books", bookS, bookDataS).modificationListener((key, oldValue, newValue, _) -> {
+		@SuppressWarnings("ConstantValue") final var books = db.hashMap("books", bookS, bookDataS).modificationListener((key, oldValue, newValue, _) -> {
 			if (oldValue == null) {
 				switch (newValue) {
 					case Book.Data(_, _, _, _, final Book original, _) -> {
@@ -130,8 +128,7 @@ public final class Repository implements Closeable {
 				throw new IllegalStateException("User not found");
 			}
 		}).createOrOpen();
-		@SuppressWarnings("ConstantValue")
-		final var userBookRequests = db.treeMap("userBookRequests", new SerializerArrayTuple(userS, bookRequestS), bookRequestDataS).modificationListener((key, oldValue, newValue, _) -> {
+		@SuppressWarnings("ConstantValue") final var userBookRequests = db.treeMap("userBookRequests", new SerializerArrayTuple(userS, bookRequestS), bookRequestDataS).modificationListener((key, oldValue, newValue, _) -> {
 			if (oldValue == null && newValue != null) {
 				@SuppressWarnings("SuspiciousMethodCalls") final var containsUser = users.containsKey(key[0]);
 				if (!containsUser) {
@@ -139,8 +136,7 @@ public final class Repository implements Closeable {
 				}
 			}
 		}).createOrOpen();
-		@SuppressWarnings("ConstantValue")
-		final var borrows = db.treeMap("borrows", new SerializerArrayTuple(userS, bookS), borrowS).modificationListener((key, oldValue, newValue, _) -> {
+		@SuppressWarnings("ConstantValue") final var borrows = db.treeMap("borrows", new SerializerArrayTuple(userS, bookS), borrowS).modificationListener((key, oldValue, newValue, _) -> {
 			if (oldValue == null && newValue != null) {
 				@SuppressWarnings("SuspiciousMethodCalls") final var containsUser = users.containsKey(key[0]);
 				if (!containsUser) {

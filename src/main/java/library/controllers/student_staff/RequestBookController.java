@@ -16,24 +16,24 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public final class RequestBookController implements RequiresLoggedIn {
-    private final Context context = Main.getContext();
-    private final User user = this.getLoggedInUser()._1();
+	private final Context context = Main.getContext();
+	private final User user = this.getLoggedInUser()._1();
 
-    @FXML
-    private TextField titleField, authorField;
+	@FXML
+	private TextField titleField, authorField;
 
-    @Override
-    public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
-        RequiresLoggedIn.super.initialize(location, resources);
-    }
+	@Override
+	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+		RequiresLoggedIn.super.initialize(location, resources);
+	}
 
-    @FXML
-    private void requestBookButtonAction() throws TransactionException {
-        String title = titleField.getText();
-        String author = authorField.getText();
-	    switch (context.getRequestBooksControl().requestBook(user, title, author)) {
-		    case RequestBooksControl.RequestResult.Success() -> Alerts.showInfoDialog("Book request submitted.");
-            case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
-        }
-    }
+	@FXML
+	private void requestBookButtonAction() throws TransactionException {
+		String title = titleField.getText();
+		String author = authorField.getText();
+		switch (context.getRequestBooksControl().requestBook(user, title, author)) {
+			case RequestBooksControl.RequestResult.Success() -> Alerts.showInfoDialog("Book request submitted.");
+			case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
+		}
+	}
 }

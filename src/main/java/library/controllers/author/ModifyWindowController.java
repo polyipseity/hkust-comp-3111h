@@ -47,29 +47,29 @@ public final class ModifyWindowController implements RequiresLoggedIn {
 		this.bookEntry = bookEntry;
 	}
 
-    @FXML
-    private void saveModification() {
-	    final var bookEntry = getBookEntry();
-	    final var title = TitleField.getText();
-	    final var summary = SummaryArea.getText();
-	    try {
-		    switch (Main.getContext().getManageBooksControl()
-				    .modifyBook(bookEntry._1(), title, summary)) {
-			    case ManageBooksControl.ModifyResult.Success success -> {
-				    Alerts.showInfoDialog(success.getMessage());
-				    // Close the current window
-				    ((Stage) saveButton.getScene().getWindow()).close();
-				    modifyCallback.run();
-			    }
-			    case HasMessage message -> Alerts.showErrorDialog(message.getMessage());
-		    }
-	    } catch (TransactionException e) {
-		    Alerts.showErrorDialog(e.getLocalizedMessage());
-	    }
-    }
+	@FXML
+	private void saveModification() {
+		final var bookEntry = getBookEntry();
+		final var title = TitleField.getText();
+		final var summary = SummaryArea.getText();
+		try {
+			switch (Main.getContext().getManageBooksControl()
+					.modifyBook(bookEntry._1(), title, summary)) {
+				case ManageBooksControl.ModifyResult.Success success -> {
+					Alerts.showInfoDialog(success.getMessage());
+					// Close the current window
+					((Stage) saveButton.getScene().getWindow()).close();
+					modifyCallback.run();
+				}
+				case HasMessage message -> Alerts.showErrorDialog(message.getMessage());
+			}
+		} catch (TransactionException e) {
+			Alerts.showErrorDialog(e.getLocalizedMessage());
+		}
+	}
 
-    @FXML
-    private void cancelModification(){
-	    ((Stage) saveButton.getScene().getWindow()).close();
-    }
+	@FXML
+	private void cancelModification() {
+		((Stage) saveButton.getScene().getWindow()).close();
+	}
 }

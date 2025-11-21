@@ -24,6 +24,6 @@
 	</center>
 	<bottom>
 		<Button onAction="#readSelectedBook" mnemonicParsing="false" text="Read Selected Book"
-				BorderPane.alignment="CENTER"/>
+		        BorderPane.alignment="CENTER"/>
 	</bottom>
 </BorderPane>

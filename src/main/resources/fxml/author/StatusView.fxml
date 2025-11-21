@@ -6,30 +6,30 @@
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-
-<VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" spacing="40.0"
-      xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER" prefHeight="400.0" prefWidth="600.0"
+      spacing="40.0" xmlns="http://javafx.com/javafx/25"
       fx:controller="library.controllers.author.StatusViewController">
-   <children>
-      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="40.0" VBox.vgrow="ALWAYS">
-         <children>
-            <PieChart maxWidth="600" maxHeight="600" fx:id="BooksStatusPieChart" title="My Books: Status" HBox.hgrow="ALWAYS" />
-            <BarChart legendVisible="false" maxWidth="600" maxHeight="600" animated="false" fx:id="PopularBooksBarChart" title="Top 5 Most Popular Book" HBox.hgrow="ALWAYS">
-              <xAxis>
-                <CategoryAxis side="BOTTOM" tickLabelRotation="90"/>
-              </xAxis>
-              <yAxis>
-                <NumberAxis tickUnit="10.0" minorTickCount="1"
-                            label="Times Borrowed" side="LEFT"/>
-              </yAxis>
-            </BarChart>
-         </children>
-      </HBox>
-      <Button minHeight="40.0" mnemonicParsing="false" onAction="#refresh" text="Refresh Status" VBox.vgrow="NEVER" />
-    </children>
-   <padding>
-      <Insets bottom="50.0" left="50.0" right="50.0" top="50.0" />
-   </padding>
+	<children>
+		<HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="40.0" VBox.vgrow="ALWAYS">
+			<children>
+				<PieChart maxWidth="600" maxHeight="600" fx:id="BooksStatusPieChart" title="My Books: Status"
+				          HBox.hgrow="ALWAYS"/>
+				<BarChart legendVisible="false" maxWidth="600" maxHeight="600" animated="false" fx:id="PopularBooksBarChart"
+				          title="Top 5 Most Popular Book" HBox.hgrow="ALWAYS">
+					<xAxis>
+						<CategoryAxis side="BOTTOM" tickLabelRotation="90"/>
+					</xAxis>
+					<yAxis>
+						<NumberAxis tickUnit="10.0" minorTickCount="1"
+						            label="Times Borrowed" side="LEFT"/>
+					</yAxis>
+				</BarChart>
+			</children>
+		</HBox>
+		<Button minHeight="40.0" mnemonicParsing="false" onAction="#refresh" text="Refresh Status" VBox.vgrow="NEVER"/>
+	</children>
+	<padding>
+		<Insets bottom="50.0" left="50.0" right="50.0" top="50.0"/>
+	</padding>
 </VBox>

@@ -15,38 +15,38 @@
 
 			<!-- My Books Tab -->
 			<Tab text="My Books" onSelectionChanged="#loadMyBooks">
-                <StackPane>
-                    <fx:include source="MyBooks.fxml" fx:id="myBooks"/>
-                </StackPane>
+				<StackPane>
+					<fx:include source="MyBooks.fxml" fx:id="myBooks"/>
+				</StackPane>
 			</Tab>
 
 			<!-- Publish New Book Tab -->
 			<Tab text="Publish New Book">
-                <StackPane>
-                    <fx:include source="PublishBooks.fxml" fx:id="publishBooks"/>
-                </StackPane>
+				<StackPane>
+					<fx:include source="PublishBooks.fxml" fx:id="publishBooks"/>
+				</StackPane>
 			</Tab>
 
 
 			<!-- Status View Tab -->
 			<Tab text="Status View">
-                <StackPane>
-                    <fx:include source="StatusView.fxml"/>
-                </StackPane>
+				<StackPane>
+					<fx:include source="StatusView.fxml"/>
+				</StackPane>
 			</Tab>
 
 			<!-- Update Account Tab -->
 			<Tab text="My Profile">
-                <StackPane>
-	                <fx:include source="../common/MyProfile.fxml"/>
-                </StackPane>
+				<StackPane>
+					<fx:include source="../common/MyProfile.fxml"/>
+				</StackPane>
 			</Tab>
 
 			<!-- Inform Board -->
 			<Tab text="Inform Board">
-                <StackPane>
-	                <fx:include source="../common/InformBoard.fxml"/>
-                </StackPane>
+				<StackPane>
+					<fx:include source="../common/InformBoard.fxml"/>
+				</StackPane>
 			</Tab>
 
 		</TabPane>

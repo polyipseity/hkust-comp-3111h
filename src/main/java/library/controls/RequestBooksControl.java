@@ -12,48 +12,24 @@ public record RequestBooksControl(Repository repository) {
 	public static final String NOTIFICATION_APPROVE = "Your book request for '%s' has been approved!";
 	public static final String NOTIFICATION_REJECT = "Your book request for '%s' has been rejected!";
 
-    public RequestResult requestBook(User user, String title, String author) throws TransactionException {
-        // Check if either title or author field is an empty string
-        if (title.isEmpty())
-            return new RequestResult.InvalidRequest(RequestResult.InvalidType.INVALID_TITLE);
-        if (author.isEmpty())
-            return new RequestResult.InvalidRequest(RequestResult.InvalidType.INVALID_AUTHOR);
+	public RequestResult requestBook(User user, String title, String author) throws TransactionException {
+		// Check if either title or author field is an empty string
+		if (title.isEmpty())
+			return new RequestResult.InvalidRequest(RequestResult.InvalidType.INVALID_TITLE);
+		if (author.isEmpty())
+			return new RequestResult.InvalidRequest(RequestResult.InvalidType.INVALID_AUTHOR);
 
-        BookRequest bookRequest = new BookRequest(title, author);
-        BookRequest.Data bookRequestData = new BookRequest.Data(ZonedDateTime.now());
+		BookRequest bookRequest = new BookRequest(title, author);
+		BookRequest.Data bookRequestData = new BookRequest.Data(ZonedDateTime.now());
 
-        // Check if the user has made the same book request in the past
-        if (repository.userBookRequestOps.read(user, bookRequest).isPresent())
-            return new RequestResult.RequestRepeated();
-        else {
-            repository.userBookRequestOps.create(user, bookRequest, bookRequestData);
-            return new RequestResult.Success();
-        }
-    }
-
-    public sealed interface RequestResult {
-        enum InvalidType {INVALID_TITLE, INVALID_AUTHOR}
-
-        record Success() implements RequestResult {
-        }
-
-        record InvalidRequest(InvalidType type) implements RequestResult, HasMessage {
-            @Override
-            public String getMessage() {
-                return switch (type) {
-                    case INVALID_TITLE -> "Invalid title";
-                    case INVALID_AUTHOR -> "Invalid author";
-                };
-            }
-        }
-
-        record RequestRepeated() implements RequestResult, HasMessage {
-            @Override
-            public String getMessage() {
-                return "Request has been made before";
-            }
-        }
-    }
+		// Check if the user has made the same book request in the past
+		if (repository.userBookRequestOps.read(user, bookRequest).isPresent())
+			return new RequestResult.RequestRepeated();
+		else {
+			repository.userBookRequestOps.create(user, bookRequest, bookRequestData);
+			return new RequestResult.Success();
+		}
+	}
 
 	public ApproveResult approveRequest(User user, BookRequest bookRequest) throws TransactionException {
 		repository.transact(_ -> {
@@ -75,6 +51,30 @@ public record RequestBooksControl(Repository repository) {
 			return true;
 		}, () -> "Failed to reject book request: %s, %s".formatted(user, bookRequest));
 		return new RejectResult.Success();
+	}
+
+	public sealed interface RequestResult {
+		enum InvalidType {INVALID_TITLE, INVALID_AUTHOR}
+
+		record Success() implements RequestResult {
+		}
+
+		record InvalidRequest(InvalidType type) implements RequestResult, HasMessage {
+			@Override
+			public String getMessage() {
+				return switch (type) {
+					case INVALID_TITLE -> "Invalid title";
+					case INVALID_AUTHOR -> "Invalid author";
+				};
+			}
+		}
+
+		record RequestRepeated() implements RequestResult, HasMessage {
+			@Override
+			public String getMessage() {
+				return "Request has been made before";
+			}
+		}
 	}
 
 	/**

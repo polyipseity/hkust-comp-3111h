@@ -21,7 +21,7 @@ public enum Alerts {
 	}
 
 	public static Optional<ButtonType> showConfirmDialog(String message) {
-        return new Alert(Alert.AlertType.CONFIRMATION, message).showAndWait();
+		return new Alert(Alert.AlertType.CONFIRMATION, message).showAndWait();
 	}
 
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted")

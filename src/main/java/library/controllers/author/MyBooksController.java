@@ -60,38 +60,38 @@ public final class MyBooksController implements RequiresLoggedIn {
 				.toList());
 	}
 
-    @FXML
-    private void AuthorViewBook() {
-	    final var selected = table.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            Alerts.showErrorDialog("Please select a book first.");
-            return;
-        }
-	    try {
-		    Main.getContext().newWindow(
-				    TextViewController.WINDOW_TITLE.formatted(selected.book.title()),
-				    FXMLs.COMMON_TEXT_VIEW.load(loader -> loader.<TextViewController>getController().setContent(selected.bookData.content())),
-				    null
-		    ).show();
-	    } catch (IOException e) {
-		    Alerts.showErrorDialog(e.getLocalizedMessage());
-	    }
-    }
+	@FXML
+	private void AuthorViewBook() {
+		final var selected = table.getSelectionModel().getSelectedItem();
+		if (selected == null) {
+			Alerts.showErrorDialog("Please select a book first.");
+			return;
+		}
+		try {
+			Main.getContext().newWindow(
+					TextViewController.WINDOW_TITLE.formatted(selected.book.title()),
+					FXMLs.COMMON_TEXT_VIEW.load(loader -> loader.<TextViewController>getController().setContent(selected.bookData.content())),
+					null
+			).show();
+		} catch (IOException e) {
+			Alerts.showErrorDialog(e.getLocalizedMessage());
+		}
+	}
 
 	@FXML
 	private void AuthorModifyBook() throws IOException {
 		final var selected = table.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-	        Alerts.showErrorDialog("Please select a book first.");
-	        return;
-        }
+		if (selected == null) {
+			Alerts.showErrorDialog("Please select a book first.");
+			return;
+		}
 
-            // Load the FXML file for the new window's content
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/author/ModifyWindow.fxml"));
+		// Load the FXML file for the new window's content
+		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/author/ModifyWindow.fxml"));
 		Parent root = fxmlLoader.load();
 
-            //Passing content to new window
-            ModifyWindowController controller = fxmlLoader.getController();
+		//Passing content to new window
+		ModifyWindowController controller = fxmlLoader.getController();
 		controller.setBookEntry(new Tuple2<>(selected.book, selected.bookData));
 		controller.modifyCallback = this::loadTable;
 
@@ -102,17 +102,17 @@ public final class MyBooksController implements RequiresLoggedIn {
 				null
 		);
 
-            // Show the new window
+		// Show the new window
 		window.show();
-    }
+	}
 
 	@FXML
 	private void AuthorDeleteBook() {
 		final var selected = table.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            Alerts.showErrorDialog("Please select a book first.");
-            return;
-        }
+		if (selected == null) {
+			Alerts.showErrorDialog("Please select a book first.");
+			return;
+		}
 		if (!deleteConfirmation(selected.book.title())) {
 			return;
 		}
@@ -129,10 +129,10 @@ public final class MyBooksController implements RequiresLoggedIn {
 	}
 
 	private boolean deleteConfirmation(String message) {
-        Optional<ButtonType> result = Alerts.showConfirmDialog("Delete \"" + message + "\"?");
-        // Return true if confirmed
-        return !(result.isPresent() && result.get() == ButtonType.CANCEL);
-    }
+		Optional<ButtonType> result = Alerts.showConfirmDialog("Delete \"" + message + "\"?");
+		// Return true if confirmed
+		return !(result.isPresent() && result.get() == ButtonType.CANCEL);
+	}
 
 	public enum Keys {
 		TITLE,

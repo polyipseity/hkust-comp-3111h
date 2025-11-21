@@ -7,19 +7,19 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Text?>
-<BorderPane prefHeight="200.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="200.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/25"
             fx:controller="library.controllers.common.InformBoardController">
 	<top>
 		<HBox alignment="CENTER_LEFT" spacing="8.0" BorderPane.alignment="CENTER">
 			<padding>
-				<Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
+				<Insets bottom="8.0" left="8.0" right="8.0" top="8.0"/>
 			</padding>
-			<Button onAction="#ClearAll" mnemonicParsing="false" text="Clear All" />
-			<Separator orientation="VERTICAL" />
-			<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Notifications" />
+			<Button onAction="#ClearAll" mnemonicParsing="false" text="Clear All"/>
+			<Separator orientation="VERTICAL"/>
+			<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Notifications"/>
 		</HBox>
 	</top>
-   <center>
-      <ListView fx:id="NotificationList" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
-   </center>
+	<center>
+		<ListView fx:id="NotificationList" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER"/>
+	</center>
 </BorderPane>

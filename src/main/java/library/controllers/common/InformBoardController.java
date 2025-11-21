@@ -21,56 +21,18 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 public final class InformBoardController implements RequiresLoggedIn {
-    Repository repository = Main.getContext().getRepository();
-
-    //Referring to fxml ListView
-    @FXML
-    private ListView<String> NotificationList;
-
-    //Storing all notifications of user
-    private final ObservableList<String> notifications = FXCollections.observableArrayList();
-
-    class NotificationCell extends ListCell<@Nullable String> {
-        HBox hbox = new HBox();
-        Label label = new Label();
-        Pane pane = new Pane();
-        Button button = new Button("Close");
-	    @Nullable
-	    String lastItem;
-
-        public NotificationCell() {
-            super();
-            hbox.getChildren().addAll(label, pane, button);
-            HBox.setHgrow(pane, Priority.ALWAYS);
-            button.setOnAction(_ -> {
-                try {
-	                CloseNotif(getIndex());
-                } catch (TransactionException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        }
-
-        @Override
-        protected void updateItem(@Nullable String item, boolean empty) {
-            super.updateItem(item, empty);
-            setText(null);
-            if (empty) {
-                lastItem = null;
-                setGraphic(null);
-            } else {
-                lastItem = item;
-                label.setText(item != null ? item : "<null>");
-                setGraphic(hbox);
-            }
-        }
-    }
+	//Storing all notifications of user
+	private final ObservableList<String> notifications = FXCollections.observableArrayList();
+	Repository repository = Main.getContext().getRepository();
+	//Referring to fxml ListView
+	@FXML
+	private ListView<String> NotificationList;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
 
-        NotificationList.setCellFactory(_ -> new NotificationCell());
+		NotificationList.setCellFactory(_ -> new NotificationCell());
 		NotificationList.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/common/NotificationList.css")).toExternalForm());
 		NotificationList.setFocusTraversable(false);
 		updateNotificationList();
@@ -78,15 +40,24 @@ public final class InformBoardController implements RequiresLoggedIn {
 
 	private void updateNotificationList() {
 		Optional<String[]> opt = repository.userNotificationOps.read(getLoggedInUser()._1());
-        notifications.setAll(opt.get());
-        NotificationList.setItems(notifications);
-    }
+		notifications.setAll(opt.get());
+		NotificationList.setItems(notifications);
+	}
 
-    @FXML
-    private void ClearAll() throws TransactionException {
-	    repository.userNotificationOps.update(getLoggedInUser()._1(), current -> new String[0]);
-        updateNotificationList();
-    }
+	@FXML
+	private void ClearAll() throws TransactionException {
+		repository.userNotificationOps.update(getLoggedInUser()._1(), current -> new String[0]);
+		updateNotificationList();
+	}
+
+	private void CloseNotif(int index) throws TransactionException {
+		repository.userNotificationOps.updateAsList(
+				getLoggedInUser()._1(),
+				current -> {
+					current.remove(index);
+				});
+		updateNotificationList();
+	}
 
 		/*
     private void AddNotif() throws TransactionException {
@@ -98,10 +69,39 @@ public final class InformBoardController implements RequiresLoggedIn {
     }
 		 */
 
-    private void CloseNotif(int index) throws TransactionException {
-	    repository.userNotificationOps.updateAsList(
-                getLoggedInUser()._1(),
-			    current -> { current.remove(index); });
-        updateNotificationList();
-    }
+	class NotificationCell extends ListCell<@Nullable String> {
+		HBox hbox = new HBox();
+		Label label = new Label();
+		Pane pane = new Pane();
+		Button button = new Button("Close");
+		@Nullable
+		String lastItem;
+
+		public NotificationCell() {
+			super();
+			hbox.getChildren().addAll(label, pane, button);
+			HBox.setHgrow(pane, Priority.ALWAYS);
+			button.setOnAction(_ -> {
+				try {
+					CloseNotif(getIndex());
+				} catch (TransactionException e) {
+					throw new RuntimeException(e);
+				}
+			});
+		}
+
+		@Override
+		protected void updateItem(@Nullable String item, boolean empty) {
+			super.updateItem(item, empty);
+			setText(null);
+			if (empty) {
+				lastItem = null;
+				setGraphic(null);
+			} else {
+				lastItem = item;
+				label.setText(item != null ? item : "<null>");
+				setGraphic(hbox);
+			}
+		}
+	}
 }

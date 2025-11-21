@@ -105,8 +105,8 @@ public final class ManageUsersController implements RequiresLoggedIn, Initializa
 									} catch (TransactionException e) {
 										Alerts.showErrorDialog(e.getMessage());
 									}
-						})
-				);
+								})
+						);
 			};
 		}
 	}

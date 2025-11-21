@@ -102,27 +102,27 @@ public final class BorrowedBooksController implements RequiresLoggedIn {
 		}
 	}
 
-	public enum Keys {
-		TITLE,
-		AUTHOR_FULL_NAME,
-		BORROW_DATE,
-		TIME_LEFT,
-		ACTIONS
-	}
-
 	private void displayPdfFile(String path, String title, String author) throws IOException {
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
 				"/fxml/student_staff/BookView.fxml"));
 		BookViewController controller = new BookViewController(path);
 		fxmlLoader.setController(controller);
 		BorderPane borderPane = fxmlLoader.load();
-		
+
 		Stage stage = new Stage();
 		stage.setScene(new Scene(borderPane));
 		stage.setTitle("Reading: " + title + " by " + author);
 		stage.setOnShown(controller::createResizeListeners);
 		stage.setOnCloseRequest(controller::disposeController);
 		stage.show();
+	}
+
+	public enum Keys {
+		TITLE,
+		AUTHOR_FULL_NAME,
+		BORROW_DATE,
+		TIME_LEFT,
+		ACTIONS
 	}
 
 	public record Data(BorrowedBooksController controller,

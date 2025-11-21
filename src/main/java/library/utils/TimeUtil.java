@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 
 public enum TimeUtil {
 	;
+
 	public static ZonedDateTime nowZoned() {
 		return ZonedDateTime.now(ZoneOffset.UTC);
 	}
