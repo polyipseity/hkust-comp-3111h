@@ -1,6 +1,5 @@
 package library.controllers.common;
 
-import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import library.Context;
@@ -10,6 +9,7 @@ import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -18,9 +18,9 @@ public final class MyProfileController implements RequiresLoggedIn {
 	private final Context context = Main.getContext();
 	private final Repository repository = context.getRepository();
 
-	@FXML
+	@UnknownNullability
 	public Text usernameText;
-	@FXML
+	@UnknownNullability
 	public TextField newNameField, newPasswordField;
 
 	@Override
@@ -30,8 +30,7 @@ public final class MyProfileController implements RequiresLoggedIn {
 		usernameText.setText(getLoggedInUser()._1().username());
 	}
 
-	@FXML
-	private void updateProfile() {
+	public void updateProfile() {
 		String enteredPassword = newPasswordField.getText();
 		String enteredFullName = newNameField.getText();
 		if (enteredPassword.isEmpty() && enteredFullName.isEmpty()) {

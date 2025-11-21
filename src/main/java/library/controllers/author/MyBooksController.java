@@ -1,6 +1,5 @@
 package library.controllers.author;
 
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -66,8 +65,7 @@ public final class MyBooksController implements RequiresLoggedIn {
 				.toList());
 	}
 
-	@FXML
-	private void AuthorViewBook() {
+	public void viewBook() {
 		final var selected = table.getSelectionModel().getSelectedItem();
 		if (selected == null) {
 			Alerts.showErrorDialog("Please select a book first.");
@@ -84,8 +82,7 @@ public final class MyBooksController implements RequiresLoggedIn {
 		}
 	}
 
-	@FXML
-	private void AuthorModifyBook() throws IOException {
+	public void modifyBook() throws IOException {
 		final var selected = table.getSelectionModel().getSelectedItem();
 		if (selected == null) {
 			Alerts.showErrorDialog("Please select a book first.");
@@ -98,8 +95,8 @@ public final class MyBooksController implements RequiresLoggedIn {
 
 		//Passing content to new window
 		ModifyWindowController controller = fxmlLoader.getController();
+		controller.confirmCallback = this::loadTable;
 		controller.setBookEntry(new Tuple2<>(selected.book, selected.bookData));
-		controller.modifyCallback = this::loadTable;
 
 		// Create a new Stage (window)
 		final var window = Main.getContext().newWindow(
@@ -122,8 +119,7 @@ public final class MyBooksController implements RequiresLoggedIn {
 		window.show();
 	}
 
-	@FXML
-	private void AuthorDeleteBook() {
+	public void deleteBook() {
 		final var selected = table.getSelectionModel().getSelectedItem();
 		if (selected == null) {
 			Alerts.showErrorDialog("Please select a book first.");

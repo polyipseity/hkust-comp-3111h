@@ -25,12 +25,12 @@
 	<TextField fx:id="titleField" GridPane.columnIndex="1"/>
 	<TextField editable="false" fx:id="contentField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 	<TextField fx:id="summaryField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-	<Button onAction="#ChooseTextFile" mnemonicParsing="false" text="Choose Text File" GridPane.columnIndex="2"
+	<Button onAction="#chooseTextFile" mnemonicParsing="false" text="Choose Text File" GridPane.columnIndex="2"
 	        GridPane.rowIndex="1"/>
-	<Button onAction="#Generate" mnemonicParsing="false" text="Generate" GridPane.columnIndex="2"
+	<Button onAction="#generateSummary" mnemonicParsing="false" text="Generate" GridPane.columnIndex="2"
 	        GridPane.rowIndex="2"/>
 	<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Book Title:"/>
 	<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Selected Text File:" GridPane.rowIndex="1"/>
 	<Text strokeType="OUTSIDE" strokeWidth="0.0" text="Summary of this Book:" GridPane.rowIndex="2"/>
-	<Button onAction="#PublishBook" mnemonicParsing="false" text="Publish Book" GridPane.rowIndex="3"/>
+	<Button onAction="#publishBook" mnemonicParsing="false" text="Publish Book" GridPane.rowIndex="3"/>
 </GridPane>

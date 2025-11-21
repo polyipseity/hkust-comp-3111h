@@ -1,6 +1,5 @@
 package library.controllers.student_staff;
 
-import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -74,8 +73,7 @@ public final class AvailableBooksController implements RequiresLoggedIn {
 	/**
 	 * Runs each time the "Borrow Book" button is pressed.
 	 */
-	@FXML
-	private void borrowButtonAction() throws TransactionException {
+	public void borrowSelectedBook() throws TransactionException {
 		final var context = Main.getContext();
 		final var currentRow = table.getSelectionModel().getSelectedItem();
 		if (currentRow == null) {

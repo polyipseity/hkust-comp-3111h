@@ -1,27 +1,31 @@
 package library.controllers.student_staff;
 
 import javafx.embed.swing.SwingNode;
-import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.WindowEvent;
+import library.controllers.common.RequiresLoggedIn;
 import library.utils.Alerts;
 import org.icepdf.ri.common.SwingController;
 import org.icepdf.ri.common.SwingViewBuilder;
 import org.icepdf.ri.util.FontPropertiesManager;
 import org.icepdf.ri.util.ViewerPropertiesManager;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public final class BookViewController {
+public final class BookViewController implements RequiresLoggedIn {
 	private final String currentPath;
-	@FXML
-	private BorderPane borderPane;
+	@UnknownNullability
+	public BorderPane borderPane;
 	private SwingController swingController;
 	private JComponent viewerPanel;
 
@@ -29,8 +33,10 @@ public final class BookViewController {
 		currentPath = path;
 	}
 
-	@FXML
-	private void initialize() {
+	@Override
+	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+		RequiresLoggedIn.super.initialize(location, resources);
+
 		createViewer();
 		load();
 	}

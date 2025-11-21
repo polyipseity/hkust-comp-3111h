@@ -32,7 +32,7 @@
 					<Insets bottom="8.0"/>
 				</VBox.margin>
 			</Text>
-			<Button onAction="#borrowButtonAction" text="Borrow Selected Book" wrapText="true">
+			<Button onAction="#borrowSelectedBook" text="Borrow Selected Book" wrapText="true">
 				<VBox.margin>
 					<Insets bottom="8.0"/>
 				</VBox.margin>

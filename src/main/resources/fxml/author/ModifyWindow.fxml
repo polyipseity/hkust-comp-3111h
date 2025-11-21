@@ -43,8 +43,8 @@
 			<GridPane.margin>
 				<Insets top="15.0" />
 			</GridPane.margin>
-			<Button mnemonicParsing="false" onAction="#cancelModification" prefWidth="60.0" text="Cancel" />
-			<Button fx:id="saveButton" defaultButton="true" disable="true" mnemonicParsing="false" onAction="#saveModification" prefWidth="60.0" text="Save" />
+			<Button mnemonicParsing="false" onAction="#cancel" prefWidth="60.0" text="Cancel" />
+			<Button fx:id="saveButton" defaultButton="true" disable="true" mnemonicParsing="false" onAction="#confirm" prefWidth="60.0" text="Save" />
 		</HBox>
 	</GridPane>
 </VBox>
