@@ -1,92 +1,81 @@
 package library.controllers.student_staff;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
-import library.Context;
 import library.Main;
+import library.controllers.common.DynamicTableController;
 import library.controllers.common.RequiresLoggedIn;
 import library.controls.BorrowBooksControl;
+import library.models.Author;
 import library.models.Book;
 import library.models.User;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.HasMessage;
-import lombok.Getter;
+import library.utils.TimeUtil;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.net.URL;
-import java.time.format.DateTimeFormatter;
-import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.Function;
 
 public final class AvailableBooksController implements RequiresLoggedIn {
-    private final Context context = Main.getContext();
-    private final User user = this.getLoggedInUser()._1();
+	@UnknownNullability
+	public TableView<@Nullable Data> table;
+	@UnknownNullability
+	public DynamicTableController<Keys, Data> tableController;
+	@UnknownNullability
+	public TableColumn<Data, @Nullable Data> titleCol, authorCol, publishDateCol, summaryCol;
 
-	public Text titleText, authorText, publishDateText, summaryText;
-	public TableView<@Nullable tableRow> table;
+	@UnknownNullability
 	public Node sidebar;
-	public TableColumn<tableRow, @Nullable String> titleCol, authorCol, publishDateCol, summaryCol;
+	@UnknownNullability
+	public Text titleText, authorText, publishDateText, summaryText;
+
 	@Setter
-    private DashboardController parentController;
-
-    public record tableRow(
-            @Getter String title,
-            @Getter String author,
-            @Getter String publishDate,
-            @Getter String summary,
-            Book book
-    ) {
-    }
-
-    public record dialogResult(String minutes, String seconds) {
-    }
-
-    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+	private DashboardController parentController;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
 
-		titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
-		authorCol.setCellValueFactory(new PropertyValueFactory<>("author"));
-		publishDateCol.setCellValueFactory(new PropertyValueFactory<>("publishDate"));
-		summaryCol.setCellValueFactory(new PropertyValueFactory<>("summary"));
+		final var keys = new LinkedHashMap<Keys, TableColumn<Data, @Nullable Data>>();
+		keys.put(Keys.TITLE, titleCol);
+		keys.put(Keys.AUTHOR_FULL_NAME, authorCol);
+		keys.put(Keys.PUBLISH_DATE, publishDateCol);
+		keys.put(Keys.SUMMARY, summaryCol);
+		tableController = new DynamicTableController<>(table, keys);
 
-		table.getSelectionModel().selectedItemProperty().addListener(
-				(_, _, newValue) -> {
-					if (newValue != null) {
-						titleText.setText(newValue.getTitle());
-						authorText.setText(newValue.getAuthor());
-						publishDateText.setText(newValue.getPublishDate());
-						summaryText.setText(newValue.getSummary());
-					}
-				}
-		);
+		final var selectedItem = table.getSelectionModel().selectedItemProperty();
+		titleText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.book.title()));
+		authorText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.authorFullName));
+		publishDateText.textProperty().bind(selectedItem.map(item -> item == null || item.bookData.publishDate() == null ? "" : TimeUtil.toStringZonedLocal(item.bookData.publishDate())));
+		summaryText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.bookData.summary()));
 
-		reload();
+		loadTable();
 	}
 
-	public void reload() {
-        ObservableList<tableRow> data = FXCollections.observableArrayList();
-		Map<Book, Book.Data> availableBooks = context.getBorrowBooksControl().availableBooks(user);
-        for (var entry : availableBooks.entrySet()) {
-            Book book = entry.getKey();
-            Book.Data bookData = entry.getValue();
-            String publishDateString =
-                    bookData.publishDate() == null ? "N/A" : bookData.publishDate().format(dateTimeFormatter);
-            data.add(new tableRow(book.title(), book.author().toString(),
-                    publishDateString, bookData.summary(), book));
-        }
-        table.setItems(data);
+	public void loadTable() {
+		final var context = Main.getContext();
+		final var repository = context.getRepository();
+		tableController.setData(context.getBorrowBooksControl().getBorrowableBooks(getLoggedInUser()._1())
+				.entrySet()
+				.stream()
+				.map(entry -> new Data(this, entry.getKey(), entry.getValue(), switch (entry.getKey().author()) {
+					case Author.ByName(final var val) -> val;
+					case Author.ByRef(final var val) -> repository.userOps
+							.read(val)
+							.map(User.Data::fullName)
+							.orElseGet(() -> "ERROR: %s".formatted(val.username()));
+				}))
+				.toList());
     }
 
     /**
@@ -94,12 +83,13 @@ public final class AvailableBooksController implements RequiresLoggedIn {
      */
     @FXML
     private void borrowButtonAction() throws TransactionException {
-        tableRow currentRow = table.getSelectionModel().getSelectedItem();
+	    final var context = Main.getContext();
+	    final var currentRow = table.getSelectionModel().getSelectedItem();
         if (currentRow == null) {
             Alerts.showErrorDialog("Please select a book first.");
             return;
         }
-        Book selectedBook = currentRow.book;
+	    final var selectedBook = currentRow.book;
 
         // Try to get the borrow duration for the book
         Dialog<@Nullable dialogResult> dialog = createDialog();
@@ -116,7 +106,7 @@ public final class AvailableBooksController implements RequiresLoggedIn {
             return;
         }
 
-	    switch (context.getBorrowBooksControl().borrowBook(user, selectedBook, minutes, seconds)) {
+	    switch (context.getBorrowBooksControl().borrowBook(getLoggedInUser()._1(), selectedBook, minutes, seconds)) {
             case BorrowBooksControl.BorrowResult.Success _ -> {
                 context.getRepository().bookOps.update(selectedBook, current->current.withTimesBorrowed(current.timesBorrowed()+1));
                 long millis = (minutes * 60L + seconds) * 1000;
@@ -124,10 +114,45 @@ public final class AvailableBooksController implements RequiresLoggedIn {
                 Alerts.showInfoDialog("Book borrowed successfully");
             }
             case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
-        }
+	    }
 
-        reload();
+	    loadTable();
     }
+
+	public enum Keys {
+		TITLE,
+		AUTHOR_FULL_NAME,
+		PUBLISH_DATE,
+		SUMMARY
+	}
+
+	public record dialogResult(String minutes, String seconds) {
+	}
+
+	public record Data(AvailableBooksController controller,
+	                   Book book,
+	                   Book.Data bookData,
+	                   String authorFullName)
+			implements Function<Keys, DynamicTableController.Data> {
+		/**
+		 * Applies this function to the given argument.
+		 *
+		 * @param key the function argument
+		 * @return the function result
+		 */
+		@Override
+		public DynamicTableController.Data apply(Keys key) {
+			return switch (key) {
+				case TITLE -> new DynamicTableController.Data.Text(book.title());
+				case AUTHOR_FULL_NAME -> new DynamicTableController.Data.Text(authorFullName);
+				case PUBLISH_DATE -> new DynamicTableController.Data.Text(
+						bookData.publishDate() == null
+								? ""
+								: TimeUtil.toStringZonedLocal(bookData.publishDate()));
+				case SUMMARY -> new DynamicTableController.Data.Text(bookData.summary());
+			};
+		}
+	}
 
     /**
      * @return A properly configured input dialog for entering the borrowing duration.

@@ -34,9 +34,8 @@ public final class MyBooksController implements RequiresLoggedIn {
 	public TableView<@Nullable Data> table;
 	@UnknownNullability
 	public DynamicTableController<Keys, Data> tableController;
-
-    @FXML
-    private TableColumn<Data, @Nullable Data> titleColumn, statusColumn, dateColumn, readersColumn, summaryColumn;
+	@UnknownNullability
+	public TableColumn<Data, @Nullable Data> titleColumn, statusColumn, dateColumn, readersColumn, summaryColumn;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {

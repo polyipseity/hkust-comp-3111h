@@ -1,6 +1,6 @@
 package library.controllers.student_staff;
 
-import javafx.fxml.FXML;
+import javafx.application.Platform;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import library.Context;
@@ -12,6 +12,7 @@ import library.models.Book;
 import library.models.User;
 import library.persistence.TransactionException;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -23,16 +24,18 @@ public final class DashboardController extends CommonDashboardController impleme
     private final User user = this.getLoggedInUser()._1();
     Timer timer = new Timer("student_staff_timer");
 
-    @FXML
-    SplitPane availableBooks;
-    @FXML
-    BorderPane borrowedBooks;
+	@UnknownNullability
+	public SplitPane availableBooks;
+	@UnknownNullability
+	public AvailableBooksController availableBooksController;
 
-    public AvailableBooksController availableBooksController;
+	@UnknownNullability
+	public BorderPane borrowedBooks;
+	@UnknownNullability
     public BorrowedBooksController borrowedBooksController;
 
     public void loadAvailableBooks() {
-        availableBooksController.reload();
+	    availableBooksController.loadTable();
     }
 
     public void loadBorrowedBooks() {
@@ -65,8 +68,10 @@ public final class DashboardController extends CommonDashboardController impleme
                             context.getBorrowBooksControl().returnBook(user, book);
                     // Only reload tabs if a book is actually returned
                     if (result instanceof BorrowBooksControl.ReturnResult.Success) {
-                        loadAvailableBooks();
-                        loadBorrowedBooks();
+	                    Platform.runLater(() -> {
+		                    loadAvailableBooks();
+		                    loadBorrowedBooks();
+	                    });
                     }
                 } catch (TransactionException e) {
                     throw new RuntimeException(e);

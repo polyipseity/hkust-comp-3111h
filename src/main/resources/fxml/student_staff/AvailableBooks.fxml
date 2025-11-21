@@ -12,7 +12,7 @@
 			<TableColumn fx:id="titleCol" prefWidth="75.0" text="Title"/>
 			<TableColumn fx:id="authorCol" prefWidth="75.0" text="Author"/>
 			<TableColumn fx:id="publishDateCol" prefWidth="75.0" text="Published On"/>
-			<TableColumn fx:id="summaryCol" prefWidth="75.0" text="Abstract"/>
+			<TableColumn fx:id="summaryCol" prefWidth="75.0" text="Summary"/>
 		</columns>
 	</TableView>
 	<ScrollPane fx:id="sidebar" minWidth="200.0" fitToWidth="true">

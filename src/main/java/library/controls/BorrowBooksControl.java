@@ -53,12 +53,12 @@ public record BorrowBooksControl(Repository repository) {
         return new BorrowResult.Success();
     }
 
-    public Map<Book, Book.Data> availableBooks(User user) {
-        return repository.bookOps.read(entry -> {
-            Book book = entry.getKey();
-            Book.Data bookData = entry.getValue();
-            return repository.borrowOps.read(user, book).isEmpty();
-        });
+	public Map<Book, Book.Data> getBorrowableBooks(User user) {
+		final var publishedBooks = repository.bookOps.read(entry -> entry.getValue().published());
+		final var borrowedBooks = repository.borrowOps.read(user);
+		return publishedBooks.entrySet().stream()
+				.filter(book -> !borrowedBooks.containsKey(book.getKey()))
+				.collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private String generatePdfPath(User user, Book book) {
@@ -179,7 +179,7 @@ public record BorrowBooksControl(Repository repository) {
 	public ReturnResult returnBook(User user, Book book) throws TransactionException {
 		if (!checkBorrowed(user, book)) return new ReturnResult.BookNotBorrowed();
 		else {
-			Borrow borrowData = repository.borrowOps.read(user, book).get();
+			Borrow borrowData = repository.borrowOps.readOrThrow(user, book);
 			repository.borrowOps.delete(user, book, borrowData);
 			return new ReturnResult.Success();
 		}
