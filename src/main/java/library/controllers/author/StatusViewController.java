@@ -2,7 +2,6 @@ package library.controllers.author;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
@@ -12,6 +11,7 @@ import library.models.Author;
 import library.models.Book;
 import library.persistence.Repository;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.net.URL;
 import java.util.Comparator;
@@ -28,10 +28,10 @@ public final class StatusViewController implements RequiresLoggedIn {
 	private int approvedBooks = 0;
 	private int rejectedBooks = 0;
 
-	@FXML
-	private PieChart statusChart;
-	@FXML
-	private BarChart<String, Number> popularChart;
+	@UnknownNullability
+	public PieChart statusChart;
+	@UnknownNullability
+	public BarChart<String, Number> popularChart;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
@@ -45,8 +45,7 @@ public final class StatusViewController implements RequiresLoggedIn {
 		authorBooks = repository.bookOps.read(entry -> author.equals(entry.getKey().author()));
 	}
 
-	@FXML
-	private void refresh() {
+	public void refresh() {
 		refreshStatus();
 		loadPieChartData();
 		loadBarChartData();

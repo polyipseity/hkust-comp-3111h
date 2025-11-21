@@ -2,7 +2,6 @@ package library.controllers.common;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -14,6 +13,7 @@ import library.Main;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.net.URL;
 import java.util.Objects;
@@ -25,8 +25,8 @@ public final class InformBoardController implements RequiresLoggedIn {
 	private final ObservableList<String> notifications = FXCollections.observableArrayList();
 	Repository repository = Main.getContext().getRepository();
 	//Referring to fxml ListView
-	@FXML
-	private ListView<String> notificationList;
+	@UnknownNullability
+	public ListView<String> notificationList;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
@@ -44,8 +44,7 @@ public final class InformBoardController implements RequiresLoggedIn {
 		notificationList.setItems(notifications);
 	}
 
-	@FXML
-	private void ClearAll() throws TransactionException {
+	public void clearAll() throws TransactionException {
 		repository.userNotificationOps.update(getLoggedInUser()._1(), current -> new String[0]);
 		updateNotificationList();
 	}

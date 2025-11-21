@@ -1,7 +1,6 @@
 package library.controllers.author;
 
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -20,7 +19,7 @@ import org.jetbrains.annotations.UnknownNullability;
 import java.util.Objects;
 
 public final class ModifyWindowController implements RequiresLoggedIn {
-	public Runnable modifyCallback = () -> {
+	public Runnable confirmCallback = () -> {
 	};
 
 	@UnknownNullability
@@ -49,8 +48,7 @@ public final class ModifyWindowController implements RequiresLoggedIn {
 		this.bookEntry = bookEntry;
 	}
 
-	@FXML
-	private void saveModification() {
+	public void confirm() {
 		final var bookEntry = getBookEntry();
 		final var title = titleField.getText();
 		final var summary = summaryArea.getText();
@@ -61,7 +59,7 @@ public final class ModifyWindowController implements RequiresLoggedIn {
 					Alerts.showInfoDialog(success.getMessage());
 					// Close the current window
 					((Stage) saveButton.getScene().getWindow()).close();
-					modifyCallback.run();
+					confirmCallback.run();
 				}
 				case HasMessage message -> Alerts.showErrorDialog(message.getMessage());
 			}
@@ -70,8 +68,7 @@ public final class ModifyWindowController implements RequiresLoggedIn {
 		}
 	}
 
-	@FXML
-	private void cancelModification() {
+	public void cancel() {
 		((Stage) saveButton.getScene().getWindow()).close();
 	}
 }

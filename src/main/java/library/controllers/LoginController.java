@@ -1,6 +1,5 @@
 package library.controllers;
 
-import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -14,17 +13,18 @@ import library.utils.Alerts;
 import library.utils.HasMessage;
 import library.utils.Tuple2;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.io.IOException;
 import java.util.Objects;
 
 public final class LoginController implements DependsOnRole, RequiresLoggedOut {
-	@FXML
-	private Label headerLabel;
-	@FXML
-	private TextField usernameField;
-	@FXML
-	private PasswordField passwordField;
+	@UnknownNullability
+	public Label headerLabel;
+	@UnknownNullability
+	public TextField usernameField;
+	@UnknownNullability
+	public PasswordField passwordField;
 
 	@Nullable
 	private User.Role role;
@@ -40,8 +40,7 @@ public final class LoginController implements DependsOnRole, RequiresLoggedOut {
 		headerLabel.setText("%s Login".formatted(role.nameCapitalized));
 	}
 
-	@FXML
-	private void login() throws IOException {
+	public void login() throws IOException {
 		String username = usernameField.getText();
 		String password = passwordField.getText();
 
@@ -59,17 +58,14 @@ public final class LoginController implements DependsOnRole, RequiresLoggedOut {
 		}
 	}
 
-
-	@FXML
-	private void goToHome() throws IOException {
+	public void goToHome() throws IOException {
 		Main.getContext().setScene(FXMLs.HOME.load());
 	}
 
 	/**
 	 * New: navigate to the standalone Register screen
 	 */
-	@FXML
-	private void goToRegister() throws IOException {
+	public void goToRegister() throws IOException {
 		Main.getContext().setScene(FXMLs.REGISTER.load(loader -> loader.<DependsOnRole>getController().setRole(getRole())));
 	}
 }

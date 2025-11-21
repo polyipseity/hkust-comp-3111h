@@ -20,5 +20,5 @@
 		<TextField fx:id="titleField" GridPane.columnIndex="1"/>
 		<TextField fx:id="authorField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
 	</GridPane>
-	<Button onAction="#requestBookButtonAction" mnemonicParsing="false" text="Submit Request"/>
+	<Button onAction="#requestBook" mnemonicParsing="false" text="Submit Request"/>
 </VBox>

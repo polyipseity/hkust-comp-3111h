@@ -1,7 +1,6 @@
 package library.controllers.student_staff;
 
 import javafx.beans.property.SimpleStringProperty;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
@@ -61,8 +60,7 @@ public final class BorrowedBooksController implements RequiresLoggedIn {
 		);
 	}
 
-	@FXML
-	private void readSelectedBook() throws IOException {
+	public void readSelectedBook() throws IOException {
 		final var context = Main.getContext();
 
 		final var currentRow = table.getSelectionModel().getSelectedItem();

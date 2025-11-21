@@ -1,6 +1,5 @@
 package library.controllers.common;
 
-import javafx.fxml.FXML;
 import library.FXMLs;
 import library.Main;
 
@@ -10,8 +9,7 @@ public abstract class CommonDashboardController implements RequiresLoggedIn {
 	/**
 	 * Log out back to the Home screen.
 	 */
-	@FXML
-	private void goToLogout() throws IOException {
+	public void goToLogout() throws IOException {
 		Main.getContext().setScene(FXMLs.HOME.load());
 	}
 }

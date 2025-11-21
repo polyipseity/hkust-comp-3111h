@@ -33,8 +33,8 @@
 		<padding>
 			<Insets top="10.0"/>
 		</padding>
-		<Button onAction="#AuthorViewBook" mnemonicParsing="false" text="View" textAlignment="CENTER"/>
-		<Button onAction="#AuthorModifyBook" mnemonicParsing="false" text="Modify" textAlignment="CENTER"/>
-		<Button onAction="#AuthorDeleteBook" mnemonicParsing="false" text="Delete" textAlignment="CENTER"/>
+		<Button onAction="#viewBook" mnemonicParsing="false" text="View" textAlignment="CENTER"/>
+		<Button onAction="#modifyBook" mnemonicParsing="false" text="Modify" textAlignment="CENTER"/>
+		<Button onAction="#deleteBook" mnemonicParsing="false" text="Delete" textAlignment="CENTER"/>
 	</HBox>
 </VBox>

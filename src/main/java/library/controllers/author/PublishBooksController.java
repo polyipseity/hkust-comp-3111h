@@ -1,6 +1,5 @@
 package library.controllers.author;
 
-import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import library.Main;
@@ -13,6 +12,7 @@ import library.persistence.TransactionException;
 import library.utils.Alerts;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,14 +27,13 @@ public final class PublishBooksController implements RequiresLoggedIn {
 	@Setter
 	private DashboardController parentController;
 
-	@FXML
-	private TextField titleField, contentField, summaryField;
+	@UnknownNullability
+	public TextField titleField, contentField, summaryField;
 	@Nullable
 	private String ContentTxt;
 
 	//Method for choosing text file
-	@FXML
-	private void ChooseTextFile() {
+	public void chooseTextFile() {
 		FileChooser fileChooser = new FileChooser();
 
 		// Set file filter for .txt files
@@ -60,8 +59,7 @@ public final class PublishBooksController implements RequiresLoggedIn {
 	}
 
 	//Method for generating summary of the book based on the title
-	@FXML
-	private void Generate() {
+	public void generateSummary() {
 		if (ContentTxt == null || titleField.getText() == null) {
 			Alerts.showErrorDialog("You must enter the book title and upload the book content first!");
 		} else {
@@ -90,8 +88,7 @@ public final class PublishBooksController implements RequiresLoggedIn {
 	}
 
 	//Method for publishing the book
-	@FXML
-	private void PublishBook() {
+	public void publishBook() {
 		if (titleField.getText().isEmpty() || ContentTxt == null || ContentTxt.isEmpty() || summaryField.getText().isEmpty()) {
 			Alerts.showErrorDialog("Missing information of the book.");
 			return;
