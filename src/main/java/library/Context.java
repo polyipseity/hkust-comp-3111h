@@ -44,7 +44,9 @@ public interface Context extends Closeable {
 
 	StatsControl getStatsControl();
 
-	void addSecondTimerListener(Object key, Consumer<? super ActionEvent> listener);
+	void addSecondTimelineListener(Object key, Consumer<? super ActionEvent> listener);
+
+	void addMinuteTimelineListener(Object key, Consumer<? super ActionEvent> listener);
 
 	@Nullable
 	Tuple2<User, User.Data> getLoggedInUser();

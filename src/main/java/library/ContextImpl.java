@@ -46,8 +46,11 @@ public final class ContextImpl implements Context {
 	private final RequestBooksControl requestBooksControl;
 	@Getter
 	private final StatsControl statsControl;
+
 	private final Timeline secondTimeline;
-	private final WeakHashMap<Object, Consumer<? super ActionEvent>> secondTimerListeners = new WeakHashMap<>();
+	private final WeakHashMap<Object, Consumer<? super ActionEvent>> secondTimelineListeners = new WeakHashMap<>();
+	private final Timeline minuteTimeline;
+	private final WeakHashMap<Object, Consumer<? super ActionEvent>> minuteTimelineListeners = new WeakHashMap<>();
 
 	@Setter
 	@Getter
@@ -68,10 +71,16 @@ public final class ContextImpl implements Context {
 		this.statsControl = new StatsControl();
 
 		final var secondTimeline = new Timeline(new KeyFrame(Duration.seconds(1), event ->
-				secondTimerListeners.values().forEach(listener -> listener.accept(event))));
+				secondTimelineListeners.values().forEach(listener -> listener.accept(event))));
 		secondTimeline.setCycleCount(Animation.INDEFINITE);
 		secondTimeline.play();
 		this.secondTimeline = secondTimeline;
+
+		final var minuteTimeline = new Timeline(new KeyFrame(Duration.minutes(1), event ->
+				minuteTimelineListeners.values().forEach(listener -> listener.accept(event))));
+		minuteTimeline.setCycleCount(Animation.INDEFINITE);
+		minuteTimeline.play();
+		this.minuteTimeline = minuteTimeline;
 	}
 
 	/**
@@ -107,7 +116,12 @@ public final class ContextImpl implements Context {
 	}
 
 	@Override
-	public void addSecondTimerListener(Object key, Consumer<? super ActionEvent> listener) {
-		secondTimerListeners.put(key, listener);
+	public void addSecondTimelineListener(Object key, Consumer<? super ActionEvent> listener) {
+		secondTimelineListeners.put(key, listener);
+	}
+
+	@Override
+	public void addMinuteTimelineListener(Object key, Consumer<? super ActionEvent> listener) {
+		minuteTimelineListeners.put(key, listener);
 	}
 }

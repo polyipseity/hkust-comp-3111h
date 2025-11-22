@@ -83,7 +83,12 @@ class FXMLsTest {
 			}
 
 			@Override
-			public void addSecondTimerListener(Object key, Consumer<? super ActionEvent> listener) {
+			public void addSecondTimelineListener(Object key, Consumer<? super ActionEvent> listener) {
+				// noop
+			}
+
+			@Override
+			public void addMinuteTimelineListener(Object key, Consumer<? super ActionEvent> listener) {
 				// noop
 			}
 

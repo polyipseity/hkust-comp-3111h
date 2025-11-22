@@ -137,7 +137,7 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 					final var borrow = this.borrow; // Do not reference `this` in lambda.
 					final var prop = new SimpleStringProperty(TimeUtil.toStringDuration(borrow.durationLeft()));
 					final var ret = new DynamicTableController.Data.ObservableText(prop);
-					Main.getContext().addSecondTimerListener(ret, _ ->
+					Main.getContext().addSecondTimelineListener(ret, _ ->
 							prop.setValue(TimeUtil.toStringDuration(borrow.durationLeft())));
 					yield ret;
 				}
