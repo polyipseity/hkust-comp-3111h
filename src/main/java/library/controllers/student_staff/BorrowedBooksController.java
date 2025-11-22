@@ -126,9 +126,8 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 				case DURATION_LEFT -> {
 					final var borrow = this.borrow; // Do not reference `this` in lambda.
 					final var prop = new SimpleStringProperty(TimeUtil.toStringDuration(borrow.durationLeft()));
-					final var ret = new DynamicTableController.Data.ObservableText(prop, borrow::durationLeft);
 					final var weakThis = new WeakReference<>(this);
-					Main.getContext().addSecondTimelineListener(ret, _ -> {
+					Main.getContext().addSecondTimelineListener(this, _ -> {
 						prop.setValue(TimeUtil.toStringDuration(borrow.durationLeft()));
 						if (borrow.expired()) {
 							final var this2 = weakThis.get();
@@ -136,7 +135,7 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 							this2.controller.tableController.removeDatum(this2);
 						}
 					});
-					yield ret;
+					yield new DynamicTableController.Data.ObservableText(prop, borrow::durationLeft);
 				}
 				case ACTIONS -> DynamicTableController.Data.Graphic.ofButtons(
 						new Tuple2<>(new ReadOnlyStringWrapper("Return"), (_, _) -> {
