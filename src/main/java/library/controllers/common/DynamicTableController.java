@@ -54,13 +54,20 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 	@SuppressWarnings("UnusedReturnValue")
 	public boolean setData(Collection<Value> data) {
 		final var items = table.getItems();
-		return items.removeIf(Predicate.not(data::contains)) // Remove obsolete items
-				|| items.addAll(data.stream().filter(Predicate.not(items::contains)).toList()); // Add new items
+		final var removed = items.removeIf(Predicate.not(data::contains)); // Remove obsolete items
+		// Add new items
+		if (items.addAll(data.stream().filter(Predicate.not(items::contains)).toList())) {
+			table.sort();
+			return true;
+		}
+		return removed;
 	}
 
 	@SuppressWarnings("UnusedReturnValue")
 	public boolean addDatum(@NotNull Value datum) {
-		return table.getItems().add(datum);
+		table.getItems().add(datum); // always `true`
+		table.sort();
+		return true;
 	}
 
 	@SuppressWarnings("UnusedReturnValue")
@@ -75,6 +82,7 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 			case -1 -> false;
 			case Integer idx -> {
 				items.set(idx, datum);
+				table.sort();
 				yield true;
 			}
 		};
