@@ -7,7 +7,7 @@ import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.TimeZone;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,21 +45,22 @@ class TimeUtilTest {
 		final var utcInstant =
 				ZonedDateTime.of(2023, 5, 15, 12, 0, 0, 0, ZoneOffset.UTC);
 
-		// Act
-		final var result = TimeUtil.toStringZonedLocal(utcInstant);
-
-		// Assert: the string contains the system default zone id
-		assertTrue(result.contains(ZoneId.systemDefault().getId()),
-				() -> "Result did not contain system default zone id. Result: %s".formatted(result));
-
 		// Also check that the UTC part was removed (i.e. the hour has changed if the offset is non‑zero)
-		final var converted = utcInstant.withZoneSameInstant(ZoneId.systemDefault());
-		final var expected = DateTimeFormatter.ISO_ZONED_DATE_TIME.format(converted);
-		assertEquals(expected, result,
-				() -> """
-						Converted string does not match expected value.
-						Expected: %s
-						Actual:   %s""".formatted(expected, result));
+		final var defaultTimeZone = TimeZone.getDefault();
+		TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.ofHours(1)));
+		try {
+			// Act
+			final var result = TimeUtil.toStringZonedLocal(utcInstant);
+
+			final var expected = "2023-05-15 13:00:00";
+			assertEquals(expected, result,
+					() -> """
+							Converted string does not match expected value.
+							Expected: %s
+							Actual:   %s""".formatted(expected, result));
+		} finally {
+			TimeZone.setDefault(defaultTimeZone);
+		}
 	}
 
 	@Test
@@ -74,7 +75,7 @@ class TimeUtilTest {
 		final var result = TimeUtil.toStringZonedLocal(localInstant);
 
 		// Assert: the string is identical to the original formatted value
-		final var expected = DateTimeFormatter.ISO_ZONED_DATE_TIME.format(localInstant);
+		final var expected = "2024-01-01 08:30:00";
 		assertEquals(expected, result,
 				() -> """
 						String representation should be unchanged for local zone.

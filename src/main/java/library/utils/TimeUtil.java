@@ -4,7 +4,6 @@ import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 public enum TimeUtil {
 	;
@@ -14,7 +13,13 @@ public enum TimeUtil {
 	}
 
 	public static String toStringZonedLocal(ZonedDateTime dateTime) {
-		return DateTimeFormatter.ISO_ZONED_DATE_TIME.format(dateTime.withZoneSameInstant(ZoneId.systemDefault()));
+		final var localDateTime = dateTime.withZoneSameInstant(ZoneId.systemDefault());
+		return "%04d-%02d-%02d %02d:%02d:%02d".formatted(localDateTime.getYear(),
+				localDateTime.getMonthValue(),
+				localDateTime.getDayOfMonth(),
+				localDateTime.getHour(),
+				localDateTime.getMinute(),
+				localDateTime.getSecond());
 	}
 
 	public static String toStringDuration(Duration duration) {
