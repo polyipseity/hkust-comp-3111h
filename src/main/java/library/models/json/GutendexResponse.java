@@ -31,15 +31,18 @@ public record GutendexResponse(
 			@JsonProperty("download_count") long downloadCount
 	) {
 		public String authorString() {
-			return authors.stream().map(Person::name).collect(Collectors.joining("; "));
+			final var ret = authors.stream().map(Person::name).collect(Collectors.joining("; "));
+			return ret.isBlank() ? "(no authors)" : ret;
 		}
 
 		public String bookshelvesString() {
-			return String.join("; ", bookshelves);
+			final var ret = String.join("; ", bookshelves);
+			return ret.isBlank() ? "(no bookshelves)" : ret;
 		}
 
 		public String summariesString() {
-			return String.join("\n\n", summaries);
+			final var ret = String.join("\n\n", summaries);
+			return ret.isBlank() ? "(no summary)" : ret;
 		}
 	}
 
