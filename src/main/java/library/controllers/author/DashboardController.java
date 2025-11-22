@@ -1,6 +1,8 @@
 package library.controllers.author;
 
+import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Tab;
 import library.controllers.common.CommonDashboardController;
 import library.controllers.common.InformBoardController;
 import org.jetbrains.annotations.UnknownNullability;
@@ -27,12 +29,17 @@ public final class DashboardController extends CommonDashboardController {
 	@SuppressWarnings("unused")
 	public InformBoardController informBoardController;
 
+    @FXML
+    private Tab statusViewTab;
+
 	public void loadMyBooks() {
 		myBooksController.loadData();
 	}
 
 	public void loadStatusView() {
-		statusViewController.loadData();
+        if(statusViewTab.isSelected()){
+            statusViewController.loadData();
+        }
 	}
 
 	public void loadInformBoard() {

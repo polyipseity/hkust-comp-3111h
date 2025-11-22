@@ -14,9 +14,9 @@
 		<Insets bottom="50.0" left="50.0" right="50.0" top="50.0"/>
 	</padding>
 	<HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="40.0" VBox.vgrow="ALWAYS">
-		<PieChart maxWidth="600" maxHeight="600" fx:id="statusChart" title="My Books: Status"
+		<PieChart maxWidth="500" maxHeight="500" fx:id="statusChart" title="My Books: Status"
 		          HBox.hgrow="ALWAYS"/>
-		<BarChart legendVisible="false" maxWidth="600" maxHeight="600" animated="false" fx:id="popularChart"
+		<BarChart legendVisible="false" maxWidth="500" maxHeight="500" animated="false" fx:id="popularChart"
 		          title="Top 5 Most Popular Book" HBox.hgrow="ALWAYS">
 			<xAxis>
 				<CategoryAxis side="BOTTOM" tickLabelRotation="90"/>

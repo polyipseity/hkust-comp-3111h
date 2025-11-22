@@ -48,13 +48,15 @@ public final class StatusViewController implements RequiresLoggedIn, Initializab
 
 		for (final var bookEntry : authorBooks.entrySet()) {
 			final var data = bookEntry.getValue();
-			if (data.approvalStatus() == Book.ApprovalStatus.APPROVED) {
-				approvedBooks++;
-			} else if (data.approvalStatus() == Book.ApprovalStatus.PENDING) {
-				pendingBooks++;
-			} else if (data.approvalStatus() == Book.ApprovalStatus.REJECTED) {
-				rejectedBooks++;
-			}
+            if (data.approvalStatus() == Book.ApprovalStatus.APPROVED) {
+                if(data.originalOrModified()==null) {
+                    approvedBooks++;
+                }
+            } else if (data.approvalStatus() == Book.ApprovalStatus.PENDING) {
+                pendingBooks++;
+            } else if (data.approvalStatus() == Book.ApprovalStatus.REJECTED) {
+                rejectedBooks++;
+            }
 		}
 
 		List<PieChart.Data> pieChartData = List.of(
@@ -64,6 +66,8 @@ public final class StatusViewController implements RequiresLoggedIn, Initializab
 		);
 
 		statusChart.getData().setAll(pieChartData);
+        statusChart.setMinSize(200, 200);
+        statusChart.layout();
 	}
 
 	@SuppressWarnings("unchecked")

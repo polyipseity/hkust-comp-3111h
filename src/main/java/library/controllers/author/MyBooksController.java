@@ -100,13 +100,18 @@ public final class MyBooksController implements RequiresLoggedIn, Initializable,
 			// Button should be disabled
 			return;
 		}
-		Main.getContext().newWindow(
+		var newWindow = Main.getContext().newWindow(
 				"Modify Book",
 				// Load the FXML file for the new window's content
 				stage -> FXMLs.AUTHOR_MODIFY_WINDOW.<Parent>load(loader ->
 						loader.setControllerFactory(_ -> new ModifyWindowController(stage, selected.book, selected.bookData, this::loadData))),
 				null
-		).show();
+		);
+        newWindow.setOnHidden(windowEvent -> loadData());
+        newWindow.setHeight(250);
+        newWindow.setWidth(480);
+        newWindow.setResizable(false);
+        newWindow.show();
 	}
 
 	public void deleteBook() {

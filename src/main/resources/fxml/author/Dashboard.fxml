@@ -29,7 +29,7 @@
 
 
 			<!-- Status View Tab -->
-			<Tab text="Status View" onSelectionChanged="#loadStatusView">
+			<Tab text="Status View" onSelectionChanged="#loadStatusView" fx:id="statusViewTab">
 				<StackPane>
 					<fx:include source="StatusView.fxml" fx:id="statusView"/>
 				</StackPane>
