@@ -5,10 +5,7 @@ import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
 import library.utils.Tuple2;
@@ -78,6 +75,7 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 	}
 
 	protected TableColumn<Value, @Nullable Value> configureColumn(@NotNull Key key, TableColumn<Value, @Nullable Value> column) {
+		column.setComparator(Comparator.comparing(datum -> Objects.requireNonNull(datum).apply(key)));
 		column.setCellValueFactory(new Callback<>() {
 			/**
 			 * The <code>call</code> method is called when required, and is given a
@@ -113,10 +111,10 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 					 * best method for developers to override to allow for them to customise the
 					 * visuals of the cell. To clarify, developers should never call this method
 					 * in their code (they should leave it up to the UI control, such as the
-					 * {@link javafx.scene.control.ListView} control) to call this method. However,
+					 * {@link ListView} control) to call this method. However,
 					 * the purpose of having the updateItem method is so that developers, when
 					 * specifying custom cell factories (again, like the ListView
-					 * {@link javafx.scene.control.ListView#cellFactoryProperty() cell factory}),
+					 * {@link ListView#cellFactoryProperty() cell factory}),
 					 * the updateItem method can be overridden to allow for complete customisation
 					 * of the cell.
 					 *
@@ -167,8 +165,8 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 						}
 						switch (item.apply(key)) {
 							case Data.Text(final var val) -> setText(val);
-							case Data.Graphic(final var val) -> setGraphic(val.get());
 							case Data.ObservableText(final var val) -> textProperty().bind(val);
+							case Data.Graphic(final var val) -> setGraphic(val.get());
 						}
 					}
 				};
@@ -177,13 +175,118 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 		return column;
 	}
 
-	public sealed interface Data permits Data.Graphic, Data.ObservableText, Data.Text {
+	public sealed interface Data extends Comparable<Data> permits Data.Graphic, Data.ObservableText, Data.Text {
+		byte getTag();
+
 		record Text(String value) implements Data {
+			public static final byte TAG = 0;
+
+			@Override
+			public byte getTag() {
+				return TAG;
+			}
+
+			/**
+			 * Compares this object with the specified object for order.  Returns a
+			 * negative integer, zero, or a positive integer as this object is less
+			 * than, equal to, or greater than the specified object.
+			 *
+			 * <p>The implementor must ensure {@link Integer#signum
+			 * signum}{@code (x.compareTo(y)) == -signum(y.compareTo(x))} for
+			 * all {@code x} and {@code y}.  (This implies that {@code
+			 * x.compareTo(y)} must throw an exception if and only if {@code
+			 * y.compareTo(x)} throws an exception.)
+			 *
+			 * <p>The implementor must also ensure that the relation is transitive:
+			 * {@code (x.compareTo(y) > 0 && y.compareTo(z) > 0)} implies
+			 * {@code x.compareTo(z) > 0}.
+			 *
+			 * <p>Finally, the implementor must ensure that {@code
+			 * x.compareTo(y)==0} implies that {@code signum(x.compareTo(z))
+			 * == signum(y.compareTo(z))}, for all {@code z}.
+			 *
+			 * @param o the object to be compared.
+			 * @return a negative integer, zero, or a positive integer as this object
+			 * is less than, equal to, or greater than the specified object.
+			 * @throws NullPointerException if the specified object is null
+			 * @throws ClassCastException   if the specified object's type prevents it
+			 *                              from being compared to this object.
+			 * @apiNote It is strongly recommended, but <i>not</i> strictly required that
+			 * {@code (x.compareTo(y)==0) == (x.equals(y))}.  Generally speaking, any
+			 * class that implements the {@code Comparable} interface and violates
+			 * this condition should clearly indicate this fact.  The recommended
+			 * language is "Note: this class has a natural ordering that is
+			 * inconsistent with equals."
+			 */
+			@Override
+			public int compareTo(Data o) {
+				return switch (o) {
+					case Graphic _ -> Byte.compare(getTag(), o.getTag());
+					case ObservableText(final var val) -> value.compareToIgnoreCase(val.get());
+					case Text(final var val) -> value.compareToIgnoreCase(val);
+				};
+			}
+		}
+
+		record ObservableText(ObservableStringValue value) implements Data {
+			public static final byte TAG = 1;
+
+			@Override
+			public byte getTag() {
+				return TAG;
+			}
+
+			/**
+			 * Compares this object with the specified object for order.  Returns a
+			 * negative integer, zero, or a positive integer as this object is less
+			 * than, equal to, or greater than the specified object.
+			 *
+			 * <p>The implementor must ensure {@link Integer#signum
+			 * signum}{@code (x.compareTo(y)) == -signum(y.compareTo(x))} for
+			 * all {@code x} and {@code y}.  (This implies that {@code
+			 * x.compareTo(y)} must throw an exception if and only if {@code
+			 * y.compareTo(x)} throws an exception.)
+			 *
+			 * <p>The implementor must also ensure that the relation is transitive:
+			 * {@code (x.compareTo(y) > 0 && y.compareTo(z) > 0)} implies
+			 * {@code x.compareTo(z) > 0}.
+			 *
+			 * <p>Finally, the implementor must ensure that {@code
+			 * x.compareTo(y)==0} implies that {@code signum(x.compareTo(z))
+			 * == signum(y.compareTo(z))}, for all {@code z}.
+			 *
+			 * @param o the object to be compared.
+			 * @return a negative integer, zero, or a positive integer as this object
+			 * is less than, equal to, or greater than the specified object.
+			 * @throws NullPointerException if the specified object is null
+			 * @throws ClassCastException   if the specified object's type prevents it
+			 *                              from being compared to this object.
+			 * @apiNote It is strongly recommended, but <i>not</i> strictly required that
+			 * {@code (x.compareTo(y)==0) == (x.equals(y))}.  Generally speaking, any
+			 * class that implements the {@code Comparable} interface and violates
+			 * this condition should clearly indicate this fact.  The recommended
+			 * language is "Note: this class has a natural ordering that is
+			 * inconsistent with equals."
+			 */
+			@Override
+			public int compareTo(Data o) {
+				return switch (o) {
+					case Graphic _ -> Byte.compare(getTag(), o.getTag());
+					case ObservableText(final var val) -> value.get().compareToIgnoreCase(val.get());
+					case Text(final var val) -> value.get().compareToIgnoreCase(val);
+				};
+			}
 		}
 
 		record Graphic(Supplier<? extends Node> value)
 				implements Data {
+			public static final byte TAG = 2;
 			public static final double BUTTON_SPACING = 5;
+
+			@Override
+			public byte getTag() {
+				return TAG;
+			}
 
 			@SafeVarargs
 			public static Graphic ofButtons(Tuple2<? extends ObservableValue<? extends String>, ? extends BiConsumer<? super Button, ? super ActionEvent>>... buttonData) {
@@ -198,9 +301,46 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 					return buttonBox;
 				});
 			}
-		}
 
-		record ObservableText(ObservableStringValue value) implements Data {
+			/**
+			 * Compares this object with the specified object for order.  Returns a
+			 * negative integer, zero, or a positive integer as this object is less
+			 * than, equal to, or greater than the specified object.
+			 *
+			 * <p>The implementor must ensure {@link Integer#signum
+			 * signum}{@code (x.compareTo(y)) == -signum(y.compareTo(x))} for
+			 * all {@code x} and {@code y}.  (This implies that {@code
+			 * x.compareTo(y)} must throw an exception if and only if {@code
+			 * y.compareTo(x)} throws an exception.)
+			 *
+			 * <p>The implementor must also ensure that the relation is transitive:
+			 * {@code (x.compareTo(y) > 0 && y.compareTo(z) > 0)} implies
+			 * {@code x.compareTo(z) > 0}.
+			 *
+			 * <p>Finally, the implementor must ensure that {@code
+			 * x.compareTo(y)==0} implies that {@code signum(x.compareTo(z))
+			 * == signum(y.compareTo(z))}, for all {@code z}.
+			 *
+			 * @param o the object to be compared.
+			 * @return a negative integer, zero, or a positive integer as this object
+			 * is less than, equal to, or greater than the specified object.
+			 * @throws NullPointerException if the specified object is null
+			 * @throws ClassCastException   if the specified object's type prevents it
+			 *                              from being compared to this object.
+			 * @apiNote It is strongly recommended, but <i>not</i> strictly required that
+			 * {@code (x.compareTo(y)==0) == (x.equals(y))}.  Generally speaking, any
+			 * class that implements the {@code Comparable} interface and violates
+			 * this condition should clearly indicate this fact.  The recommended
+			 * language is "Note: this class has a natural ordering that is
+			 * inconsistent with equals."
+			 */
+			@Override
+			public int compareTo(Data o) {
+				return switch (o) {
+					case Graphic _ -> 0;
+					case ObservableText _, Text _ -> Byte.compare(getTag(), o.getTag());
+				};
+			}
 		}
 	}
 }
