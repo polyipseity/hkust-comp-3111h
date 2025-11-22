@@ -190,12 +190,12 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 	}
 
 	public sealed interface Data extends Comparable<Data> permits Data.Graphic, Data.ObservableText, Data.Text {
-		byte getTag();
-
 		@SuppressWarnings("unchecked")
 		static int compareComparable(@Nullable Comparable<?> left, @Nullable Comparable<?> right) {
 			return ((Comparator<Comparable<?>>) Comparator.nullsFirst(Comparator.naturalOrder())).compare(left, right);
 		}
+
+		byte getTag();
 
 		@Nullable
 		Comparable<?> comparable();
@@ -203,13 +203,13 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 		record Text(String value, @Nullable Comparable<?> comparable) implements Data {
 			public static final byte TAG = 0;
 
+			public Text(String value) {
+				this(value, null);
+			}
+
 			@Override
 			public byte getTag() {
 				return TAG;
-			}
-
-			public Text(String value) {
-				this(value, null);
 			}
 
 			/**
@@ -259,14 +259,14 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 		                      Supplier<? extends @Nullable Comparable<?>> comparableSupplier) implements Data {
 			public static final byte TAG = 1;
 
-			@Override
-			public byte getTag() {
-				return TAG;
-			}
-
 			@SuppressWarnings("unused")
 			public ObservableText(ObservableStringValue value) {
 				this(value, () -> null);
+			}
+
+			@Override
+			public byte getTag() {
+				return TAG;
 			}
 
 			@Override
