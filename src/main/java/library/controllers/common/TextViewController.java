@@ -19,8 +19,10 @@ public final class TextViewController implements RequiresLoggedIn, Initializable
 	@Getter
 	public final String content;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public TextArea contentArea;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public Slider zoomSlider;
 
 	@SuppressWarnings("unused") // for testing

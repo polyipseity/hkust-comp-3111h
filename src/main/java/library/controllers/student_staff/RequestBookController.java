@@ -16,6 +16,7 @@ public final class RequestBookController implements RequiresLoggedIn {
 	private final User user = this.getLoggedInUser()._1();
 
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public TextField titleField, authorField;
 
 	public void requestBook() {

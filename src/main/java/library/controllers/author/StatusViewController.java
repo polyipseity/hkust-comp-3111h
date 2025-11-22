@@ -11,29 +11,22 @@ import library.controllers.common.RequiresLoggedIn;
 import library.models.Author;
 import library.models.Book;
 import library.persistence.Repository;
-import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.net.URL;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public final class StatusViewController implements RequiresLoggedIn, Initializable {
 	private final Repository repository = Main.getContext().getRepository();
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public PieChart statusChart;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public BarChart<String, Number> popularChart;
-	private Map<Book, Book.Data> authorBooks;
-	private int pendingBooks = 0;
-	private int approvedBooks = 0;
-	private int rejectedBooks = 0;
-	@Setter
-	private DashboardController parentController;
+	private Map<Book, Book.Data> authorBooks = new HashMap<>();
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
@@ -55,9 +48,9 @@ public final class StatusViewController implements RequiresLoggedIn, Initializab
 
 	private void loadPieChartData() {
 		// Get books by status for the current author
-		approvedBooks = 0;
-		pendingBooks = 0;
-		rejectedBooks = 0;
+		int approvedBooks = 0;
+		int pendingBooks = 0;
+		int rejectedBooks = 0;
 
 		for (final var bookEntry : authorBooks.entrySet()) {
 			final var data = bookEntry.getValue();

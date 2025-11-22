@@ -283,11 +283,6 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 			public static final byte TAG = 2;
 			public static final double BUTTON_SPACING = 5;
 
-			@Override
-			public byte getTag() {
-				return TAG;
-			}
-
 			@SafeVarargs
 			public static Graphic ofButtons(Tuple2<? extends ObservableValue<? extends String>, ? extends BiConsumer<? super Button, ? super ActionEvent>>... buttonData) {
 				return new Graphic(() -> {
@@ -300,6 +295,11 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 					}
 					return buttonBox;
 				});
+			}
+
+			@Override
+			public byte getTag() {
+				return TAG;
 			}
 
 			/**

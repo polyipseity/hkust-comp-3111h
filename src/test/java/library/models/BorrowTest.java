@@ -55,7 +55,7 @@ class BorrowTest {
 	void durationLeft_defaultUsesCurrentUTC() {
 		final var now = TimeUtil.nowZoned();              // helper that returns UTC instant
 		final var borrowDate = now.minusHours(1);
-		final var dur = Duration.ofHours(2);          // due 1 hour from now
+		final var dur = Duration.ofHours(2);          // is due 1 hour from now
 		final var borrow = new Borrow(borrowDate, dur,
 				"test.pdf");
 

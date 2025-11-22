@@ -25,17 +25,23 @@ import java.util.function.Function;
 
 public final class BookDownloadController implements RequiresLoggedIn, Initializable {
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public TableView<@Nullable Data> table;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public DynamicTableController<Keys, Data> tableController;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public TableColumn<Data, @Nullable Data> titleCol, authorCol, bookshelvesCol, summaryCol;
 
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public TextField searchBar;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public Region sidebar;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public Text titleText, authorText, bookshelvesText, summaryText;
 
 	@Override
@@ -67,7 +73,7 @@ public final class BookDownloadController implements RequiresLoggedIn, Initializ
 		final var startTime = System.currentTimeMillis();
 		final var searchFuture = Main.getContext().getBookDownloadControl().searchProjectGutenberg(searchBar.getText()).thenApply(results -> results.stream().map(Data::new).toList());
 
-		// Show uncloseable dialog during search
+		// Show not closeable dialog during search
 		final var running = new SimpleBooleanProperty(true);
 		searchFuture.whenComplete((_, _) -> Platform.runLater(() -> running.set(false)));
 		if (!Alerts.showLoadingDialog("Searching for books...", running)) {
@@ -98,7 +104,7 @@ public final class BookDownloadController implements RequiresLoggedIn, Initializ
 				final var startTime = System.currentTimeMillis();
 				final var downloadFuture = context.getBookDownloadControl().downloadProjectGutenberg(rawBook).thenApply(content -> context.getBookDownloadControl().newBook(rawBook, content));
 
-				// Show uncloseable dialog during download
+				// Show not closeable dialog during download
 				final var running = new SimpleBooleanProperty(true);
 				downloadFuture.whenComplete((_, _) -> Platform.runLater(() -> running.set(false)));
 				if (!Alerts.showLoadingDialog("Downloading book...", running)) {

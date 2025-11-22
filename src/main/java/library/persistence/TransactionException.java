@@ -3,6 +3,7 @@ package library.persistence;
 import library.utils.HasMessage;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("NullableProblems")
 public final class TransactionException extends Exception implements HasMessage {
 	/**
 	 * Constructs a new exception with {@code null} as its detail message.

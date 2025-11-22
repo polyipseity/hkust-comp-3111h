@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unused")
 public record GutendexResponse(
 		@JsonProperty("count") long count,
 		@JsonProperty("next") @Nullable String next,

@@ -31,8 +31,12 @@ public final class BookViewController implements RequiresLoggedIn, Initializable
 	public final Stage stage;
 	private final String currentPath;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public BorderPane borderPane;
+
+	@UnknownNullability
 	private SwingController swingController;
+	@UnknownNullability
 	private JComponent viewerPanel;
 
 	@SuppressWarnings({"DataFlowIssue", "unused"}) // for testing
@@ -129,7 +133,7 @@ public final class BookViewController implements RequiresLoggedIn, Initializable
 				borderPane.setCenter(swingNode);
 			});
 		} catch (InterruptedException | InvocationTargetException e) {
-			e.printStackTrace();
+			Alerts.showErrorDialog(e.getLocalizedMessage());
 		}
 	}
 

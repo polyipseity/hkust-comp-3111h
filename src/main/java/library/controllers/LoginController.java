@@ -24,10 +24,13 @@ import java.util.ResourceBundle;
 public final class LoginController implements RequiresLoggedOut, Initializable {
 	public final User.Role role;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public Label headerLabel;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public TextField usernameField;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public PasswordField passwordField;
 
 	@SuppressWarnings("unused") // for testing

@@ -24,8 +24,10 @@ import java.util.ResourceBundle;
 public final class RegisterController implements RequiresLoggedOut, Initializable {
 	public final User.Role role;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public Label headerLabel;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public TextField usernameField, passwordField, fullNameField;
 
 	@SuppressWarnings("unused") // for testing

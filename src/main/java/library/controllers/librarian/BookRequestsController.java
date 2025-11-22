@@ -24,10 +24,13 @@ import java.util.function.Function;
 
 public final class BookRequestsController implements RequiresLoggedIn, Initializable {
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public TableView<@Nullable Data> table;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public DynamicTableController<Keys, Data> tableController;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public TableColumn<Data, @Nullable Data> titleCol, authorCol, userCol, requestDateCol, actionsCol;
 
 	@Override

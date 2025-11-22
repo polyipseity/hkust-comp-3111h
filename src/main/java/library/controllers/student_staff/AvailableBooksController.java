@@ -26,15 +26,20 @@ import java.util.function.Function;
 
 public final class AvailableBooksController implements RequiresLoggedIn, Initializable {
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public TableView<@Nullable Data> table;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public DynamicTableController<Keys, Data> tableController;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public TableColumn<Data, @Nullable Data> titleCol, authorCol, publishDateCol, summaryCol;
 
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public Node sidebar;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public Text titleText, authorText, publishDateText, summaryText;
 
 	@Setter

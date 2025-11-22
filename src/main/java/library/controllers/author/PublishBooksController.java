@@ -23,6 +23,7 @@ import java.util.Optional;
 
 public final class PublishBooksController implements RequiresLoggedIn {
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public TextField titleField, contentField, summaryField;
 	@Nullable
 	private String ContentTxt;

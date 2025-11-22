@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record OpenAIChatCompletionResponse(
 		@JsonProperty("id") String id,

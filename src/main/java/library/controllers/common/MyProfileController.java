@@ -21,8 +21,10 @@ public final class MyProfileController implements RequiresLoggedIn, Initializabl
 	private final Repository repository = context.getRepository();
 
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public Text usernameText;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public TextField newNameField, newPasswordField;
 
 	@Override

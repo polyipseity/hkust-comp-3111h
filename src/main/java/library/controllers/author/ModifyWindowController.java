@@ -30,10 +30,13 @@ public final class ModifyWindowController implements RequiresLoggedIn, Initializ
 	public final Runnable confirmCallback;
 
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public TextField titleField;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public TextArea summaryArea;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public Button confirmButton;
 
 	@SuppressWarnings({"DataFlowIssue", "unused"}) // for testing

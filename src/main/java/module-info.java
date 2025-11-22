@@ -1,3 +1,4 @@
+@SuppressWarnings("Java9RedundantRequiresStatement")
 module library {
 	requires com.fasterxml.jackson.annotation;
 	requires com.fasterxml.jackson.databind;

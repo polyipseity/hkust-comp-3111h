@@ -21,17 +21,21 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public final class DashboardController extends CommonDashboardController implements RequiresLoggedIn, Initializable {
+	final Timer timer = new Timer("student_staff_timer");
 	private final Context context = Main.getContext();
 	private final User user = this.getLoggedInUser()._1();
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public SplitPane availableBooks;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public AvailableBooksController availableBooksController;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public BorderPane borrowedBooks;
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public BorrowedBooksController borrowedBooksController;
-	Timer timer = new Timer("student_staff_timer");
 
 	public void loadAvailableBooks() {
 		availableBooksController.loadTable();

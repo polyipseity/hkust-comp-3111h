@@ -11,14 +11,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import library.Main;
-import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public final class InformBoardController implements RequiresLoggedIn, Initializable {
@@ -26,8 +24,8 @@ public final class InformBoardController implements RequiresLoggedIn, Initializa
 	private final ObservableList<String> notifications = FXCollections.observableArrayList();
 	//Referring to fxml ListView
 	@UnknownNullability
+	@SuppressWarnings("unused")
 	public ListView<String> notificationList;
-	Repository repository = Main.getContext().getRepository();
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
@@ -38,14 +36,13 @@ public final class InformBoardController implements RequiresLoggedIn, Initializa
 	}
 
 	private void updateNotificationList() {
-		Optional<String[]> opt = repository.userNotificationOps.read(getLoggedInUser()._1());
-		notifications.setAll(opt.get());
+		notifications.setAll(Main.getContext().getRepository().userNotificationOps.readOrThrow(getLoggedInUser()._1()));
 		notificationList.setItems(notifications);
 	}
 
 	public void clearAll() {
 		try {
-			repository.userNotificationOps.update(getLoggedInUser()._1(), current -> new String[0]);
+			Main.getContext().getRepository().userNotificationOps.update(getLoggedInUser()._1(), _ -> new String[0]);
 		} catch (TransactionException e) {
 			Alerts.showErrorDialog(e.getLocalizedMessage());
 		}
@@ -54,7 +51,7 @@ public final class InformBoardController implements RequiresLoggedIn, Initializa
 
 	private void CloseNotif(int index) {
 		try {
-			repository.userNotificationOps.updateAsList(
+			Main.getContext().getRepository().userNotificationOps.updateAsList(
 					getLoggedInUser()._1(),
 					current -> {
 						current.remove(index);
@@ -65,23 +62,11 @@ public final class InformBoardController implements RequiresLoggedIn, Initializa
 		updateNotificationList();
 	}
 
-		/*
-    private void AddNotif() {
-	    repository.userNotificationOps.update(getLoggedInUser()._1(), currentNotifications -> {
-            String[] updated = Arrays.copyOf(currentNotifications, currentNotifications.length + 1);
-            updated[updated.length - 1] = "New notification message " + updated.length;
-            return updated;});
-        updateNotificationList();
-    }
-		 */
-
 	class NotificationCell extends ListCell<@Nullable String> {
-		HBox hbox = new HBox();
-		Label label = new Label();
-		Pane pane = new Pane();
-		Button button = new Button("Close");
-		@Nullable
-		String lastItem;
+		final HBox hbox = new HBox();
+		final Label label = new Label();
+		final Pane pane = new Pane();
+		final Button button = new Button("Close");
 
 		public NotificationCell() {
 			super();
@@ -95,10 +80,8 @@ public final class InformBoardController implements RequiresLoggedIn, Initializa
 			super.updateItem(item, empty);
 			setText(null);
 			if (empty) {
-				lastItem = null;
 				setGraphic(null);
 			} else {
-				lastItem = item;
 				label.setText(item != null ? item : "<null>");
 				setGraphic(hbox);
 			}

@@ -24,14 +24,14 @@ public record ManageBooksControl(Repository repository) {
 	 * Approves a pending book and updates the database in one transaction.
 	 *
 	 * <p>For a pending book without an {@code originalOrModified} reference,
-	 * it becomes published immediately with the current timestamp as its publish date.</p>
+	 * it becomes published immediately with the current timestamp as its publishing date.</p>
 	 *
 	 * <p>If the pending book has an {@code originalOrModified} reference:
 	 * <ul>
 	 *   <li>When the pending book is temporary, the data of the referenced
 	 *       original/modified book is updated to match the pending book’s
 	 *       summary and content, and the temporary book is removed.</li>
-	 *   <li>When it is not temporary, the publish date of the referenced
+	 *   <li>When it is not temporary, the publishing date of the referenced
 	 *       book is copied to the pending book, the pending book becomes
 	 *       published, and the old book record is deleted.</li>
 	 * </ul></p>
