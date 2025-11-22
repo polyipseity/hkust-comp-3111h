@@ -4,9 +4,9 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.scene.Cursor;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public enum Alerts {
@@ -20,8 +20,12 @@ public enum Alerts {
 		new Alert(Alert.AlertType.ERROR, message).showAndWait();
 	}
 
-	public static Optional<ButtonType> showConfirmDialog(String message) {
-		return new Alert(Alert.AlertType.CONFIRMATION, message).showAndWait();
+	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
+	public static boolean showConfirmDialog(String message) {
+		return new Alert(Alert.AlertType.CONFIRMATION, message).showAndWait()
+				.map(ButtonType::getButtonData)
+				.map(ButtonBar.ButtonData::isDefaultButton)
+				.orElse(false);
 	}
 
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted")

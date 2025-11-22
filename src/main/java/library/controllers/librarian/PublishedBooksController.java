@@ -3,8 +3,6 @@ package library.controllers.librarian;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import library.FXMLs;
@@ -108,10 +106,7 @@ public final class PublishedBooksController implements RequiresLoggedIn, Initial
 							}
 						}),
 						new Tuple2<>(new SimpleStringProperty("Delete"), (_, _) -> {
-							if (!Alerts.showConfirmDialog("Delete '%s'? All borrowing privileges for this book will be revoked.".formatted(book.title()))
-									.map(ButtonType::getButtonData)
-									.map(ButtonBar.ButtonData::isDefaultButton)
-									.orElse(false)) {
+							if (!Alerts.showConfirmDialog("Delete '%s'? All borrowing privileges for this book will be revoked.".formatted(book.title()))) {
 								return;
 							}
 							try {

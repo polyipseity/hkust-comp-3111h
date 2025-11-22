@@ -3,7 +3,6 @@ package library.controllers.author;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import library.FXMLs;
@@ -27,7 +26,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
@@ -112,7 +110,7 @@ public final class MyBooksController implements RequiresLoggedIn, Initializable 
 			return;
 		}
 
-		if (!deleteConfirmation(selected.book.title())) {
+		if (!Alerts.showConfirmDialog("Delete '%s'?".formatted(selected.book.title()))) {
 			return;
 		}
 		try {
@@ -124,12 +122,6 @@ public final class MyBooksController implements RequiresLoggedIn, Initializable 
 		} catch (TransactionException e) {
 			Alerts.showErrorDialog(e.getLocalizedMessage());
 		}
-	}
-
-	private boolean deleteConfirmation(String message) {
-		Optional<ButtonType> result = Alerts.showConfirmDialog("Delete '%s'?".formatted(message));
-		// Return true if confirmed
-		return !(result.isPresent() && result.get() == ButtonType.CANCEL);
 	}
 
 	public enum Keys {
