@@ -55,37 +55,11 @@ public final class ContextImpl implements Context {
 	private final WeakHashMap<Object, Consumer<? super ActionEvent>> secondTimelineListeners = new WeakHashMap<>();
 	private final Timeline minuteTimeline;
 	private final WeakHashMap<Object, Consumer<? super ActionEvent>> minuteTimelineListeners = new WeakHashMap<>();
-
+	@SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+	private final List<Object> loggedInTokens = new ArrayList<>();
 	@Getter
 	@Nullable
 	private Tuple2<User, User.Data> loggedInUser;
-	@SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-	private final List<Object> loggedInTokens = new ArrayList<>();
-
-	@SuppressWarnings("CallToPrintStackTrace")
-	@Override
-	public void setLoggedInUser(@Nullable Tuple2<User, User.Data> loggedInUser) {
-		this.loggedInUser = loggedInUser;
-		if (loggedInUser == null) {
-			loggedInTokens.clear();
-		} else {
-			addMinuteTimelineListener(Objects.requireNonNull(getLoggedInToken()), _ -> {
-				try {
-					repository.borrowOps.prune();
-				} catch (TransactionException e) {
-					e.printStackTrace(); // nothing we can do
-				}
-			});
-		}
-	}
-
-	@Override
-	public @Nullable Object getLoggedInToken() {
-		if (loggedInUser == null) return null;
-		final var ret = new Object();
-		loggedInTokens.add(ret);
-		return ret;
-	}
 
 	public ContextImpl(Stage primaryStage, Repository repository) {
 		this.primaryStage = primaryStage;
@@ -112,6 +86,31 @@ public final class ContextImpl implements Context {
 		minuteTimeline.setCycleCount(Animation.INDEFINITE);
 		minuteTimeline.play();
 		this.minuteTimeline = minuteTimeline;
+	}
+
+	@SuppressWarnings("CallToPrintStackTrace")
+	@Override
+	public void setLoggedInUser(@Nullable Tuple2<User, User.Data> loggedInUser) {
+		this.loggedInUser = loggedInUser;
+		if (loggedInUser == null) {
+			loggedInTokens.clear();
+		} else {
+			addMinuteTimelineListener(Objects.requireNonNull(getLoggedInToken()), _ -> {
+				try {
+					repository.borrowOps.prune();
+				} catch (TransactionException e) {
+					e.printStackTrace(); // nothing we can do
+				}
+			});
+		}
+	}
+
+	@Override
+	public @Nullable Object getLoggedInToken() {
+		if (loggedInUser == null) return null;
+		final var ret = new Object();
+		loggedInTokens.add(ret);
+		return ret;
 	}
 
 	/**
