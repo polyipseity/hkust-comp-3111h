@@ -1,8 +1,6 @@
 package library.controllers.author;
 
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -88,29 +86,21 @@ public final class MyBooksController implements RequiresLoggedIn, Initializable 
 			return;
 		}
 
-		// Load the FXML file for the new window's content
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/author/ModifyWindow.fxml"));
-		Parent root = fxmlLoader.load();
-
-		//Passing content to new window
-		ModifyWindowController controller = fxmlLoader.getController();
-		controller.confirmCallback = this::loadTable;
-		controller.setBookEntry(new Tuple2<>(selected.book, selected.bookData));
-
 		// Create a new Stage (window)
 		final var window = Main.getContext().newWindow(
 				"Modify Book",
-				root,
+				// Load the FXML file for the new window's content
+				FXMLs.AUTHOR_MODIFY_WINDOW.load(loader -> {
+					final var controller = loader.<ModifyWindowController>getController();
+					//Execute the following when window closed
+					controller.confirmCallback = this::loadTable;
+					//Passing content to new window
+					controller.setBookEntry(new Tuple2<>(selected.book, selected.bookData));
+				}),
 				null
 		);
-		//Set the window properties
-		window.setResizable(false);
-		window.setWidth(480);
-		window.setHeight(250);
 
-		//Execute the following when window closed
 		window.setOnHidden(event -> {
-			loadTable();  // This runs AFTER window closes
 			parentController.loadStatusView();
 		});
 

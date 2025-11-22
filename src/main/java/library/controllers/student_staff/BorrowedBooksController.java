@@ -1,13 +1,12 @@
 package library.controllers.student_staff;
 
 import javafx.beans.property.SimpleStringProperty;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import library.FXMLs;
 import library.Main;
 import library.controllers.common.DynamicTableController;
 import library.controllers.common.RequiresLoggedIn;
@@ -102,14 +101,10 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 	}
 
 	private void displayPdfFile(String path, String title, String author) throws IOException {
-		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(
-				"/fxml/student_staff/BookView.fxml"));
-		BookViewController controller = new BookViewController(path);
-		fxmlLoader.setController(controller);
-		BorderPane borderPane = fxmlLoader.load();
+		final var controller = new BookViewController(path);
 
 		Stage stage = new Stage();
-		stage.setScene(new Scene(borderPane));
+		stage.setScene(new Scene(FXMLs.STUDENT_STAFF_BOOK_VIEW.load(loader -> loader.setController(controller))));
 		stage.setTitle("Reading: " + title + " by " + author);
 		stage.setOnShown(controller::createResizeListeners);
 		stage.setOnCloseRequest(controller::disposeController);
