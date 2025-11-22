@@ -108,4 +108,15 @@ public record RepositoryBorrowOps(Repository repository) {
 			return true;
 		}, () -> "User not found: %s".formatted(user));
 	}
+
+	public void prune() throws TransactionException {
+		repository.transact(tx -> {
+			// Prune all borrows based on if expired
+			for (final var borrowEntry : tx.borrows().entrySet()) {
+				if (!borrowEntry.getValue().expired()) continue;
+				tx.borrows().remove(borrowEntry.getKey(), borrowEntry.getValue());
+			}
+			return true;
+		}, () -> "Error while pruning");
+	}
 }
