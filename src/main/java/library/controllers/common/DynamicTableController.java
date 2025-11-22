@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class DynamicTableController<Key, Value extends Function<Key, DynamicTableController.Data>> {
@@ -23,6 +24,7 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 
 	public DynamicTableController(TableView<@Nullable Value> table, SequencedMap<Key, TableColumn<Value, @Nullable Value>> keys) {
 		this(table);
+		table.getItems().clear(); // Odd that it contains `TableColumn`s...
 		setKeys(keys);
 	}
 
@@ -53,8 +55,8 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 	@SuppressWarnings("UnusedReturnValue")
 	public boolean setData(Collection<Value> data) {
 		final var items = table.getItems();
-		items.clear();
-		return items.addAll(data);
+		return items.removeIf(Predicate.not(data::contains)) // Remove obsolete items
+				|| items.addAll(data.stream().filter(Predicate.not(items::contains)).toList()); // Add new items
 	}
 
 	@SuppressWarnings("UnusedReturnValue")
