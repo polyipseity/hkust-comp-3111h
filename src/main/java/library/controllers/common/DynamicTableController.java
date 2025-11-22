@@ -58,6 +58,11 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 	}
 
 	@SuppressWarnings("UnusedReturnValue")
+	public boolean addDatum(@NotNull Value datum) {
+		return table.getItems().add(datum);
+	}
+
+	@SuppressWarnings("UnusedReturnValue")
 	public boolean removeDatum(@NotNull Value datum) {
 		return table.getItems().remove(datum);
 	}

@@ -16,7 +16,7 @@
 				<!--suppress XmlUnresolvedReference -->
 				<TableColumn fx:id="borrowedOnCol" prefWidth="${table.width * 0.15}" text="Borrowed On"/>
 				<!--suppress XmlUnresolvedReference -->
-				<TableColumn fx:id="timeLeftCol" prefWidth="${table.width * 0.15}" text="Time Left"/>
+				<TableColumn fx:id="durationLeftCol" prefWidth="${table.width * 0.15}" text="Time Left"/>
 				<!--suppress XmlUnresolvedReference -->
 				<TableColumn fx:id="actionsCol" prefWidth="${table.width * 0.20}" text="Actions"/>
 			</columns>

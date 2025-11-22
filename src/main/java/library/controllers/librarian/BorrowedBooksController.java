@@ -1,5 +1,6 @@
 package library.controllers.librarian;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -14,6 +15,7 @@ import library.utils.TimeUtil;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
+import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
@@ -45,13 +47,9 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 
 	@Override
 	public void loadData() {
-		tableController.setData(Main.getContext()
-				.getRepository()
-				.borrowOps
-				.read()
-				.entrySet()
-				.stream()
+		tableController.setData(Main.getContext().getRepository().borrowOps.read().entrySet().stream()
 				.map(entry -> new Data(
+						this,
 						entry.getKey()._1(),
 						entry.getKey()._2(),
 						entry.getValue()))
@@ -65,7 +63,8 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 		DURATION_LEFT
 	}
 
-	public record Data(User user,
+	public record Data(BorrowedBooksController controller,
+	                   User user,
 	                   Book book,
 	                   Borrow borrow)
 			implements Function<Keys, DynamicTableController.Data> {
@@ -83,8 +82,21 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 				case BORROWER -> new DynamicTableController.Data.Text(user.username());
 				case BORROW_DATE -> new DynamicTableController.Data.Text(
 						TimeUtil.toStringZonedLocal(borrow.borrowDate()));
-				case DURATION_LEFT -> new DynamicTableController.Data.Text(
-						TimeUtil.toStringDuration(borrow.durationLeft()));
+				case DURATION_LEFT -> {
+					final var borrow = this.borrow; // Do not reference `this` in lambda.
+					final var prop = new SimpleStringProperty(TimeUtil.toStringDuration(borrow.durationLeft()));
+					final var ret = new DynamicTableController.Data.ObservableText(prop);
+					final var weakThis = new WeakReference<>(this);
+					Main.getContext().addSecondTimelineListener(ret, _ -> {
+						prop.setValue(TimeUtil.toStringDuration(borrow.durationLeft()));
+						if (borrow.expired()) {
+							final var this2 = weakThis.get();
+							if (this2 == null) return;
+							this2.controller.tableController.removeDatum(this2);
+						}
+					});
+					yield ret;
+				}
 			};
 		}
 	}

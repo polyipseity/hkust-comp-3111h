@@ -11,19 +11,18 @@ import library.controllers.common.LoadsData;
 import library.controllers.common.RequiresLoggedIn;
 import library.controls.BorrowBooksControl;
 import library.models.Book;
+import library.models.Borrow;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.HasMessage;
 import library.utils.TimeUtil;
-import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public final class AvailableBooksController implements RequiresLoggedIn, Initializable, LoadsData {
 	@UnknownNullability
@@ -43,8 +42,7 @@ public final class AvailableBooksController implements RequiresLoggedIn, Initial
 	@SuppressWarnings("unused")
 	public Text titleText, authorText, publishDateText, summaryText;
 
-	@Setter
-	private DashboardController parentController;
+	private final SortedMap<Borrow, Book> activeBorrows = new TreeMap<>(Comparator.comparing(Borrow::due));
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
@@ -62,13 +60,29 @@ public final class AvailableBooksController implements RequiresLoggedIn, Initial
 		authorText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.authorFullName).orElse("").orElse(""));
 		publishDateText.textProperty().bind(selectedItem.map(item -> item == null || item.bookData.publishDate() == null ? "" : TimeUtil.toStringZonedLocal(item.bookData.publishDate())).orElse("").orElse(""));
 		summaryText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.bookData.summary()).orElse("").orElse(""));
+
+		final var context = Main.getContext();
+		final var repository = context.getRepository();
+		context.addSecondTimelineListener(getLoggedInUser(), _ -> activeBorrows.entrySet().removeIf(entry -> {
+			if (!entry.getKey().expired()) return false;
+			final var key = entry.getValue();
+			final var value = repository.bookOps.read(key);
+			value.ifPresent(val -> tableController.addDatum(new Data(this, key, val, repository.userOps.readFullName(key.author()))));
+			return true;
+		}));
 	}
 
 	@Override
 	public void loadData() {
 		final var context = Main.getContext();
 		final var repository = context.getRepository();
-		tableController.setData(context.getBorrowBooksControl().getBorrowableBooks(getLoggedInUser()._1())
+
+		activeBorrows.clear();
+		activeBorrows.putAll(repository.borrowOps.read(getLoggedInUser()._1()).entrySet().stream()
+				.collect(Collectors.toUnmodifiableMap(Map.Entry::getValue, Map.Entry::getKey)));
+
+		tableController.setData(context.getBorrowBooksControl()
+				.getBorrowableBooks(getLoggedInUser()._1())
 				.entrySet()
 				.stream()
 				.map(entry ->
@@ -106,18 +120,17 @@ public final class AvailableBooksController implements RequiresLoggedIn, Initial
 
 		try {
 			switch (context.getBorrowBooksControl().borrowBook(getLoggedInUser()._1(), selectedBook, minutes, seconds)) {
-				case BorrowBooksControl.BorrowResult.Success _ -> {
-					long millis = (minutes * 60L + seconds) * 1000;
-					parentController.scheduleReturn(selectedBook, millis);
+				case BorrowBooksControl.BorrowResult.Success(final var borrow) -> {
 					Alerts.showInfoDialog("Book borrowed successfully");
+					// Only after showing the info dialog, change the UI
+					tableController.removeDatum(currentRow);
+					activeBorrows.put(borrow, selectedBook); // Placed afterwards, in case it expired quickly
 				}
 				case HasMessage ret -> Alerts.showErrorDialog(ret.getLocalizedMessage());
 			}
 		} catch (TransactionException e) {
 			Alerts.showErrorDialog(e.getLocalizedMessage());
 		}
-
-		loadData();
 	}
 
 	/**

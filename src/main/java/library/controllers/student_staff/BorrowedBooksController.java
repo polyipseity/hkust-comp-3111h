@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
@@ -37,7 +38,7 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 	public DynamicTableController<Keys, Data> tableController;
 	@UnknownNullability
 	@SuppressWarnings("unused")
-	public TableColumn<Data, @Nullable Data> titleCol, authorCol, borrowedOnCol, timeLeftCol, actionsCol;
+	public TableColumn<Data, @Nullable Data> titleCol, authorCol, borrowedOnCol, durationLeftCol, actionsCol;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
@@ -45,7 +46,7 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 		keys.put(Keys.TITLE, titleCol);
 		keys.put(Keys.AUTHOR_FULL_NAME, authorCol);
 		keys.put(Keys.BORROW_DATE, borrowedOnCol);
-		keys.put(Keys.TIME_LEFT, timeLeftCol);
+		keys.put(Keys.DURATION_LEFT, durationLeftCol);
 		keys.put(Keys.ACTIONS, actionsCol);
 		tableController = new DynamicTableController<>(table, keys);
 
@@ -86,23 +87,6 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 		}
 	}
 
-	/**
-	 * Executes when the "Return" button of the table in the "My Borrowed Books" tab is pressed.
-	 *
-	 * @param book The book to be returned by the current user,
-	 *             which should be the book pointed to by the button's table row.
-	 */
-	private void returnButtonAction(Book book) {
-		try {
-			switch (Main.getContext().getBorrowBooksControl().returnBook(getLoggedInUser()._1(), book)) {
-				case BorrowBooksControl.ReturnResult.Success _ -> Alerts.showInfoDialog("Book returned successfully");
-				case HasMessage ret -> Alerts.showErrorDialog(ret.getLocalizedMessage());
-			}
-		} catch (TransactionException e) {
-			Alerts.showErrorDialog(e.getLocalizedMessage());
-		}
-	}
-
 	private void displayPdfFile(String path, String title, String author) throws IOException {
 		Main.getContext().newWindow(
 				BookViewController.WINDOW_TITLE.formatted(title, author),
@@ -115,7 +99,7 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 		TITLE,
 		AUTHOR_FULL_NAME,
 		BORROW_DATE,
-		TIME_LEFT,
+		DURATION_LEFT,
 		ACTIONS
 	}
 
@@ -137,17 +121,35 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 				case TITLE -> new DynamicTableController.Data.Text(book.title());
 				case AUTHOR_FULL_NAME -> new DynamicTableController.Data.Text(authorFullName);
 				case BORROW_DATE -> new DynamicTableController.Data.Text(TimeUtil.toStringZonedLocal(borrow.borrowDate()));
-				case TIME_LEFT -> {
+				case DURATION_LEFT -> {
 					final var borrow = this.borrow; // Do not reference `this` in lambda.
 					final var prop = new SimpleStringProperty(TimeUtil.toStringDuration(borrow.durationLeft()));
 					final var ret = new DynamicTableController.Data.ObservableText(prop);
-					Main.getContext().addSecondTimelineListener(ret, _ ->
-							prop.setValue(TimeUtil.toStringDuration(borrow.durationLeft())));
+					final var weakThis = new WeakReference<>(this);
+					Main.getContext().addSecondTimelineListener(ret, _ -> {
+						prop.setValue(TimeUtil.toStringDuration(borrow.durationLeft()));
+						if (borrow.expired()) {
+							final var this2 = weakThis.get();
+							if (this2 == null) return;
+							this2.controller.tableController.removeDatum(this2);
+						}
+					});
 					yield ret;
 				}
 				case ACTIONS -> DynamicTableController.Data.Graphic.ofButtons(
-						new Tuple2<>(new ReadOnlyStringWrapper("Return"), (_, _) ->
-								controller.returnButtonAction(book))
+						new Tuple2<>(new ReadOnlyStringWrapper("Return"), (_, _) -> {
+							try {
+								switch (Main.getContext().getBorrowBooksControl().returnBook(controller.getLoggedInUser()._1(), book)) {
+									case BorrowBooksControl.ReturnResult.Success _ -> {
+										Alerts.showInfoDialog("Book returned successfully");
+										controller.tableController.removeDatum(this);
+									}
+									case HasMessage message -> Alerts.showErrorDialog(message.getLocalizedMessage());
+								}
+							} catch (TransactionException e) {
+								Alerts.showErrorDialog(e.getLocalizedMessage());
+							}
+						})
 				);
 			};
 		}

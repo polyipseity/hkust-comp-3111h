@@ -19,6 +19,10 @@ public record Borrow(
 		Duration duration,
 		String pdfPath
 ) {
+	public ZonedDateTime due() {
+		return borrowDate.plus(duration);
+	}
+
 	/**
 	 * How much time is left until the book is due, relative to {@code reference}.
 	 *
@@ -27,7 +31,7 @@ public record Borrow(
 	 * otherwise the duration between {@code reference} and the due date
 	 */
 	public Duration durationLeft(ZonedDateTime reference) {
-		final var due = borrowDate.plus(duration);
+		final var due = due();
 		return reference.isAfter(due)
 				? Duration.ZERO
 				: Duration.between(reference, due);

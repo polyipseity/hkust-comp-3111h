@@ -51,7 +51,7 @@ public record BorrowBooksControl(Repository repository) {
 		);
 		repository.borrowOps.create(user, book, borrowData);
 		repository.bookOps.update(book, current -> current.withTimesBorrowed(current.timesBorrowed() + 1));
-		return new BorrowResult.Success();
+		return new BorrowResult.Success(borrowData);
 	}
 
 	public Map<Book, Book.Data> getBorrowableBooks(User user) {
@@ -126,25 +126,8 @@ public record BorrowBooksControl(Repository repository) {
 		}
 	}
 
-	public Map<Book, Duration> getBorrowDurations(User user) {
-		return repository.borrowOps.read(user).entrySet().stream().collect(
-				Collectors.toMap(Map.Entry::getKey, e -> e.getValue().durationLeft()));
-	}
-
-	public void returnExpiredBooks(User user) {
-		getBorrowDurations(user).forEach((book, duration) -> {
-			if (duration.isZero()) {
-				try {
-					returnBook(user, book);
-				} catch (TransactionException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		});
-	}
-
 	public sealed interface BorrowResult {
-		record Success() implements BorrowResult {
+		record Success(Borrow borrow) implements BorrowResult {
 		}
 
 		record InvalidDuration(String message) implements BorrowResult, HasMessage {
