@@ -54,6 +54,8 @@ public final class MyBooksController implements RequiresLoggedIn, Initializable,
 		keys.put(Keys.READERS, readersCol);
 		keys.put(Keys.SUMMARY, summaryCol);
 		tableController = new DynamicTableController<>(table, keys);
+		dateCol.setSortType(TableColumn.SortType.DESCENDING);
+		table.getSortOrder().add(dateCol);
 
 		LoadsData.super.initialize(location, resources);
 

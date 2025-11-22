@@ -41,6 +41,7 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 		keys.put(Keys.BORROW_DATE, borrowDateCol);
 		keys.put(Keys.DURATION_LEFT, durationLeftCol);
 		tableController = new DynamicTableController<>(table, keys);
+		table.getSortOrder().add(durationLeftCol);
 
 		LoadsData.super.initialize(location, resources);
 	}

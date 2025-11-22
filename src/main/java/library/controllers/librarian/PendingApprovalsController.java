@@ -44,6 +44,7 @@ public final class PendingApprovalsController implements RequiresLoggedIn, Initi
 		keys.put(Keys.SUMMARY, summaryCol);
 		keys.put(Keys.ACTIONS, actionsCol);
 		tableController = new DynamicTableController<>(table, keys);
+		table.getSortOrder().add(titleCol);
 
 		LoadsData.super.initialize(location, resources);
 	}

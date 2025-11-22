@@ -52,6 +52,8 @@ public final class AvailableBooksController implements RequiresLoggedIn, Initial
 		keys.put(Keys.PUBLISH_DATE, publishDateCol);
 		keys.put(Keys.SUMMARY, summaryCol);
 		tableController = new DynamicTableController<>(table, keys);
+		publishDateCol.setSortType(TableColumn.SortType.DESCENDING);
+		table.getSortOrder().add(publishDateCol);
 
 		LoadsData.super.initialize(location, resources);
 

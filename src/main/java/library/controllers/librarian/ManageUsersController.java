@@ -42,6 +42,7 @@ public final class ManageUsersController implements RequiresLoggedIn, Initializa
 		keys.put(Keys.ACTIVE, activeCol);
 		keys.put(Keys.ACTIONS, actionsCol);
 		tableController = new DynamicTableController<>(table, keys);
+		table.getSortOrder().add(usernameCol);
 
 		LoadsData.super.initialize(location, resources);
 	}

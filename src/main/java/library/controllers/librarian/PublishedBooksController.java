@@ -47,6 +47,8 @@ public final class PublishedBooksController implements RequiresLoggedIn, Initial
 		keys.put(Keys.TIMES_BORROWED, timesBorrowedCol);
 		keys.put(Keys.ACTIONS, actionsCol);
 		tableController = new DynamicTableController<>(table, keys);
+		publishDateCol.setSortType(TableColumn.SortType.DESCENDING);
+		table.getSortOrder().add(publishDateCol);
 
 		LoadsData.super.initialize(location, resources);
 	}

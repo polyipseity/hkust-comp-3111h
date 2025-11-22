@@ -44,6 +44,8 @@ public final class BookRequestsController implements RequiresLoggedIn, Initializ
 		keys.put(Keys.REQUEST_DATE, requestDateCol);
 		keys.put(Keys.ACTIONS, actionsCol);
 		tableController = new DynamicTableController<>(table, keys);
+		requestDateCol.setSortType(TableColumn.SortType.DESCENDING);
+		table.getSortOrder().add(requestDateCol);
 
 		LoadsData.super.initialize(location, resources);
 	}

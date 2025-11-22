@@ -54,6 +54,7 @@ public final class BookDownloadController implements RequiresLoggedIn, Initializ
 		keys.put(Keys.BOOKSHELVES, bookshelvesCol);
 		keys.put(Keys.SUMMARY, summaryCol);
 		tableController = new DynamicTableController<>(table, keys);
+		table.getSortOrder().add(titleCol);
 
 		final var selectedItem = table.getSelectionModel().selectedItemProperty();
 		titleText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.book.title()).orElse(""));
