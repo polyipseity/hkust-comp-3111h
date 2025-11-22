@@ -79,7 +79,7 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 				Alerts.showInfoDialog("PDF file not found, generating a new one...");
 				displayPdfFile(path, title, author);
 			}
-			case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
+			case HasMessage ret -> Alerts.showErrorDialog(ret.getLocalizedMessage());
 		}
 	}
 
@@ -93,10 +93,10 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 		try {
 			switch (Main.getContext().getBorrowBooksControl().returnBook(getLoggedInUser()._1(), book)) {
 				case BorrowBooksControl.ReturnResult.Success _ -> Alerts.showInfoDialog("Book returned successfully");
-				case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
+				case HasMessage ret -> Alerts.showErrorDialog(ret.getLocalizedMessage());
 			}
 		} catch (TransactionException e) {
-			Alerts.showErrorDialog("Unknown error occurred: " + e.getMessage());
+			Alerts.showErrorDialog(e.getLocalizedMessage());
 		}
 	}
 

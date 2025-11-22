@@ -117,7 +117,7 @@ public final class PublishedBooksController implements RequiresLoggedIn, Initial
 							try {
 								switch (Main.getContext().getManageBooksControl().deleteBook(book, controller.getLoggedInUser()._2().role())) {
 									case ManageBooksControl.DeleteResult.Success _ -> controller.tableController.removeDatum(this);
-									case HasMessage message -> Alerts.showErrorDialog(message.getMessage());
+									case HasMessage message -> Alerts.showErrorDialog(message.getLocalizedMessage());
 								}
 							} catch (TransactionException e) {
 								Alerts.showErrorDialog(e.getLocalizedMessage());

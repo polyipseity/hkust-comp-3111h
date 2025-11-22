@@ -23,7 +23,7 @@ public final class RequestBookController implements RequiresLoggedIn {
 		String author = authorField.getText();
 		switch (context.getRequestBooksControl().requestBook(user, title, author)) {
 			case RequestBooksControl.RequestResult.Success() -> Alerts.showInfoDialog("Book request submitted.");
-			case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
+			case HasMessage ret -> Alerts.showErrorDialog(ret.getLocalizedMessage());
 		}
 	}
 }

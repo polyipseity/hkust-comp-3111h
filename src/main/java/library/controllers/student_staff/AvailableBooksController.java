@@ -105,7 +105,7 @@ public final class AvailableBooksController implements RequiresLoggedIn, Initial
 				parentController.scheduleReturn(selectedBook, millis);
 				Alerts.showInfoDialog("Book borrowed successfully");
 			}
-			case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
+			case HasMessage ret -> Alerts.showErrorDialog(ret.getLocalizedMessage());
 		}
 
 		loadTable();

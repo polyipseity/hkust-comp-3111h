@@ -49,7 +49,7 @@ public final class MyProfileController implements RequiresLoggedIn, Initializabl
 							.withFullName(newFullName));
 					Alerts.showInfoDialog("Updated successfully");
 				} catch (TransactionException e) {
-					Alerts.showErrorDialog("Update Failed: " + e.getMessage());
+					Alerts.showErrorDialog(e.getLocalizedMessage());
 				}
 			}
 			case UserValidator.Result.BadFullName(String message) -> Alerts.showErrorDialog(message);

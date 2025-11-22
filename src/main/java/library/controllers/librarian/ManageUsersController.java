@@ -94,7 +94,7 @@ public final class ManageUsersController implements RequiresLoggedIn, Initializa
 													controller.tableController.replaceDatum(this, withUserData(data));
 										}
 									} catch (TransactionException e) {
-										Alerts.showErrorDialog(e.getMessage());
+										Alerts.showErrorDialog(e.getLocalizedMessage());
 									}
 								}) : new Tuple2<>(new SimpleStringProperty("Activate"), (_, _) -> {
 									try {
@@ -103,7 +103,7 @@ public final class ManageUsersController implements RequiresLoggedIn, Initializa
 													controller.tableController.replaceDatum(this, withUserData(data));
 										}
 									} catch (TransactionException e) {
-										Alerts.showErrorDialog(e.getMessage());
+										Alerts.showErrorDialog(e.getLocalizedMessage());
 									}
 								})
 						);

@@ -119,7 +119,7 @@ public final class MyBooksController implements RequiresLoggedIn, Initializable 
 			switch (Main.getContext().getManageBooksControl().deleteBook(selected.book, getLoggedInUser()._2().role())) {
 				//Reload table after deleting a book
 				case ManageBooksControl.DeleteResult.Success _ -> loadTable();
-				case HasMessage message -> Alerts.showErrorDialog(message.getMessage());
+				case HasMessage message -> Alerts.showErrorDialog(message.getLocalizedMessage());
 			}
 		} catch (TransactionException e) {
 			Alerts.showErrorDialog(e.getLocalizedMessage());

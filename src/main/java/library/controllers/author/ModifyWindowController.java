@@ -55,10 +55,10 @@ public final class ModifyWindowController implements RequiresLoggedIn, Initializ
 					// Close the current window
 					stage.close();
 					//Show success response to author
-					Alerts.showInfoDialog(success.getMessage());
+					Alerts.showInfoDialog(success.getLocalizedMessage());
 					confirmCallback.run();
 				}
-				case HasMessage message -> Alerts.showErrorDialog(message.getMessage());
+				case HasMessage message -> Alerts.showErrorDialog(message.getLocalizedMessage());
 			}
 		} catch (TransactionException e) {
 			Alerts.showErrorDialog(e.getLocalizedMessage());

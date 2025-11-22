@@ -48,7 +48,7 @@ public final class PublishBooksController implements RequiresLoggedIn {
 				ContentTxt = Files.readString(file.toPath());
 				contentField.setText(file.getName());
 			} catch (IOException e) {
-				Alerts.showErrorDialog(e.getMessage());
+				Alerts.showErrorDialog(e.getLocalizedMessage());
 			}
 		}
 	}

@@ -36,7 +36,7 @@ class FXMLsTest {
 		} catch (UnsupportedOperationException ex) {
 			// java.lang.UnsupportedOperationException: Unable to open DISPLAY
 			unsupported = true;
-			abort(ex.getMessage());
+			abort(ex.getLocalizedMessage());
 		}
 		final var context = new Context() {
 			@Getter

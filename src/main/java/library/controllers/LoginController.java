@@ -50,7 +50,7 @@ public final class LoginController implements RequiresLoggedOut, Initializable {
 					case LIBRARIAN -> FXMLs.LIBRARIAN_DASHBOARD;
 				}).load());
 			}
-			case HasMessage ret -> Alerts.showErrorDialog(ret.getMessage());
+			case HasMessage ret -> Alerts.showErrorDialog(ret.getLocalizedMessage());
 		}
 	}
 

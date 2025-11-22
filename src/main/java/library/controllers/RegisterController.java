@@ -43,13 +43,13 @@ public final class RegisterController implements RequiresLoggedOut, Initializabl
 		try {
 			switch (context.getManageProfileControl().register(UserValidator.DEFAULT, role, username, password, fullName)) {
 				case ManageProfileControl.RegisterResult.Success val -> {
-					Alerts.showInfoDialog(val.getMessage());
+					Alerts.showInfoDialog(val.getLocalizedMessage());
 					goToLogin();
 				}
-				case HasMessage val -> Alerts.showErrorDialog(val.getMessage());
+				case HasMessage val -> Alerts.showErrorDialog(val.getLocalizedMessage());
 			}
 		} catch (TransactionException exception) {
-			Alerts.showErrorDialog(exception.getMessage());
+			Alerts.showErrorDialog(exception.getLocalizedMessage());
 		}
 	}
 

@@ -92,7 +92,7 @@ public final class PendingApprovalsController implements RequiresLoggedIn, Initi
 										null
 								).show();
 							} catch (IOException e) {
-								Alerts.showErrorDialog(e.getMessage());
+								Alerts.showErrorDialog(e.getLocalizedMessage());
 							}
 						}),
 						new Tuple2<>(new SimpleStringProperty("Approve"), (_, _) -> {
@@ -101,7 +101,7 @@ public final class PendingApprovalsController implements RequiresLoggedIn, Initi
 									case ManageBooksControl.ApproveResult.Success _ -> controller.tableController.removeDatum(this);
 								}
 							} catch (TransactionException e) {
-								Alerts.showErrorDialog(e.getMessage());
+								Alerts.showErrorDialog(e.getLocalizedMessage());
 							}
 						}),
 						new Tuple2<>(new SimpleStringProperty("Reject"), (_, _) -> {
@@ -110,7 +110,7 @@ public final class PendingApprovalsController implements RequiresLoggedIn, Initi
 									case ManageBooksControl.RejectResult.Success _ -> controller.tableController.removeDatum(this);
 								}
 							} catch (TransactionException e) {
-								Alerts.showErrorDialog(e.getMessage());
+								Alerts.showErrorDialog(e.getLocalizedMessage());
 							}
 						})
 				);

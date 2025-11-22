@@ -109,7 +109,7 @@ public final class BookDownloadController implements RequiresLoggedIn, Initializ
 					try {
 						switch (context.getPublishBooksControl().addBook(results._1(), results._2())) {
 							case PublishBooksControl.AddBookResult.AlreadyExists val -> {
-								if (!Alerts.showConfirmDialog("%s\nOverwrite?".formatted(val.getMessage())).map(ButtonType::getButtonData).map(ButtonBar.ButtonData::isDefaultButton).orElse(false)) {
+								if (!Alerts.showConfirmDialog("%s\nOverwrite?".formatted(val.getLocalizedMessage())).map(ButtonType::getButtonData).map(ButtonBar.ButtonData::isDefaultButton).orElse(false)) {
 									return;
 								}
 								switch (context.getPublishBooksControl().addBook(results._1(), results._2(), true)) {
