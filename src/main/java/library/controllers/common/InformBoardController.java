@@ -13,6 +13,7 @@ import javafx.scene.layout.Priority;
 import library.Main;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
+import library.utils.Alerts;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
@@ -42,22 +43,30 @@ public final class InformBoardController implements RequiresLoggedIn, Initializa
 		notificationList.setItems(notifications);
 	}
 
-	public void clearAll() throws TransactionException {
-		repository.userNotificationOps.update(getLoggedInUser()._1(), current -> new String[0]);
+	public void clearAll() {
+		try {
+			repository.userNotificationOps.update(getLoggedInUser()._1(), current -> new String[0]);
+		} catch (TransactionException e) {
+			Alerts.showErrorDialog(e.getLocalizedMessage());
+		}
 		updateNotificationList();
 	}
 
-	private void CloseNotif(int index) throws TransactionException {
-		repository.userNotificationOps.updateAsList(
-				getLoggedInUser()._1(),
-				current -> {
-					current.remove(index);
-				});
+	private void CloseNotif(int index) {
+		try {
+			repository.userNotificationOps.updateAsList(
+					getLoggedInUser()._1(),
+					current -> {
+						current.remove(index);
+					});
+		} catch (TransactionException e) {
+			Alerts.showErrorDialog(e.getLocalizedMessage());
+		}
 		updateNotificationList();
 	}
 
 		/*
-    private void AddNotif() throws TransactionException {
+    private void AddNotif() {
 	    repository.userNotificationOps.update(getLoggedInUser()._1(), currentNotifications -> {
             String[] updated = Arrays.copyOf(currentNotifications, currentNotifications.length + 1);
             updated[updated.length - 1] = "New notification message " + updated.length;
@@ -78,13 +87,7 @@ public final class InformBoardController implements RequiresLoggedIn, Initializa
 			super();
 			hbox.getChildren().addAll(label, pane, button);
 			HBox.setHgrow(pane, Priority.ALWAYS);
-			button.setOnAction(_ -> {
-				try {
-					CloseNotif(getIndex());
-				} catch (TransactionException e) {
-					throw new RuntimeException(e);
-				}
-			});
+			button.setOnAction(_ -> CloseNotif(getIndex()));
 		}
 
 		@Override

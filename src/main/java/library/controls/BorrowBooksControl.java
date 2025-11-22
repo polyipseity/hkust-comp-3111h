@@ -50,6 +50,7 @@ public record BorrowBooksControl(Repository repository) {
 				generatePdfPath(user, book)
 		);
 		repository.borrowOps.create(user, book, borrowData);
+		repository.bookOps.update(book, current -> current.withTimesBorrowed(current.timesBorrowed() + 1));
 		return new BorrowResult.Success();
 	}
 

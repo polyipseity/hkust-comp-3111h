@@ -65,7 +65,7 @@ public final class ModifyWindowController implements RequiresLoggedIn, Initializ
 				case ManageBooksControl.ModifyResult.Success success -> {
 					// Close the current window
 					stage.close();
-					//Show success response to author
+					// Show success response to author
 					Alerts.showInfoDialog(success.getLocalizedMessage());
 					confirmCallback.run();
 				}

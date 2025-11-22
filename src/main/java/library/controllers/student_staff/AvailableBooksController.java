@@ -74,7 +74,7 @@ public final class AvailableBooksController implements RequiresLoggedIn, Initial
 	/**
 	 * Runs each time the "Borrow Book" button is pressed.
 	 */
-	public void borrowSelectedBook() throws TransactionException {
+	public void borrowSelectedBook() {
 		final var context = Main.getContext();
 		final var currentRow = table.getSelectionModel().getSelectedItem();
 		if (currentRow == null) {
@@ -98,14 +98,18 @@ public final class AvailableBooksController implements RequiresLoggedIn, Initial
 			return;
 		}
 
-		switch (context.getBorrowBooksControl().borrowBook(getLoggedInUser()._1(), selectedBook, minutes, seconds)) {
-			case BorrowBooksControl.BorrowResult.Success _ -> {
-				context.getRepository().bookOps.update(selectedBook, current -> current.withTimesBorrowed(current.timesBorrowed() + 1));
-				long millis = (minutes * 60L + seconds) * 1000;
-				parentController.scheduleReturn(selectedBook, millis);
-				Alerts.showInfoDialog("Book borrowed successfully");
+
+		try {
+			switch (context.getBorrowBooksControl().borrowBook(getLoggedInUser()._1(), selectedBook, minutes, seconds)) {
+				case BorrowBooksControl.BorrowResult.Success _ -> {
+					long millis = (minutes * 60L + seconds) * 1000;
+					parentController.scheduleReturn(selectedBook, millis);
+					Alerts.showInfoDialog("Book borrowed successfully");
+				}
+				case HasMessage ret -> Alerts.showErrorDialog(ret.getLocalizedMessage());
 			}
-			case HasMessage ret -> Alerts.showErrorDialog(ret.getLocalizedMessage());
+		} catch (TransactionException e) {
+			Alerts.showErrorDialog(e.getLocalizedMessage());
 		}
 
 		loadTable();

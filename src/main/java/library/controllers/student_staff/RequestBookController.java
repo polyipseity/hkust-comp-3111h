@@ -18,12 +18,16 @@ public final class RequestBookController implements RequiresLoggedIn {
 	@UnknownNullability
 	public TextField titleField, authorField;
 
-	public void requestBook() throws TransactionException {
+	public void requestBook() {
 		String title = titleField.getText();
 		String author = authorField.getText();
-		switch (context.getRequestBooksControl().requestBook(user, title, author)) {
-			case RequestBooksControl.RequestResult.Success() -> Alerts.showInfoDialog("Book request submitted.");
-			case HasMessage ret -> Alerts.showErrorDialog(ret.getLocalizedMessage());
+		try {
+			switch (context.getRequestBooksControl().requestBook(user, title, author)) {
+				case RequestBooksControl.RequestResult.Success() -> Alerts.showInfoDialog("Book request submitted.");
+				case HasMessage ret -> Alerts.showErrorDialog(ret.getLocalizedMessage());
+			}
+		} catch (TransactionException e) {
+			Alerts.showErrorDialog(e.getLocalizedMessage());
 		}
 	}
 }
