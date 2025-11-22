@@ -68,6 +68,6 @@ public final class DashboardController extends CommonDashboardController {
 	}
 
 	public void loadBookDownload() {
-		bookDownloadController.loadTable();
+		bookDownloadController.loadData();
 	}
 }

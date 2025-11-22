@@ -46,8 +46,6 @@ public final class BookDownloadController implements RequiresLoggedIn, Initializ
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
-		RequiresLoggedIn.super.initialize(location, resources);
-
 		final var keys = new LinkedHashMap<Keys, TableColumn<Data, @Nullable Data>>();
 		keys.put(Keys.TITLE, titleCol);
 		keys.put(Keys.AUTHOR, authorCol);
@@ -56,17 +54,18 @@ public final class BookDownloadController implements RequiresLoggedIn, Initializ
 		tableController = new DynamicTableController<>(table, keys);
 		table.getSortOrder().add(titleCol);
 
+		RequiresLoggedIn.super.initialize(location, resources);
+		loadData();
+
 		final var selectedItem = table.getSelectionModel().selectedItemProperty();
 		titleText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.book.title()).orElse(""));
 		authorText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.book.authorString()).orElse(""));
 		bookshelvesText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.book.bookshelvesString()).orElse(""));
 		summaryText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.book.summariesString()).orElse(""));
-
-		loadTable();
 	}
 
 	@SuppressWarnings("EmptyMethod")
-	public void loadTable() {
+	public void loadData() {
 		// noop
 	}
 

@@ -1,7 +1,5 @@
 package library.controllers.author;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
@@ -59,15 +57,16 @@ public final class StatusViewController implements RequiresLoggedIn, Initializab
 			}
 		}
 
-		ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(
+		List<PieChart.Data> pieChartData = List.of(
 				new PieChart.Data("Pending", pendingBooks),
 				new PieChart.Data("Approved", approvedBooks),
 				new PieChart.Data("Rejected", rejectedBooks)
 		);
 
-		statusChart.setData(pieChartData);
+		statusChart.getData().setAll(pieChartData);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void loadBarChartData() {
 		// Get all approved books for the current author
 		Map<Book, Book.Data> allApprovedBook = authorBooks.entrySet().stream().filter(book ->
@@ -90,7 +89,6 @@ public final class StatusViewController implements RequiresLoggedIn, Initializab
 		}
 
 		// Clear existing data and add new series
-		popularChart.getData().clear();
-		popularChart.getData().add(series);
+		popularChart.getData().setAll(series);
 	}
 }
