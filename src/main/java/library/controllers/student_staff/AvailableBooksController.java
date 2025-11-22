@@ -22,9 +22,9 @@ import org.jetbrains.annotations.UnknownNullability;
 import java.net.URL;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public final class AvailableBooksController implements RequiresLoggedIn, Initializable, LoadsData {
+	private final Map<Book, Borrow> activeBorrows = new HashMap<>();
 	@UnknownNullability
 	@SuppressWarnings("unused")
 	public TableView<@Nullable Data> table;
@@ -34,15 +34,12 @@ public final class AvailableBooksController implements RequiresLoggedIn, Initial
 	@UnknownNullability
 	@SuppressWarnings("unused")
 	public TableColumn<Data, @Nullable Data> titleCol, authorCol, publishDateCol, summaryCol;
-
 	@UnknownNullability
 	@SuppressWarnings("unused")
 	public Node sidebar;
 	@UnknownNullability
 	@SuppressWarnings("unused")
 	public Text titleText, authorText, publishDateText, summaryText;
-
-	private final SortedMap<Borrow, Book> activeBorrows = new TreeMap<>(Comparator.comparing(Borrow::due));
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
@@ -65,9 +62,9 @@ public final class AvailableBooksController implements RequiresLoggedIn, Initial
 
 		final var context = Main.getContext();
 		final var repository = context.getRepository();
-		context.addSecondTimelineListener(getLoggedInUser(), _ -> activeBorrows.entrySet().removeIf(entry -> {
-			if (!entry.getKey().expired()) return false;
-			final var key = entry.getValue();
+		context.addSecondTimelineListener(getLoggedInToken(), _ -> activeBorrows.entrySet().removeIf(entry -> {
+			if (!entry.getValue().expired()) return false;
+			final var key = entry.getKey();
 			final var value = repository.bookOps.read(key);
 			value.ifPresent(val -> tableController.addDatum(new Data(this, key, val, repository.userOps.readFullName(key.author()))));
 			return true;
@@ -80,8 +77,7 @@ public final class AvailableBooksController implements RequiresLoggedIn, Initial
 		final var repository = context.getRepository();
 
 		activeBorrows.clear();
-		activeBorrows.putAll(repository.borrowOps.read(getLoggedInUser()._1()).entrySet().stream()
-				.collect(Collectors.toUnmodifiableMap(Map.Entry::getValue, Map.Entry::getKey)));
+		activeBorrows.putAll(repository.borrowOps.read(getLoggedInUser()._1()));
 
 		tableController.setData(context.getBorrowBooksControl()
 				.getBorrowableBooks(getLoggedInUser()._1())
@@ -126,7 +122,7 @@ public final class AvailableBooksController implements RequiresLoggedIn, Initial
 					Alerts.showInfoDialog("Book borrowed successfully");
 					// Only after showing the info dialog, change the UI
 					tableController.removeDatum(currentRow);
-					activeBorrows.put(borrow, selectedBook); // Placed afterwards, in case it expired quickly
+					activeBorrows.put(selectedBook, borrow); // Placed afterwards, in case it expired quickly
 				}
 				case HasMessage ret -> Alerts.showErrorDialog(ret.getLocalizedMessage());
 			}
