@@ -14,16 +14,23 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public record RepositoryBorrowOps(Repository repository) {
+	// Only care about expired entries if reading is required
+
 	public Map<Tuple2<User, Book>, Borrow> read() {
 		return read(_ -> true);
 	}
 
 	public Map<Tuple2<User, Book>, Borrow> read(Predicate<? super Map.Entry<Tuple2<User, Book>, Borrow>> filter) {
-		return repository.borrows.entrySet().stream().map(entry -> Map.entry(new Tuple2<>((User) entry.getKey()[0], (Book) entry.getKey()[1]), entry.getValue())).filter(filter).collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
+		return repository.borrows.entrySet().stream()
+				.filter(entry -> !entry.getValue().expired())
+				.map(entry -> Map.entry(new Tuple2<>((User) entry.getKey()[0], (Book) entry.getKey()[1]), entry.getValue()))
+				.filter(filter)
+				.collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
 	public Optional<Borrow> read(User user, Book book) {
-		return Optional.ofNullable(repository.borrows.get(new Object[]{user, book}));
+		return Optional.ofNullable(repository.borrows.get(new Object[]{user, book}))
+				.filter(Predicate.not(Borrow::expired));
 	}
 
 	public Borrow readOrThrow(User user, Book book) {
@@ -34,24 +41,29 @@ public record RepositoryBorrowOps(Repository repository) {
 
 	public Map<Book, Borrow> read(User user) {
 		return repository.borrows.prefixSubMap(new Object[]{user}).entrySet().stream()
+				.filter(entry -> !entry.getValue().expired())
 				.collect(Collectors.toUnmodifiableMap(entry -> (Book) entry.getKey()[1], Map.Entry::getValue));
 	}
 
 	public Map<User, Borrow> read(Book book) {
 		return repository.borrows.entrySet().stream()
+				.filter(entry -> !entry.getValue().expired())
 				.filter(entry -> book.equals(entry.getKey()[1]))
 				.collect(Collectors.toUnmodifiableMap(entry -> (User) entry.getKey()[0], Map.Entry::getValue));
 	}
 
 	public void create(User user, Book book, Borrow data) throws TransactionException {
-		repository.transact(tx -> tx.borrows().put(new Object[]{user, book}, data) == null, () -> "Already created: %s, %s".formatted(user, book));
+		repository.transact(tx -> {
+			final var oldBorrow = tx.borrows().put(new Object[]{user, book}, data);
+			return oldBorrow == null || oldBorrow.expired();
+		}, () -> "Already created: %s, %s".formatted(user, book));
 	}
 
 	public void update(User user, Book book, Function<Borrow, Borrow> callback) throws TransactionException {
 		repository.transact(tx -> {
 			final var key = new Object[]{user, book};
 			final var oldValue = tx.borrows().get(key);
-			return oldValue != null && oldValue.equals(tx.borrows().put(key, callback.apply(oldValue)));
+			return oldValue != null && !oldValue.expired() && oldValue.equals(tx.borrows().put(key, callback.apply(oldValue)));
 		}, () -> "Not found or updated concurrently: %s,  %s".formatted(user, book));
 	}
 
@@ -62,9 +74,10 @@ public record RepositoryBorrowOps(Repository repository) {
 		repository.transact(
 				tx -> {
 					final var key = new Object[]{user, book};
+					final var oldBorrow = tx.borrows().put(key, data);
 					return expected == null
-							? tx.borrows().put(key, data) != null
-							: expected.equals(tx.borrows().put(key, data));
+							? oldBorrow != null && !oldBorrow.expired()
+							: expected.equals(oldBorrow) || expected.expired();
 				},
 				() -> "Not found or updated concurrently: %s,  %s".formatted(user, book)
 		);
@@ -74,7 +87,12 @@ public record RepositoryBorrowOps(Repository repository) {
 	                   Book book,
 	                   @Nullable Borrow expected) throws TransactionException {
 		repository.transact(
-				tx -> expected == null ? tx.borrows().remove(new Object[]{user, book}) != null : tx.borrows().remove(new Object[]{user, book}, expected),
+				tx -> {
+					final var oldBorrow = tx.borrows().remove(new Object[]{user, book});
+					return expected == null
+							? oldBorrow != null && !oldBorrow.expired()
+							: expected.equals(oldBorrow) || expected.expired();
+				},
 				() -> "Already deleted: %s, %s".formatted(user, book)
 		);
 	}

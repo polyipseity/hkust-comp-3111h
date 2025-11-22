@@ -36,7 +36,7 @@ class RepositoryBorrowOpsTest {
 		data.books().put(book, new Book.Data("summary", "content", Book.ApprovalStatus.APPROVED, TimeUtil.nowZoned(), null, 42));
 		data.books().put(book2, new Book.Data("summary", "content", Book.ApprovalStatus.REJECTED, null, null, 42));
 
-		data.borrows().put(new Object[]{reader, book}, new Borrow(TimeUtil.nowZoned(), Duration.ofNanos(42), "test.pdf"));
+		data.borrows().put(new Object[]{reader, book}, new Borrow(TimeUtil.nowZoned(), Duration.ofHours(42), "test.pdf")); // ensure not expired
 
 		return true;
 	}
@@ -68,7 +68,7 @@ class RepositoryBorrowOpsTest {
 						Book.ApprovalStatus.APPROVED, TimeUtil.nowZoned(), null, 10));
 
 		ops.create(reader2, book2, new Borrow(TimeUtil.nowZoned(),
-				Duration.ofDays(7), "test.pdf"));
+				Duration.ofDays(7), "test.pdf")); // Ensure not expired
 
 		// now there should be two borrows in the repo
 		final var all = assertDoesNotThrow(() -> ops.read());
@@ -94,11 +94,11 @@ class RepositoryBorrowOpsTest {
 						Book.ApprovalStatus.APPROVED, TimeUtil.nowZoned(), null, 5));
 
 		ops.create(reader, bookLong, new Borrow(TimeUtil.nowZoned(),
-				Duration.ofHours(1), "test.pdf"));
+				Duration.ofDays(42), "test.pdf"));
 
-		// keep only borrows that last longer than 42 nanoseconds
+		// keep only borrows that last longer than 1 day
 		final var filtered = assertDoesNotThrow(() ->
-				ops.read(entry -> entry.getValue().duration().toNanos() > 42));
+				ops.read(entry -> entry.getValue().duration().toDays() > 1));
 
 		// we should have exactly the long borrow in the result
 		assertEquals(1, filtered.size());
@@ -150,7 +150,7 @@ class RepositoryBorrowOpsTest {
 		final var book = new Book("book", new Author.ByRef(new User("author")));
 		final var borrow = new Borrow(
 				TimeUtil.nowZoned(),
-				Duration.ofHours(1),
+				Duration.ofHours(1), // ensure not expired
 				"test.pdf"
 		);
 
@@ -168,7 +168,7 @@ class RepositoryBorrowOpsTest {
 		final var book = new Book("book", new Author.ByName("author")); // `ByName` instead of `ByRef` is intentional
 		final var borrow = new Borrow(
 				TimeUtil.nowZoned(),
-				Duration.ofHours(1),
+				Duration.ofHours(1), // ensure not expired
 				"test.pdf"
 		);
 
@@ -182,7 +182,7 @@ class RepositoryBorrowOpsTest {
 		final var book = new Book("book", new Author.ByRef(new User("author")));
 
 		// change duration by 1 hour
-		assertDoesNotThrow(() -> ops.update(user, book, old -> old.withDuration(Duration.ofDays(42))));
+		assertDoesNotThrow(() -> ops.update(user, book, old -> old.withDuration(Duration.ofDays(42)))); // ensure not expired
 
 		final var opt = ops.read(user, book);
 		assertTrue(opt.isPresent());
@@ -193,7 +193,7 @@ class RepositoryBorrowOpsTest {
 	void update_nonExistingBorrowFails() {
 		final var user = new User("reader2");
 		final var book = new Book("book", new Author.ByRef(new User("author")));
-		final var data = new Borrow(TimeUtil.nowZoned().plusDays(1), Duration.ofDays(42), "");
+		final var data = new Borrow(TimeUtil.nowZoned().plusDays(1), Duration.ofDays(42), ""); // ensure not expired
 
 		assertThrows(TransactionException.class,
 				() -> ops.update(user, book, old -> old));
@@ -205,7 +205,7 @@ class RepositoryBorrowOpsTest {
 	void update_borrowWithData_expectedMatches() throws TransactionException {
 		final var user = new User("reader2");
 		final var book = new Book("book", new Author.ByRef(new User("author")));
-		final var data = new Borrow(TimeUtil.nowZoned().plusDays(1), Duration.ofDays(42), "");
+		final var data = new Borrow(TimeUtil.nowZoned().plusDays(1), Duration.ofDays(42), ""); // ensure not expired
 		ops.create(user, book, data);
 
 		assertDoesNotThrow(() ->
@@ -220,18 +220,18 @@ class RepositoryBorrowOpsTest {
 	void update_borrowWithData_expectedMismatchThrows() throws TransactionException {
 		final var user = new User("reader2");
 		final var book = new Book("book", new Author.ByRef(new User("author")));
-		final var data = new Borrow(TimeUtil.nowZoned().plusDays(1), Duration.ofDays(42), "");
+		final var data = new Borrow(TimeUtil.nowZoned().plusDays(1), Duration.ofDays(42), ""); // ensure not expired
 		ops.create(user, book, data);
 
 		assertThrows(TransactionException.class,
-				() -> ops.update(user, book, data.withDuration(data.duration().plusDays(1)), data.withBorrowDate(data.borrowDate().plusDays(1))));
+				() -> ops.update(user, book, data.withDuration(data.duration().plusDays(1)), data.withBorrowDate(data.borrowDate().plusDays(1)))); // ensure not expired
 	}
 
 	@Test
 	void update_borrowWithData_expectedNullWorks() throws TransactionException {
 		final var user = new User("reader2");
 		final var book = new Book("book", new Author.ByRef(new User("author")));
-		final var data = new Borrow(TimeUtil.nowZoned().plusDays(1), Duration.ofDays(42), "");
+		final var data = new Borrow(TimeUtil.nowZoned().plusDays(1), Duration.ofDays(42), ""); // ensure not expired
 		ops.create(user, book, data);
 
 		assertDoesNotThrow(() ->

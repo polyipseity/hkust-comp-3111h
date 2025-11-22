@@ -42,6 +42,10 @@ public record Borrow(
 		return durationLeft(TimeUtil.nowZoned());
 	}
 
+	public boolean expired() {
+		return durationLeft().isZero();
+	}
+
 	@RequiredArgsConstructor
 	public static final class S extends GroupSerializerObjectArray<Borrow> {
 		/**
