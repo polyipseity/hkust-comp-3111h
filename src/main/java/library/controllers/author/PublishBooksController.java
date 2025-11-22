@@ -58,7 +58,7 @@ public final class PublishBooksController implements RequiresLoggedIn {
 		if (ContentTxt == null || titleField.getText() == null) {
 			Alerts.showErrorDialog("You must enter the book title and upload the book content first!");
 		} else {
-			var input = "Create a professional book abstract under 30 words for \"$title\" that summarizes the main themes and content. You should avoid \"In this book... (redundant), In the novel... (obvious), This story is about... (weak opening), In [Title]... (formulaic)\". Title:" + titleField.getText() + " and content:" + ContentTxt;
+			var input = "Create a professional book summary under 30 words for \"$title\" that summarizes the main themes and content. You should avoid \"In this book... (redundant), In the novel... (obvious), This story is about... (weak opening), In [Title]... (formulaic)\". Title:" + titleField.getText() + " and content:" + ContentTxt;
 			var response = chatService.getResponse(input);
 			summaryField.setText(response);
 		}

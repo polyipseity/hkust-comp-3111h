@@ -26,7 +26,7 @@ public class ChatService {
 
 		messages.add(Map.of(
 				"role", "system",
-				"content", "You are a book abstract reader."
+				"content", "You are a book summary reader."
 		));
 		messages.add(Map.of(
 				"role", "user",
