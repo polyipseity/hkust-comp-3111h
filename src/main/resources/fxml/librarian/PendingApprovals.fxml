@@ -13,8 +13,8 @@
 		<!--suppress XmlUnresolvedReference -->
 		<TableColumn fx:id="authorCol" prefWidth="${table.width * 0.15}" text="Author"/>
 		<!--suppress XmlUnresolvedReference -->
-		<TableColumn fx:id="summaryCol" prefWidth="${table.width * 0.50}" text="Summary"/>
+		<TableColumn fx:id="summaryCol" prefWidth="${table.width * 0.40}" text="Summary"/>
 		<!--suppress XmlUnresolvedReference -->
-		<TableColumn fx:id="actionsCol" prefWidth="${table.width * 0.10}" text="Actions"/>
+		<TableColumn fx:id="actionsCol" prefWidth="${table.width * 0.20}" text="Actions"/>
 	</TableView>
 </AnchorPane>

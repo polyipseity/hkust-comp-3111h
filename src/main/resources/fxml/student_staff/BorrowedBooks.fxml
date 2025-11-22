@@ -10,7 +10,7 @@
 		<TableView fx:id="table" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
 			<columns>
 				<!--suppress XmlUnresolvedReference -->
-				<TableColumn fx:id="titleCol" prefWidth="${table.width * 0.40}" text="Title"/>
+				<TableColumn fx:id="titleCol" prefWidth="${table.width * 0.30}" text="Title"/>
 				<!--suppress XmlUnresolvedReference -->
 				<TableColumn fx:id="authorCol" prefWidth="${table.width * 0.20}" text="Author"/>
 				<!--suppress XmlUnresolvedReference -->
@@ -18,7 +18,7 @@
 				<!--suppress XmlUnresolvedReference -->
 				<TableColumn fx:id="timeLeftCol" prefWidth="${table.width * 0.15}" text="Time Left"/>
 				<!--suppress XmlUnresolvedReference -->
-				<TableColumn fx:id="actionsCol" prefWidth="${table.width * 0.10}" text="Actions"/>
+				<TableColumn fx:id="actionsCol" prefWidth="${table.width * 0.20}" text="Actions"/>
 			</columns>
 		</TableView>
 	</center>

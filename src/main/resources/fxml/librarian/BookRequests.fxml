@@ -9,7 +9,7 @@
 	<TableView fx:id="table" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
 	           AnchorPane.topAnchor="0">
 		<!--suppress XmlUnresolvedReference -->
-		<TableColumn fx:id="titleCol" prefWidth="${table.width * 0.40}" text="Title"/>
+		<TableColumn fx:id="titleCol" prefWidth="${table.width * 0.30}" text="Title"/>
 		<!--suppress XmlUnresolvedReference -->
 		<TableColumn fx:id="authorCol" prefWidth="${table.width * 0.20}" text="Author"/>
 		<!--suppress XmlUnresolvedReference -->
@@ -17,6 +17,6 @@
 		<!--suppress XmlUnresolvedReference -->
 		<TableColumn fx:id="requestDateCol" prefWidth="${table.width * 0.15}" text="Request Date"/>
 		<!--suppress XmlUnresolvedReference -->
-		<TableColumn fx:id="actionsCol" prefWidth="${table.width * 0.10}" text="Actions"/>
+		<TableColumn fx:id="actionsCol" prefWidth="${table.width * 0.20}" text="Actions"/>
 	</TableView>
 </AnchorPane>
