@@ -28,6 +28,11 @@ public final class RegisterController implements RequiresLoggedOut, Initializabl
 	@UnknownNullability
 	public TextField usernameField, passwordField, fullNameField;
 
+	@SuppressWarnings("unused") // for testing
+	private RegisterController() {
+		this.role = User.Role.values()[0];
+	}
+
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedOut.super.initialize(location, resources);

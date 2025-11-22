@@ -12,7 +12,6 @@ module library {
 	requires javafx.swing;
 	requires kotlin.stdlib;
 	requires mapdb;
-	requires org.bouncycastle.provider;
 	requires org.icepdf.core;
 	requires org.icepdf.ri.viewer;
 	requires org.jetbrains.annotations;

@@ -9,10 +9,12 @@ import javafx.stage.Stage;
 import library.Main;
 import library.controllers.common.RequiresLoggedIn;
 import library.controls.ManageBooksControl;
+import library.models.Author;
 import library.models.Book;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.HasMessage;
+import library.utils.TimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
@@ -33,6 +35,15 @@ public final class ModifyWindowController implements RequiresLoggedIn, Initializ
 	public TextArea summaryArea;
 	@UnknownNullability
 	public Button confirmButton;
+
+	@SuppressWarnings({"DataFlowIssue", "unused"}) // for testing
+	private ModifyWindowController() {
+		this.stage = null;
+		this.book = new Book("", new Author.ByName(""));
+		this.bookData = new Book.Data("", "", Book.ApprovalStatus.values()[0], TimeUtil.nowZoned(), null, 0);
+		this.confirmCallback = () -> {
+		};
+	}
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {

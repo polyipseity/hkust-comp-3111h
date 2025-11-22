@@ -35,6 +35,12 @@ public final class BookViewController implements RequiresLoggedIn, Initializable
 	private SwingController swingController;
 	private JComponent viewerPanel;
 
+	@SuppressWarnings({"DataFlowIssue", "unused"}) // for testing
+	private BookViewController() {
+		this.stage = null;
+		this.currentPath = "";
+	}
+
 	public BookViewController(Stage stage, String path) {
 		this.stage = stage;
 		currentPath = path;
@@ -44,6 +50,8 @@ public final class BookViewController implements RequiresLoggedIn, Initializable
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
 		createViewer();
+
+		if (currentPath.isEmpty()) return; // for testing
 
 		stage.setOnHiding(_ -> SwingUtilities.invokeLater(() -> swingController.dispose()));
 		final var scene = stage.sceneProperty();

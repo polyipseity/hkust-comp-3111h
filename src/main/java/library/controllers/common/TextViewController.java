@@ -23,6 +23,11 @@ public final class TextViewController implements RequiresLoggedIn, Initializable
 	@UnknownNullability
 	public Slider zoomSlider;
 
+	@SuppressWarnings("unused") // for testing
+	private TextViewController() {
+		this.content = "";
+	}
+
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);

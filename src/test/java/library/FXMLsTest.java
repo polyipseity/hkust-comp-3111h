@@ -125,8 +125,17 @@ class FXMLsTest {
 	void allFXMLFilesLoad() {
 		for (final var fxml : FXMLs.values()) {
 			try {
-				// The generic type is Parent because most FXML roots are subclasses of it.
-				final var root = fxml.load();
+				// The generic type is usually Parent because most FXML roots are subclasses of it.
+				final var root = fxml.load(loader -> loader.setControllerFactory(clazz -> {
+					try {
+						// Use reflection to invoke the private empty constructor of clazz
+						final var constructor = clazz.getDeclaredConstructor();
+						constructor.setAccessible(true); // Make private constructor accessible
+						return constructor.newInstance();
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+				}));
 				assertNotNull(root, "Loaded root for %s should not be null".formatted(fxml));
 				assertInstanceOf(Parent.class, root, "Loaded root for %s should be an instance of `Parent`".formatted(fxml));
 			} catch (IOException e) {

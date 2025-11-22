@@ -22,7 +22,7 @@
 				<CategoryAxis side="BOTTOM" tickLabelRotation="90"/>
 			</xAxis>
 			<yAxis>
-				<NumberAxis tickUnit="10.0" minorTickCount="0" TickUnit="1"
+				<NumberAxis tickUnit="10.0" minorTickCount="0"
 				            label="Times Borrowed" side="LEFT"/>
 			</yAxis>
 		</BarChart>

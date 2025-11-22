@@ -30,6 +30,11 @@ public final class LoginController implements RequiresLoggedOut, Initializable {
 	@UnknownNullability
 	public PasswordField passwordField;
 
+	@SuppressWarnings("unused") // for testing
+	private LoginController() {
+		this.role = User.Role.values()[0];
+	}
+
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedOut.super.initialize(location, resources);
