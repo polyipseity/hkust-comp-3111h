@@ -44,9 +44,8 @@ public enum FXMLs {
 	@NotNull
 	public <T> T load(Consumer<FXMLLoader> callback) throws IOException {
 		final var loader = new FXMLLoader(resource);
-		final var ret = loader.<T>load();
 		callback.accept(loader);
-		return ret;
+		return loader.load();
 	}
 
 	@NotNull

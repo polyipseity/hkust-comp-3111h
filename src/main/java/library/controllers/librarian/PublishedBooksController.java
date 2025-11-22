@@ -100,7 +100,7 @@ public final class PublishedBooksController implements RequiresLoggedIn, Initial
 							try {
 								Main.getContext().newWindow(
 										TextViewController.WINDOW_TITLE.formatted(book.title()),
-										FXMLs.COMMON_TEXT_VIEW.<Parent>load(loader -> loader.<TextViewController>getController().setContent(bookData.content())),
+										FXMLs.COMMON_TEXT_VIEW.<Parent>load(loader -> loader.setControllerFactory(_ -> new TextViewController(bookData.content()))),
 										null
 								).show();
 							} catch (IOException e) {

@@ -1,24 +1,28 @@
 package library.controllers;
 
+import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import library.FXMLs;
 import library.Main;
-import library.controllers.common.DependsOnRole;
 import library.controllers.common.RequiresLoggedOut;
 import library.controls.ManageProfileControl;
 import library.models.User;
 import library.utils.Alerts;
 import library.utils.HasMessage;
 import library.utils.Tuple2;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.io.IOException;
-import java.util.Objects;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public final class LoginController implements DependsOnRole, RequiresLoggedOut {
+@RequiredArgsConstructor
+public final class LoginController implements RequiresLoggedOut, Initializable {
+	public final User.Role role;
 	@UnknownNullability
 	public Label headerLabel;
 	@UnknownNullability
@@ -26,17 +30,9 @@ public final class LoginController implements DependsOnRole, RequiresLoggedOut {
 	@UnknownNullability
 	public PasswordField passwordField;
 
-	@Nullable
-	private User.Role role;
-
 	@Override
-	public User.Role getRole() {
-		return Objects.requireNonNull(role);
-	}
-
-	@Override
-	public void setRole(User.Role role) {
-		this.role = role;
+	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+		RequiresLoggedOut.super.initialize(location, resources);
 		headerLabel.setText("%s Login".formatted(role.nameCapitalized));
 	}
 
@@ -45,10 +41,10 @@ public final class LoginController implements DependsOnRole, RequiresLoggedOut {
 		String password = passwordField.getText();
 
 		final var context = Main.getContext();
-		switch (context.getManageProfileControl().login(getRole(), username, password)) {
+		switch (context.getManageProfileControl().login(role, username, password)) {
 			case ManageProfileControl.LoginResult.Success(final var user, final var data) -> {
 				context.setLoggedInUser(new Tuple2<>(user, data));
-				Main.getContext().setScene((switch (getRole()) {
+				Main.getContext().setScene((switch (role) {
 					case STUDENT_STAFF -> FXMLs.STUDENT_STAFF_DASHBOARD;
 					case AUTHOR -> FXMLs.AUTHOR_DASHBOARD;
 					case LIBRARIAN -> FXMLs.LIBRARIAN_DASHBOARD;
@@ -66,6 +62,6 @@ public final class LoginController implements DependsOnRole, RequiresLoggedOut {
 	 * New: navigate to the standalone Register screen
 	 */
 	public void goToRegister() throws IOException {
-		Main.getContext().setScene(FXMLs.REGISTER.load(loader -> loader.<DependsOnRole>getController().setRole(getRole())));
+		Main.getContext().setScene(FXMLs.REGISTER.load(loader -> loader.setControllerFactory(_ -> new RegisterController(role))));
 	}
 }

@@ -20,7 +20,6 @@ import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.HasMessage;
 import library.utils.TimeUtil;
-import library.utils.Tuple2;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
@@ -84,11 +83,11 @@ public final class MyBooksController implements RequiresLoggedIn, Initializable 
 			// Button should be disabled
 			return;
 		}
-			Main.getContext().newWindow(
-					TextViewController.WINDOW_TITLE.formatted(selected.book.title()),
-					FXMLs.COMMON_TEXT_VIEW.<Parent>load(loader -> loader.<TextViewController>getController().setContent(selected.bookData.content())),
-					null
-			).show();
+		Main.getContext().newWindow(
+				TextViewController.WINDOW_TITLE.formatted(selected.book.title()),
+				FXMLs.COMMON_TEXT_VIEW.<Parent>load(loader -> loader.setControllerFactory(_ -> new TextViewController(selected.bookData.content()))),
+				null
+		).show();
 	}
 
 	public void modifyBook() throws IOException {
@@ -100,13 +99,8 @@ public final class MyBooksController implements RequiresLoggedIn, Initializable 
 		Main.getContext().newWindow(
 				"Modify Book",
 				// Load the FXML file for the new window's content
-				FXMLs.AUTHOR_MODIFY_WINDOW.<Parent>load(loader -> {
-					final var controller = loader.<ModifyWindowController>getController();
-					//Execute the following when window closed
-					controller.confirmCallback = this::loadTable;
-					//Passing content to new window
-					controller.setBookEntry(new Tuple2<>(selected.book, selected.bookData));
-				}),
+				stage -> FXMLs.AUTHOR_MODIFY_WINDOW.<Parent>load(loader ->
+						loader.setControllerFactory(_ -> new ModifyWindowController(stage, selected.book, selected.bookData, this::loadTable))),
 				null
 		).show();
 	}

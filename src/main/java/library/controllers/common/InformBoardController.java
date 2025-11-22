@@ -17,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.net.URL;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -32,10 +31,8 @@ public final class InformBoardController implements RequiresLoggedIn, Initializa
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
-
 		notificationList.setCellFactory(_ -> new NotificationCell());
-		notificationList.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/css/common/NotificationList.css")).toExternalForm());
-		notificationList.setFocusTraversable(false);
+
 		updateNotificationList();
 	}
 

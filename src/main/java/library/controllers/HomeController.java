@@ -2,7 +2,6 @@ package library.controllers;
 
 import library.FXMLs;
 import library.Main;
-import library.controllers.common.DependsOnRole;
 import library.controllers.common.RequiresLoggedOut;
 import library.models.User;
 
@@ -22,6 +21,6 @@ public final class HomeController implements RequiresLoggedOut {
 	}
 
 	private void goToLogin(User.Role role) throws IOException {
-		Main.getContext().setScene(FXMLs.LOGIN.load(loader -> loader.<DependsOnRole>getController().setRole(role)));
+		Main.getContext().setScene(FXMLs.LOGIN.load(loader -> loader.setControllerFactory(_ -> new LoginController(role))));
 	}
 }

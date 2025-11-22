@@ -1,10 +1,10 @@
 package library.controllers;
 
+import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import library.FXMLs;
 import library.Main;
-import library.controllers.common.DependsOnRole;
 import library.controllers.common.RequiresLoggedOut;
 import library.controls.ManageProfileControl;
 import library.controls.UserValidator;
@@ -12,29 +12,25 @@ import library.models.User;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.HasMessage;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.io.IOException;
-import java.util.Objects;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public final class RegisterController implements DependsOnRole, RequiresLoggedOut {
+@RequiredArgsConstructor
+public final class RegisterController implements RequiresLoggedOut, Initializable {
+	public final User.Role role;
 	@UnknownNullability
 	public Label headerLabel;
 	@UnknownNullability
 	public TextField usernameField, passwordField, fullNameField;
 
-	@Nullable
-	private User.Role role;
-
 	@Override
-	public User.Role getRole() {
-		return Objects.requireNonNull(role);
-	}
-
-	@Override
-	public void setRole(User.Role role) {
-		this.role = role;
+	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+		RequiresLoggedOut.super.initialize(location, resources);
 		headerLabel.setText("%s Register".formatted(role.nameCapitalized));
 	}
 
@@ -45,7 +41,7 @@ public final class RegisterController implements DependsOnRole, RequiresLoggedOu
 
 		final var context = Main.getContext();
 		try {
-			switch (context.getManageProfileControl().register(UserValidator.DEFAULT, getRole(), username, password, fullName)) {
+			switch (context.getManageProfileControl().register(UserValidator.DEFAULT, role, username, password, fullName)) {
 				case ManageProfileControl.RegisterResult.Success val -> {
 					Alerts.showInfoDialog(val.getMessage());
 					goToLogin();
@@ -62,6 +58,6 @@ public final class RegisterController implements DependsOnRole, RequiresLoggedOu
 	}
 
 	public void goToLogin() throws IOException {
-		Main.getContext().setScene(FXMLs.LOGIN.load(loader -> loader.<DependsOnRole>getController().setRole(getRole())));
+		Main.getContext().setScene(FXMLs.LOGIN.load(loader -> loader.setControllerFactory(_ -> new LoginController(role))));
 	}
 }

@@ -1,6 +1,7 @@
 package library.controllers.author;
 
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -12,56 +13,47 @@ import library.models.Book;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 import library.utils.HasMessage;
-import library.utils.Tuple2;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
-import java.util.Objects;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public final class ModifyWindowController implements RequiresLoggedIn {
-	public Runnable confirmCallback = () -> {
-	};
+@RequiredArgsConstructor
+public final class ModifyWindowController implements RequiresLoggedIn, Initializable {
+	public final Stage stage;
+	public final Book book;
+	public final Book.Data bookData;
+	public final Runnable confirmCallback;
 
 	@UnknownNullability
 	public TextField titleField;
 	@UnknownNullability
 	public TextArea summaryArea;
 	@UnknownNullability
-	public Button saveButton;
+	public Button confirmButton;
 
-	@Setter
-	private MyBooksController myBooksController;
-
-	@Nullable
-	private Tuple2<Book, Book.Data> bookEntry;
-
-	public Tuple2<Book, Book.Data> getBookEntry() {
-		return Objects.requireNonNull(bookEntry);
-	}
-
-	public void setBookEntry(Tuple2<Book, Book.Data> bookEntry) {
-		final var title = bookEntry._1().title();
-		final var summary = bookEntry._2().summary();
-		titleField.textProperty().setValue(title);
-		summaryArea.textProperty().setValue(summary);
-		saveButton.disableProperty().bind(
-				SimpleBooleanProperty.booleanExpression(titleField.textProperty().map(title::equals))
-						.and(SimpleBooleanProperty.booleanExpression(summaryArea.textProperty().map(summary::equals)))
+	@Override
+	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+		RequiresLoggedIn.super.initialize(location, resources);
+		titleField.setText(book.title());
+		summaryArea.setText(bookData.summary());
+		confirmButton.disableProperty().bind(
+				SimpleBooleanProperty.booleanExpression(titleField.textProperty().map(book.title()::equals))
+						.and(SimpleBooleanProperty.booleanExpression(summaryArea.textProperty().map(bookData.summary()::equals)))
 		);
-		this.bookEntry = bookEntry;
 	}
 
 	public void confirm() {
-		final var bookEntry = getBookEntry();
 		final var title = titleField.getText();
 		final var summary = summaryArea.getText();
 		try {
 			switch (Main.getContext().getManageBooksControl()
-					.modifyBook(bookEntry._1(), title, summary)) {
+					.modifyBook(book, title, summary)) {
 				case ManageBooksControl.ModifyResult.Success success -> {
 					// Close the current window
-					((Stage) saveButton.getScene().getWindow()).close();
+					stage.close();
 					//Show success response to author
 					Alerts.showInfoDialog(success.getMessage());
 					confirmCallback.run();
@@ -74,6 +66,6 @@ public final class ModifyWindowController implements RequiresLoggedIn {
 	}
 
 	public void cancel() {
-		((Stage) saveButton.getScene().getWindow()).close();
+		stage.close();
 	}
 }
