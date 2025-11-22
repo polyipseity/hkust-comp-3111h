@@ -170,9 +170,9 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 							return;
 						}
 						switch (item.apply(key)) {
-							case Data.Text(final var val) -> setText(val);
-							case Data.ObservableText(final var val) -> textProperty().bind(val);
-							case Data.Graphic(final var val) -> setGraphic(val.get());
+							case Data.Text(final var val, _) -> setText(val);
+							case Data.ObservableText(final var val, _) -> textProperty().bind(val);
+							case Data.Graphic(final var val, _) -> setGraphic(val.get());
 						}
 					}
 				};
@@ -184,7 +184,15 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 	public sealed interface Data extends Comparable<Data> permits Data.Graphic, Data.ObservableText, Data.Text {
 		byte getTag();
 
-		record Text(String value) implements Data {
+		@SuppressWarnings("unchecked")
+		static int compareComparable(@Nullable Comparable<?> left, @Nullable Comparable<?> right) {
+			return ((Comparator<Comparable<?>>) Comparator.nullsFirst(Comparator.naturalOrder())).compare(left, right);
+		}
+
+		@Nullable
+		Comparable<?> comparable();
+
+		record Text(String value, @Nullable Comparable<?> comparable) implements Data {
 			public static final byte TAG = 0;
 
 			@Override
@@ -192,6 +200,10 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 				return TAG;
 			}
 
+			public Text(String value) {
+				this(value, null);
+			}
+
 			/**
 			 * Compares this object with the specified object for order.  Returns a
 			 * negative integer, zero, or a positive integer as this object is less
@@ -226,15 +238,17 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 			 */
 			@Override
 			public int compareTo(Data o) {
+				if (comparable() != null || o.comparable() != null) return compareComparable(comparable(), o.comparable());
 				return switch (o) {
 					case Graphic _ -> Byte.compare(getTag(), o.getTag());
-					case ObservableText(final var val) -> value.compareToIgnoreCase(val.get());
-					case Text(final var val) -> value.compareToIgnoreCase(val);
+					case ObservableText(final var val, _) -> value.compareToIgnoreCase(val.get());
+					case Text(final var val, _) -> value.compareToIgnoreCase(val);
 				};
 			}
 		}
 
-		record ObservableText(ObservableStringValue value) implements Data {
+		record ObservableText(ObservableStringValue value,
+		                      Supplier<? extends @Nullable Comparable<?>> comparableSupplier) implements Data {
 			public static final byte TAG = 1;
 
 			@Override
@@ -242,6 +256,16 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 				return TAG;
 			}
 
+			@SuppressWarnings("unused")
+			public ObservableText(ObservableStringValue value) {
+				this(value, () -> null);
+			}
+
+			@Override
+			public @Nullable Comparable<?> comparable() {
+				return comparableSupplier.get();
+			}
+
 			/**
 			 * Compares this object with the specified object for order.  Returns a
 			 * negative integer, zero, or a positive integer as this object is less
@@ -276,18 +300,23 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 			 */
 			@Override
 			public int compareTo(Data o) {
+				if (comparable() != null || o.comparable() != null) return compareComparable(comparable(), o.comparable());
 				return switch (o) {
 					case Graphic _ -> Byte.compare(getTag(), o.getTag());
-					case ObservableText(final var val) -> value.get().compareToIgnoreCase(val.get());
-					case Text(final var val) -> value.get().compareToIgnoreCase(val);
+					case ObservableText(final var val, _) -> value.get().compareToIgnoreCase(val.get());
+					case Text(final var val, _) -> value.get().compareToIgnoreCase(val);
 				};
 			}
 		}
 
-		record Graphic(Supplier<? extends Node> value)
+		record Graphic(Supplier<? extends Node> value, @Nullable Comparable<?> comparable)
 				implements Data {
 			public static final byte TAG = 2;
 			public static final double BUTTON_SPACING = 5;
+
+			public Graphic(Supplier<? extends Node> value) {
+				this(value, null);
+			}
 
 			@SafeVarargs
 			public static Graphic ofButtons(Tuple2<? extends ObservableValue<? extends String>, ? extends BiConsumer<? super Button, ? super ActionEvent>>... buttonData) {
@@ -342,6 +371,7 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 			 */
 			@Override
 			public int compareTo(Data o) {
+				if (comparable() != null || o.comparable() != null) return compareComparable(comparable(), o.comparable());
 				return switch (o) {
 					case Graphic _ -> 0;
 					case ObservableText _, Text _ -> Byte.compare(getTag(), o.getTag());

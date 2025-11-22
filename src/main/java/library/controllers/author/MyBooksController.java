@@ -157,8 +157,8 @@ public final class MyBooksController implements RequiresLoggedIn, Initializable,
 				case PUBLISH_DATE -> new DynamicTableController.Data.Text(
 						bookData.publishDate() == null
 								? ""
-								: TimeUtil.toStringZonedLocal(bookData.publishDate()));
-				case READERS -> new DynamicTableController.Data.Text(String.valueOf(borrows.size()));
+								: TimeUtil.toStringZonedLocal(bookData.publishDate()), bookData.publishDate());
+				case READERS -> new DynamicTableController.Data.Text(String.valueOf(borrows.size()), borrows.size());
 				case SUMMARY -> new DynamicTableController.Data.Text(bookData.summary());
 			};
 		}

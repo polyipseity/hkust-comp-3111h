@@ -96,8 +96,9 @@ public final class PublishedBooksController implements RequiresLoggedIn, Initial
 				case PUBLISH_DATE -> new DynamicTableController.Data.Text(
 						bookData.publishDate() == null
 								? ""
-								: TimeUtil.toStringZonedLocal(bookData.publishDate()));
-				case TIMES_BORROWED -> new DynamicTableController.Data.Text(String.valueOf(bookData.timesBorrowed()));
+								: TimeUtil.toStringZonedLocal(bookData.publishDate()), bookData.publishDate());
+				case TIMES_BORROWED ->
+						new DynamicTableController.Data.Text(String.valueOf(bookData.timesBorrowed()), bookData.timesBorrowed());
 				case ACTIONS -> DynamicTableController.Data.Graphic.ofButtons(
 						new Tuple2<>(new ReadOnlyStringWrapper("View"), (_, _) -> {
 							try {

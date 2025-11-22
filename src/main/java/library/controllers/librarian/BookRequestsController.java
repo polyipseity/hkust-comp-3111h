@@ -92,7 +92,7 @@ public final class BookRequestsController implements RequiresLoggedIn, Initializ
 				case AUTHOR -> new DynamicTableController.Data.Text(bookRequest.author());
 				case USER -> new DynamicTableController.Data.Text(user.username());
 				case REQUEST_DATE -> new DynamicTableController.Data.Text(
-						TimeUtil.toStringZonedLocal(bookRequestData.requestDate()));
+						TimeUtil.toStringZonedLocal(bookRequestData.requestDate()), bookRequestData.requestDate());
 				case ACTIONS -> DynamicTableController.Data.Graphic.ofButtons(
 						new Tuple2<>(new ReadOnlyStringWrapper("Confirm"), (_, _) -> {
 							try {

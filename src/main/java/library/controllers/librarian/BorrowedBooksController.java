@@ -82,11 +82,11 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 				case TITLE -> new DynamicTableController.Data.Text(book.title());
 				case BORROWER -> new DynamicTableController.Data.Text(user.username());
 				case BORROW_DATE -> new DynamicTableController.Data.Text(
-						TimeUtil.toStringZonedLocal(borrow.borrowDate()));
+						TimeUtil.toStringZonedLocal(borrow.borrowDate()), borrow.borrowDate());
 				case DURATION_LEFT -> {
 					final var borrow = this.borrow; // Do not reference `this` in lambda.
 					final var prop = new SimpleStringProperty(TimeUtil.toStringDuration(borrow.durationLeft()));
-					final var ret = new DynamicTableController.Data.ObservableText(prop);
+					final var ret = new DynamicTableController.Data.ObservableText(prop, borrow::durationLeft);
 					final var weakThis = new WeakReference<>(this);
 					Main.getContext().addSecondTimelineListener(ret, _ -> {
 						prop.setValue(TimeUtil.toStringDuration(borrow.durationLeft()));

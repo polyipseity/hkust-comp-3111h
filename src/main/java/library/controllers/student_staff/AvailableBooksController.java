@@ -193,7 +193,7 @@ public final class AvailableBooksController implements RequiresLoggedIn, Initial
 				case PUBLISH_DATE -> new DynamicTableController.Data.Text(
 						bookData.publishDate() == null
 								? ""
-								: TimeUtil.toStringZonedLocal(bookData.publishDate()));
+								: TimeUtil.toStringZonedLocal(bookData.publishDate()), bookData.publishDate());
 				case SUMMARY -> new DynamicTableController.Data.Text(bookData.summary());
 			};
 		}
