@@ -52,10 +52,10 @@ public final class AvailableBooksController implements RequiresLoggedIn, Initial
 		tableController = new DynamicTableController<>(table, keys);
 
 		final var selectedItem = table.getSelectionModel().selectedItemProperty();
-		titleText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.book.title()));
-		authorText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.authorFullName));
-		publishDateText.textProperty().bind(selectedItem.map(item -> item == null || item.bookData.publishDate() == null ? "" : TimeUtil.toStringZonedLocal(item.bookData.publishDate())));
-		summaryText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.bookData.summary()));
+		titleText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.book.title()).orElse("").orElse(""));
+		authorText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.authorFullName).orElse("").orElse(""));
+		publishDateText.textProperty().bind(selectedItem.map(item -> item == null || item.bookData.publishDate() == null ? "" : TimeUtil.toStringZonedLocal(item.bookData.publishDate())).orElse("").orElse(""));
+		summaryText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.bookData.summary()).orElse("").orElse(""));
 
 		loadTable();
 	}

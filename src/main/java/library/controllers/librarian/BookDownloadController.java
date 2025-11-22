@@ -48,10 +48,10 @@ public final class BookDownloadController implements RequiresLoggedIn, Initializ
 		tableController = new DynamicTableController<>(table, keys);
 
 		final var selectedItem = table.getSelectionModel().selectedItemProperty();
-		titleText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.book.title()));
-		authorText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.book.authorString()));
-		bookshelvesText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.book.bookshelvesString()));
-		summaryText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.book.summariesString()));
+		titleText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.book.title()).orElse(""));
+		authorText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.book.authorString()).orElse(""));
+		bookshelvesText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.book.bookshelvesString()).orElse(""));
+		summaryText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.book.summariesString()).orElse(""));
 
 		loadTable();
 	}
