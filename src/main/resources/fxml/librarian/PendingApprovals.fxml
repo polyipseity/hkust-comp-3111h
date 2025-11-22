@@ -8,6 +8,7 @@
             prefHeight="400.0" prefWidth="600.0">
 	<TableView fx:id="table" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
 	           AnchorPane.topAnchor="0">
+		<columns>
 		<!--suppress XmlUnresolvedReference -->
 		<TableColumn fx:id="titleCol" prefWidth="${table.width * 0.25}" text="Title"/>
 		<!--suppress XmlUnresolvedReference -->
@@ -16,5 +17,6 @@
 		<TableColumn fx:id="summaryCol" prefWidth="${table.width * 0.40}" text="Summary"/>
 		<!--suppress XmlUnresolvedReference -->
 		<TableColumn fx:id="actionsCol" prefWidth="${table.width * 0.20}" text="Actions"/>
+		</columns>
 	</TableView>
 </AnchorPane>

@@ -24,7 +24,6 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 
 	public DynamicTableController(TableView<@Nullable Value> table, SequencedMap<Key, TableColumn<Value, @Nullable Value>> keys) {
 		this(table);
-		table.getItems().clear(); // Odd that it contains `TableColumn`s...
 		setKeys(keys);
 	}
 
