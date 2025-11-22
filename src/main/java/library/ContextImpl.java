@@ -73,7 +73,7 @@ public final class ContextImpl implements Context {
 				try {
 					repository.borrowOps.prune();
 				} catch (TransactionException e) {
-					e.printStackTrace();
+					e.printStackTrace(); // nothing we can do
 				}
 			});
 		}

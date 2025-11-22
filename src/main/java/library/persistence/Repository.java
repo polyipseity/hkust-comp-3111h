@@ -8,6 +8,9 @@ import org.mapdb.serializer.SerializerArray;
 import org.mapdb.serializer.SerializerArrayTuple;
 
 import java.io.Closeable;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
@@ -48,6 +51,7 @@ public final class Repository implements Closeable {
 		this.borrows = stores._6();
 	}
 
+	@SuppressWarnings("CallToPrintStackTrace")
 	private Tuple6<DB, HTreeMap<User, User.Data>, HTreeMap<Book, Book.Data>, HTreeMap<User, String[]>, BTreeMap<Object[], BookRequest.Data>, BTreeMap<Object[], Borrow>> open() {
 		final var userS = new User.S();
 		final var userDataS = new User.Data.S();
@@ -136,7 +140,7 @@ public final class Repository implements Closeable {
 				}
 			}
 		}).createOrOpen();
-		@SuppressWarnings("ConstantValue") final var borrows = db.treeMap("borrows", new SerializerArrayTuple(userS, bookS), borrowS).modificationListener((key, oldValue, newValue, _) -> {
+		@SuppressWarnings({"ConstantValue", "CallToPrintStackTrace"}) final var borrows = db.treeMap("borrows", new SerializerArrayTuple(userS, bookS), borrowS).modificationListener((key, oldValue, newValue, _) -> {
 			if (oldValue == null && newValue != null) {
 				@SuppressWarnings("SuspiciousMethodCalls") final var containsUser = users.containsKey(key[0]);
 				if (!containsUser) {
@@ -145,6 +149,13 @@ public final class Repository implements Closeable {
 				@SuppressWarnings("SuspiciousMethodCalls") final var containsBook = books.containsKey(key[1]);
 				if (!containsBook) {
 					throw new IllegalStateException("Book not found");
+				}
+			}
+			if (oldValue != null && newValue == null) {
+				try {
+					Files.deleteIfExists(Path.of(oldValue.pdfPath()));
+				} catch (IOException e) {
+					e.printStackTrace(); // nothing we can do
 				}
 			}
 		}).createOrOpen();
