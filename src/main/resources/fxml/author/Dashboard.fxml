@@ -23,13 +23,13 @@
 			<!-- Publish New Book Tab -->
 			<Tab text="Publish New Book">
 				<StackPane>
-					<fx:include source="PublishBooks.fxml" fx:id="publishBooks"/>
+					<fx:include source="PublishBooks.fxml"/>
 				</StackPane>
 			</Tab>
 
 
 			<!-- Status View Tab -->
-			<Tab text="Status View">
+			<Tab text="Status View" onSelectionChanged="#loadStatusView">
 				<StackPane>
 					<fx:include source="StatusView.fxml" fx:id="statusView"/>
 				</StackPane>

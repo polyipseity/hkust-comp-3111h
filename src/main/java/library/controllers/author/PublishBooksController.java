@@ -10,7 +10,6 @@ import library.models.Book;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
-import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
@@ -25,8 +24,6 @@ public final class PublishBooksController implements RequiresLoggedIn {
 	private final ChatService chatService = new ChatService();
 	@UnknownNullability
 	public TextField titleField, contentField, summaryField;
-	@Setter
-	private DashboardController parentController;
 	@Nullable
 	private String ContentTxt;
 
@@ -108,8 +105,6 @@ public final class PublishBooksController implements RequiresLoggedIn {
 			try {
 				repository.bookOps.create(book, data);
 				Alerts.showInfoDialog("Published and awaiting approval.");
-				parentController.loadMyBooks();
-				parentController.loadStatusView();
 			} catch (TransactionException e) {
 				throw new RuntimeException(e);
 			}

@@ -17,7 +17,6 @@ import library.utils.Alerts;
 import library.utils.HasMessage;
 import library.utils.TimeUtil;
 import library.utils.Tuple2;
-import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
@@ -35,9 +34,6 @@ public final class MyBooksController implements RequiresLoggedIn, Initializable 
 	public DynamicTableController<Keys, Data> tableController;
 	@UnknownNullability
 	public TableColumn<Data, @Nullable Data> titleCol, statusCol, dateCol, readersCol, summaryCol;
-
-	@Setter
-	private DashboardController parentController;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
@@ -85,9 +81,8 @@ public final class MyBooksController implements RequiresLoggedIn, Initializable 
 			Alerts.showErrorDialog("Please select a book first.");
 			return;
 		}
-
-		// Create a new Stage (window)
-		final var window = Main.getContext().newWindow(
+		// Create a new Stage (window) and show it
+		Main.getContext().newWindow(
 				"Modify Book",
 				// Load the FXML file for the new window's content
 				FXMLs.AUTHOR_MODIFY_WINDOW.load(loader -> {
@@ -98,14 +93,7 @@ public final class MyBooksController implements RequiresLoggedIn, Initializable 
 					controller.setBookEntry(new Tuple2<>(selected.book, selected.bookData));
 				}),
 				null
-		);
-
-		window.setOnHidden(event -> {
-			parentController.loadStatusView();
-		});
-
-		// Show the new window
-		window.show();
+		).show();
 	}
 
 	public void deleteBook() {
@@ -124,7 +112,6 @@ public final class MyBooksController implements RequiresLoggedIn, Initializable 
 				case ManageBooksControl.DeleteResult.Success _ -> loadTable();
 				case HasMessage message -> Alerts.showErrorDialog(message.getMessage());
 			}
-			parentController.loadStatusView();
 		} catch (TransactionException e) {
 			Alerts.showErrorDialog(e.getLocalizedMessage());
 		}
