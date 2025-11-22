@@ -152,7 +152,7 @@ public final class Repository implements Closeable {
 		return new Tuple6<>(db, users, books, userNotifications, userBookRequests, borrows);
 	}
 
-	public void transact(ThrowingFunction<Data, Boolean> action, Supplier<String> rollbackMessageSupplier) throws TransactionException {
+	public <E extends Throwable> void transact(ThrowingFunction<? super Data, ? extends Boolean, ? extends E> action, Supplier<String> rollbackMessageSupplier) throws TransactionException, E {
 		transactLock.lock();
 		try {
 			if (!action.apply(new Data())) {
@@ -174,7 +174,7 @@ public final class Repository implements Closeable {
 		}
 	}
 
-	void transact(ThrowingFunction<Data, Boolean> action) throws TransactionException {
+	<E extends Throwable> void transact(ThrowingFunction<? super Data, ? extends Boolean, ? extends E> action) throws E, TransactionException {
 		transact(action, () -> "Transaction rolled back");
 	}
 

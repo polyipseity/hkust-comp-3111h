@@ -8,6 +8,7 @@ import library.controls.*;
 import library.models.User;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
+import library.utils.ThrowingFunction;
 import library.utils.Tuple2;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
@@ -72,7 +73,7 @@ class FXMLsTest {
 			}
 
 			@Override
-			public Stage newWindow(String title, Parent parent, @Nullable Stage stage) {
+			public <E extends Throwable> Stage newWindow(String title, ThrowingFunction<? super Stage, ? extends Parent, ? extends E> parentSupplier, @Nullable Stage stage) {
 				throw new UnsupportedOperationException();
 			}
 

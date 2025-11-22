@@ -2,6 +2,7 @@ package library.controllers.librarian;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
@@ -99,7 +100,7 @@ public final class PublishedBooksController implements RequiresLoggedIn, Initial
 							try {
 								Main.getContext().newWindow(
 										TextViewController.WINDOW_TITLE.formatted(book.title()),
-										FXMLs.COMMON_TEXT_VIEW.load(loader -> loader.<TextViewController>getController().setContent(bookData.content())),
+										FXMLs.COMMON_TEXT_VIEW.<Parent>load(loader -> loader.<TextViewController>getController().setContent(bookData.content())),
 										null
 								).show();
 							} catch (IOException e) {

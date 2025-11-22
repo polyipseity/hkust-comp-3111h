@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 import library.controls.*;
 import library.models.User;
 import library.persistence.Repository;
+import library.utils.ThrowingFunction;
 import library.utils.Tuple2;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,7 +16,11 @@ import java.util.function.Consumer;
 public interface Context extends Closeable {
 	void setScene(Parent value);
 
-	Stage newWindow(String title, Parent parent, @Nullable Stage stage);
+	<E extends Throwable> Stage newWindow(String title, ThrowingFunction<? super Stage, ? extends Parent, ? extends E> parentSupplier, @Nullable Stage stage) throws E;
+
+	default Stage newWindow(String title, Parent parent, @Nullable Stage stage) {
+		return newWindow(title, _ -> parent, stage);
+	}
 
 	Stage getPrimaryStage();
 

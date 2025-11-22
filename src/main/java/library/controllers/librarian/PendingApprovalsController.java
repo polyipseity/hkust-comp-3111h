@@ -2,6 +2,7 @@ package library.controllers.librarian;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import library.FXMLs;
@@ -87,7 +88,7 @@ public final class PendingApprovalsController implements RequiresLoggedIn, Initi
 							try {
 								Main.getContext().newWindow(
 										TextViewController.WINDOW_TITLE.formatted(book.title()),
-										FXMLs.COMMON_TEXT_VIEW.load(loader ->
+										FXMLs.COMMON_TEXT_VIEW.<Parent>load(loader ->
 												loader.<TextViewController>getController().setContent(bookData.content())),
 										null
 								).show();

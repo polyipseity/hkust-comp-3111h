@@ -11,6 +11,7 @@ import javafx.util.Duration;
 import library.controls.*;
 import library.models.User;
 import library.persistence.Repository;
+import library.utils.ThrowingFunction;
 import library.utils.Tuple2;
 import lombok.Getter;
 import lombok.Setter;
@@ -97,9 +98,9 @@ public final class ContextImpl implements Context {
 	}
 
 	@Override
-	public Stage newWindow(String title, Parent parent, @Nullable Stage stage) {
+	public <E extends Throwable> Stage newWindow(String title, ThrowingFunction<? super Stage, ? extends Parent, ? extends E> parentSupplier, @Nullable Stage stage) throws E {
 		stage = stage == null ? new Stage() : stage;
-		stage.setScene(new Scene(parent, WINDOW_INITIAL_WIDTH, WINDOW_INITIAL_HEIGHT));
+		stage.setScene(new Scene(parentSupplier.apply(stage), WINDOW_INITIAL_WIDTH, WINDOW_INITIAL_HEIGHT));
 		stage.setTitle(title);
 		stage.setResizable(true);
 		return stage;

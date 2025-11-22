@@ -1,6 +1,7 @@
 package library.controllers.author;
 
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
@@ -85,7 +86,7 @@ public final class MyBooksController implements RequiresLoggedIn, Initializable 
 		}
 			Main.getContext().newWindow(
 					TextViewController.WINDOW_TITLE.formatted(selected.book.title()),
-					FXMLs.COMMON_TEXT_VIEW.load(loader -> loader.<TextViewController>getController().setContent(selected.bookData.content())),
+					FXMLs.COMMON_TEXT_VIEW.<Parent>load(loader -> loader.<TextViewController>getController().setContent(selected.bookData.content())),
 					null
 			).show();
 	}
@@ -99,7 +100,7 @@ public final class MyBooksController implements RequiresLoggedIn, Initializable 
 		Main.getContext().newWindow(
 				"Modify Book",
 				// Load the FXML file for the new window's content
-				FXMLs.AUTHOR_MODIFY_WINDOW.load(loader -> {
+				FXMLs.AUTHOR_MODIFY_WINDOW.<Parent>load(loader -> {
 					final var controller = loader.<ModifyWindowController>getController();
 					//Execute the following when window closed
 					controller.confirmCallback = this::loadTable;

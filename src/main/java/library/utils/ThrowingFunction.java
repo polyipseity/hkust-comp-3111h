@@ -11,15 +11,16 @@ import java.io.Serializable;
  *
  * @param <T> the type of the input to the function
  * @param <R> the type of the result of the function
+ * @param <E> the type of throwable that may be thrown
  */
 @FunctionalInterface
-public interface ThrowingFunction<T, R> extends Serializable {
+public interface ThrowingFunction<T, R, E extends Throwable> extends Serializable {
 	/**
 	 * Applies this function to the given argument.
 	 *
 	 * @param t the function argument
 	 * @return the function result
-	 * @throws Exception if the application fails for any reason
+	 * @throws E if the application fails for any reason
 	 */
-	R apply(T t) throws Exception;
+	R apply(T t) throws E;
 }
