@@ -87,7 +87,7 @@ public final class PendingApprovalsController implements RequiresLoggedIn, Initi
 						new Tuple2<>(new SimpleStringProperty("View"), (_, _) -> {
 							try {
 								Main.getContext().newWindow(
-										TextViewController.WINDOW_TITLE.formatted(book.title()),
+										TextViewController.WINDOW_TITLE.formatted(book.title(), book.author().id()),
 										FXMLs.COMMON_TEXT_VIEW.<Parent>load(loader -> loader.setControllerFactory(_ -> new TextViewController(bookData.content()))),
 										null
 								).show();

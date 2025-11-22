@@ -105,7 +105,7 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 
 		Stage stage = new Stage();
 		stage.setScene(new Scene(FXMLs.STUDENT_STAFF_BOOK_VIEW.load(loader -> loader.setControllerFactory(_ -> controller))));
-		stage.setTitle("Reading: " + title + " by " + author);
+		stage.setTitle(BookViewController.WINDOW_TITLE.formatted(title, author));
 		stage.setOnShown(controller::createResizeListeners);
 		stage.setOnCloseRequest(controller::disposeController);
 		stage.show();

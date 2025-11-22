@@ -63,7 +63,7 @@ public record BorrowBooksControl(Repository repository) {
 
 	private String generatePdfPath(User user, Book book) {
 		String filteredBookTitle = book.title().replaceAll("[-+.^:,]", "");
-		return user.username() + "__" + filteredBookTitle + ".pdf";
+		return "%s__%s.pdf".formatted(user.username(), filteredBookTitle);
 	}
 
 	public ReadResult readBook(User user, Book book) {

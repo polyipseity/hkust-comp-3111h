@@ -9,6 +9,7 @@ import library.controls.UserValidator;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
+import library.utils.HasMessage;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
@@ -52,9 +53,7 @@ public final class MyProfileController implements RequiresLoggedIn, Initializabl
 					Alerts.showErrorDialog(e.getLocalizedMessage());
 				}
 			}
-			case UserValidator.Result.BadFullName(String message) -> Alerts.showErrorDialog(message);
-			case UserValidator.Result.BadPassword(String message) -> Alerts.showErrorDialog(message);
-			default -> throw new IllegalStateException("Unexpected value: " + result);
+			case HasMessage message -> Alerts.showErrorDialog(message.getLocalizedMessage());
 		}
 	}
 }

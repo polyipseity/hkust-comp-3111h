@@ -7,6 +7,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.WindowEvent;
 import library.controllers.common.RequiresLoggedIn;
+import library.controllers.common.TextViewController;
 import library.utils.Alerts;
 import org.icepdf.ri.common.SwingController;
 import org.icepdf.ri.common.SwingViewBuilder;
@@ -24,6 +25,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public final class BookViewController implements RequiresLoggedIn, Initializable {
+	public static final String WINDOW_TITLE = TextViewController.WINDOW_TITLE;
+
 	private final String currentPath;
 	@UnknownNullability
 	public BorderPane borderPane;

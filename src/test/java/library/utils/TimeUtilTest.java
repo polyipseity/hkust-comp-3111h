@@ -76,8 +76,10 @@ class TimeUtilTest {
 		// Assert: the string is identical to the original formatted value
 		final var expected = DateTimeFormatter.ISO_ZONED_DATE_TIME.format(localInstant);
 		assertEquals(expected, result,
-				() -> "String representation should be unchanged for local zone.\nExpected: "
-						+ expected + "\nActual:   " + result);
+				() -> """
+						String representation should be unchanged for local zone.
+						Expected: %s
+						Actual:   %s""".formatted(expected, result));
 	}
 
 	@Test

@@ -84,7 +84,7 @@ public final class MyBooksController implements RequiresLoggedIn, Initializable 
 			return;
 		}
 		Main.getContext().newWindow(
-				TextViewController.WINDOW_TITLE.formatted(selected.book.title()),
+				TextViewController.WINDOW_TITLE.formatted(selected.book.title(), selected.book.author().id()),
 				FXMLs.COMMON_TEXT_VIEW.<Parent>load(loader -> loader.setControllerFactory(_ -> new TextViewController(selected.bookData.content()))),
 				null
 		).show();
@@ -127,7 +127,7 @@ public final class MyBooksController implements RequiresLoggedIn, Initializable 
 	}
 
 	private boolean deleteConfirmation(String message) {
-		Optional<ButtonType> result = Alerts.showConfirmDialog("Delete " + message + "?");
+		Optional<ButtonType> result = Alerts.showConfirmDialog("Delete '%s'?".formatted(message));
 		// Return true if confirmed
 		return !(result.isPresent() && result.get() == ButtonType.CANCEL);
 	}

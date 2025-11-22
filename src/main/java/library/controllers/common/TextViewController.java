@@ -14,7 +14,8 @@ import java.util.ResourceBundle;
 
 @RequiredArgsConstructor
 public final class TextViewController implements RequiresLoggedIn, Initializable {
-	public static final String WINDOW_TITLE = "Reading: %s.txt";
+	public static final String WINDOW_TITLE = "Reading: '%s' by '%s'";
+
 	@Getter
 	public final String content;
 	@UnknownNullability
