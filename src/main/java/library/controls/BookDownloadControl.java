@@ -33,7 +33,10 @@ public record BookDownloadControl(
 	 * Creates a new BookDownloadControl instance with a pre-initialized HttpClient.
 	 */
 	public BookDownloadControl() {
-		this(HttpClient.newHttpClient(), new ObjectMapper());
+		this(HttpClient.newBuilder()
+						.followRedirects(HttpClient.Redirect.ALWAYS)
+						.build(),
+				new ObjectMapper());
 	}
 
 	/**
