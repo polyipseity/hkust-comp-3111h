@@ -23,7 +23,7 @@ public interface UserValidator {
 			}
 			case String val when val.chars().anyMatch(ch -> ch < 32 || ch >= 127) -> {
 				// non-ASCII or control characters
-				return new Result.BadUsername("Bad characters in password");
+				return new Result.BadPassword("Bad characters in password");
 			}
 			default -> {
 			}

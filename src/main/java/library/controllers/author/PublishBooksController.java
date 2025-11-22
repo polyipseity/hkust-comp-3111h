@@ -6,12 +6,15 @@ import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import library.Main;
 import library.controllers.common.RequiresLoggedIn;
+import library.controls.ManageBooksControl;
+import library.controls.PublishBooksControl;
 import library.models.Author;
 import library.models.Book;
 import library.models.json.OpenAIChatCompletionBody;
 import library.models.json.OpenAIChatCompletionResponse;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
+import library.utils.HasMessage;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
@@ -122,7 +125,7 @@ public final class PublishBooksController implements RequiresLoggedIn {
 	}
 
 	//Method for publishing the book
-	public void publishBook() {
+	public void publishBook() throws TransactionException {
 		if (titleField.getText().isEmpty() || ContentTxt == null || ContentTxt.isEmpty() || summaryField.getText().isEmpty()) {
 			Alerts.showErrorDialog("Missing information of the book.");
 			return;
@@ -132,22 +135,14 @@ public final class PublishBooksController implements RequiresLoggedIn {
 			return;
 		}
 		var book = new Book(titleField.getText(), new Author.ByRef(getLoggedInUser()._1()), false);
-		final var repository = Main.getContext().getRepository();
-		Optional<Book.Data> opt = repository.bookOps.read(book);
-		if (opt.isPresent()) {
-			if (opt.get().approvalStatus() == Book.ApprovalStatus.REJECTED) {
-				Alerts.showErrorDialog("Rejected Book of the same title and author already exists");
-			} else {
-				Alerts.showErrorDialog("Book of the same title and author already exists");
-			}
-		} else {
-			var data = new Book.Data(summaryField.getText(), ContentTxt, Book.ApprovalStatus.PENDING, null, null, 0);
-			try {
-				repository.bookOps.create(book, data);
-			} catch (TransactionException e) {
-				throw new RuntimeException(e);
-			}
-			Alerts.showInfoDialog("Published and awaiting approval.");
+        var data = new Book.Data(summaryField.getText(), ContentTxt, Book.ApprovalStatus.PENDING, null, null, 0);
+		final var publishBooksControl = Main.getContext().getPublishBooksControl();
+        switch(publishBooksControl.addBook(book,data)) {
+            case PublishBooksControl.AddBookResult.Success success -> {
+                // Show success response to author
+                Alerts.showInfoDialog("Published and awaiting approval.");
+            }
+            case HasMessage message -> Alerts.showErrorDialog(message.getLocalizedMessage());
 		}
 	}
 }

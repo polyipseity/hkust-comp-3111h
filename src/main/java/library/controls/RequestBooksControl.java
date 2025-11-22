@@ -13,9 +13,9 @@ public record RequestBooksControl(Repository repository) {
 
 	public RequestResult requestBook(User user, String title, String author) throws TransactionException {
 		// Check if either title or author field is an empty string
-		if (title.isEmpty())
+		if (title.trim().isEmpty())
 			return new RequestResult.InvalidRequest(RequestResult.InvalidType.INVALID_TITLE);
-		if (author.isEmpty())
+		if (author.trim().isEmpty())
 			return new RequestResult.InvalidRequest(RequestResult.InvalidType.INVALID_AUTHOR);
 
 		BookRequest bookRequest = new BookRequest(title, author);

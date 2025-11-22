@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 public record BorrowBooksControl(Repository repository) {
 	public BorrowResult borrowBook(User user, Book book, int minutes, int seconds) throws TransactionException {
-		int durationUpperBound = 1 + 14 * 24 * 60 * 60;
+		int durationUpperBound = 14 * 24 * 60 * 60;
 		int durationLowerBound = 1;
 		int durationSeconds = minutes * 60 + seconds;
 

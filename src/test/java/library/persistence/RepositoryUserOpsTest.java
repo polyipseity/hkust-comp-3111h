@@ -1,5 +1,6 @@
 package library.persistence;
 
+import library.models.Author;
 import library.models.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -295,4 +296,65 @@ class RepositoryUserOpsTest {
 	void repository() {
 		assertSame(repository, ops.repository());
 	}
+
+    @Test
+    void readFullName_AuthorByName_ReturnsNameDirectly() {
+        Author.ByName author = new Author.ByName("John Smith");
+
+        String result = ops.readFullName(author);
+
+        assertEquals("John Smith", result);
+    }
+
+    @Test
+    void readFullName_AuthorByRef_UserExists_ReturnsFullName() throws TransactionException {
+        // Create a user first
+        User authorUser = new User("author123");
+        User.Data userData = new User.Data(User.Role.STUDENT_STAFF, true, "password", "Jane Doe");
+        repository.userOps.create(authorUser, userData);
+
+        Author.ByRef author = new Author.ByRef(authorUser);
+
+        String result = ops.readFullName(author);
+
+        assertEquals("Jane Doe", result);
+    }
+
+    @Test
+    void readFullName_AuthorByRef_UserNotFound_ReturnsErrorFormat() {
+        User nonExistentUser = new User("nonexistent");
+        Author author = new Author.ByRef(nonExistentUser);
+
+        String result = ops.readFullName(author);
+
+        assertEquals("ERROR: nonexistent", result);
+    }
+
+    @Test
+    void readFullName_AuthorByRef_UserExistsButNoFullName_ReturnsEmptyString() throws TransactionException {
+        // Create a user with empty full name
+        User authorUser = new User("author456");
+        User.Data userData = new User.Data(User.Role.STUDENT_STAFF, true, "password", "");
+        repository.userOps.create(authorUser, userData);
+
+        Author.ByRef author = new Author.ByRef(authorUser);
+
+        String result = ops.readFullName(author);
+
+        assertEquals("", result);
+    }
+
+    @Test
+    void readFullName_AuthorByRef_UserExistsWithSpecialCharacters() throws TransactionException {
+        // Create a user with special characters in full name
+        User authorUser = new User("author789");
+        User.Data userData = new User.Data(User.Role.STUDENT_STAFF, true, "password", "José García-López");
+        repository.userOps.create(authorUser, userData);
+
+        Author.ByRef author = new Author.ByRef(authorUser);
+
+        String result = ops.readFullName(author);
+
+        assertEquals("José García-López", result);
+    }
 }
