@@ -33,14 +33,14 @@
 		<SplitPane dividerPositions="0.75" VBox.vgrow="ALWAYS">
 			<TableView minWidth="200.0" fx:id="table">
 				<columns>
-				<!--suppress XmlUnresolvedReference -->
-				<TableColumn fx:id="titleCol" prefWidth="${table.width * 0.30}" text="Title"/>
-				<!--suppress XmlUnresolvedReference -->
-				<TableColumn fx:id="authorCol" prefWidth="${table.width * 0.15}" text="Author"/>
-				<!--suppress XmlUnresolvedReference -->
-				<TableColumn fx:id="bookshelvesCol" prefWidth="${table.width * 0.15}" text="Bookshelves"/>
-				<!--suppress XmlUnresolvedReference -->
-				<TableColumn fx:id="summaryCol" prefWidth="${table.width * 0.40}" text="Summary"/>
+					<!--suppress XmlUnresolvedReference -->
+					<TableColumn fx:id="titleCol" prefWidth="${table.width * 0.30}" text="Title"/>
+					<!--suppress XmlUnresolvedReference -->
+					<TableColumn fx:id="authorCol" prefWidth="${table.width * 0.15}" text="Author"/>
+					<!--suppress XmlUnresolvedReference -->
+					<TableColumn fx:id="bookshelvesCol" prefWidth="${table.width * 0.15}" text="Bookshelves"/>
+					<!--suppress XmlUnresolvedReference -->
+					<TableColumn fx:id="summaryCol" prefWidth="${table.width * 0.40}" text="Summary"/>
 				</columns>
 			</TableView>
 			<ScrollPane minWidth="200.0" fitToWidth="true" fx:id="sidebar">

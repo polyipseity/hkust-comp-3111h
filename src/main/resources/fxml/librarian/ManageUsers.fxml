@@ -9,16 +9,16 @@
 	<TableView fx:id="table" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
 	           AnchorPane.topAnchor="0">
 		<columns>
-		<!--suppress XmlUnresolvedReference -->
-		<TableColumn fx:id="usernameCol" prefWidth="${table.width * 0.20}" text="Username"/>
-		<!--suppress XmlUnresolvedReference -->
-		<TableColumn fx:id="roleCol" prefWidth="${table.width * 0.10}" text="Role"/>
-		<!--suppress XmlUnresolvedReference -->
-		<TableColumn fx:id="nameCol" prefWidth="${table.width * 0.30}" text="Name"/>
-		<!--suppress XmlUnresolvedReference -->
-		<TableColumn fx:id="activeCol" prefWidth="${table.width * 0.10}" text="Active"/>
-		<!--suppress XmlUnresolvedReference -->
-		<TableColumn fx:id="actionsCol" prefWidth="${table.width * 0.20}" text="Actions"/>
+			<!--suppress XmlUnresolvedReference -->
+			<TableColumn fx:id="usernameCol" prefWidth="${table.width * 0.20}" text="Username"/>
+			<!--suppress XmlUnresolvedReference -->
+			<TableColumn fx:id="roleCol" prefWidth="${table.width * 0.10}" text="Role"/>
+			<!--suppress XmlUnresolvedReference -->
+			<TableColumn fx:id="nameCol" prefWidth="${table.width * 0.30}" text="Name"/>
+			<!--suppress XmlUnresolvedReference -->
+			<TableColumn fx:id="activeCol" prefWidth="${table.width * 0.10}" text="Active"/>
+			<!--suppress XmlUnresolvedReference -->
+			<TableColumn fx:id="actionsCol" prefWidth="${table.width * 0.20}" text="Actions"/>
 		</columns>
 	</TableView>
 </AnchorPane>

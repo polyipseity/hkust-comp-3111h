@@ -9,16 +9,16 @@
 	<TableView fx:id="table" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
 	           AnchorPane.topAnchor="0">
 		<columns>
-		<!--suppress XmlUnresolvedReference -->
-		<TableColumn fx:id="titleCol" prefWidth="${table.width * 0.30}" text="Title"/>
-		<!--suppress XmlUnresolvedReference -->
-		<TableColumn fx:id="authorCol" prefWidth="${table.width * 0.20}" text="Author"/>
-		<!--suppress XmlUnresolvedReference -->
-		<TableColumn fx:id="userCol" prefWidth="${table.width * 0.15}" text="Requested By"/>
-		<!--suppress XmlUnresolvedReference -->
-		<TableColumn fx:id="requestDateCol" prefWidth="${table.width * 0.15}" text="Request Date"/>
-		<!--suppress XmlUnresolvedReference -->
-		<TableColumn fx:id="actionsCol" prefWidth="${table.width * 0.20}" text="Actions"/>
+			<!--suppress XmlUnresolvedReference -->
+			<TableColumn fx:id="titleCol" prefWidth="${table.width * 0.30}" text="Title"/>
+			<!--suppress XmlUnresolvedReference -->
+			<TableColumn fx:id="authorCol" prefWidth="${table.width * 0.20}" text="Author"/>
+			<!--suppress XmlUnresolvedReference -->
+			<TableColumn fx:id="userCol" prefWidth="${table.width * 0.15}" text="Requested By"/>
+			<!--suppress XmlUnresolvedReference -->
+			<TableColumn fx:id="requestDateCol" prefWidth="${table.width * 0.15}" text="Request Date"/>
+			<!--suppress XmlUnresolvedReference -->
+			<TableColumn fx:id="actionsCol" prefWidth="${table.width * 0.20}" text="Actions"/>
 		</columns>
 	</TableView>
 </AnchorPane>

@@ -9,14 +9,14 @@
 	<TableView fx:id="table" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
 	           AnchorPane.topAnchor="0">
 		<columns>
-		<!--suppress XmlUnresolvedReference -->
-		<TableColumn fx:id="titleCol" prefWidth="${table.width * 0.55}" text="Title"/>
-		<!--suppress XmlUnresolvedReference -->
-		<TableColumn fx:id="borrowerCol" prefWidth="${table.width * 0.15}" text="Borrower"/>
-		<!--suppress XmlUnresolvedReference -->
-		<TableColumn fx:id="borrowDateCol" prefWidth="${table.width * 0.15}" text="Borrowed On"/>
-		<!--suppress XmlUnresolvedReference -->
-		<TableColumn fx:id="durationLeftCol" prefWidth="${table.width * 0.15}" text="Time Left"/>
+			<!--suppress XmlUnresolvedReference -->
+			<TableColumn fx:id="titleCol" prefWidth="${table.width * 0.55}" text="Title"/>
+			<!--suppress XmlUnresolvedReference -->
+			<TableColumn fx:id="borrowerCol" prefWidth="${table.width * 0.15}" text="Borrower"/>
+			<!--suppress XmlUnresolvedReference -->
+			<TableColumn fx:id="borrowDateCol" prefWidth="${table.width * 0.15}" text="Borrowed On"/>
+			<!--suppress XmlUnresolvedReference -->
+			<TableColumn fx:id="durationLeftCol" prefWidth="${table.width * 0.15}" text="Time Left"/>
 		</columns>
 	</TableView>
 </AnchorPane>
