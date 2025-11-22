@@ -26,6 +26,8 @@ public interface Context extends Closeable {
 
 	Repository getRepository();
 
+	AIServiceControl getAIServiceControl();
+
 	BookDownloadControl getBookDownloadControl();
 
 	BorrowBooksControl getBorrowBooksControl();

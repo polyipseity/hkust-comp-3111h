@@ -16,8 +16,6 @@ module library {
 	requires org.icepdf.core;
 	requires org.icepdf.ri.viewer;
 	requires org.jetbrains.annotations;
-	requires spring.boot;
-	requires spring.web;
 	requires static lombok;
 
 	exports library;
@@ -43,6 +41,4 @@ module library {
 	opens library.models.json;
 	opens library.persistence;
 	opens library.utils;
-	exports library.SpringApplicationPackage;
-	opens library.SpringApplicationPackage;
 }

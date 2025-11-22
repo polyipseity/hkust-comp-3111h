@@ -41,6 +41,7 @@ class FXMLsTest {
 		final var context = new Context() {
 			@Getter
 			private final Repository repository = new Repository(DBMaker.memoryDirectDB());
+			private final AIServiceControl aiServiceControl = new AIServiceControl();
 			@Getter
 			private final BookDownloadControl bookDownloadControl = new BookDownloadControl();
 			@Getter
@@ -80,6 +81,11 @@ class FXMLsTest {
 			@Override
 			public Stage getPrimaryStage() {
 				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public AIServiceControl getAIServiceControl() {
+				return aiServiceControl;
 			}
 
 			@Override

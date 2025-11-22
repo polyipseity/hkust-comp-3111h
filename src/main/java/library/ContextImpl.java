@@ -28,6 +28,7 @@ public final class ContextImpl implements Context {
 	private final Stage primaryStage;
 	@Getter
 	private final Repository repository;
+	private final AIServiceControl aiServiceControl;
 	@Getter
 	private final BookDownloadControl bookDownloadControl;
 	@Getter
@@ -60,6 +61,7 @@ public final class ContextImpl implements Context {
 	public ContextImpl(Stage primaryStage, Repository repository) {
 		this.primaryStage = primaryStage;
 		this.repository = repository;
+		this.aiServiceControl = new AIServiceControl();
 		this.bookDownloadControl = new BookDownloadControl();
 		this.borrowBooksControl = new BorrowBooksControl(repository);
 		this.manageBooksControl = new ManageBooksControl(repository);
@@ -96,6 +98,7 @@ public final class ContextImpl implements Context {
 	 */
 	@Override
 	public void close() {
+		minuteTimeline.stop();
 		secondTimeline.stop();
 		repository.close();
 	}
@@ -113,6 +116,11 @@ public final class ContextImpl implements Context {
 		stage.setTitle(title);
 		stage.setResizable(true);
 		return stage;
+	}
+
+	@Override
+	public AIServiceControl getAIServiceControl() {
+		return aiServiceControl;
 	}
 
 	@Override

@@ -74,9 +74,8 @@ public record BookDownloadControl(
 						try {
 							throw new CompletionException(objectMapper.readValue(body, GutendexErrorResponse.class).detail(), e);
 						} catch (JsonProcessingException e2) {
-							final var e3 = new CompletionException(e2);
-							e3.addSuppressed(e);
-							throw e3;
+							e2.addSuppressed(e);
+							throw new CompletionException(e2);
 						}
 					}
 				})

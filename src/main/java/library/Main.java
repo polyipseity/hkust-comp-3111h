@@ -8,7 +8,6 @@ import lombok.AccessLevel;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 import org.mapdb.DBMaker;
-import org.springframework.boot.SpringApplication;
 
 import java.util.Objects;
 
@@ -23,7 +22,6 @@ public final class Main extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		SpringApplication.run(Main.class);
 		context = new ContextImpl(stage, new Repository(DBMaker.fileDB("repository.db")));
 		// Show the Home (role‐select) first, not the Login screen directly:
 		getContext().newWindow("Library Management System", FXMLs.HOME.<Parent>load(), stage);

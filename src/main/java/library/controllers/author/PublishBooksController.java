@@ -1,13 +1,15 @@
 package library.controllers.author;
 
+import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import library.Main;
-import library.SpringApplicationPackage.ChatService;
 import library.controllers.common.RequiresLoggedIn;
 import library.models.Author;
 import library.models.Book;
-import library.persistence.Repository;
+import library.models.json.OpenAIChatCompletionBody;
+import library.models.json.OpenAIChatCompletionResponse;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 import org.jetbrains.annotations.Nullable;
@@ -16,12 +18,10 @@ import org.jetbrains.annotations.UnknownNullability;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.Optional;
 
 public final class PublishBooksController implements RequiresLoggedIn {
-	private final Repository repository = Main.getContext().getRepository();
-
-	private final ChatService chatService = new ChatService();
 	@UnknownNullability
 	public TextField titleField, contentField, summaryField;
 	@Nullable
@@ -57,11 +57,48 @@ public final class PublishBooksController implements RequiresLoggedIn {
 	public void generateSummary() {
 		if (ContentTxt == null || titleField.getText() == null) {
 			Alerts.showErrorDialog("You must enter the book title and upload the book content first!");
-		} else {
-			var input = "Create a professional book summary under 30 words for \"$title\" that summarizes the main themes and content. You should avoid \"In this book... (redundant), In the novel... (obvious), This story is about... (weak opening), In [Title]... (formulaic)\". Title: %s and content: %s".formatted(titleField.getText(), ContentTxt);
-			var response = chatService.getResponse(input);
-			summaryField.setText(response);
+			return;
 		}
+
+		final var startTime = System.currentTimeMillis();
+		final var responseFuture = Main.getContext().getAIServiceControl()
+				.chatComplete(new OpenAIChatCompletionBody(
+						"gpt-4o-mini",
+						List.of(new OpenAIChatCompletionBody.Message(
+										"system",
+										"""        
+												I want you to act as a book summarizer. Provide a detailed summary of %s. Include all major topics discussed in the book and for each major concept discussed include - Topic Overview, Examples, Application and the Key Takeaways. Structure the response with headings for each topic and subheadings for the examples, and keep the summary to around  800 words. An excerpt of the book is provided below.
+												""".formatted(titleField.getText())
+								),
+								new OpenAIChatCompletionBody.Message(
+										"user",
+										ContentTxt.length() > 2048 ? "%s\n\n%s".formatted(ContentTxt.substring(0, 1024), ContentTxt.substring(ContentTxt.length() - 1024)) : ContentTxt
+								)
+						),
+						null,
+						null,
+						null
+				))
+				.thenApply(response -> response.choices().stream().map(OpenAIChatCompletionResponse.Choice::message).map(OpenAIChatCompletionResponse.Message::content).findFirst().orElseThrow());
+
+// Show loading dialog during request
+		final var running = new SimpleBooleanProperty(true);
+		responseFuture.whenComplete((_, _) -> Platform.runLater(() -> running.set(false)));
+		if (!Alerts.showLoadingDialog("Generating book summary...", running)) {
+			responseFuture.cancel(true);
+			return;
+		}
+
+		responseFuture.<Runnable>thenApply(response -> {
+			final var endTime = System.currentTimeMillis();
+			return () -> {
+				summaryField.setText(response);
+				Alerts.showInfoDialog("Summary generated in %d ms".formatted(endTime - startTime));
+			};
+		}).exceptionally(throwable -> {
+			final var endTime = System.currentTimeMillis();
+			return () -> Alerts.showErrorDialog("Failed to generate summary in %d ms: %s".formatted(endTime - startTime, throwable.getLocalizedMessage()));
+		}).thenAccept(Platform::runLater);
 	}
 
 	public boolean isValidBookTitle(@Nullable String title) {
@@ -93,6 +130,7 @@ public final class PublishBooksController implements RequiresLoggedIn {
 			return;
 		}
 		var book = new Book(titleField.getText(), new Author.ByRef(getLoggedInUser()._1()), false);
+		final var repository = Main.getContext().getRepository();
 		Optional<Book.Data> opt = repository.bookOps.read(book);
 		if (opt.isPresent()) {
 			if (opt.get().approvalStatus() == Book.ApprovalStatus.REJECTED) {
@@ -110,5 +148,4 @@ public final class PublishBooksController implements RequiresLoggedIn {
 			}
 		}
 	}
-
 }

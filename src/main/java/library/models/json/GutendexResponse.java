@@ -30,7 +30,7 @@ public record GutendexResponse(
 			@JsonProperty("download_count") long downloadCount
 	) {
 		public String authorString() {
-			return authors.stream().map(GutendexResponse.Person::name).collect(Collectors.joining("; "));
+			return authors.stream().map(Person::name).collect(Collectors.joining("; "));
 		}
 
 		public String bookshelvesString() {
