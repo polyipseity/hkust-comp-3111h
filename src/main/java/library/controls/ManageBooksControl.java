@@ -162,20 +162,16 @@ public record ManageBooksControl(Repository repository) {
 						// Read the current book data to ensure it exists
 						final var bookData = repository.bookOps.readOrThrow(book);
 
-						// Retrieve all borrows associated with the book
+						// Retrieve all borrows associated with the book before being deleted by the database constraint
 						final var borrows = repository.borrowOps.read(book);
 						if (role != User.Role.LIBRARIAN && !borrows.isEmpty()) {
 							ret.set(new DeleteResult.HasBorrows(borrows));
 							return false;
 						}
 
-						// Process each borrow and remove it from the database
-						for (final var borrowEntry : borrows.entrySet()) {
-							repository.borrowOps.delete(borrowEntry.getKey(), book, borrowEntry.getValue());
-						}
+						// Process each borrow and remove it from the database: not necessary by database constraint
 						// After removing all borrows, delete the book
 						repository.bookOps.delete(book, bookData);
-
 
 						if (role != User.Role.AUTHOR) {
 							// Notify the author of the book deletion
