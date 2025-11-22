@@ -25,8 +25,8 @@
 			<Tab text="My Profile">
 				<fx:include source="../common/MyProfile.fxml"/>
 			</Tab>
-			<Tab text="Inform Board">
-				<fx:include source="../common/InformBoard.fxml"/>
+			<Tab text="Inform Board" onSelectionChanged="#loadInformBoard">
+				<fx:include source="../common/InformBoard.fxml" fx:id="informBoard"/>
 			</Tab>
 		</TabPane>
 	</center>

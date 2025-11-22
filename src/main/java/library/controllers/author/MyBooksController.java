@@ -8,6 +8,7 @@ import javafx.scene.control.TableView;
 import library.FXMLs;
 import library.Main;
 import library.controllers.common.DynamicTableController;
+import library.controllers.common.LoadsData;
 import library.controllers.common.RequiresLoggedIn;
 import library.controllers.common.TextViewController;
 import library.controls.ManageBooksControl;
@@ -29,7 +30,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
-public final class MyBooksController implements RequiresLoggedIn, Initializable {
+public final class MyBooksController implements RequiresLoggedIn, Initializable, LoadsData {
 	@UnknownNullability
 	@SuppressWarnings("unused")
 	public TableView<@Nullable Data> table;
@@ -46,8 +47,6 @@ public final class MyBooksController implements RequiresLoggedIn, Initializable 
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
-		RequiresLoggedIn.super.initialize(location, resources);
-
 		final var keys = new LinkedHashMap<Keys, TableColumn<Data, @Nullable Data>>();
 		keys.put(Keys.TITLE, titleCol);
 		keys.put(Keys.STATUS, statusCol);
@@ -56,15 +55,16 @@ public final class MyBooksController implements RequiresLoggedIn, Initializable 
 		keys.put(Keys.SUMMARY, summaryCol);
 		tableController = new DynamicTableController<>(table, keys);
 
+		LoadsData.super.initialize(location, resources);
+
 		final var selectedItem = table.getSelectionModel().selectedItemProperty();
 		viewButton.disableProperty().bind(selectedItem.isNull());
 		modifyButton.disableProperty().bind(selectedItem.map(item -> item == null || !item.borrows.isEmpty()).orElse(true));
 		deleteButton.disableProperty().bind(selectedItem.map(item -> item == null || !item.borrows.isEmpty()).orElse(true));
-
-		loadTable();
 	}
 
-	public void loadTable() {
+	@Override
+	public void loadData() {
 		final var author = new Author.ByRef(getLoggedInUser()._1());
 		final var repository = Main.getContext().getRepository();
 		tableController.setData(repository.bookOps
@@ -102,7 +102,7 @@ public final class MyBooksController implements RequiresLoggedIn, Initializable 
 				"Modify Book",
 				// Load the FXML file for the new window's content
 				stage -> FXMLs.AUTHOR_MODIFY_WINDOW.<Parent>load(loader ->
-						loader.setControllerFactory(_ -> new ModifyWindowController(stage, selected.book, selected.bookData, this::loadTable))),
+						loader.setControllerFactory(_ -> new ModifyWindowController(stage, selected.book, selected.bookData, this::loadData))),
 				null
 		).show();
 	}
@@ -120,7 +120,7 @@ public final class MyBooksController implements RequiresLoggedIn, Initializable 
 		try {
 			switch (Main.getContext().getManageBooksControl().deleteBook(selected.book, getLoggedInUser()._2().role())) {
 				//Reload table after deleting a book
-				case ManageBooksControl.DeleteResult.Success _ -> loadTable();
+				case ManageBooksControl.DeleteResult.Success _ -> loadData();
 				case HasMessage message -> Alerts.showErrorDialog(message.getLocalizedMessage());
 			}
 		} catch (TransactionException e) {

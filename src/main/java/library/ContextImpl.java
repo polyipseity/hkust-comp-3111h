@@ -11,12 +11,15 @@ import javafx.util.Duration;
 import library.controls.*;
 import library.models.User;
 import library.persistence.Repository;
+import library.persistence.TransactionException;
 import library.utils.ThrowingFunction;
 import library.utils.Tuple2;
 import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.WeakHashMap;
 import java.util.function.Consumer;
 
@@ -53,10 +56,36 @@ public final class ContextImpl implements Context {
 	private final Timeline minuteTimeline;
 	private final WeakHashMap<Object, Consumer<? super ActionEvent>> minuteTimelineListeners = new WeakHashMap<>();
 
-	@Setter
 	@Getter
 	@Nullable
 	private Tuple2<User, User.Data> loggedInUser;
+	@SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
+	private final List<Object> loggedInTokens = new ArrayList<>();
+
+	@SuppressWarnings("CallToPrintStackTrace")
+	@Override
+	public void setLoggedInUser(@Nullable Tuple2<User, User.Data> loggedInUser) {
+		this.loggedInUser = loggedInUser;
+		if (loggedInUser == null) {
+			loggedInTokens.clear();
+		} else {
+			addMinuteTimelineListener(Objects.requireNonNull(getLoggedInToken()), _ -> {
+				try {
+					repository.borrowOps.prune();
+				} catch (TransactionException e) {
+					e.printStackTrace();
+				}
+			});
+		}
+	}
+
+	@Override
+	public @Nullable Object getLoggedInToken() {
+		if (loggedInUser == null) return null;
+		final var ret = new Object();
+		loggedInTokens.add(ret);
+		return ret;
+	}
 
 	public ContextImpl(Stage primaryStage, Repository repository) {
 		this.primaryStage = primaryStage;

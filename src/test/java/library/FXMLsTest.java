@@ -99,6 +99,11 @@ class FXMLsTest {
 			}
 
 			@Override
+			public Object getLoggedInToken() {
+				return new Object();
+			}
+
+			@Override
 			public void setLoggedInUser(@Nullable Tuple2<User, User.Data> loggedInUser) {
 				// noop
 			}

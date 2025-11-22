@@ -2,11 +2,11 @@ package library.controllers.student_staff;
 
 import javafx.application.Platform;
 import javafx.fxml.Initializable;
-import javafx.scene.control.SplitPane;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.Node;
 import library.Context;
 import library.Main;
 import library.controllers.common.CommonDashboardController;
+import library.controllers.common.InformBoardController;
 import library.controllers.common.RequiresLoggedIn;
 import library.controls.BorrowBooksControl;
 import library.models.Book;
@@ -24,25 +24,34 @@ public final class DashboardController extends CommonDashboardController impleme
 	final Timer timer = new Timer("student_staff_timer");
 	private final Context context = Main.getContext();
 	private final User user = this.getLoggedInUser()._1();
+
 	@UnknownNullability
 	@SuppressWarnings("unused")
-	public SplitPane availableBooks;
+	public Node availableBooks;
 	@UnknownNullability
 	@SuppressWarnings("unused")
 	public AvailableBooksController availableBooksController;
+
 	@UnknownNullability
 	@SuppressWarnings("unused")
-	public BorderPane borrowedBooks;
+	public Node borrowedBooks;
 	@UnknownNullability
 	@SuppressWarnings("unused")
 	public BorrowedBooksController borrowedBooksController;
 
+	@UnknownNullability
+	@SuppressWarnings("unused")
+	public Node informBoard;
+	@UnknownNullability
+	@SuppressWarnings("unused")
+	public InformBoardController informBoardController;
+
 	public void loadAvailableBooks() {
-		availableBooksController.loadTable();
+		availableBooksController.loadData();
 	}
 
 	public void loadBorrowedBooks() {
-		borrowedBooksController.loadTable();
+		borrowedBooksController.loadData();
 	}
 
 	@Override
@@ -84,5 +93,9 @@ public final class DashboardController extends CommonDashboardController impleme
 
 	public void scheduleReturn(Book book, long millis) {
 		timer.schedule(createReturnTask(book), millis);
+	}
+
+	public void loadInformBoard() {
+		informBoardController.loadData();
 	}
 }

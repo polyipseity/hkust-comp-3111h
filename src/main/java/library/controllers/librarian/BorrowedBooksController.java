@@ -5,6 +5,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import library.Main;
 import library.controllers.common.DynamicTableController;
+import library.controllers.common.LoadsData;
 import library.controllers.common.RequiresLoggedIn;
 import library.models.Book;
 import library.models.Borrow;
@@ -18,7 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
-public final class BorrowedBooksController implements RequiresLoggedIn, Initializable {
+public final class BorrowedBooksController implements RequiresLoggedIn, Initializable, LoadsData {
 	@UnknownNullability
 	@SuppressWarnings("unused")
 	public TableView<@Nullable Data> table;
@@ -32,8 +33,6 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
-		RequiresLoggedIn.super.initialize(location, resources);
-
 		final var keys = new LinkedHashMap<Keys, TableColumn<Data, @Nullable Data>>();
 		keys.put(Keys.TITLE, titleCol);
 		keys.put(Keys.BORROWER, borrowerCol);
@@ -41,10 +40,11 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 		keys.put(Keys.DURATION_LEFT, durationLeftCol);
 		tableController = new DynamicTableController<>(table, keys);
 
-		loadTable();
+		LoadsData.super.initialize(location, resources);
 	}
 
-	public void loadTable() {
+	@Override
+	public void loadData() {
 		tableController.setData(Main.getContext()
 				.getRepository()
 				.borrowOps

@@ -6,6 +6,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import library.Main;
 import library.controllers.common.DynamicTableController;
+import library.controllers.common.LoadsData;
 import library.controllers.common.RequiresLoggedIn;
 import library.controls.RequestBooksControl;
 import library.models.BookRequest;
@@ -22,7 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
-public final class BookRequestsController implements RequiresLoggedIn, Initializable {
+public final class BookRequestsController implements RequiresLoggedIn, Initializable, LoadsData {
 	@UnknownNullability
 	@SuppressWarnings("unused")
 	public TableView<@Nullable Data> table;
@@ -35,8 +36,6 @@ public final class BookRequestsController implements RequiresLoggedIn, Initializ
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
-		RequiresLoggedIn.super.initialize(location, resources);
-
 		final var keys = new LinkedHashMap<Keys, TableColumn<Data, Data>>();
 		// This is a placeholder - the original suggestion was invalid and should not be used
 		keys.put(Keys.TITLE, titleCol);
@@ -46,10 +45,11 @@ public final class BookRequestsController implements RequiresLoggedIn, Initializ
 		keys.put(Keys.ACTIONS, actionsCol);
 		tableController = new DynamicTableController<>(table, keys);
 
-		loadTable();
+		LoadsData.super.initialize(location, resources);
 	}
 
-	public void loadTable() {
+	@Override
+	public void loadData() {
 		tableController.setData(Main.getContext()
 				.getRepository()
 				.userBookRequestOps

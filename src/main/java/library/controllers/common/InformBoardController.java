@@ -19,7 +19,7 @@ import org.jetbrains.annotations.UnknownNullability;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public final class InformBoardController implements RequiresLoggedIn, Initializable {
+public final class InformBoardController implements RequiresLoggedIn, Initializable, LoadsData {
 	//Storing all notifications of user
 	private final ObservableList<String> notifications = FXCollections.observableArrayList();
 	//Referring to fxml ListView
@@ -29,13 +29,13 @@ public final class InformBoardController implements RequiresLoggedIn, Initializa
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
-		RequiresLoggedIn.super.initialize(location, resources);
 		notificationList.setCellFactory(_ -> new NotificationCell());
 
-		updateNotificationList();
+		LoadsData.super.initialize(location, resources);
 	}
 
-	private void updateNotificationList() {
+	@Override
+	public void loadData() {
 		notifications.setAll(Main.getContext().getRepository().userNotificationOps.readOrThrow(getLoggedInUser()._1()));
 		notificationList.setItems(notifications);
 	}
@@ -46,7 +46,7 @@ public final class InformBoardController implements RequiresLoggedIn, Initializa
 		} catch (TransactionException e) {
 			Alerts.showErrorDialog(e.getLocalizedMessage());
 		}
-		updateNotificationList();
+		loadData();
 	}
 
 	private void CloseNotif(int index) {
@@ -59,7 +59,7 @@ public final class InformBoardController implements RequiresLoggedIn, Initializa
 		} catch (TransactionException e) {
 			Alerts.showErrorDialog(e.getLocalizedMessage());
 		}
-		updateNotificationList();
+		loadData();
 	}
 
 	class NotificationCell extends ListCell<@Nullable String> {

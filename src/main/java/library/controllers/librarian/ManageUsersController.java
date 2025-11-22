@@ -6,6 +6,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import library.Main;
 import library.controllers.common.DynamicTableController;
+import library.controllers.common.LoadsData;
 import library.controllers.common.RequiresLoggedIn;
 import library.controls.ManageUsersControl;
 import library.models.User;
@@ -21,7 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
-public final class ManageUsersController implements RequiresLoggedIn, Initializable {
+public final class ManageUsersController implements RequiresLoggedIn, Initializable, LoadsData {
 	@UnknownNullability
 	@SuppressWarnings("unused")
 	public TableView<@Nullable Data> table;
@@ -34,8 +35,6 @@ public final class ManageUsersController implements RequiresLoggedIn, Initializa
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
-		RequiresLoggedIn.super.initialize(location, resources);
-
 		final var keys = new LinkedHashMap<Keys, TableColumn<Data, @Nullable Data>>();
 		keys.put(Keys.USERNAME, usernameCol);
 		keys.put(Keys.ROLE, roleCol);
@@ -44,10 +43,11 @@ public final class ManageUsersController implements RequiresLoggedIn, Initializa
 		keys.put(Keys.ACTIONS, actionsCol);
 		tableController = new DynamicTableController<>(table, keys);
 
-		loadTable();
+		LoadsData.super.initialize(location, resources);
 	}
 
-	public void loadTable() {
+	@Override
+	public void loadData() {
 		tableController.setData(Main.getContext()
 				.getRepository()
 				.userOps

@@ -7,6 +7,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import library.Main;
 import library.controllers.common.DynamicTableController;
+import library.controllers.common.LoadsData;
 import library.controllers.common.RequiresLoggedIn;
 import library.controls.BorrowBooksControl;
 import library.models.Book;
@@ -24,7 +25,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
-public final class AvailableBooksController implements RequiresLoggedIn, Initializable {
+public final class AvailableBooksController implements RequiresLoggedIn, Initializable, LoadsData {
 	@UnknownNullability
 	@SuppressWarnings("unused")
 	public TableView<@Nullable Data> table;
@@ -47,8 +48,6 @@ public final class AvailableBooksController implements RequiresLoggedIn, Initial
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
-		RequiresLoggedIn.super.initialize(location, resources);
-
 		final var keys = new LinkedHashMap<Keys, TableColumn<Data, @Nullable Data>>();
 		keys.put(Keys.TITLE, titleCol);
 		keys.put(Keys.AUTHOR_FULL_NAME, authorCol);
@@ -56,16 +55,17 @@ public final class AvailableBooksController implements RequiresLoggedIn, Initial
 		keys.put(Keys.SUMMARY, summaryCol);
 		tableController = new DynamicTableController<>(table, keys);
 
+		LoadsData.super.initialize(location, resources);
+
 		final var selectedItem = table.getSelectionModel().selectedItemProperty();
 		titleText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.book.title()).orElse("").orElse(""));
 		authorText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.authorFullName).orElse("").orElse(""));
 		publishDateText.textProperty().bind(selectedItem.map(item -> item == null || item.bookData.publishDate() == null ? "" : TimeUtil.toStringZonedLocal(item.bookData.publishDate())).orElse("").orElse(""));
 		summaryText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.bookData.summary()).orElse("").orElse(""));
-
-		loadTable();
 	}
 
-	public void loadTable() {
+	@Override
+	public void loadData() {
 		final var context = Main.getContext();
 		final var repository = context.getRepository();
 		tableController.setData(context.getBorrowBooksControl().getBorrowableBooks(getLoggedInUser()._1())
@@ -117,7 +117,7 @@ public final class AvailableBooksController implements RequiresLoggedIn, Initial
 			Alerts.showErrorDialog(e.getLocalizedMessage());
 		}
 
-		loadTable();
+		loadData();
 	}
 
 	/**

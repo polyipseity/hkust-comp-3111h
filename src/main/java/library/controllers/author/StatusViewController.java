@@ -7,18 +7,20 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import library.Main;
+import library.controllers.common.LoadsData;
 import library.controllers.common.RequiresLoggedIn;
 import library.models.Author;
 import library.models.Book;
 import library.persistence.Repository;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
-import java.net.URL;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-public final class StatusViewController implements RequiresLoggedIn, Initializable {
+public final class StatusViewController implements RequiresLoggedIn, Initializable, LoadsData {
 	private final Repository repository = Main.getContext().getRepository();
 	@UnknownNullability
 	@SuppressWarnings("unused")
@@ -29,13 +31,7 @@ public final class StatusViewController implements RequiresLoggedIn, Initializab
 	private Map<Book, Book.Data> authorBooks = new HashMap<>();
 
 	@Override
-	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
-		RequiresLoggedIn.super.initialize(location, resources);
-
-		refresh();
-	}
-
-	public void refresh() {
+	public void loadData() {
 		refreshStatus();
 		loadPieChartData();
 		loadBarChartData();

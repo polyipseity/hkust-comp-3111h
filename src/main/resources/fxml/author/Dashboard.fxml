@@ -43,9 +43,9 @@
 			</Tab>
 
 			<!-- Inform Board -->
-			<Tab text="Inform Board">
+			<Tab text="Inform Board" onSelectionChanged="#loadInformBoard">
 				<StackPane>
-					<fx:include source="../common/InformBoard.fxml"/>
+					<fx:include source="../common/InformBoard.fxml" fx:id="informBoard"/>
 				</StackPane>
 			</Tab>
 

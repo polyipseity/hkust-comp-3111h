@@ -27,5 +27,6 @@
 			</yAxis>
 		</BarChart>
 	</HBox>
-	<Button minHeight="40.0" mnemonicParsing="false" onAction="#refresh" text="Refresh Status" VBox.vgrow="NEVER"/>
+	<!--suppress JavaFxEventHandler -->
+	<Button minHeight="40.0" mnemonicParsing="false" onAction="#loadData" text="Refresh Status" VBox.vgrow="NEVER"/>
 </VBox>

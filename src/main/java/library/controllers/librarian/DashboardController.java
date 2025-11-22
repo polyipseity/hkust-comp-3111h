@@ -48,23 +48,23 @@ public final class DashboardController extends CommonDashboardController {
 	public BookDownloadController bookDownloadController;
 
 	public void loadPendingApprovals() {
-		pendingApprovalsController.loadTable();
+		pendingApprovalsController.loadData();
 	}
 
 	public void loadManageUsers() {
-		manageUsersController.loadTable();
+		manageUsersController.loadData();
 	}
 
 	public void loadBorrowedBooks() {
-		borrowedBooksController.loadTable();
+		borrowedBooksController.loadData();
 	}
 
 	public void loadPublishedBooks() {
-		publishedBooksController.loadTable();
+		publishedBooksController.loadData();
 	}
 
 	public void loadBookRequests() {
-		bookRequestsController.loadTable();
+		bookRequestsController.loadData();
 	}
 
 	public void loadBookDownload() {

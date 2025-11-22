@@ -53,6 +53,9 @@ public interface Context extends Closeable {
 	@Nullable
 	Tuple2<User, User.Data> getLoggedInUser();
 
+	@Nullable
+	Object getLoggedInToken();
+
 	@SuppressWarnings("EmptyMethod")
 	void setLoggedInUser(@SuppressWarnings("unused") @Nullable Tuple2<library.models.User, library.models.User.Data> loggedInUser);
 

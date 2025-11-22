@@ -19,4 +19,8 @@ public interface RequiresLoggedIn extends Initializable {
 	default Tuple2<User, User.Data> getLoggedInUser() {
 		return Objects.requireNonNull(Main.getContext().getLoggedInUser());
 	}
+
+	default Object getLoggedInToken() {
+		return Objects.requireNonNull(Main.getContext().getLoggedInToken());
+	}
 }
