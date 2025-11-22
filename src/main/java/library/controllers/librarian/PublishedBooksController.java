@@ -1,6 +1,6 @@
 package library.controllers.librarian;
 
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.TableColumn;
@@ -94,7 +94,7 @@ public final class PublishedBooksController implements RequiresLoggedIn, Initial
 								: TimeUtil.toStringZonedLocal(bookData.publishDate()));
 				case TIMES_BORROWED -> new DynamicTableController.Data.Text(String.valueOf(bookData.timesBorrowed()));
 				case ACTIONS -> DynamicTableController.Data.Graphic.ofButtons(
-						new Tuple2<>(new SimpleStringProperty("View"), (_, _) -> {
+						new Tuple2<>(new ReadOnlyStringWrapper("View"), (_, _) -> {
 							try {
 								Main.getContext().newWindow(
 										TextViewController.WINDOW_TITLE.formatted(book.title(), book.author().id()),
@@ -105,7 +105,7 @@ public final class PublishedBooksController implements RequiresLoggedIn, Initial
 								Alerts.showErrorDialog(e.getLocalizedMessage());
 							}
 						}),
-						new Tuple2<>(new SimpleStringProperty("Delete"), (_, _) -> {
+						new Tuple2<>(new ReadOnlyStringWrapper("Delete"), (_, _) -> {
 							if (!Alerts.showConfirmDialog("Delete '%s'? All borrowing privileges for this book will be revoked.".formatted(book.title()))) {
 								return;
 							}

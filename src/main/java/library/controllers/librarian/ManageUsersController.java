@@ -1,6 +1,6 @@
 package library.controllers.librarian;
 
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -87,7 +87,7 @@ public final class ManageUsersController implements RequiresLoggedIn, Initializa
 				case ACTIVE -> new DynamicTableController.Data.Text(String.valueOf(userData.active()));
 				case ACTIONS ->
 						user.equals(controller.getLoggedInUser()._1()) ? DynamicTableController.Data.Graphic.ofButtons() : DynamicTableController.Data.Graphic.ofButtons(
-								userData.active() ? new Tuple2<>(new SimpleStringProperty("Deactivate"), (_, _) -> {
+								userData.active() ? new Tuple2<>(new ReadOnlyStringWrapper("Deactivate"), (_, _) -> {
 									try {
 										switch (Main.getContext().getManageUsersControl().deactivateUser(user)) {
 											case ManageUsersControl.DeactivateResult.Success(final var data) ->
@@ -96,7 +96,7 @@ public final class ManageUsersController implements RequiresLoggedIn, Initializa
 									} catch (TransactionException e) {
 										Alerts.showErrorDialog(e.getLocalizedMessage());
 									}
-								}) : new Tuple2<>(new SimpleStringProperty("Activate"), (_, _) -> {
+								}) : new Tuple2<>(new ReadOnlyStringWrapper("Activate"), (_, _) -> {
 									try {
 										switch (Main.getContext().getManageUsersControl().activateUser(user)) {
 											case ManageUsersControl.ActivateResult.Success(final var data) ->

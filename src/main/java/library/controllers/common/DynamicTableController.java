@@ -1,6 +1,6 @@
 package library.controllers.common;
 
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableStringValue;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -91,7 +91,7 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 			 */
 			@Override
 			public ObservableValue<Value> call(TableColumn.CellDataFeatures<Value, Value> param) {
-				return new SimpleObjectProperty<>(param.getValue());
+				return new ReadOnlyObjectWrapper<>(param.getValue());
 			}
 		});
 		column.setCellFactory(new Callback<>() {

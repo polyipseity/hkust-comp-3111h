@@ -1,5 +1,6 @@
 package library.controllers.student_staff;
 
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -142,7 +143,7 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 					yield ret;
 				}
 				case ACTIONS -> DynamicTableController.Data.Graphic.ofButtons(
-						new Tuple2<>(new SimpleStringProperty("Return"), (_, _) ->
+						new Tuple2<>(new ReadOnlyStringWrapper("Return"), (_, _) ->
 								controller.returnButtonAction(book))
 				);
 			};

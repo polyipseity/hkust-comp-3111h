@@ -1,6 +1,6 @@
 package library.controllers.librarian;
 
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -89,7 +89,7 @@ public final class BookRequestsController implements RequiresLoggedIn, Initializ
 				case REQUEST_DATE -> new DynamicTableController.Data.Text(
 						TimeUtil.toStringZonedLocal(bookRequestData.requestDate()));
 				case ACTIONS -> DynamicTableController.Data.Graphic.ofButtons(
-						new Tuple2<>(new SimpleStringProperty("Confirm"), (_, _) -> {
+						new Tuple2<>(new ReadOnlyStringWrapper("Confirm"), (_, _) -> {
 							try {
 								switch (Main.getContext().getRequestBooksControl().approveRequest(user, bookRequest)) {
 									case RequestBooksControl.ApproveResult.Success _ -> controller.tableController.removeDatum(this);
@@ -98,7 +98,7 @@ public final class BookRequestsController implements RequiresLoggedIn, Initializ
 								Alerts.showErrorDialog(e.getLocalizedMessage());
 							}
 						}),
-						new Tuple2<>(new SimpleStringProperty("Reject"), (_, _) -> {
+						new Tuple2<>(new ReadOnlyStringWrapper("Reject"), (_, _) -> {
 							try {
 								switch (Main.getContext().getRequestBooksControl().rejectRequest(user, bookRequest)) {
 									case RequestBooksControl.RejectResult.Success _ -> controller.tableController.removeDatum(this);

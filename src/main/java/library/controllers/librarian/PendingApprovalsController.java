@@ -1,6 +1,6 @@
 package library.controllers.librarian;
 
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.TableColumn;
@@ -84,7 +84,7 @@ public final class PendingApprovalsController implements RequiresLoggedIn, Initi
 				case AUTHOR -> new DynamicTableController.Data.Text(book.author().id());
 				case SUMMARY -> new DynamicTableController.Data.Text(bookData.summary());
 				case ACTIONS -> DynamicTableController.Data.Graphic.ofButtons(
-						new Tuple2<>(new SimpleStringProperty("View"), (_, _) -> {
+						new Tuple2<>(new ReadOnlyStringWrapper("View"), (_, _) -> {
 							try {
 								Main.getContext().newWindow(
 										TextViewController.WINDOW_TITLE.formatted(book.title(), book.author().id()),
@@ -95,7 +95,7 @@ public final class PendingApprovalsController implements RequiresLoggedIn, Initi
 								Alerts.showErrorDialog(e.getLocalizedMessage());
 							}
 						}),
-						new Tuple2<>(new SimpleStringProperty("Approve"), (_, _) -> {
+						new Tuple2<>(new ReadOnlyStringWrapper("Approve"), (_, _) -> {
 							try {
 								switch (Main.getContext().getManageBooksControl().approveBook(book)) {
 									case ManageBooksControl.ApproveResult.Success _ -> controller.tableController.removeDatum(this);
@@ -104,7 +104,7 @@ public final class PendingApprovalsController implements RequiresLoggedIn, Initi
 								Alerts.showErrorDialog(e.getLocalizedMessage());
 							}
 						}),
-						new Tuple2<>(new SimpleStringProperty("Reject"), (_, _) -> {
+						new Tuple2<>(new ReadOnlyStringWrapper("Reject"), (_, _) -> {
 							try {
 								switch (Main.getContext().getManageBooksControl().rejectBook(book)) {
 									case ManageBooksControl.RejectResult.Success _ -> controller.tableController.removeDatum(this);
