@@ -1,11 +1,12 @@
 package library.controllers.student_staff;
 
+import javafx.beans.binding.Bindings;
 import javafx.embed.swing.SwingNode;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
-import javafx.stage.WindowEvent;
+import javafx.stage.Stage;
 import library.controllers.common.RequiresLoggedIn;
 import library.controllers.common.TextViewController;
 import library.utils.Alerts;
@@ -27,21 +28,42 @@ import java.util.ResourceBundle;
 public final class BookViewController implements RequiresLoggedIn, Initializable {
 	public static final String WINDOW_TITLE = TextViewController.WINDOW_TITLE;
 
+	public final Stage stage;
 	private final String currentPath;
 	@UnknownNullability
 	public BorderPane borderPane;
 	private SwingController swingController;
 	private JComponent viewerPanel;
 
-	public BookViewController(String path) {
+	public BookViewController(Stage stage, String path) {
+		this.stage = stage;
 		currentPath = path;
 	}
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
 		RequiresLoggedIn.super.initialize(location, resources);
-
 		createViewer();
+
+		stage.setOnHiding(_ -> SwingUtilities.invokeLater(() -> swingController.dispose()));
+		final var scene = stage.sceneProperty();
+		final var sceneWidth = scene.flatMap(Scene::widthProperty);
+		final var sceneHeight = scene.flatMap(Scene::heightProperty);
+		Bindings.createObjectBinding(
+				() -> {
+					final var width = sceneWidth.getValue();
+					final var height = sceneHeight.getValue();
+					return width == null || height == null ? null : new Dimension(width.intValue(), height.intValue());
+				},
+				sceneWidth,
+				sceneHeight
+		).addListener((_, _, newValue) -> {
+			if (newValue == null) return;
+			viewerPanel.setSize(newValue);
+			viewerPanel.setPreferredSize(newValue);
+			viewerPanel.repaint();
+		});
+
 		load();
 	}
 
@@ -66,27 +88,6 @@ public final class BookViewController implements RequiresLoggedIn, Initializable
 		} catch (Exception e) {
 			Alerts.showErrorDialog("Could not save changes.");
 		}
-	}
-
-	public void createResizeListeners(WindowEvent event) {
-		Scene scene = borderPane.getScene();
-		scene.widthProperty().addListener((_, _, newValue) -> SwingUtilities.invokeLater(() -> {
-			Dimension target = new Dimension(newValue.intValue(), (int) scene.getHeight());
-			viewerPanel.setSize(target);
-			viewerPanel.setPreferredSize(target);
-			viewerPanel.repaint();
-		}));
-
-		scene.heightProperty().addListener((_, _, newValue) -> SwingUtilities.invokeLater(() -> {
-			Dimension target = new Dimension((int) scene.getWidth(), newValue.intValue());
-			viewerPanel.setSize(target);
-			viewerPanel.setPreferredSize(target);
-			viewerPanel.repaint();
-		}));
-	}
-
-	public void disposeController(WindowEvent event) {
-		SwingUtilities.invokeLater(() -> swingController.dispose());
 	}
 
 	private void createViewer() {

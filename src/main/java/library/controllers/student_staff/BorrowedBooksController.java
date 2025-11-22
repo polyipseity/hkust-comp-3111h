@@ -2,10 +2,9 @@ package library.controllers.student_staff;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
+import javafx.scene.Parent;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.stage.Stage;
 import library.FXMLs;
 import library.Main;
 import library.controllers.common.DynamicTableController;
@@ -101,14 +100,11 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 	}
 
 	private void displayPdfFile(String path, String title, String author) throws IOException {
-		final var controller = new BookViewController(path);
-
-		Stage stage = new Stage();
-		stage.setScene(new Scene(FXMLs.STUDENT_STAFF_BOOK_VIEW.load(loader -> loader.setControllerFactory(_ -> controller))));
-		stage.setTitle(BookViewController.WINDOW_TITLE.formatted(title, author));
-		stage.setOnShown(controller::createResizeListeners);
-		stage.setOnCloseRequest(controller::disposeController);
-		stage.show();
+		Main.getContext().newWindow(
+				BookViewController.WINDOW_TITLE.formatted(title, author),
+				stage -> FXMLs.STUDENT_STAFF_BOOK_VIEW.<Parent>load(loader -> loader.setControllerFactory(_ -> new BookViewController(stage, path))),
+				null
+		).show();
 	}
 
 	public enum Keys {
