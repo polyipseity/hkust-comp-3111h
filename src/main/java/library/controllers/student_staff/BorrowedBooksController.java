@@ -80,8 +80,8 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 		switch (context.getBorrowBooksControl().readBook(getLoggedInUser()._1(), selectedBook)) {
 			case BorrowBooksControl.ReadResult.Success(String path) -> displayPdfFile(path, title, author);
 			case BorrowBooksControl.ReadResult.NewPdfGenerated(String path) -> {
-				Alerts.showInfoDialog("PDF file not found, generating a new one...");
 				displayPdfFile(path, title, author);
+				Alerts.showInfoDialog("PDF file not found, generating a new one...");
 			}
 			case HasMessage ret -> Alerts.showErrorDialog(ret.getLocalizedMessage());
 		}
@@ -142,6 +142,7 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 								switch (Main.getContext().getBorrowBooksControl().returnBook(controller.getLoggedInUser()._1(), book)) {
 									case BorrowBooksControl.ReturnResult.Success _ -> {
 										Alerts.showInfoDialog("Book returned successfully");
+										// Only after the dialog finishes, return the book
 										controller.tableController.removeDatum(this);
 									}
 									case HasMessage message -> Alerts.showErrorDialog(message.getLocalizedMessage());

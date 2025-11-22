@@ -50,12 +50,12 @@ public final class MyProfileController implements RequiresLoggedIn, Initializabl
 					repository.userOps.update(getLoggedInUser()._1(), user -> user
 							.withPassword(newPassword)
 							.withFullName(newFullName));
-					Alerts.showInfoDialog("Updated successfully");
 				} catch (TransactionException e) {
 					Alerts.showErrorDialog(e.getLocalizedMessage());
 				}
 			}
 			case HasMessage message -> Alerts.showErrorDialog(message.getLocalizedMessage());
 		}
+		Alerts.showInfoDialog("Updated successfully");
 	}
 }

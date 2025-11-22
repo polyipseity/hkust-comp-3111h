@@ -66,10 +66,10 @@ public final class ModifyWindowController implements RequiresLoggedIn, Initializ
 			switch (Main.getContext().getManageBooksControl()
 					.modifyBook(book, title, summary)) {
 				case ManageBooksControl.ModifyResult.Success success -> {
-					// Close the current window
-					stage.close();
 					// Show success response to author
 					Alerts.showInfoDialog(success.getLocalizedMessage());
+					// Close the current window
+					stage.close();
 					confirmCallback.run();
 				}
 				case HasMessage message -> Alerts.showErrorDialog(message.getLocalizedMessage());

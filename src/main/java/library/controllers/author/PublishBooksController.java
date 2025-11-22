@@ -143,10 +143,10 @@ public final class PublishBooksController implements RequiresLoggedIn {
 			var data = new Book.Data(summaryField.getText(), ContentTxt, Book.ApprovalStatus.PENDING, null, null, 0);
 			try {
 				repository.bookOps.create(book, data);
-				Alerts.showInfoDialog("Published and awaiting approval.");
 			} catch (TransactionException e) {
 				throw new RuntimeException(e);
 			}
+			Alerts.showInfoDialog("Published and awaiting approval.");
 		}
 	}
 }
