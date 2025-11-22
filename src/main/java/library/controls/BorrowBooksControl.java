@@ -6,6 +6,7 @@ import library.models.User;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.HasMessage;
+import library.utils.TimeUtil;
 import lombok.Getter;
 import org.openpdf.text.Document;
 import org.openpdf.text.Element;
@@ -16,7 +17,6 @@ import org.openpdf.text.pdf.PdfWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.time.Duration;
-import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -45,7 +45,7 @@ public record BorrowBooksControl(Repository repository) {
 
 		// Execute borrow after everything else is successful
 		Borrow borrowData = new Borrow(
-				ZonedDateTime.now(),
+				TimeUtil.nowZoned(),
 				Duration.ofSeconds(durationSeconds),
 				generatePdfPath(user, book)
 		);

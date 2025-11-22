@@ -5,8 +5,7 @@ import library.models.User;
 import library.persistence.Repository;
 import library.persistence.TransactionException;
 import library.utils.HasMessage;
-
-import java.time.ZonedDateTime;
+import library.utils.TimeUtil;
 
 public record RequestBooksControl(Repository repository) {
 	public static final String NOTIFICATION_APPROVE = "Your book request for '%s' has been approved!";
@@ -20,7 +19,7 @@ public record RequestBooksControl(Repository repository) {
 			return new RequestResult.InvalidRequest(RequestResult.InvalidType.INVALID_AUTHOR);
 
 		BookRequest bookRequest = new BookRequest(title, author);
-		BookRequest.Data bookRequestData = new BookRequest.Data(ZonedDateTime.now());
+		BookRequest.Data bookRequestData = new BookRequest.Data(TimeUtil.nowZoned());
 
 		// Check if the user has made the same book request in the past
 		if (repository.userBookRequestOps.read(user, bookRequest).isPresent())
