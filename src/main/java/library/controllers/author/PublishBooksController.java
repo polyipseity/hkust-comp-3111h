@@ -116,8 +116,9 @@ public final class PublishBooksController implements RequiresLoggedIn {
 //
 //        return title.trim().matches(validTitlePattern);
 
-		// Optional: Check for minimum meaningful length
-		return title.trim().length() >= 2;
+//		// Optional: Check for minimum meaningful length
+//		return title.trim().length() >= 2;
+        return true;
 	}
 
 	//Method for publishing the book
