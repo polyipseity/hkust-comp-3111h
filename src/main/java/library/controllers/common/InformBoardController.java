@@ -56,8 +56,13 @@ public final class InformBoardController implements RequiresLoggedIn, Initializa
 		final var context = Main.getContext();
 		context.addSecondTimelineListener(getLoggedInToken(), _ -> activeBorrows.entrySet().removeIf(entry -> {
 			if (!entry.getValue().expired()) return false;
-			// Sync with `RepositoryBorrowOps.prune`.
-			notificationList.getItems().add("The book '%s' you borrowed has been expired!".formatted(entry.getKey().title()));
+			try {
+				context.getRepository().borrowOps.prune();
+				// Sync with `RepositoryBorrowOps.prune`.
+				notificationList.getItems().add("The book '%s' you borrowed has been expired!".formatted(entry.getKey().title()));
+			} catch (TransactionException e) {
+				throw new RuntimeException(e);
+			}
 			return true;
 		}));
 	}
