@@ -7,8 +7,11 @@ import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
+import library.Main;
 import library.controllers.common.RequiresLoggedIn;
 import library.controllers.common.TextViewController;
+import library.models.Book;
+import library.models.User;
 import library.utils.Alerts;
 import org.icepdf.ri.common.SwingController;
 import org.icepdf.ri.common.SwingViewBuilder;
@@ -30,6 +33,8 @@ public final class BookViewController implements RequiresLoggedIn, Initializable
 
 	public final Stage stage;
 	private final String currentPath;
+	private final Book book;
+
 	@UnknownNullability
 	@SuppressWarnings("unused")
 	public BorderPane borderPane;
@@ -43,11 +48,13 @@ public final class BookViewController implements RequiresLoggedIn, Initializable
 	private BookViewController() {
 		this.stage = null;
 		this.currentPath = "";
+		this.book = null;
 	}
 
-	public BookViewController(Stage stage, String path) {
+	public BookViewController(Stage stage, String path, Book book) {
 		this.stage = stage;
 		currentPath = path;
+		this.book = book;
 	}
 
 	@Override
@@ -80,6 +87,11 @@ public final class BookViewController implements RequiresLoggedIn, Initializable
 	}
 
 	public void load() {
+		User user = getLoggedInUser()._1();
+		if (!Main.getContext().getBorrowBooksControl().checkBorrowed(user, book)) {
+			Alerts.showErrorDialog("Cannot load book as it is not currently being borrowed.");
+			return;
+		}
 		SwingUtilities.invokeLater(() -> {
 			swingController.openDocument(currentPath);
 			viewerPanel.revalidate();
@@ -87,6 +99,11 @@ public final class BookViewController implements RequiresLoggedIn, Initializable
 	}
 
 	public void save() {
+		User user = getLoggedInUser()._1();
+		if (!Main.getContext().getBorrowBooksControl().checkBorrowed(user, book)) {
+			Alerts.showErrorDialog("Cannot save book as it is not currently being borrowed.");
+			return;
+		}
 		try (FileOutputStream os = new FileOutputStream(currentPath)) {
 			SwingUtilities.invokeLater(() -> {
 				try {

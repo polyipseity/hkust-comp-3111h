@@ -14,7 +14,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class RequestBooksControTestl {
+class RequestBooksControlTest {
 	private Repository repository;
 	private RequestBooksControl manageRequests;
 

@@ -79,19 +79,19 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 		final var author = currentRow.authorFullName;
 
 		switch (context.getBorrowBooksControl().readBook(getLoggedInUser()._1(), selectedBook)) {
-			case BorrowBooksControl.ReadResult.Success(String path) -> displayPdfFile(path, title, author);
+			case BorrowBooksControl.ReadResult.Success(String path) -> displayPdfFile(path, title, author, selectedBook);
 			case BorrowBooksControl.ReadResult.NewPdfGenerated(String path) -> {
-				displayPdfFile(path, title, author);
+				displayPdfFile(path, title, author, selectedBook);
 				Alerts.showInfoDialog("PDF file not found, generating a new one...");
 			}
 			case HasMessage ret -> Alerts.showErrorDialog(ret.getLocalizedMessage());
 		}
 	}
 
-	private void displayPdfFile(String path, String title, String author) throws IOException {
+	private void displayPdfFile(String path, String title, String author, Book book) throws IOException {
 		Main.getContext().newWindow(
 				BookViewController.WINDOW_TITLE.formatted(title, author),
-				stage -> FXMLs.STUDENT_STAFF_BOOK_VIEW.<Parent>load(loader -> loader.setControllerFactory(_ -> new BookViewController(stage, path))),
+				stage -> FXMLs.STUDENT_STAFF_BOOK_VIEW.<Parent>load(loader -> loader.setControllerFactory(_ -> new BookViewController(stage, path, book))),
 				null
 		).show();
 	}
