@@ -74,6 +74,12 @@ one for when borrowed book is deleted by librarian, and the other for approval o
 
 ![](screenshots/author/status_view.png)
 
+### "My Profile" Tab
+
+> [!NOTE]
+> Please refer to ["My Profile" screenshot in Student/Staff section](#my-profile-tab)
+> since both tabs share the same UI and controller logic.
+
 ### "Inform Board" Tab
 
 ![](screenshots/author/inform_board.png)
@@ -81,9 +87,35 @@ one for when borrowed book is deleted by librarian, and the other for approval o
 
 ## Task 3
 
+### "Pending Approvals" Tab
+
+![](screenshots/librarian/pending_approvals.png)
+*"View" option produces text view window as seen in author's "My Books Tab". ([reference](#my-books-tab))*
+
 ### "Manage Users" Tab
 
 ![](screenshots/librarian/manage_users.png)
+
+### "My Profile" Tab
+
+> [!NOTE]
+> Please refer to ["My Profile" screenshot in Student/Staff section](#my-profile-tab)
+> since both tabs share the same UI and controller logic.
+
+### "Borrowed Books" Tab
+
+![](screenshots/librarian/borrowed_books.png)
+
+### "Published Books" Tab
+
+![](screenshots/librarian/published_books.png)
+
+![](screenshots/librarian/delete_confirmation.png)
+*Window that appears after "Delete" is pressed.*
+
+### "Book Requests" Tab
+
+![](screenshots/librarian/book_requests.png)
 
 ### "Book Download" Tab
 
