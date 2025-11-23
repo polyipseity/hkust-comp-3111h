@@ -1,0 +1,189 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > TransactionException</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.persistence</a>
+</div>
+
+<h1>Coverage Summary for Class: TransactionException (library.persistence)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TransactionException</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.persistence;
+&nbsp;
+&nbsp;import library.utils.HasMessage;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;
+&nbsp;@SuppressWarnings(&quot;NullableProblems&quot;)
+&nbsp;public final class TransactionException extends Exception implements HasMessage {
+&nbsp;	/**
+&nbsp;	 * Constructs a new exception with {@code null} as its detail message.
+&nbsp;	 * The cause is not initialized, and may subsequently be initialized by a
+&nbsp;	 * call to {@link #initCause}.
+&nbsp;	 */
+&nbsp;	public TransactionException() {
+<b class="fc">&nbsp;		super();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Constructs a new exception with the specified detail message.  The
+&nbsp;	 * cause is not initialized, and may subsequently be initialized by
+&nbsp;	 * a call to {@link #initCause}.
+&nbsp;	 *
+&nbsp;	 * @param message the detail message. The detail message is saved for
+&nbsp;	 *                later retrieval by the {@link #getMessage()} method.
+&nbsp;	 */
+&nbsp;	public TransactionException(@Nullable String message) {
+<b class="fc">&nbsp;		super(message);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Constructs a new exception with the specified detail message and
+&nbsp;	 * cause.  &lt;p&gt;Note that the detail message associated with
+&nbsp;	 * {@code cause} is &lt;i&gt;not&lt;/i&gt; automatically incorporated in
+&nbsp;	 * this exception&#39;s detail message.
+&nbsp;	 *
+&nbsp;	 * @param message the detail message (which is saved for later retrieval
+&nbsp;	 *                by the {@link #getMessage()} method).
+&nbsp;	 * @param cause   the cause (which is saved for later retrieval by the
+&nbsp;	 *                {@link #getCause()} method).  (A {@code null} value is
+&nbsp;	 *                permitted, and indicates that the cause is nonexistent or
+&nbsp;	 *                unknown.)
+&nbsp;	 * @since 1.4
+&nbsp;	 */
+&nbsp;	public TransactionException(@Nullable String message, @Nullable Throwable cause) {
+<b class="fc">&nbsp;		super(message, cause);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Constructs a new exception with the specified cause and a detail
+&nbsp;	 * message of {@code (cause==null ? null : cause.toString())} (which
+&nbsp;	 * typically contains the class and detail message of {@code cause}).
+&nbsp;	 * This constructor is useful for exceptions that are little more than
+&nbsp;	 * wrappers for other throwables (for example, {@link
+&nbsp;	 * java.security.PrivilegedActionException}).
+&nbsp;	 *
+&nbsp;	 * @param cause the cause (which is saved for later retrieval by the
+&nbsp;	 *              {@link #getCause()} method).  (A {@code null} value is
+&nbsp;	 *              permitted, and indicates that the cause is nonexistent or
+&nbsp;	 *              unknown.)
+&nbsp;	 * @since 1.4
+&nbsp;	 */
+&nbsp;	public TransactionException(@Nullable Throwable cause) {
+<b class="fc">&nbsp;		super(cause);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public String getMessage() {
+<b class="fc">&nbsp;		return switch (super.getMessage()) {</b>
+<b class="fc">&nbsp;			case null -&gt; &quot;Database transaction exception&quot;;</b>
+<b class="fc">&nbsp;			case &quot;&quot; -&gt; &quot;Database transaction exception&quot;;</b>
+<b class="fc">&nbsp;			case String val -&gt; &quot;Database transaction exception: %s&quot;.formatted(val);</b>
+&nbsp;		};
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

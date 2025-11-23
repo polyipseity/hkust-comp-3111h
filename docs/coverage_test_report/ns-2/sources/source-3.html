@@ -1,0 +1,186 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > RegisterController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.controllers</a>
+</div>
+
+<h1>Coverage Summary for Class: RegisterController (library.controllers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RegisterController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (2/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    25%
+  </span>
+  <span class="absValue">
+    (4/16)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.controllers;
+&nbsp;
+&nbsp;import javafx.fxml.Initializable;
+&nbsp;import javafx.scene.control.Label;
+&nbsp;import javafx.scene.control.TextField;
+&nbsp;import library.FXMLs;
+&nbsp;import library.Main;
+&nbsp;import library.controllers.common.RequiresLoggedOut;
+&nbsp;import library.controls.ManageProfileControl;
+&nbsp;import library.controls.UserValidator;
+&nbsp;import library.models.User;
+&nbsp;import library.persistence.TransactionException;
+&nbsp;import library.utils.Alerts;
+&nbsp;import library.utils.HasMessage;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;import org.jetbrains.annotations.UnknownNullability;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.net.URL;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;
+&nbsp;@RequiredArgsConstructor
+&nbsp;public final class RegisterController implements RequiresLoggedOut, Initializable {
+&nbsp;	public final User.Role role;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public Label headerLabel;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public TextField usernameField, passwordField, fullNameField;
+&nbsp;
+&nbsp;	@SuppressWarnings(&quot;unused&quot;) // for testing
+<b class="fc">&nbsp;	private RegisterController() {</b>
+<b class="fc">&nbsp;		this.role = User.Role.values()[0];</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+<b class="fc">&nbsp;		RequiresLoggedOut.super.initialize(location, resources);</b>
+<b class="fc">&nbsp;		headerLabel.setText(&quot;%s Register&quot;.formatted(role.nameCapitalized));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void register() throws IOException {
+<b class="nc">&nbsp;		String username = usernameField.getText();</b>
+<b class="nc">&nbsp;		String password = passwordField.getText();</b>
+<b class="nc">&nbsp;		String fullName = fullNameField.getText();</b>
+&nbsp;
+<b class="nc">&nbsp;		final var context = Main.getContext();</b>
+&nbsp;		try {
+<b class="nc">&nbsp;			switch (context.getManageProfileControl().register(UserValidator.DEFAULT, role, username, password, fullName)) {</b>
+<b class="nc">&nbsp;				case ManageProfileControl.RegisterResult.Success val -&gt; {</b>
+<b class="nc">&nbsp;					Alerts.showInfoDialog(val.getLocalizedMessage());</b>
+<b class="nc">&nbsp;					goToLogin();</b>
+&nbsp;				}
+<b class="nc">&nbsp;				case HasMessage val -&gt; Alerts.showErrorDialog(val.getLocalizedMessage());</b>
+&nbsp;			}
+&nbsp;		} catch (TransactionException exception) {
+<b class="nc">&nbsp;			Alerts.showErrorDialog(exception.getLocalizedMessage());</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	public void goToHome() throws IOException {
+<b class="nc">&nbsp;		Main.getContext().setScene(FXMLs.HOME.load());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void goToLogin() throws IOException {
+<b class="nc">&nbsp;		Main.getContext().setScene(FXMLs.LOGIN.load(loader -&gt; loader.setControllerFactory(_ -&gt; new LoginController(role))));</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

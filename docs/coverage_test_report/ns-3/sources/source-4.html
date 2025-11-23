@@ -1,0 +1,264 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > PublishBooksController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.controllers.author</a>
+</div>
+
+<h1>Coverage Summary for Class: PublishBooksController (library.controllers.author)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PublishBooksController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    12.5%
+  </span>
+  <span class="absValue">
+    (1/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/28)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    2.1%
+  </span>
+  <span class="absValue">
+    (1/47)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.controllers.author;
+&nbsp;
+&nbsp;import javafx.application.Platform;
+&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+&nbsp;import javafx.scene.control.TextField;
+&nbsp;import javafx.stage.FileChooser;
+&nbsp;import library.Main;
+&nbsp;import library.controllers.common.RequiresLoggedIn;
+&nbsp;import library.controls.ManageBooksControl;
+&nbsp;import library.controls.PublishBooksControl;
+&nbsp;import library.models.Author;
+&nbsp;import library.models.Book;
+&nbsp;import library.models.json.OpenAIChatCompletionBody;
+&nbsp;import library.models.json.OpenAIChatCompletionResponse;
+&nbsp;import library.persistence.TransactionException;
+&nbsp;import library.utils.Alerts;
+&nbsp;import library.utils.HasMessage;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;import org.jetbrains.annotations.UnknownNullability;
+&nbsp;
+&nbsp;import java.io.File;
+&nbsp;import java.io.IOException;
+&nbsp;import java.nio.file.Files;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+<b class="fc">&nbsp;public final class PublishBooksController implements RequiresLoggedIn {</b>
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public TextField titleField, contentField, summaryField;
+&nbsp;	@Nullable
+&nbsp;	private String ContentTxt;
+&nbsp;
+&nbsp;	//Method for choosing text file
+&nbsp;	public void chooseTextFile() {
+<b class="nc">&nbsp;		FileChooser fileChooser = new FileChooser();</b>
+&nbsp;
+&nbsp;		// Set file filter for .txt files
+<b class="nc">&nbsp;		FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter(</b>
+&nbsp;				&quot;Text files&quot;, &quot;*.txt&quot;);
+<b class="nc">&nbsp;		fileChooser.getExtensionFilters().add(filter);</b>
+&nbsp;
+&nbsp;		// Show open file dialog
+<b class="nc">&nbsp;		File file = fileChooser.showOpenDialog(Main.getContext().getPrimaryStage());</b>
+&nbsp;
+<b class="nc">&nbsp;		if (file != null) {</b>
+&nbsp;			try {
+&nbsp;				// Read the file content
+<b class="nc">&nbsp;				if (titleField.getText().isEmpty()) {</b>
+<b class="nc">&nbsp;					titleField.setText(file.getName().substring(0, file.getName().lastIndexOf(&#39;.&#39;)));</b>
+&nbsp;				}
+<b class="nc">&nbsp;				ContentTxt = Files.readString(file.toPath());</b>
+<b class="nc">&nbsp;				contentField.setText(file.getName());</b>
+&nbsp;			} catch (IOException e) {
+<b class="nc">&nbsp;				Alerts.showErrorDialog(e.getLocalizedMessage());</b>
+&nbsp;			}
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	//Method for generating summary of the book based on the title
+&nbsp;	public void generateSummary() {
+<b class="nc">&nbsp;		if (ContentTxt == null || titleField.getText() == null) {</b>
+<b class="nc">&nbsp;			Alerts.showErrorDialog(&quot;You must enter the book title and upload the book content first!&quot;);</b>
+&nbsp;			return;
+&nbsp;		}
+&nbsp;
+<b class="nc">&nbsp;		final var startTime = System.currentTimeMillis();</b>
+<b class="nc">&nbsp;		final var responseFuture = Main.getContext().getAIServiceControl()</b>
+<b class="nc">&nbsp;				.chatComplete(new OpenAIChatCompletionBody(</b>
+&nbsp;						&quot;gpt-4o-mini&quot;,
+<b class="nc">&nbsp;						List.of(new OpenAIChatCompletionBody.Message(</b>
+&nbsp;										&quot;system&quot;,
+&nbsp;										&quot;&quot;&quot;        
+&nbsp;												I want you to act as a book summarizer. Provide a detailed summary of %s. Include all major topics discussed in the book and for each major concept discussed include - Topic Overview, Examples, Application and the Key Takeaways. Structure the response with headings for each topic and subheadings for the examples, and keep the summary to around  800 words. An excerpt of the book is provided below.
+<b class="nc">&nbsp;												&quot;&quot;&quot;.formatted(titleField.getText())</b>
+&nbsp;								),
+&nbsp;								new OpenAIChatCompletionBody.Message(
+&nbsp;										&quot;user&quot;,
+<b class="nc">&nbsp;										ContentTxt.length() &gt; 2048 ? &quot;%s\n\n%s&quot;.formatted(ContentTxt.substring(0, 1024), ContentTxt.substring(ContentTxt.length() - 1024)) : ContentTxt</b>
+&nbsp;								)
+&nbsp;						),
+&nbsp;						null,
+&nbsp;						null,
+&nbsp;						null
+&nbsp;				))
+<b class="nc">&nbsp;				.thenApply(response -&gt; response.choices().stream().map(OpenAIChatCompletionResponse.Choice::message).map(OpenAIChatCompletionResponse.Message::content).findFirst().orElseThrow());</b>
+&nbsp;
+&nbsp;// Show loading dialog during request
+<b class="nc">&nbsp;		final var running = new SimpleBooleanProperty(true);</b>
+<b class="nc">&nbsp;		responseFuture.whenComplete((_, _) -&gt; Platform.runLater(() -&gt; running.set(false)));</b>
+<b class="nc">&nbsp;		if (!Alerts.showLoadingDialog(&quot;Generating book summary...&quot;, running)) {</b>
+<b class="nc">&nbsp;			responseFuture.cancel(true);</b>
+&nbsp;			return;
+&nbsp;		}
+&nbsp;
+<b class="nc">&nbsp;		responseFuture.&lt;Runnable&gt;thenApply(response -&gt; {</b>
+<b class="nc">&nbsp;			final var endTime = System.currentTimeMillis();</b>
+<b class="nc">&nbsp;			return () -&gt; {</b>
+<b class="nc">&nbsp;				summaryField.setText(response);</b>
+<b class="nc">&nbsp;				Alerts.showInfoDialog(&quot;Summary generated in %d ms&quot;.formatted(endTime - startTime));</b>
+&nbsp;			};
+<b class="nc">&nbsp;		}).exceptionally(throwable -&gt; {</b>
+<b class="nc">&nbsp;			final var endTime = System.currentTimeMillis();</b>
+<b class="nc">&nbsp;			return () -&gt; Alerts.showErrorDialog(&quot;Failed to generate summary in %d ms: %s&quot;.formatted(endTime - startTime, throwable.getLocalizedMessage()));</b>
+<b class="nc">&nbsp;		}).thenAccept(Platform::runLater);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean isValidBookTitle(@Nullable String title) {
+<b class="nc">&nbsp;		if (title == null || title.trim().isEmpty()) {</b>
+<b class="nc">&nbsp;			return false;</b>
+&nbsp;		}
+&nbsp;
+&nbsp;		// Allow: letters, numbers, spaces, basic punctuation
+&nbsp;		// Disallow: only spaces, only symbols, prohibited characters
+&nbsp;//        String validTitlePattern = &quot;^(?!\\s*$)&quot; +                   // Not only whitespace
+&nbsp;//                &quot;(?!.*[$%^&amp;*&lt;&gt;{}|\\\\~`])&quot; +      // No prohibited chars
+&nbsp;//                &quot;(?=.*[a-zA-Z0-9])&quot; +             // At least one letter/number
+&nbsp;//                &quot;[\\p{L}\\p{N}\\p{Zs}\\p{P}&amp;&amp;[^$%^&amp;*&lt;&gt;{}|\\\\~`]]{1,255}$&quot;;
+&nbsp;//
+&nbsp;//        return title.trim().matches(validTitlePattern);
+&nbsp;
+&nbsp;//		// Optional: Check for minimum meaningful length
+&nbsp;//		return title.trim().length() &gt;= 2;
+<b class="nc">&nbsp;        return true;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	//Method for publishing the book
+&nbsp;	public void publishBook() throws TransactionException {
+<b class="nc">&nbsp;		if (titleField.getText().isEmpty() || ContentTxt == null || ContentTxt.isEmpty() || summaryField.getText().isEmpty()) {</b>
+<b class="nc">&nbsp;			Alerts.showErrorDialog(&quot;Missing information of the book.&quot;);</b>
+&nbsp;			return;
+&nbsp;		}
+<b class="nc">&nbsp;		if (!isValidBookTitle(titleField.getText())) {</b>
+<b class="nc">&nbsp;			Alerts.showErrorDialog(&quot;The book title is invalid or too short.&quot;);</b>
+&nbsp;			return;
+&nbsp;		}
+<b class="nc">&nbsp;		var book = new Book(titleField.getText(), new Author.ByRef(getLoggedInUser()._1()), false);</b>
+<b class="nc">&nbsp;        var data = new Book.Data(summaryField.getText(), ContentTxt, Book.ApprovalStatus.PENDING, null, null, 0);</b>
+<b class="nc">&nbsp;		final var publishBooksControl = Main.getContext().getPublishBooksControl();</b>
+<b class="nc">&nbsp;        switch(publishBooksControl.addBook(book,data)) {</b>
+<b class="nc">&nbsp;            case PublishBooksControl.AddBookResult.Success success -&gt; {</b>
+&nbsp;                // Show success response to author
+<b class="nc">&nbsp;                Alerts.showInfoDialog(&quot;Published and awaiting approval.&quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            case HasMessage message -&gt; Alerts.showErrorDialog(message.getLocalizedMessage());</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

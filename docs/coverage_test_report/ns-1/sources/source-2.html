@@ -1,0 +1,281 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ContextImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library</a>
+</div>
+
+<h1>Coverage Summary for Class: ContextImpl (library)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ContextImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/50)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library;
+&nbsp;
+&nbsp;import javafx.animation.Animation;
+&nbsp;import javafx.animation.KeyFrame;
+&nbsp;import javafx.animation.Timeline;
+&nbsp;import javafx.event.ActionEvent;
+&nbsp;import javafx.scene.Parent;
+&nbsp;import javafx.scene.Scene;
+&nbsp;import javafx.stage.Stage;
+&nbsp;import javafx.util.Duration;
+&nbsp;import library.controls.*;
+&nbsp;import library.models.User;
+&nbsp;import library.persistence.Repository;
+&nbsp;import library.persistence.TransactionException;
+&nbsp;import library.utils.ThrowingFunction;
+&nbsp;import library.utils.Tuple2;
+&nbsp;import lombok.Getter;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Objects;
+&nbsp;import java.util.WeakHashMap;
+&nbsp;import java.util.function.Consumer;
+&nbsp;
+&nbsp;public final class ContextImpl implements Context {
+&nbsp;	public static final double WINDOW_INITIAL_WIDTH = 640;
+&nbsp;	public static final double WINDOW_INITIAL_HEIGHT = 480;
+&nbsp;
+<b class="nc">&nbsp;	@Getter</b>
+&nbsp;	private final boolean testing = false;
+&nbsp;	@Getter
+&nbsp;	private final Stage primaryStage;
+&nbsp;	@Getter
+&nbsp;	private final Repository repository;
+&nbsp;	private final AIServiceControl aiServiceControl;
+&nbsp;	@Getter
+&nbsp;	private final BookDownloadControl bookDownloadControl;
+&nbsp;	@Getter
+&nbsp;	private final BorrowBooksControl borrowBooksControl;
+&nbsp;	@Getter
+&nbsp;	private final ManageBooksControl manageBooksControl;
+&nbsp;	@Getter
+&nbsp;	private final ManageNotificationsControl manageNotificationsControl;
+&nbsp;	@Getter
+&nbsp;	private final ManageProfileControl manageProfileControl;
+&nbsp;	@Getter
+&nbsp;	private final ManageUsersControl manageUsersControl;
+&nbsp;	@Getter
+&nbsp;	private final PublishBooksControl publishBooksControl;
+&nbsp;	@Getter
+&nbsp;	private final RequestBooksControl requestBooksControl;
+&nbsp;	@Getter
+&nbsp;	private final StatsControl statsControl;
+&nbsp;
+&nbsp;	private final Timeline secondTimeline;
+<b class="nc">&nbsp;	private final WeakHashMap&lt;Object, Consumer&lt;? super ActionEvent&gt;&gt; secondTimelineListeners = new WeakHashMap&lt;&gt;();</b>
+&nbsp;	private final Timeline minuteTimeline;
+<b class="nc">&nbsp;	private final WeakHashMap&lt;Object, Consumer&lt;? super ActionEvent&gt;&gt; minuteTimelineListeners = new WeakHashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;	@SuppressWarnings(&quot;MismatchedQueryAndUpdateOfCollection&quot;)</b>
+&nbsp;	private final List&lt;Object&gt; loggedInTokens = new ArrayList&lt;&gt;();
+&nbsp;	@Getter
+&nbsp;	@Nullable
+&nbsp;	private Tuple2&lt;User, User.Data&gt; loggedInUser;
+&nbsp;
+<b class="nc">&nbsp;	public ContextImpl(Stage primaryStage, Repository repository) {</b>
+<b class="nc">&nbsp;		this.primaryStage = primaryStage;</b>
+<b class="nc">&nbsp;		this.repository = repository;</b>
+<b class="nc">&nbsp;		this.aiServiceControl = new AIServiceControl();</b>
+<b class="nc">&nbsp;		this.bookDownloadControl = new BookDownloadControl();</b>
+<b class="nc">&nbsp;		this.borrowBooksControl = new BorrowBooksControl(repository);</b>
+<b class="nc">&nbsp;		this.manageBooksControl = new ManageBooksControl(repository);</b>
+<b class="nc">&nbsp;		this.manageNotificationsControl = new ManageNotificationsControl();</b>
+<b class="nc">&nbsp;		this.manageProfileControl = new ManageProfileControl(repository);</b>
+<b class="nc">&nbsp;		this.manageUsersControl = new ManageUsersControl(repository);</b>
+<b class="nc">&nbsp;		this.publishBooksControl = new PublishBooksControl(repository);</b>
+<b class="nc">&nbsp;		this.requestBooksControl = new RequestBooksControl(repository);</b>
+<b class="nc">&nbsp;		this.statsControl = new StatsControl();</b>
+&nbsp;
+<b class="nc">&nbsp;		final var secondTimeline = new Timeline(new KeyFrame(Duration.seconds(1), event -&gt;</b>
+<b class="nc">&nbsp;				secondTimelineListeners.values().forEach(listener -&gt; listener.accept(event))));</b>
+<b class="nc">&nbsp;		secondTimeline.setCycleCount(Animation.INDEFINITE);</b>
+<b class="nc">&nbsp;		secondTimeline.play();</b>
+<b class="nc">&nbsp;		this.secondTimeline = secondTimeline;</b>
+&nbsp;
+<b class="nc">&nbsp;		final var minuteTimeline = new Timeline(new KeyFrame(Duration.minutes(1), event -&gt;</b>
+<b class="nc">&nbsp;				minuteTimelineListeners.values().forEach(listener -&gt; listener.accept(event))));</b>
+<b class="nc">&nbsp;		minuteTimeline.setCycleCount(Animation.INDEFINITE);</b>
+<b class="nc">&nbsp;		minuteTimeline.play();</b>
+<b class="nc">&nbsp;		this.minuteTimeline = minuteTimeline;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@SuppressWarnings(&quot;CallToPrintStackTrace&quot;)
+&nbsp;	@Override
+&nbsp;	public void setLoggedInUser(@Nullable Tuple2&lt;User, User.Data&gt; loggedInUser) {
+<b class="nc">&nbsp;		this.loggedInUser = loggedInUser;</b>
+<b class="nc">&nbsp;		if (loggedInUser == null) {</b>
+<b class="nc">&nbsp;			loggedInTokens.clear();</b>
+&nbsp;		} else {
+<b class="nc">&nbsp;			addMinuteTimelineListener(Objects.requireNonNull(getLoggedInToken()), _ -&gt; {</b>
+&nbsp;				try {
+<b class="nc">&nbsp;					repository.borrowOps.prune();</b>
+&nbsp;				} catch (TransactionException e) {
+<b class="nc">&nbsp;					e.printStackTrace(); // nothing we can do</b>
+&nbsp;				}
+&nbsp;			});
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public @Nullable Object getLoggedInToken() {
+<b class="nc">&nbsp;		if (loggedInUser == null) return null;</b>
+<b class="nc">&nbsp;		final var ret = new Object();</b>
+<b class="nc">&nbsp;		loggedInTokens.add(ret);</b>
+<b class="nc">&nbsp;		return ret;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Closes this stream and releases any system resources associated
+&nbsp;	 * with it. If the stream is already closed then invoking this
+&nbsp;	 * method has no effect.
+&nbsp;	 *
+&nbsp;	 * &lt;p&gt; As noted in {@link AutoCloseable#close()}, cases where the
+&nbsp;	 * close may fail require careful attention. It is strongly advised
+&nbsp;	 * to relinquish the underlying resources and to internally
+&nbsp;	 * &lt;em&gt;mark&lt;/em&gt; the {@code Closeable} as closed, prior to throwing
+&nbsp;	 * the {@code IOException}.
+&nbsp;	 */
+&nbsp;	@Override
+&nbsp;	public void close() {
+<b class="nc">&nbsp;		minuteTimeline.stop();</b>
+<b class="nc">&nbsp;		secondTimeline.stop();</b>
+<b class="nc">&nbsp;		repository.close();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void setScene(Parent value) {
+<b class="nc">&nbsp;		final var oldScene = primaryStage.getScene();</b>
+<b class="nc">&nbsp;		primaryStage.setScene(new Scene(value, oldScene.getWidth(), oldScene.getHeight()));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public &lt;E extends Throwable&gt; Stage newWindow(String title, ThrowingFunction&lt;? super Stage, ? extends Parent, ? extends E&gt; parentSupplier, @Nullable Stage stage) throws E {
+<b class="nc">&nbsp;		stage = stage == null ? new Stage() : stage;</b>
+<b class="nc">&nbsp;		stage.setScene(new Scene(parentSupplier.apply(stage), WINDOW_INITIAL_WIDTH, WINDOW_INITIAL_HEIGHT));</b>
+<b class="nc">&nbsp;		stage.setTitle(title);</b>
+<b class="nc">&nbsp;		stage.setResizable(true);</b>
+<b class="nc">&nbsp;		return stage;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public AIServiceControl getAIServiceControl() {
+<b class="nc">&nbsp;		return aiServiceControl;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void addSecondTimelineListener(Object key, Consumer&lt;? super ActionEvent&gt; listener) {
+<b class="nc">&nbsp;		secondTimelineListeners.put(key, listener);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void addMinuteTimelineListener(Object key, Consumer&lt;? super ActionEvent&gt; listener) {
+<b class="nc">&nbsp;		minuteTimelineListeners.put(key, listener);</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

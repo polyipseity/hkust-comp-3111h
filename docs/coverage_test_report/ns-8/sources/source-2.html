@@ -1,0 +1,429 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Book</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.models</a>
+</div>
+
+<h1>Coverage Summary for Class: Book (library.models)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Book</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Book$ApprovalStatus</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">Book$Data</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (10/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/9)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">Book$Data$S</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (25/25)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">Book$S</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (16/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (54/54)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.models;
+&nbsp;
+&nbsp;import library.utils.ZonedDateTimeSerializer;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import lombok.With;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;import org.mapdb.DataInput2;
+&nbsp;import org.mapdb.DataOutput2;
+&nbsp;import org.mapdb.Serializer;
+&nbsp;import org.mapdb.serializer.GroupSerializerObjectArray;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.time.ZonedDateTime;
+&nbsp;import java.util.Comparator;
+&nbsp;
+<b class="fc">&nbsp;public record Book(</b>
+&nbsp;		String title,
+&nbsp;		Author author,
+&nbsp;		boolean temporary
+&nbsp;) implements Comparable&lt;Book&gt; {
+&nbsp;	public Book(String title, Author author) {
+<b class="fc">&nbsp;		this(title, author, false);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Compares this object with the specified object for order.  Returns a
+&nbsp;	 * negative integer, zero, or a positive integer as this object is less
+&nbsp;	 * than, equal to, or greater than the specified object.
+&nbsp;	 *
+&nbsp;	 * &lt;p&gt;The implementor must ensure {@link Integer#signum
+&nbsp;	 * signum}{@code (x.compareTo(y)) == -signum(y.compareTo(x))} for
+&nbsp;	 * all {@code x} and {@code y}.  (This implies that {@code
+&nbsp;	 * x.compareTo(y)} must throw an exception if and only if {@code
+&nbsp;	 * y.compareTo(x)} throws an exception.)
+&nbsp;	 *
+&nbsp;	 * &lt;p&gt;The implementor must also ensure that the relation is transitive:
+&nbsp;	 * {@code (x.compareTo(y) &gt; 0 &amp;&amp; y.compareTo(z) &gt; 0)} implies
+&nbsp;	 * {@code x.compareTo(z) &gt; 0}.
+&nbsp;	 *
+&nbsp;	 * &lt;p&gt;Finally, the implementor must ensure that {@code
+&nbsp;	 * x.compareTo(y)==0} implies that {@code signum(x.compareTo(z))
+&nbsp;	 * == signum(y.compareTo(z))}, for all {@code z}.
+&nbsp;	 *
+&nbsp;	 * @param o the object to be compared.
+&nbsp;	 * @return a negative integer, zero, or a positive integer as this object
+&nbsp;	 * is less than, equal to, or greater than the specified object.
+&nbsp;	 * @throws NullPointerException if the specified object is null
+&nbsp;	 * @throws ClassCastException   if the specified object&#39;s type prevents it
+&nbsp;	 *                              from being compared to this object.
+&nbsp;	 * @apiNote It is strongly recommended, but &lt;i&gt;not&lt;/i&gt; strictly required that
+&nbsp;	 * {@code (x.compareTo(y)==0) == (x.equals(y))}.  Generally speaking, any
+&nbsp;	 * class that implements the {@code Comparable} interface and violates
+&nbsp;	 * this condition should clearly indicate this fact.  The recommended
+&nbsp;	 * language is &quot;Note: this class has a natural ordering that is
+&nbsp;	 * inconsistent with equals.&quot;
+&nbsp;	 */
+&nbsp;	@Override
+&nbsp;	public int compareTo(Book o) {
+<b class="fc">&nbsp;		return Comparator</b>
+<b class="fc">&nbsp;				.comparing(Book::title)</b>
+<b class="fc">&nbsp;				.thenComparing(Book::author)</b>
+<b class="fc">&nbsp;				.thenComparingInt(book -&gt; book.temporary ? 1 : 0)</b>
+<b class="fc">&nbsp;				.compare(this, o);</b>
+&nbsp;	}
+&nbsp;
+<b class="fc">&nbsp;	public enum ApprovalStatus {</b>
+<b class="fc">&nbsp;		PENDING(&quot;pending&quot;),</b>
+<b class="fc">&nbsp;		APPROVED(&quot;approved&quot;),</b>
+<b class="fc">&nbsp;		REJECTED(&quot;rejected&quot;),</b>
+&nbsp;		;
+&nbsp;
+&nbsp;		public final String name;
+&nbsp;
+<b class="fc">&nbsp;		ApprovalStatus(String name) {</b>
+<b class="fc">&nbsp;			this.name = name;</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+<b class="fc">&nbsp;	@With</b>
+<b class="fc">&nbsp;	public record Data(</b>
+&nbsp;			String summary,
+&nbsp;			String content,
+&nbsp;			ApprovalStatus approvalStatus,
+&nbsp;			@Nullable ZonedDateTime publishDate,
+&nbsp;			@Nullable Book originalOrModified,
+&nbsp;			long timesBorrowed
+&nbsp;	) {
+&nbsp;		/**
+&nbsp;		 * Indicates whether this book data represents a publicly available, published edition.
+&nbsp;		 *
+&nbsp;		 * &lt;p&gt;A {@code Data} instance is considered published when the following conditions are met:
+&nbsp;		 * &lt;ul&gt;
+&nbsp;		 *   &lt;li&gt;The {@link ApprovalStatus#APPROVED} status has been granted.&lt;/li&gt;
+&nbsp;		 *   &lt;li&gt;It is not an edited or derived copy of another book
+&nbsp;		 *       (i.e. {@code originalOrModified == null}).&lt;/li&gt;
+&nbsp;		 * &lt;/ul&gt;
+&nbsp;		 *
+&nbsp;		 * &lt;p&gt;Both conditions must hold simultaneously; if either fails, the method returns {@code false}.
+&nbsp;		 *
+&nbsp;		 * @return {@code true} when the data is approved and not a modification of an existing book,
+&nbsp;		 * otherwise {@code false}
+&nbsp;		 */
+&nbsp;		public boolean published() {
+<b class="pc">&nbsp;			return switch (approvalStatus) {</b>
+<b class="fc">&nbsp;				case PENDING, REJECTED -&gt; false;</b>
+<b class="fc">&nbsp;				case APPROVED -&gt; originalOrModified == null;</b>
+&nbsp;			};
+&nbsp;		}
+&nbsp;
+&nbsp;		public boolean active() {
+<b class="pc">&nbsp;			return switch (approvalStatus) {</b>
+<b class="fc">&nbsp;				case PENDING -&gt; true;</b>
+<b class="fc">&nbsp;				case APPROVED -&gt; originalOrModified == null;</b>
+<b class="fc">&nbsp;				case REJECTED -&gt; false;</b>
+&nbsp;			};
+&nbsp;		}
+&nbsp;
+&nbsp;		@RequiredArgsConstructor
+&nbsp;		public static final class S extends GroupSerializerObjectArray&lt;Data&gt; {
+&nbsp;			private final Serializer&lt;Book&gt; bookSerializer;
+&nbsp;
+&nbsp;			/**
+&nbsp;			 * Serializes the content of the given value into the given
+&nbsp;			 * {@link DataOutput2}.
+&nbsp;			 *
+&nbsp;			 * @param out   DataOutput2 to save object into
+&nbsp;			 * @param value Object to serialize
+&nbsp;			 * @throws IOException in case of an I/O error
+&nbsp;			 */
+&nbsp;			@Override
+&nbsp;			public void serialize(DataOutput2 out, Data value) throws IOException {
+<b class="fc">&nbsp;				out.writeUTF(value.summary());</b>
+<b class="fc">&nbsp;				out.writeUTF(value.content());</b>
+<b class="fc">&nbsp;				out.writeInt(value.approvalStatus().ordinal());</b>
+<b class="fc">&nbsp;				if (value.publishDate() == null) {</b>
+<b class="fc">&nbsp;					out.writeBoolean(false);  // flag that it is absent</b>
+&nbsp;				} else {
+<b class="fc">&nbsp;					out.writeBoolean(true);</b>
+<b class="fc">&nbsp;					ZonedDateTimeSerializer.INSTANCE.serialize(out, value.publishDate());</b>
+&nbsp;				}
+<b class="fc">&nbsp;				if (value.originalOrModified() == null) {</b>
+<b class="fc">&nbsp;					out.writeBoolean(false);  // flag that it is absent</b>
+&nbsp;				} else {
+<b class="fc">&nbsp;					out.writeBoolean(true);</b>
+<b class="fc">&nbsp;					bookSerializer.serialize(out, value.originalOrModified());</b>
+&nbsp;				}
+<b class="fc">&nbsp;				out.writeLong(value.timesBorrowed());</b>
+&nbsp;			}
+&nbsp;
+&nbsp;			/**
+&nbsp;			 * Deserializes and returns the content of the given {@link DataInput2}.
+&nbsp;			 *
+&nbsp;			 * @param input     DataInput2 to de-serialize data from
+&nbsp;			 * @param available how many bytes that are available in the DataInput2 for
+&nbsp;			 *                  reading, may be -1 (in streams) or 0 (null).
+&nbsp;			 * @return the de-serialized content of the given {@link DataInput2}
+&nbsp;			 * @throws IOException in case of an I/O error
+&nbsp;			 */
+&nbsp;			@Override
+&nbsp;			public Data deserialize(DataInput2 input, int available) throws IOException {
+<b class="fc">&nbsp;				final var summary = input.readUTF();</b>
+<b class="fc">&nbsp;				final var content = input.readUTF();</b>
+<b class="fc">&nbsp;				final var status = ApprovalStatus.values()[input.readInt()];</b>
+<b class="fc">&nbsp;				@SuppressWarnings(&quot;SwitchStatementWithTooFewBranches&quot;) final var publishDate = switch (input.readBoolean() ? 1 : 0) {</b>
+<b class="fc">&nbsp;					case 1 -&gt; ZonedDateTimeSerializer.INSTANCE.deserialize(input, available);</b>
+<b class="fc">&nbsp;					default -&gt; null;</b>
+<b class="fc">&nbsp;				};</b>
+<b class="fc">&nbsp;				@SuppressWarnings(&quot;SwitchStatementWithTooFewBranches&quot;) final var originalOrModified = switch (input.readBoolean() ? 1 : 0) {</b>
+<b class="fc">&nbsp;					case 1 -&gt; bookSerializer.deserialize(input, available);</b>
+<b class="fc">&nbsp;					default -&gt; null;</b>
+<b class="fc">&nbsp;				};</b>
+<b class="fc">&nbsp;				final var times = input.readLong();</b>
+<b class="fc">&nbsp;				return new Data(summary, content, status, publishDate, originalOrModified, times);</b>
+&nbsp;			}
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	@RequiredArgsConstructor
+&nbsp;	public static final class S extends GroupSerializerObjectArray&lt;Book&gt; {
+&nbsp;		private final Serializer&lt;Author&gt; authorSerializer;
+&nbsp;
+&nbsp;		/**
+&nbsp;		 * Serializes the content of the given value into the given
+&nbsp;		 * {@link DataOutput2}.
+&nbsp;		 *
+&nbsp;		 * @param out   DataOutput2 to save object into
+&nbsp;		 * @param value Object to serialize
+&nbsp;		 * @throws IOException in case of an I/O error
+&nbsp;		 */
+&nbsp;		@Override
+&nbsp;		public void serialize(DataOutput2 out, Book value) throws IOException {
+<b class="fc">&nbsp;			out.writeUTF(value.title());</b>
+<b class="fc">&nbsp;			authorSerializer.serialize(out, value.author());</b>
+<b class="fc">&nbsp;			out.writeBoolean(value.temporary());</b>
+&nbsp;		}
+&nbsp;
+&nbsp;		/**
+&nbsp;		 * Deserializes and returns the content of the given {@link DataInput2}.
+&nbsp;		 *
+&nbsp;		 * @param input     DataInput2 to de-serialize data from
+&nbsp;		 * @param available how many bytes that are available in the DataInput2 for
+&nbsp;		 *                  reading, may be -1 (in streams) or 0 (null).
+&nbsp;		 * @return the de-serialized content of the given {@link DataInput2}
+&nbsp;		 * @throws IOException in case of an I/O error
+&nbsp;		 */
+&nbsp;		@Override
+&nbsp;		public Book deserialize(DataInput2 input, int available) throws IOException {
+<b class="fc">&nbsp;			final var title = input.readUTF();</b>
+<b class="fc">&nbsp;			final var author = authorSerializer.deserialize(input, available);</b>
+<b class="fc">&nbsp;			final var temporary = input.readBoolean();</b>
+<b class="fc">&nbsp;			return new Book(title, author, temporary);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

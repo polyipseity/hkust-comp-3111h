@@ -1,0 +1,177 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > MyProfileController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.controllers.common</a>
+</div>
+
+<h1>Coverage Summary for Class: MyProfileController (library.controllers.common)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MyProfileController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (2/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    25%
+  </span>
+  <span class="absValue">
+    (5/20)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.controllers.common;
+&nbsp;
+&nbsp;import javafx.fxml.Initializable;
+&nbsp;import javafx.scene.control.TextField;
+&nbsp;import javafx.scene.text.Text;
+&nbsp;import library.Context;
+&nbsp;import library.Main;
+&nbsp;import library.controls.UserValidator;
+&nbsp;import library.persistence.Repository;
+&nbsp;import library.persistence.TransactionException;
+&nbsp;import library.utils.Alerts;
+&nbsp;import library.utils.HasMessage;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;import org.jetbrains.annotations.UnknownNullability;
+&nbsp;
+&nbsp;import java.net.URL;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;
+<b class="fc">&nbsp;public final class MyProfileController implements RequiresLoggedIn, Initializable {</b>
+<b class="fc">&nbsp;	private final Context context = Main.getContext();</b>
+<b class="fc">&nbsp;	private final Repository repository = context.getRepository();</b>
+&nbsp;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public Text usernameText;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public TextField newNameField, newPasswordField;
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+<b class="fc">&nbsp;		RequiresLoggedIn.super.initialize(location, resources);</b>
+&nbsp;
+<b class="fc">&nbsp;		usernameText.setText(getLoggedInUser()._1().username());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void updateProfile() {
+<b class="nc">&nbsp;		String enteredPassword = newPasswordField.getText();</b>
+<b class="nc">&nbsp;		String enteredFullName = newNameField.getText();</b>
+<b class="nc">&nbsp;		if (enteredPassword.isEmpty() &amp;&amp; enteredFullName.isEmpty()) {</b>
+<b class="nc">&nbsp;			Alerts.showErrorDialog(&quot;Both input fields are empty&quot;);</b>
+&nbsp;			return;
+&nbsp;		}
+<b class="nc">&nbsp;		String newPassword = enteredPassword.isEmpty() ? getLoggedInUser()._2().password() : enteredPassword;</b>
+<b class="nc">&nbsp;		String newFullName = enteredFullName.isEmpty() ? getLoggedInUser()._2().fullName() : enteredFullName;</b>
+<b class="nc">&nbsp;		UserValidator.Result result = UserValidator.DEFAULT.apply(getLoggedInUser()._1().username(), newPassword, newFullName);</b>
+<b class="nc">&nbsp;		switch (result) {</b>
+<b class="nc">&nbsp;			case UserValidator.Result.Success() -&gt; {</b>
+&nbsp;				try {
+<b class="nc">&nbsp;					repository.userOps.update(getLoggedInUser()._1(), user -&gt; user</b>
+<b class="nc">&nbsp;							.withPassword(newPassword)</b>
+<b class="nc">&nbsp;							.withFullName(newFullName));</b>
+&nbsp;				} catch (TransactionException e) {
+<b class="nc">&nbsp;					Alerts.showErrorDialog(e.getLocalizedMessage());</b>
+&nbsp;				}
+&nbsp;			}
+<b class="nc">&nbsp;			case HasMessage message -&gt; Alerts.showErrorDialog(message.getLocalizedMessage());</b>
+&nbsp;		}
+<b class="nc">&nbsp;		Alerts.showInfoDialog(&quot;Updated successfully&quot;);</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

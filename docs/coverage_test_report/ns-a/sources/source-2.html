@@ -1,0 +1,173 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > RepositoryBookOps</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.persistence</a>
+</div>
+
+<h1>Coverage Summary for Class: RepositoryBookOps (library.persistence)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RepositoryBookOps</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (15/15)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.persistence;
+&nbsp;
+&nbsp;import library.models.Book;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;
+&nbsp;import java.util.Collections;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.NoSuchElementException;
+&nbsp;import java.util.Optional;
+&nbsp;import java.util.function.Function;
+&nbsp;import java.util.function.Predicate;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+<b class="fc">&nbsp;public record RepositoryBookOps(Repository repository) {</b>
+&nbsp;
+&nbsp;	public void create(Book book, Book.Data data) throws TransactionException {
+<b class="fc">&nbsp;		repository.transact(tx -&gt; tx.books().put(book, data) == null, () -&gt; &quot;Already created: %s&quot;.formatted(book));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Map&lt;Book, Book.Data&gt; read() {
+<b class="fc">&nbsp;		return Collections.unmodifiableMap(repository.books);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Map&lt;Book, Book.Data&gt; read(Predicate&lt;? super Map.Entry&lt;Book, Book.Data&gt;&gt; filter) {
+<b class="fc">&nbsp;		return repository.books.entrySet().stream().filter(filter).collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Optional&lt;Book.Data&gt; read(Book book) {
+<b class="fc">&nbsp;		return Optional.ofNullable(repository.books.get(book));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Book.Data readOrThrow(Book book) {
+<b class="fc">&nbsp;		return read(book).orElseThrow(() -&gt; new NoSuchElementException(&quot;Not found: %s&quot;.formatted(book)));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void update(Book book, Function&lt;Book.Data, Book.Data&gt; callback) throws TransactionException {
+<b class="fc">&nbsp;		repository.transact(tx -&gt; {</b>
+<b class="fc">&nbsp;			final var oldValue = tx.books().get(book);</b>
+<b class="fc">&nbsp;			return oldValue != null &amp;&amp; oldValue.equals(tx.books().put(book, callback.apply(oldValue)));</b>
+<b class="fc">&nbsp;		}, () -&gt; &quot;Not found or updated concurrently: %s&quot;.formatted(book));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void update(Book book, Book.Data data, Book.@Nullable Data expected) throws TransactionException {
+<b class="fc">&nbsp;		repository.transact(</b>
+<b class="fc">&nbsp;				tx -&gt; expected == null ? tx.books().put(book, data) != null : expected.equals(tx.books().put(book, data)),</b>
+<b class="fc">&nbsp;				() -&gt; &quot;Not found or updated concurrently: %s&quot;.formatted(book)</b>
+&nbsp;		);
+&nbsp;	}
+&nbsp;
+&nbsp;	public void delete(Book book, @Nullable Book.Data expected) throws TransactionException {
+<b class="fc">&nbsp;		repository.transact(tx -&gt; expected == null ? tx.books().remove(book) != null : tx.books().remove(book, expected), () -&gt; &quot;Already deleted: %s&quot;.formatted(book));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	void delete(Book book) throws TransactionException {
+<b class="fc">&nbsp;		delete(book, null);</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

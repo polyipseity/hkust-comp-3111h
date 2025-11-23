@@ -1,0 +1,237 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Borrow</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.models</a>
+</div>
+
+<h1>Coverage Summary for Class: Borrow (library.models)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Borrow</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/9)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Borrow$S</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (16/16)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.models;
+&nbsp;
+&nbsp;import library.utils.DurationSerializer;
+&nbsp;import library.utils.TimeUtil;
+&nbsp;import library.utils.ZonedDateTimeSerializer;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import lombok.With;
+&nbsp;import org.mapdb.DataInput2;
+&nbsp;import org.mapdb.DataOutput2;
+&nbsp;import org.mapdb.serializer.GroupSerializerObjectArray;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.time.Duration;
+&nbsp;import java.time.ZonedDateTime;
+&nbsp;
+<b class="fc">&nbsp;@With</b>
+<b class="fc">&nbsp;public record Borrow(</b>
+&nbsp;		ZonedDateTime borrowDate,
+&nbsp;		Duration duration,
+&nbsp;		String pdfPath
+&nbsp;) {
+&nbsp;	public ZonedDateTime due() {
+<b class="fc">&nbsp;		return borrowDate.plus(duration);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * How much time is left until the book is due, relative to {@code reference}.
+&nbsp;	 *
+&nbsp;	 * @param reference the point in time from which we want to measure the remaining period
+&nbsp;	 * @return a {@link Duration} that is zero if the due date has already passed,
+&nbsp;	 * otherwise the duration between {@code reference} and the due date
+&nbsp;	 */
+&nbsp;	public Duration durationLeft(ZonedDateTime reference) {
+<b class="fc">&nbsp;		final var due = due();</b>
+<b class="fc">&nbsp;		return reference.isAfter(due)</b>
+<b class="fc">&nbsp;				? Duration.ZERO</b>
+<b class="fc">&nbsp;				: Duration.between(reference, due);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Convenience overload that uses the current instant in UTC.
+&nbsp;	 *
+&nbsp;	 * @return the remaining duration until the book is due (or zero if overdue)
+&nbsp;	 */
+&nbsp;	public Duration durationLeft() {
+<b class="fc">&nbsp;		return durationLeft(TimeUtil.nowZoned());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public boolean expired() {
+<b class="fc">&nbsp;		return durationLeft().isZero();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@RequiredArgsConstructor
+&nbsp;	public static final class S extends GroupSerializerObjectArray&lt;Borrow&gt; {
+&nbsp;		/**
+&nbsp;		 * Serializes the content of the given value into the given
+&nbsp;		 * {@link DataOutput2}.
+&nbsp;		 *
+&nbsp;		 * @param out   DataOutput2 to save object into
+&nbsp;		 * @param value Object to serialize
+&nbsp;		 * @throws IOException in case of an I/O error
+&nbsp;		 */
+&nbsp;		@Override
+&nbsp;		public void serialize(DataOutput2 out, Borrow value) throws IOException {
+<b class="fc">&nbsp;			ZonedDateTimeSerializer.INSTANCE.serialize(out, value.borrowDate());</b>
+<b class="fc">&nbsp;			DurationSerializer.INSTANCE.serialize(out, value.duration());</b>
+<b class="fc">&nbsp;			out.writeUTF(value.pdfPath);</b>
+&nbsp;		}
+&nbsp;
+&nbsp;		/**
+&nbsp;		 * Deserializes and returns the content of the given {@link DataInput2}.
+&nbsp;		 *
+&nbsp;		 * @param input     DataInput2 to de-serialize data from
+&nbsp;		 * @param available how many bytes that are available in the DataInput2 for
+&nbsp;		 *                  reading, may be -1 (in streams) or 0 (null).
+&nbsp;		 * @return the de-serialized content of the given {@link DataInput2}
+&nbsp;		 * @throws IOException in case of an I/O error
+&nbsp;		 */
+&nbsp;		@Override
+&nbsp;		public Borrow deserialize(DataInput2 input, int available) throws IOException {
+<b class="fc">&nbsp;			final var borrowDate = ZonedDateTimeSerializer.INSTANCE.deserialize(input, available);</b>
+<b class="fc">&nbsp;			final var duration = DurationSerializer.INSTANCE.deserialize(input, available);</b>
+<b class="fc">&nbsp;			final var pdfPath = input.readUTF();</b>
+<b class="fc">&nbsp;			return new Borrow(borrowDate, duration, pdfPath);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

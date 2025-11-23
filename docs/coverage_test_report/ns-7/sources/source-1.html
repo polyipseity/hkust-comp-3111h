@@ -1,0 +1,173 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AIServiceControl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.controls</a>
+</div>
+
+<h1>Coverage Summary for Class: AIServiceControl (library.controls)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AIServiceControl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    33.3%
+  </span>
+  <span class="absValue">
+    (2/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    21.7%
+  </span>
+  <span class="absValue">
+    (5/23)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.controls;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.core.JsonProcessingException;
+&nbsp;import com.fasterxml.jackson.databind.ObjectMapper;
+&nbsp;import library.models.json.OpenAIChatCompletionBody;
+&nbsp;import library.models.json.OpenAIChatCompletionResponse;
+&nbsp;import library.models.json.OpenAIErrorResponse;
+&nbsp;
+&nbsp;import java.io.Closeable;
+&nbsp;import java.net.URI;
+&nbsp;import java.net.http.HttpClient;
+&nbsp;import java.net.http.HttpRequest;
+&nbsp;import java.net.http.HttpResponse;
+&nbsp;import java.util.concurrent.CompletableFuture;
+&nbsp;import java.util.concurrent.CompletionException;
+&nbsp;
+<b class="fc">&nbsp;public record AIServiceControl(</b>
+&nbsp;		HttpClient client,
+&nbsp;		ObjectMapper objectMapper
+&nbsp;) implements Closeable {
+&nbsp;	public static final String OPENAI_API_URL = &quot;https://hkust.azure-api.net/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-10-21&quot;;
+&nbsp;	public static final String OPENAI_API_KEY = &quot;d7d5f6c01f3c493292402ec61cafe248&quot;;
+&nbsp;
+&nbsp;	public AIServiceControl() {
+<b class="fc">&nbsp;		this(</b>
+<b class="fc">&nbsp;				HttpClient.newBuilder()</b>
+<b class="fc">&nbsp;						.followRedirects(HttpClient.Redirect.ALWAYS)</b>
+<b class="fc">&nbsp;						.build(),</b>
+&nbsp;				new ObjectMapper()
+&nbsp;		);
+&nbsp;	}
+&nbsp;
+&nbsp;	public CompletableFuture&lt;OpenAIChatCompletionResponse&gt; chatComplete(OpenAIChatCompletionBody prompt) {
+<b class="nc">&nbsp;		return CompletableFuture.supplyAsync(() -&gt; {</b>
+&nbsp;					try {
+<b class="nc">&nbsp;						System.out.println(objectMapper.writeValueAsString(prompt));</b>
+<b class="nc">&nbsp;						return HttpRequest.newBuilder()</b>
+<b class="nc">&nbsp;								.uri(URI.create(OPENAI_API_URL))</b>
+<b class="nc">&nbsp;								.header(&quot;Content-Type&quot;, &quot;application/json&quot;)</b>
+<b class="nc">&nbsp;								.header(&quot;api-key&quot;, OPENAI_API_KEY)</b>
+<b class="nc">&nbsp;								.POST(HttpRequest.BodyPublishers.ofString(objectMapper.writeValueAsString(prompt)))</b>
+<b class="nc">&nbsp;								.build();</b>
+&nbsp;					} catch (JsonProcessingException e) {
+<b class="nc">&nbsp;						throw new CompletionException(e);</b>
+&nbsp;					}
+&nbsp;				})
+&nbsp;				// Use the pre-initialized HttpClient to call the API asynchronously
+<b class="nc">&nbsp;				.thenCompose(request -&gt; client.sendAsync(request, HttpResponse.BodyHandlers.ofString()))</b>
+<b class="nc">&nbsp;				.thenApply(HttpResponse::body)</b>
+<b class="nc">&nbsp;				.thenApply(body -&gt; {</b>
+<b class="nc">&nbsp;					System.out.println(body);</b>
+&nbsp;					try {
+<b class="nc">&nbsp;						return objectMapper.readValue(body, OpenAIChatCompletionResponse.class);</b>
+&nbsp;					} catch (JsonProcessingException e) {
+&nbsp;						try {
+<b class="nc">&nbsp;							throw new CompletionException(objectMapper.readValue(body, OpenAIErrorResponse.class).message(), e);</b>
+&nbsp;						} catch (JsonProcessingException e2) {
+<b class="nc">&nbsp;							e2.addSuppressed(e);</b>
+<b class="nc">&nbsp;							throw new CompletionException(e2);</b>
+&nbsp;						}
+&nbsp;					}
+&nbsp;				});
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void close() {
+<b class="nc">&nbsp;		client.close();</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

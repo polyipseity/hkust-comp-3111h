@@ -1,0 +1,148 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > DurationSerializer</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.utils</a>
+</div>
+
+<h1>Coverage Summary for Class: DurationSerializer (library.utils)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DurationSerializer</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.utils;
+&nbsp;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.mapdb.DataInput2;
+&nbsp;import org.mapdb.DataOutput2;
+&nbsp;import org.mapdb.serializer.GroupSerializerObjectArray;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.time.Duration;
+&nbsp;
+&nbsp;@RequiredArgsConstructor
+&nbsp;public class DurationSerializer extends GroupSerializerObjectArray&lt;Duration&gt; {
+<b class="fc">&nbsp;	public static final DurationSerializer INSTANCE = new DurationSerializer();</b>
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Serializes the content of the given value into the given
+&nbsp;	 * {@link DataOutput2}.
+&nbsp;	 *
+&nbsp;	 * @param out   DataOutput2 to save object into
+&nbsp;	 * @param value Object to serialize
+&nbsp;	 * @throws IOException in case of an I/O error
+&nbsp;	 */
+&nbsp;	@Override
+&nbsp;	public void serialize(DataOutput2 out, Duration value) throws IOException {
+<b class="fc">&nbsp;		out.writeLong(value.getSeconds());</b>
+<b class="fc">&nbsp;		out.writeInt(value.getNano());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Deserializes and returns the content of the given {@link DataInput2}.
+&nbsp;	 *
+&nbsp;	 * @param input     DataInput2 to de-serialize data from
+&nbsp;	 * @param available how many bytes that are available in the DataInput2 for
+&nbsp;	 *                  reading, may be -1 (in streams) or 0 (null).
+&nbsp;	 * @return the de-serialized content of the given {@link DataInput2}
+&nbsp;	 * @throws IOException in case of an I/O error
+&nbsp;	 */
+&nbsp;	@Override
+&nbsp;	public Duration deserialize(DataInput2 input, int available) throws IOException {
+<b class="fc">&nbsp;		final var seconds = input.readLong();</b>
+<b class="fc">&nbsp;		final var nanoAdjustment = input.readInt();</b>
+<b class="fc">&nbsp;		return Duration.ofSeconds(seconds, nanoAdjustment);</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

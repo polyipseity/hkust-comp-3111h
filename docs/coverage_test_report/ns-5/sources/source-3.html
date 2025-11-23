@@ -1,0 +1,272 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > BorrowedBooksController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.controllers.librarian</a>
+</div>
+
+<h1>Coverage Summary for Class: BorrowedBooksController (library.controllers.librarian)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BorrowedBooksController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (15/15)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">BorrowedBooksController$Data</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (2/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (4/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    68.8%
+  </span>
+  <span class="absValue">
+    (11/16)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">BorrowedBooksController$Keys</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    88.9%
+  </span>
+  <span class="absValue">
+    (8/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (4/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    86.1%
+  </span>
+  <span class="absValue">
+    (31/36)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.controllers.librarian;
+&nbsp;
+&nbsp;import javafx.beans.property.SimpleStringProperty;
+&nbsp;import javafx.fxml.Initializable;
+&nbsp;import javafx.scene.control.TableColumn;
+&nbsp;import javafx.scene.control.TableView;
+&nbsp;import library.Main;
+&nbsp;import library.controllers.common.DynamicTableController;
+&nbsp;import library.controllers.common.LoadsData;
+&nbsp;import library.controllers.common.RequiresLoggedIn;
+&nbsp;import library.models.Book;
+&nbsp;import library.models.Borrow;
+&nbsp;import library.models.User;
+&nbsp;import library.utils.TimeUtil;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;import org.jetbrains.annotations.UnknownNullability;
+&nbsp;
+&nbsp;import java.lang.ref.WeakReference;
+&nbsp;import java.net.URL;
+&nbsp;import java.util.LinkedHashMap;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;import java.util.function.Function;
+&nbsp;
+<b class="fc">&nbsp;public final class BorrowedBooksController implements RequiresLoggedIn, Initializable, LoadsData {</b>
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public TableView&lt;@Nullable Data&gt; table;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public DynamicTableController&lt;Keys, Data&gt; tableController;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public TableColumn&lt;Data, @Nullable Data&gt; titleCol, borrowerCol, borrowDateCol, durationLeftCol;
+&nbsp;
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+<b class="fc">&nbsp;		final var keys = new LinkedHashMap&lt;Keys, TableColumn&lt;Data, @Nullable Data&gt;&gt;();</b>
+<b class="fc">&nbsp;		keys.put(Keys.TITLE, titleCol);</b>
+<b class="fc">&nbsp;		keys.put(Keys.BORROWER, borrowerCol);</b>
+<b class="fc">&nbsp;		keys.put(Keys.BORROW_DATE, borrowDateCol);</b>
+<b class="fc">&nbsp;		keys.put(Keys.DURATION_LEFT, durationLeftCol);</b>
+<b class="fc">&nbsp;		tableController = new DynamicTableController&lt;&gt;(table, keys);</b>
+<b class="fc">&nbsp;		table.getSortOrder().add(durationLeftCol);</b>
+&nbsp;
+<b class="fc">&nbsp;		LoadsData.super.initialize(location, resources);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void loadData() {
+<b class="fc">&nbsp;		tableController.setData(Main.getContext().getRepository().borrowOps.read().entrySet().stream()</b>
+<b class="fc">&nbsp;				.map(entry -&gt; new Data(</b>
+&nbsp;						this,
+<b class="fc">&nbsp;						entry.getKey()._1(),</b>
+<b class="fc">&nbsp;						entry.getKey()._2(),</b>
+<b class="fc">&nbsp;						entry.getValue()))</b>
+<b class="fc">&nbsp;				.toList());</b>
+&nbsp;	}
+&nbsp;
+<b class="fc">&nbsp;	public enum Keys {</b>
+<b class="fc">&nbsp;		TITLE,</b>
+<b class="fc">&nbsp;		BORROWER,</b>
+<b class="fc">&nbsp;		BORROW_DATE,</b>
+<b class="fc">&nbsp;		DURATION_LEFT</b>
+&nbsp;	}
+&nbsp;
+<b class="fc">&nbsp;	public record Data(BorrowedBooksController controller,</b>
+&nbsp;	                   User user,
+&nbsp;	                   Book book,
+&nbsp;	                   Borrow borrow)
+&nbsp;			implements Function&lt;Keys, DynamicTableController.Data&gt; {
+&nbsp;
+&nbsp;		/**
+&nbsp;		 * Applies this function to the given argument.
+&nbsp;		 *
+&nbsp;		 * @param key the function argument
+&nbsp;		 * @return the function result
+&nbsp;		 */
+&nbsp;		@Override
+&nbsp;		public DynamicTableController.Data apply(Keys key) {
+<b class="pc">&nbsp;			return switch (key) {</b>
+<b class="fc">&nbsp;				case TITLE -&gt; new DynamicTableController.Data.Text(book.title());</b>
+<b class="fc">&nbsp;				case BORROWER -&gt; new DynamicTableController.Data.Text(user.username());</b>
+<b class="fc">&nbsp;				case BORROW_DATE -&gt; new DynamicTableController.Data.Text(</b>
+<b class="fc">&nbsp;						TimeUtil.toStringZonedLocal(borrow.borrowDate()), borrow.borrowDate());</b>
+&nbsp;				case DURATION_LEFT -&gt; {
+<b class="fc">&nbsp;					final var borrow = this.borrow; // Do not reference `this` in lambda.</b>
+<b class="fc">&nbsp;					final var prop = new SimpleStringProperty(TimeUtil.toStringDuration(borrow.durationLeft()));</b>
+<b class="fc">&nbsp;					final var weakThis = new WeakReference&lt;&gt;(this);</b>
+<b class="fc">&nbsp;					Main.getContext().addSecondTimelineListener(this, _ -&gt; {</b>
+<b class="nc">&nbsp;						prop.setValue(TimeUtil.toStringDuration(borrow.durationLeft()));</b>
+<b class="nc">&nbsp;						if (borrow.expired()) {</b>
+<b class="nc">&nbsp;							final var this2 = weakThis.get();</b>
+<b class="nc">&nbsp;							if (this2 == null) return;</b>
+<b class="nc">&nbsp;							this2.controller.tableController.removeDatum(this2);</b>
+&nbsp;						}
+&nbsp;					});
+<b class="fc">&nbsp;					yield new DynamicTableController.Data.ObservableText(prop, borrow::durationLeft);</b>
+&nbsp;				}
+&nbsp;			};
+&nbsp;		}
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,356 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > RequestBooksControl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.controls</a>
+</div>
+
+<h1>Coverage Summary for Class: RequestBooksControl (library.controls)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RequestBooksControl</td>
+<td class="coverageStat">
+  <span class="percent">
+    80%
+  </span>
+  <span class="absValue">
+    (8/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    92%
+  </span>
+  <span class="absValue">
+    (23/25)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">RequestBooksControl$ApproveResult</td>
+  </tr>
+  <tr>
+    <td class="name">RequestBooksControl$ApproveResult$Success</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">RequestBooksControl$RejectResult</td>
+  </tr>
+  <tr>
+    <td class="name">RequestBooksControl$RejectResult$Success</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">RequestBooksControl$RequestResult</td>
+  </tr>
+  <tr>
+    <td class="name">RequestBooksControl$RequestResult$InvalidRequest</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">RequestBooksControl$RequestResult$InvalidType</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">RequestBooksControl$RequestResult$RequestRepeated</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">RequestBooksControl$RequestResult$Success</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    88.9%
+  </span>
+  <span class="absValue">
+    (16/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    94.3%
+  </span>
+  <span class="absValue">
+    (33/35)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.controls;
+&nbsp;
+&nbsp;import library.models.BookRequest;
+&nbsp;import library.models.User;
+&nbsp;import library.persistence.Repository;
+&nbsp;import library.persistence.TransactionException;
+&nbsp;import library.utils.HasMessage;
+&nbsp;import library.utils.TimeUtil;
+&nbsp;
+<b class="fc">&nbsp;public record RequestBooksControl(Repository repository) {</b>
+&nbsp;	public static final String NOTIFICATION_APPROVE = &quot;Your book request for &#39;%s&#39; has been approved!&quot;;
+&nbsp;	public static final String NOTIFICATION_REJECT = &quot;Your book request for &#39;%s&#39; has been rejected!&quot;;
+&nbsp;
+&nbsp;	public RequestResult requestBook(User user, String title, String author) throws TransactionException {
+&nbsp;		// Check if either title or author field is an empty string
+<b class="fc">&nbsp;		if (title.trim().isEmpty())</b>
+<b class="fc">&nbsp;			return new RequestResult.InvalidRequest(RequestResult.InvalidType.INVALID_TITLE);</b>
+<b class="fc">&nbsp;		if (author.trim().isEmpty())</b>
+<b class="fc">&nbsp;			return new RequestResult.InvalidRequest(RequestResult.InvalidType.INVALID_AUTHOR);</b>
+&nbsp;
+<b class="fc">&nbsp;		BookRequest bookRequest = new BookRequest(title, author);</b>
+<b class="fc">&nbsp;		BookRequest.Data bookRequestData = new BookRequest.Data(TimeUtil.nowZoned());</b>
+&nbsp;
+&nbsp;		// Check if the user has made the same book request in the past
+<b class="fc">&nbsp;		if (repository.userBookRequestOps.read(user, bookRequest).isPresent())</b>
+<b class="fc">&nbsp;			return new RequestResult.RequestRepeated();</b>
+&nbsp;		else {
+<b class="fc">&nbsp;			repository.userBookRequestOps.create(user, bookRequest, bookRequestData);</b>
+<b class="fc">&nbsp;			return new RequestResult.Success();</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	public ApproveResult approveRequest(User user, BookRequest bookRequest) throws TransactionException {
+<b class="fc">&nbsp;		repository.transact(_ -&gt; {</b>
+<b class="fc">&nbsp;			repository.userBookRequestOps.delete(user, bookRequest, null);</b>
+<b class="fc">&nbsp;			repository.userNotificationOps.updateAsList(user, list -&gt; {</b>
+<b class="fc">&nbsp;				list.add(NOTIFICATION_APPROVE.formatted(bookRequest.title()));</b>
+&nbsp;			});
+<b class="fc">&nbsp;			return true;</b>
+<b class="nc">&nbsp;		}, () -&gt; &quot;Failed to approve book request: %s, %s&quot;.formatted(user, bookRequest));</b>
+<b class="fc">&nbsp;		return new ApproveResult.Success();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public RejectResult rejectRequest(User user, BookRequest bookRequest) throws TransactionException {
+<b class="fc">&nbsp;		repository.transact(_ -&gt; {</b>
+<b class="fc">&nbsp;			repository.userBookRequestOps.delete(user, bookRequest, null);</b>
+<b class="fc">&nbsp;			repository.userNotificationOps.updateAsList(user, list -&gt; {</b>
+<b class="fc">&nbsp;				list.add(NOTIFICATION_REJECT.formatted(bookRequest.title()));</b>
+&nbsp;			});
+<b class="fc">&nbsp;			return true;</b>
+<b class="nc">&nbsp;		}, () -&gt; &quot;Failed to reject book request: %s, %s&quot;.formatted(user, bookRequest));</b>
+<b class="fc">&nbsp;		return new RejectResult.Success();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public sealed interface RequestResult {
+<b class="fc">&nbsp;		enum InvalidType {INVALID_TITLE, INVALID_AUTHOR}</b>
+&nbsp;
+<b class="fc">&nbsp;		record Success() implements RequestResult {</b>
+&nbsp;		}
+&nbsp;
+<b class="fc">&nbsp;		record InvalidRequest(InvalidType type) implements RequestResult, HasMessage {</b>
+&nbsp;			@Override
+&nbsp;			public String getMessage() {
+<b class="pc">&nbsp;				return switch (type) {</b>
+<b class="fc">&nbsp;					case INVALID_TITLE -&gt; &quot;Invalid title&quot;;</b>
+<b class="fc">&nbsp;					case INVALID_AUTHOR -&gt; &quot;Invalid author&quot;;</b>
+&nbsp;				};
+&nbsp;			}
+&nbsp;		}
+&nbsp;
+<b class="fc">&nbsp;		record RequestRepeated() implements RequestResult, HasMessage {</b>
+&nbsp;			@Override
+&nbsp;			public String getMessage() {
+<b class="fc">&nbsp;				return &quot;Request has been made before&quot;;</b>
+&nbsp;			}
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Result type for the approval operation.
+&nbsp;	 */
+&nbsp;	public sealed interface ApproveResult permits ApproveResult.Success {
+<b class="fc">&nbsp;		record Success() implements ApproveResult {</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Result type for the rejection operation.
+&nbsp;	 */
+&nbsp;	public sealed interface RejectResult permits RejectResult.Success {
+<b class="fc">&nbsp;		record Success() implements RejectResult {</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

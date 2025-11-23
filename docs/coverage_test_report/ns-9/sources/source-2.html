@@ -1,0 +1,224 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > GutendexResponse</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.models.json</a>
+</div>
+
+<h1>Coverage Summary for Class: GutendexResponse (library.models.json)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GutendexResponse</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">GutendexResponse$Book</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">GutendexResponse$Person</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (10/10)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.models.json;
+&nbsp;
+&nbsp;import com.fasterxml.jackson.annotation.JsonProperty;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+<b class="fc">&nbsp;@SuppressWarnings(&quot;unused&quot;)</b>
+<b class="fc">&nbsp;public record GutendexResponse(</b>
+&nbsp;		@JsonProperty(&quot;count&quot;) long count,
+&nbsp;		@JsonProperty(&quot;next&quot;) @Nullable String next,
+&nbsp;		@JsonProperty(&quot;previous&quot;) @Nullable String previous,
+&nbsp;		@JsonProperty(&quot;results&quot;) List&lt;Book&gt; results
+&nbsp;) {
+<b class="fc">&nbsp;	public record Book(</b>
+&nbsp;			@JsonProperty(&quot;id&quot;) long id,
+&nbsp;			@JsonProperty(&quot;title&quot;) String title,
+&nbsp;			@JsonProperty(&quot;subjects&quot;) List&lt;String&gt; subjects,
+&nbsp;			@JsonProperty(&quot;authors&quot;) List&lt;Person&gt; authors,
+&nbsp;			@JsonProperty(&quot;summaries&quot;) List&lt;String&gt; summaries,
+&nbsp;			@JsonProperty(&quot;editors&quot;) List&lt;Person&gt; editors,
+&nbsp;			@JsonProperty(&quot;translators&quot;) List&lt;Person&gt; translators,
+&nbsp;			@JsonProperty(&quot;bookshelves&quot;) List&lt;String&gt; bookshelves,
+&nbsp;			@JsonProperty(&quot;languages&quot;) List&lt;String&gt; languages,
+&nbsp;			@JsonProperty(&quot;copyright&quot;) @Nullable Boolean copyright,
+&nbsp;			@JsonProperty(&quot;media_type&quot;) String mediaType,
+&nbsp;			@JsonProperty(&quot;formats&quot;) Map&lt;String, String&gt; formats,
+&nbsp;			// &lt;string of MIME-type&gt;: &lt;string of URL&gt;
+&nbsp;			@JsonProperty(&quot;download_count&quot;) long downloadCount
+&nbsp;	) {
+&nbsp;		public String authorString() {
+<b class="fc">&nbsp;			final var ret = authors.stream().map(Person::name).collect(Collectors.joining(&quot;; &quot;));</b>
+<b class="fc">&nbsp;			return ret.isBlank() ? &quot;(no authors)&quot; : ret;</b>
+&nbsp;		}
+&nbsp;
+&nbsp;		public String bookshelvesString() {
+<b class="fc">&nbsp;			final var ret = String.join(&quot;; &quot;, bookshelves);</b>
+<b class="fc">&nbsp;			return ret.isBlank() ? &quot;(no bookshelves)&quot; : ret;</b>
+&nbsp;		}
+&nbsp;
+&nbsp;		public String summariesString() {
+<b class="fc">&nbsp;			final var ret = String.join(&quot;\n\n&quot;, summaries);</b>
+<b class="fc">&nbsp;			return ret.isBlank() ? &quot;(no summary)&quot; : ret;</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+<b class="fc">&nbsp;	public record Person(</b>
+&nbsp;			@JsonProperty(&quot;birth_year&quot;) @Nullable Integer birthYear,
+&nbsp;			@JsonProperty(&quot;death_year&quot;) @Nullable Integer deathYear,
+&nbsp;			@JsonProperty(&quot;name&quot;) String name
+&nbsp;	) {
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,286 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ManageUsersController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.controllers.librarian</a>
+</div>
+
+<h1>Coverage Summary for Class: ManageUsersController (library.controllers.librarian)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ManageUsersController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (19/19)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ManageUsersController$Data</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (2/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    81.8%
+  </span>
+  <span class="absValue">
+    (9/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (9/18)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ManageUsersController$Keys</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    72.7%
+  </span>
+  <span class="absValue">
+    (8/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    81.8%
+  </span>
+  <span class="absValue">
+    (9/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    79.1%
+  </span>
+  <span class="absValue">
+    (34/43)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.controllers.librarian;
+&nbsp;
+&nbsp;import javafx.beans.property.ReadOnlyStringWrapper;
+&nbsp;import javafx.fxml.Initializable;
+&nbsp;import javafx.scene.control.TableColumn;
+&nbsp;import javafx.scene.control.TableView;
+&nbsp;import library.Main;
+&nbsp;import library.controllers.common.DynamicTableController;
+&nbsp;import library.controllers.common.LoadsData;
+&nbsp;import library.controllers.common.RequiresLoggedIn;
+&nbsp;import library.controls.ManageUsersControl;
+&nbsp;import library.models.User;
+&nbsp;import library.persistence.TransactionException;
+&nbsp;import library.utils.Alerts;
+&nbsp;import library.utils.Tuple2;
+&nbsp;import lombok.With;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;import org.jetbrains.annotations.UnknownNullability;
+&nbsp;
+&nbsp;import java.net.URL;
+&nbsp;import java.util.LinkedHashMap;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;import java.util.function.Function;
+&nbsp;
+<b class="fc">&nbsp;public final class ManageUsersController implements RequiresLoggedIn, Initializable, LoadsData {</b>
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public TableView&lt;@Nullable Data&gt; table;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public DynamicTableController&lt;Keys, Data&gt; tableController;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public TableColumn&lt;Data, @Nullable Data&gt; usernameCol, roleCol, nameCol, activeCol, actionsCol;
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+<b class="fc">&nbsp;		final var keys = new LinkedHashMap&lt;Keys, TableColumn&lt;Data, @Nullable Data&gt;&gt;();</b>
+<b class="fc">&nbsp;		keys.put(Keys.USERNAME, usernameCol);</b>
+<b class="fc">&nbsp;		keys.put(Keys.ROLE, roleCol);</b>
+<b class="fc">&nbsp;		keys.put(Keys.NAME, nameCol);</b>
+<b class="fc">&nbsp;		keys.put(Keys.ACTIVE, activeCol);</b>
+<b class="fc">&nbsp;		keys.put(Keys.ACTIONS, actionsCol);</b>
+<b class="fc">&nbsp;		tableController = new DynamicTableController&lt;&gt;(table, keys);</b>
+<b class="fc">&nbsp;		table.getSortOrder().add(usernameCol);</b>
+&nbsp;
+<b class="fc">&nbsp;		LoadsData.super.initialize(location, resources);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void loadData() {
+<b class="fc">&nbsp;		tableController.setData(Main.getContext()</b>
+<b class="fc">&nbsp;				.getRepository()</b>
+&nbsp;				.userOps
+<b class="fc">&nbsp;				.read()</b>
+<b class="fc">&nbsp;				.entrySet()</b>
+<b class="fc">&nbsp;				.stream()</b>
+<b class="fc">&nbsp;				.map(entry -&gt; new Data(</b>
+&nbsp;						this,
+<b class="fc">&nbsp;						entry.getKey(),</b>
+<b class="fc">&nbsp;						entry.getValue()))</b>
+<b class="fc">&nbsp;				.toList());</b>
+&nbsp;	}
+&nbsp;
+<b class="fc">&nbsp;	public enum Keys {</b>
+<b class="fc">&nbsp;		USERNAME,</b>
+<b class="fc">&nbsp;		ROLE,</b>
+<b class="fc">&nbsp;		NAME,</b>
+<b class="fc">&nbsp;		ACTIVE,</b>
+<b class="fc">&nbsp;		ACTIONS</b>
+&nbsp;	}
+&nbsp;
+<b class="nc">&nbsp;	@With</b>
+<b class="fc">&nbsp;	public record Data(ManageUsersController controller,</b>
+&nbsp;	                   User user,
+&nbsp;	                   User.Data userData)
+&nbsp;			implements Function&lt;Keys, DynamicTableController.Data&gt; {
+&nbsp;
+&nbsp;		/**
+&nbsp;		 * Applies this function to the given argument.
+&nbsp;		 *
+&nbsp;		 * @param key the function argument
+&nbsp;		 * @return the function result
+&nbsp;		 */
+&nbsp;		@Override
+&nbsp;		public DynamicTableController.Data apply(Keys key) {
+<b class="pc">&nbsp;			return switch (key) {</b>
+<b class="fc">&nbsp;				case USERNAME -&gt; new DynamicTableController.Data.Text(user.username());</b>
+<b class="fc">&nbsp;				case ROLE -&gt; new DynamicTableController.Data.Text(userData.role().name);</b>
+<b class="fc">&nbsp;				case NAME -&gt; new DynamicTableController.Data.Text(userData.fullName());</b>
+<b class="fc">&nbsp;				case ACTIVE -&gt; new DynamicTableController.Data.Text(String.valueOf(userData.active()));</b>
+&nbsp;				case ACTIONS -&gt;
+<b class="fc">&nbsp;						user.equals(controller.getLoggedInUser()._1()) ? DynamicTableController.Data.Graphic.ofButtons() : DynamicTableController.Data.Graphic.ofButtons(</b>
+<b class="fc">&nbsp;								userData.active() ? new Tuple2&lt;&gt;(new ReadOnlyStringWrapper(&quot;Deactivate&quot;), (_, _) -&gt; {</b>
+&nbsp;									try {
+<b class="nc">&nbsp;										switch (Main.getContext().getManageUsersControl().deactivateUser(user)) {</b>
+<b class="nc">&nbsp;											case ManageUsersControl.DeactivateResult.Success(final var data) -&gt;</b>
+<b class="nc">&nbsp;													controller.tableController.replaceDatum(this, withUserData(data));</b>
+&nbsp;										}
+&nbsp;									} catch (TransactionException e) {
+<b class="nc">&nbsp;										Alerts.showErrorDialog(e.getLocalizedMessage());</b>
+&nbsp;									}
+<b class="fc">&nbsp;								}) : new Tuple2&lt;&gt;(new ReadOnlyStringWrapper(&quot;Activate&quot;), (_, _) -&gt; {</b>
+&nbsp;									try {
+<b class="nc">&nbsp;										switch (Main.getContext().getManageUsersControl().activateUser(user)) {</b>
+<b class="nc">&nbsp;											case ManageUsersControl.ActivateResult.Success(final var data) -&gt;</b>
+<b class="nc">&nbsp;													controller.tableController.replaceDatum(this, withUserData(data));</b>
+&nbsp;										}
+&nbsp;									} catch (TransactionException e) {
+<b class="nc">&nbsp;										Alerts.showErrorDialog(e.getLocalizedMessage());</b>
+&nbsp;									}
+&nbsp;								})
+&nbsp;						);
+&nbsp;			};
+&nbsp;		}
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

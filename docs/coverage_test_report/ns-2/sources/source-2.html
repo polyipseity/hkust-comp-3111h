@@ -1,0 +1,225 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > LoginController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.controllers</a>
+</div>
+
+<h1>Coverage Summary for Class: LoginController (library.controllers)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LoginController</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (2/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    22.2%
+  </span>
+  <span class="absValue">
+    (4/18)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">LoginController$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    33.3%
+  </span>
+  <span class="absValue">
+    (2/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    21.1%
+  </span>
+  <span class="absValue">
+    (4/19)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.controllers;
+&nbsp;
+&nbsp;import javafx.fxml.Initializable;
+&nbsp;import javafx.scene.control.Label;
+&nbsp;import javafx.scene.control.PasswordField;
+&nbsp;import javafx.scene.control.TextField;
+&nbsp;import library.FXMLs;
+&nbsp;import library.Main;
+&nbsp;import library.controllers.common.RequiresLoggedOut;
+&nbsp;import library.controls.ManageProfileControl;
+&nbsp;import library.models.User;
+&nbsp;import library.utils.Alerts;
+&nbsp;import library.utils.HasMessage;
+&nbsp;import library.utils.Tuple2;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;import org.jetbrains.annotations.UnknownNullability;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.net.URL;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;
+&nbsp;@RequiredArgsConstructor
+&nbsp;public final class LoginController implements RequiresLoggedOut, Initializable {
+&nbsp;	public final User.Role role;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public Label headerLabel;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public TextField usernameField;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public PasswordField passwordField;
+&nbsp;
+&nbsp;	@SuppressWarnings(&quot;unused&quot;) // for testing
+<b class="fc">&nbsp;	private LoginController() {</b>
+<b class="fc">&nbsp;		this.role = User.Role.values()[0];</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+<b class="fc">&nbsp;		RequiresLoggedOut.super.initialize(location, resources);</b>
+<b class="fc">&nbsp;		headerLabel.setText(&quot;%s Login&quot;.formatted(role.nameCapitalized));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void login() throws IOException {
+<b class="nc">&nbsp;		String username = usernameField.getText();</b>
+<b class="nc">&nbsp;		String password = passwordField.getText();</b>
+&nbsp;
+<b class="nc">&nbsp;		final var context = Main.getContext();</b>
+<b class="nc">&nbsp;		switch (context.getManageProfileControl().login(role, username, password)) {</b>
+<b class="nc">&nbsp;			case ManageProfileControl.LoginResult.Success(final var user, final var data) -&gt; {</b>
+<b class="nc">&nbsp;				context.setLoggedInUser(new Tuple2&lt;&gt;(user, data));</b>
+<b class="nc">&nbsp;				Main.getContext().setScene((switch (role) {</b>
+<b class="nc">&nbsp;					case STUDENT_STAFF -&gt; FXMLs.STUDENT_STAFF_DASHBOARD;</b>
+<b class="nc">&nbsp;					case AUTHOR -&gt; FXMLs.AUTHOR_DASHBOARD;</b>
+<b class="nc">&nbsp;					case LIBRARIAN -&gt; FXMLs.LIBRARIAN_DASHBOARD;</b>
+<b class="nc">&nbsp;				}).load());</b>
+&nbsp;			}
+<b class="nc">&nbsp;			case HasMessage ret -&gt; Alerts.showErrorDialog(ret.getLocalizedMessage());</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	public void goToHome() throws IOException {
+<b class="nc">&nbsp;		Main.getContext().setScene(FXMLs.HOME.load());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * New: navigate to the standalone Register screen
+&nbsp;	 */
+&nbsp;	public void goToRegister() throws IOException {
+<b class="nc">&nbsp;		Main.getContext().setScene(FXMLs.REGISTER.load(loader -&gt; loader.setControllerFactory(_ -&gt; new RegisterController(role))));</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>
