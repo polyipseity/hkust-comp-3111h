@@ -303,7 +303,7 @@ class BorrowControlTest {
         repository.bookOps.create(approvedBook, approvedData);
         repository.bookOps.create(rejectedBook, rejectedData);
 
-        Map<Book, Book.Data> result = borrowBooksControl.getBorrowableBooks(student);
+	    Map<Book, Book.Data> result = borrowBooksControl.getBorrowableBooks(repository.borrowOps.read(student).keySet());
 
         // Should only contain approved books
         assertEquals(1, result.size());
@@ -336,7 +336,7 @@ class BorrowControlTest {
         // Borrow one book
         borrowBooksControl.borrowBook(student, approvedBook1, 10, 0);
 
-        Map<Book, Book.Data> result = borrowBooksControl.getBorrowableBooks(student);
+	    Map<Book, Book.Data> result = borrowBooksControl.getBorrowableBooks(repository.borrowOps.read(student).keySet());
 
         // Should only contain the non-borrowed approved book
         assertEquals(1, result.size());
@@ -365,7 +365,7 @@ class BorrowControlTest {
         repository.bookOps.create(pendingBook, pendingData);
         repository.bookOps.create(rejectedBook, rejectedData);
 
-        Map<Book, Book.Data> result = borrowBooksControl.getBorrowableBooks(student);
+	    Map<Book, Book.Data> result = borrowBooksControl.getBorrowableBooks(repository.borrowOps.read(student).keySet());
 
         assertTrue(result.isEmpty());
     }

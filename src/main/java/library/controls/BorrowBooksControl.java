@@ -17,6 +17,7 @@ import org.openpdf.text.pdf.PdfWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.time.Duration;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -72,14 +73,13 @@ public record BorrowBooksControl(Repository repository) {
     /**
      * Gets borrowable books.
      *
-     * @param user the user
+     * @param borrowedBooks currently borrowed books by a user
      * @return the borrowable books
      */
-    public Map<Book, Book.Data> getBorrowableBooks(User user) {
+    public Map<Book, Book.Data> getBorrowableBooks(Collection<Book> borrowedBooks) {
 		final var publishedBooks = repository.bookOps.read(entry -> entry.getValue().published());
-		final var borrowedBooks = repository.borrowOps.read(user);
 		return publishedBooks.entrySet().stream()
-				.filter(book -> !borrowedBooks.containsKey(book.getKey()))
+				.filter(book -> !borrowedBooks.contains(book.getKey()))
 				.collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 

@@ -114,16 +114,16 @@ public final class AvailableBooksController implements RequiresLoggedIn, Initial
 		final var context = Main.getContext();
 		final var repository = context.getRepository();
 
-		activeBorrows.clear();
-		activeBorrows.putAll(repository.borrowOps.read(getLoggedInUser()._1()));
-
+		final var activeBorrows2 = repository.borrowOps.read(getLoggedInUser()._1());
 		tableController.setData(context.getBorrowBooksControl()
-				.getBorrowableBooks(getLoggedInUser()._1())
+				.getBorrowableBooks(activeBorrows2.keySet())
 				.entrySet()
 				.stream()
 				.map(entry ->
 						new Data(this, entry.getKey(), entry.getValue(), repository.userOps.readFullName(entry.getKey().author())))
 				.toList());
+		activeBorrows.clear();
+		activeBorrows.putAll(activeBorrows2);
 	}
 
     /**
