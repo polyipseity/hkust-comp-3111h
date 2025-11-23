@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.util.Callback;
+import library.Main;
 import library.utils.Tuple2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -51,12 +52,25 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 		}
 	}
 
-	@SuppressWarnings("UnusedReturnValue")
+	@SuppressWarnings({"UnusedReturnValue", "unchecked"})
 	public boolean setData(Collection<Value> data) {
 		final var items = table.getItems();
 		final var removed = items.removeIf(Predicate.not(data::contains)); // Remove obsolete items
 		// Add new items
 		if (items.addAll(data.stream().filter(Predicate.not(items::contains)).toList())) {
+			if (Main.getContext().isTesting()) {
+				// Sort by all columns for testing...
+				final var sortOrder = table.getSortOrder();
+				final var oldSortOrder = sortOrder.stream().toList();
+				try {
+					for (final var column : table.getColumns()) {
+						sortOrder.setAll(column);
+						table.sort();
+					}
+				} finally {
+					sortOrder.setAll(oldSortOrder);
+				}
+			}
 			table.sort();
 			return true;
 		}
