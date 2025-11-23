@@ -13,7 +13,6 @@ import org.mapdb.DBMaker;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -93,6 +92,21 @@ class ManageBooksControlTest {
     }
 
     @Test
+    void approveBook_approvedBook() throws TransactionException {
+        // Create author
+        User author = new User("author1");
+        User.Data authorData = new User.Data(User.Role.AUTHOR, true, "password", "Author One");
+        repository.userOps.create(author, authorData);
+
+        // Create original book
+        Book originalBook = new Book("Original Book", new Author.ByRef(author));
+        Book.Data originalData = new Book.Data("Old Summary", "Old Content", Book.ApprovalStatus.APPROVED, null, null, 5);
+        repository.bookOps.create(originalBook, originalData);
+
+        assertThrows(TransactionException.class, () -> manageBooksControl.approveBook(originalBook));
+    }
+
+    @Test
     void approveBook_Success_WithOriginalReference_NotTemporary() throws TransactionException {
         // Create author
         User author = new User("author1");
@@ -149,6 +163,21 @@ class ManageBooksControlTest {
         var notifications = Arrays.asList(repository.userNotificationOps.read(author).get());
         assertFalse(notifications.isEmpty());
         assertEquals("Your book 'Pending Book' has been rejected!", notifications.get(0));
+    }
+
+    @Test
+    void rejectBook_nonPending() throws TransactionException {
+        // Create author
+        User author = new User("author1");
+        User.Data authorData = new User.Data(User.Role.AUTHOR, true, "password", "Author One");
+        repository.userOps.create(author, authorData);
+
+        // Create pending book without original reference
+        Book book = new Book("Book", new Author.ByRef(author));
+        Book.Data data = new Book.Data("Summary", "Content", Book.ApprovalStatus.APPROVED, null, null, 0);
+        repository.bookOps.create(book, data);
+
+        assertThrows(TransactionException.class, () -> manageBooksControl.rejectBook(book));
     }
 
     @Test
