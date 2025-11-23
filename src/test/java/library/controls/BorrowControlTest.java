@@ -12,6 +12,8 @@ import org.mapdb.DBMaker;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;
 
@@ -22,7 +24,7 @@ class BorrowControlTest {
     private BorrowBooksControl borrowBooksControl;
 
     @BeforeEach
-    void setUp() throws TransactionException {
+    void setUp() {
         repository = new Repository(DBMaker.memoryDirectDB());
         borrowBooksControl = new BorrowBooksControl(repository);
     }
@@ -414,11 +416,14 @@ class BorrowControlTest {
         var result = borrowBooksControl.readBook(student, approvedBook);
 
         String pdfPath = ((BorrowBooksControl.ReadResult.NewPdfGenerated) result).getPath();
-
-        // Verify PDF was created and contains content
-        File pdfFile = new File(pdfPath);
-        assertTrue(pdfFile.exists());
-        assertTrue(pdfFile.length() > 0);
+	    try {
+		    // Verify PDF was created and contains content
+		    File pdfFile = new File(pdfPath);
+		    assertTrue(pdfFile.exists());
+		    assertTrue(pdfFile.length() > 0);
+	    } finally {
+		    Files.deleteIfExists(Path.of(pdfPath));
+	    }
     }
 
     @Test
