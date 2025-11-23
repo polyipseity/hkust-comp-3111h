@@ -1,0 +1,393 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > AvailableBooksController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.controllers.student_staff</a>
+</div>
+
+<h1>Coverage Summary for Class: AvailableBooksController (library.controllers.student_staff)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AvailableBooksController</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (4/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    41.7%
+  </span>
+  <span class="absValue">
+    (30/72)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">AvailableBooksController$Data</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    83.3%
+  </span>
+  <span class="absValue">
+    (5/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    88.9%
+  </span>
+  <span class="absValue">
+    (8/9)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">AvailableBooksController$dialogResult</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">AvailableBooksController$Keys</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    61.5%
+  </span>
+  <span class="absValue">
+    (8/13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    19.2%
+  </span>
+  <span class="absValue">
+    (5/26)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    49.4%
+  </span>
+  <span class="absValue">
+    (43/87)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.controllers.student_staff;
+&nbsp;
+&nbsp;import javafx.fxml.Initializable;
+&nbsp;import javafx.scene.Node;
+&nbsp;import javafx.scene.control.*;
+&nbsp;import javafx.scene.layout.GridPane;
+&nbsp;import javafx.scene.text.Text;
+&nbsp;import library.Main;
+&nbsp;import library.controllers.common.DynamicTableController;
+&nbsp;import library.controllers.common.LoadsData;
+&nbsp;import library.controllers.common.RequiresLoggedIn;
+&nbsp;import library.controls.BorrowBooksControl;
+&nbsp;import library.models.Book;
+&nbsp;import library.models.Borrow;
+&nbsp;import library.persistence.TransactionException;
+&nbsp;import library.utils.Alerts;
+&nbsp;import library.utils.HasMessage;
+&nbsp;import library.utils.TimeUtil;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;import org.jetbrains.annotations.UnknownNullability;
+&nbsp;
+&nbsp;import java.net.URL;
+&nbsp;import java.util.*;
+&nbsp;import java.util.function.Function;
+&nbsp;
+<b class="fc">&nbsp;public final class AvailableBooksController implements RequiresLoggedIn, Initializable, LoadsData {</b>
+<b class="fc">&nbsp;	private final Map&lt;Book, Borrow&gt; activeBorrows = new HashMap&lt;&gt;();</b>
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public TableView&lt;@Nullable Data&gt; table;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public DynamicTableController&lt;Keys, Data&gt; tableController;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public TableColumn&lt;Data, @Nullable Data&gt; titleCol, authorCol, publishDateCol, summaryCol;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public Node sidebar;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public Text titleText, authorText, publishDateText, summaryText;
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+<b class="fc">&nbsp;		final var keys = new LinkedHashMap&lt;Keys, TableColumn&lt;Data, @Nullable Data&gt;&gt;();</b>
+<b class="fc">&nbsp;		keys.put(Keys.TITLE, titleCol);</b>
+<b class="fc">&nbsp;		keys.put(Keys.AUTHOR_FULL_NAME, authorCol);</b>
+<b class="fc">&nbsp;		keys.put(Keys.PUBLISH_DATE, publishDateCol);</b>
+<b class="fc">&nbsp;		keys.put(Keys.SUMMARY, summaryCol);</b>
+<b class="fc">&nbsp;		tableController = new DynamicTableController&lt;&gt;(table, keys);</b>
+<b class="fc">&nbsp;		publishDateCol.setSortType(TableColumn.SortType.DESCENDING);</b>
+<b class="fc">&nbsp;		table.getSortOrder().add(publishDateCol);</b>
+&nbsp;
+<b class="fc">&nbsp;		LoadsData.super.initialize(location, resources);</b>
+&nbsp;
+<b class="fc">&nbsp;		final var selectedItem = table.getSelectionModel().selectedItemProperty();</b>
+<b class="pc">&nbsp;		titleText.textProperty().bind(selectedItem.map(item -&gt; item == null ? &quot;&quot; : item.book.title()).orElse(&quot;&quot;).orElse(&quot;&quot;));</b>
+<b class="pc">&nbsp;		authorText.textProperty().bind(selectedItem.map(item -&gt; item == null ? &quot;&quot; : item.authorFullName).orElse(&quot;&quot;).orElse(&quot;&quot;));</b>
+<b class="pc">&nbsp;		publishDateText.textProperty().bind(selectedItem.map(item -&gt; item == null || item.bookData.publishDate() == null ? &quot;&quot; : TimeUtil.toStringZonedLocal(item.bookData.publishDate())).orElse(&quot;&quot;).orElse(&quot;&quot;));</b>
+<b class="pc">&nbsp;		summaryText.textProperty().bind(selectedItem.map(item -&gt; item == null ? &quot;&quot; : item.bookData.summary()).orElse(&quot;&quot;).orElse(&quot;&quot;));</b>
+&nbsp;
+<b class="fc">&nbsp;		final var context = Main.getContext();</b>
+<b class="fc">&nbsp;		final var repository = context.getRepository();</b>
+<b class="fc">&nbsp;		context.addSecondTimelineListener(getLoggedInToken(), _ -&gt; activeBorrows.entrySet().removeIf(entry -&gt; {</b>
+<b class="nc">&nbsp;			if (!entry.getValue().expired()) return false;</b>
+<b class="nc">&nbsp;			final var key = entry.getKey();</b>
+<b class="nc">&nbsp;			final var value = repository.bookOps.read(key);</b>
+<b class="nc">&nbsp;			value.ifPresent(val -&gt; tableController.addDatum(new Data(this, key, val, repository.userOps.readFullName(key.author()))));</b>
+<b class="nc">&nbsp;			return true;</b>
+&nbsp;		}));
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void loadData() {
+<b class="fc">&nbsp;		final var context = Main.getContext();</b>
+<b class="fc">&nbsp;		final var repository = context.getRepository();</b>
+&nbsp;
+<b class="fc">&nbsp;		activeBorrows.clear();</b>
+<b class="fc">&nbsp;		activeBorrows.putAll(repository.borrowOps.read(getLoggedInUser()._1()));</b>
+&nbsp;
+<b class="fc">&nbsp;		tableController.setData(context.getBorrowBooksControl()</b>
+<b class="fc">&nbsp;				.getBorrowableBooks(getLoggedInUser()._1())</b>
+<b class="fc">&nbsp;				.entrySet()</b>
+<b class="fc">&nbsp;				.stream()</b>
+<b class="fc">&nbsp;				.map(entry -&gt;</b>
+<b class="fc">&nbsp;						new Data(this, entry.getKey(), entry.getValue(), repository.userOps.readFullName(entry.getKey().author())))</b>
+<b class="fc">&nbsp;				.toList());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Runs each time the &quot;Borrow Book&quot; button is pressed.
+&nbsp;	 */
+&nbsp;	public void borrowSelectedBook() {
+<b class="nc">&nbsp;		final var context = Main.getContext();</b>
+<b class="nc">&nbsp;		final var currentRow = table.getSelectionModel().getSelectedItem();</b>
+<b class="nc">&nbsp;		if (currentRow == null) {</b>
+<b class="nc">&nbsp;			Alerts.showErrorDialog(&quot;Please select a book first.&quot;);</b>
+&nbsp;			return;
+&nbsp;		}
+<b class="nc">&nbsp;		final var selectedBook = currentRow.book;</b>
+&nbsp;
+&nbsp;		// Try to get the borrow duration for the book
+<b class="nc">&nbsp;		Dialog&lt;@Nullable dialogResult&gt; dialog = createDialog();</b>
+<b class="nc">&nbsp;		Optional&lt;dialogResult&gt; result = dialog.showAndWait();</b>
+<b class="nc">&nbsp;		if (result.isEmpty()) return; // Exit if user clicks &quot;Cancel&quot;</b>
+&nbsp;
+&nbsp;		// Parse results from input dialog
+&nbsp;		int minutes, seconds;
+&nbsp;		try {
+<b class="nc">&nbsp;			minutes = Integer.parseInt(result.get().minutes);</b>
+<b class="nc">&nbsp;			seconds = Integer.parseInt(result.get().seconds);</b>
+&nbsp;		} catch (NumberFormatException e) {
+<b class="nc">&nbsp;			Alerts.showErrorDialog(&quot;Entered values could not be parsed correctly.&quot;);</b>
+&nbsp;			return;
+&nbsp;		}
+&nbsp;
+&nbsp;
+&nbsp;		try {
+<b class="nc">&nbsp;			switch (context.getBorrowBooksControl().borrowBook(getLoggedInUser()._1(), selectedBook, minutes, seconds)) {</b>
+<b class="nc">&nbsp;				case BorrowBooksControl.BorrowResult.Success(final var borrow) -&gt; {</b>
+<b class="nc">&nbsp;					Alerts.showInfoDialog(&quot;Book borrowed successfully&quot;);</b>
+&nbsp;					// Only after showing the info dialog, change the UI
+<b class="nc">&nbsp;					tableController.removeDatum(currentRow);</b>
+<b class="nc">&nbsp;					activeBorrows.put(selectedBook, borrow); // Placed afterwards, in case it expired quickly</b>
+&nbsp;				}
+<b class="nc">&nbsp;				case HasMessage ret -&gt; Alerts.showErrorDialog(ret.getLocalizedMessage());</b>
+&nbsp;			}
+&nbsp;		} catch (TransactionException e) {
+<b class="nc">&nbsp;			Alerts.showErrorDialog(e.getLocalizedMessage());</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * @return A properly configured input dialog for entering the borrowing duration.
+&nbsp;	 */
+&nbsp;	private Dialog&lt;@Nullable dialogResult&gt; createDialog() {
+<b class="nc">&nbsp;		Dialog&lt;@Nullable dialogResult&gt; dialog = new Dialog&lt;&gt;();</b>
+<b class="nc">&nbsp;		dialog.setTitle(&quot;Borrow Duration&quot;);</b>
+<b class="nc">&nbsp;		dialog.setHeaderText(&quot;Please enter the borrowing duration (minutes and seconds).&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;		TextField minutesTextField = new TextField();</b>
+<b class="nc">&nbsp;		TextField secondsTextField = new TextField();</b>
+&nbsp;
+<b class="nc">&nbsp;		GridPane grid = new GridPane();</b>
+<b class="nc">&nbsp;		grid.add(new Label(&quot;Minutes:&quot;), 0, 0);</b>
+<b class="nc">&nbsp;		grid.add(new Label(&quot;Seconds:&quot;), 0, 1);</b>
+<b class="nc">&nbsp;		grid.add(minutesTextField, 1, 0);</b>
+<b class="nc">&nbsp;		grid.add(secondsTextField, 1, 1);</b>
+<b class="nc">&nbsp;		grid.setHgap(10);</b>
+<b class="nc">&nbsp;		grid.setVgap(10);</b>
+<b class="nc">&nbsp;		dialog.getDialogPane().setContent(grid);</b>
+&nbsp;
+<b class="nc">&nbsp;		ButtonType buttonTypeOk = new ButtonType(&quot;OK&quot;, ButtonBar.ButtonData.OK_DONE);</b>
+<b class="nc">&nbsp;		ButtonType buttonTypeCancel = new ButtonType(&quot;Cancel&quot;, ButtonBar.ButtonData.CANCEL_CLOSE);</b>
+<b class="nc">&nbsp;		dialog.getDialogPane().getButtonTypes().addAll(buttonTypeOk, buttonTypeCancel);</b>
+<b class="nc">&nbsp;		dialog.setResultConverter(b -&gt;</b>
+<b class="nc">&nbsp;				b == buttonTypeOk ? new dialogResult(minutesTextField.getText(), secondsTextField.getText()) : null);</b>
+&nbsp;
+<b class="nc">&nbsp;		return dialog;</b>
+&nbsp;	}
+&nbsp;
+<b class="fc">&nbsp;	public enum Keys {</b>
+<b class="fc">&nbsp;		TITLE,</b>
+<b class="fc">&nbsp;		AUTHOR_FULL_NAME,</b>
+<b class="fc">&nbsp;		PUBLISH_DATE,</b>
+<b class="fc">&nbsp;		SUMMARY</b>
+&nbsp;	}
+&nbsp;
+<b class="nc">&nbsp;	public record dialogResult(String minutes, String seconds) {</b>
+&nbsp;	}
+&nbsp;
+<b class="fc">&nbsp;	public record Data(AvailableBooksController controller,</b>
+&nbsp;	                   Book book,
+&nbsp;	                   Book.Data bookData,
+&nbsp;	                   String authorFullName)
+&nbsp;			implements Function&lt;Keys, DynamicTableController.Data&gt; {
+&nbsp;		/**
+&nbsp;		 * Applies this function to the given argument.
+&nbsp;		 *
+&nbsp;		 * @param key the function argument
+&nbsp;		 * @return the function result
+&nbsp;		 */
+&nbsp;		@Override
+&nbsp;		public DynamicTableController.Data apply(Keys key) {
+<b class="pc">&nbsp;			return switch (key) {</b>
+<b class="fc">&nbsp;				case TITLE -&gt; new DynamicTableController.Data.Text(book.title());</b>
+<b class="fc">&nbsp;				case AUTHOR_FULL_NAME -&gt; new DynamicTableController.Data.Text(authorFullName);</b>
+<b class="fc">&nbsp;				case PUBLISH_DATE -&gt; new DynamicTableController.Data.Text(</b>
+<b class="pc">&nbsp;						bookData.publishDate() == null</b>
+<b class="nc">&nbsp;								? &quot;&quot;</b>
+<b class="fc">&nbsp;								: TimeUtil.toStringZonedLocal(bookData.publishDate()), bookData.publishDate());</b>
+<b class="fc">&nbsp;				case SUMMARY -&gt; new DynamicTableController.Data.Text(bookData.summary());</b>
+&nbsp;			};
+&nbsp;		}
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

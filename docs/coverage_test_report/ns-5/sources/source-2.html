@@ -1,0 +1,288 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > BookRequestsController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.controllers.librarian</a>
+</div>
+
+<h1>Coverage Summary for Class: BookRequestsController (library.controllers.librarian)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BookRequestsController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (21/21)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">BookRequestsController$Data</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (2/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    71.4%
+  </span>
+  <span class="absValue">
+    (5/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    57.1%
+  </span>
+  <span class="absValue">
+    (8/14)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">BookRequestsController$Keys</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    80%
+  </span>
+  <span class="absValue">
+    (8/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    71.4%
+  </span>
+  <span class="absValue">
+    (5/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    85.4%
+  </span>
+  <span class="absValue">
+    (35/41)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.controllers.librarian;
+&nbsp;
+&nbsp;import javafx.beans.property.ReadOnlyStringWrapper;
+&nbsp;import javafx.fxml.Initializable;
+&nbsp;import javafx.scene.control.TableColumn;
+&nbsp;import javafx.scene.control.TableView;
+&nbsp;import library.Main;
+&nbsp;import library.controllers.common.DynamicTableController;
+&nbsp;import library.controllers.common.LoadsData;
+&nbsp;import library.controllers.common.RequiresLoggedIn;
+&nbsp;import library.controls.RequestBooksControl;
+&nbsp;import library.models.BookRequest;
+&nbsp;import library.models.User;
+&nbsp;import library.persistence.TransactionException;
+&nbsp;import library.utils.Alerts;
+&nbsp;import library.utils.TimeUtil;
+&nbsp;import library.utils.Tuple2;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;import org.jetbrains.annotations.UnknownNullability;
+&nbsp;
+&nbsp;import java.net.URL;
+&nbsp;import java.util.LinkedHashMap;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;import java.util.function.Function;
+&nbsp;
+<b class="fc">&nbsp;public final class BookRequestsController implements RequiresLoggedIn, Initializable, LoadsData {</b>
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public TableView&lt;@Nullable Data&gt; table;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public DynamicTableController&lt;Keys, Data&gt; tableController;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public TableColumn&lt;Data, @Nullable Data&gt; titleCol, authorCol, userCol, requestDateCol, actionsCol;
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+<b class="fc">&nbsp;		final var keys = new LinkedHashMap&lt;Keys, TableColumn&lt;Data, Data&gt;&gt;();</b>
+&nbsp;		// This is a placeholder - the original suggestion was invalid and should not be used
+<b class="fc">&nbsp;		keys.put(Keys.TITLE, titleCol);</b>
+<b class="fc">&nbsp;		keys.put(Keys.AUTHOR, authorCol);</b>
+<b class="fc">&nbsp;		keys.put(Keys.USER, userCol);</b>
+<b class="fc">&nbsp;		keys.put(Keys.REQUEST_DATE, requestDateCol);</b>
+<b class="fc">&nbsp;		keys.put(Keys.ACTIONS, actionsCol);</b>
+<b class="fc">&nbsp;		tableController = new DynamicTableController&lt;&gt;(table, keys);</b>
+<b class="fc">&nbsp;		requestDateCol.setSortType(TableColumn.SortType.DESCENDING);</b>
+<b class="fc">&nbsp;		table.getSortOrder().add(requestDateCol);</b>
+&nbsp;
+<b class="fc">&nbsp;		LoadsData.super.initialize(location, resources);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void loadData() {
+<b class="fc">&nbsp;		tableController.setData(Main.getContext()</b>
+<b class="fc">&nbsp;				.getRepository()</b>
+&nbsp;				.userBookRequestOps
+<b class="fc">&nbsp;				.read()</b>
+<b class="fc">&nbsp;				.entrySet()</b>
+<b class="fc">&nbsp;				.stream()</b>
+<b class="fc">&nbsp;				.map(entry -&gt; new Data(</b>
+&nbsp;						this,
+<b class="fc">&nbsp;						entry.getKey()._1(),</b>
+<b class="fc">&nbsp;						entry.getKey()._2(),</b>
+<b class="fc">&nbsp;						entry.getValue()))</b>
+<b class="fc">&nbsp;				.toList());</b>
+&nbsp;	}
+&nbsp;
+<b class="fc">&nbsp;	public enum Keys {</b>
+<b class="fc">&nbsp;		TITLE,</b>
+<b class="fc">&nbsp;		AUTHOR,</b>
+<b class="fc">&nbsp;		USER,</b>
+<b class="fc">&nbsp;		REQUEST_DATE,</b>
+<b class="fc">&nbsp;		ACTIONS</b>
+&nbsp;	}
+&nbsp;
+<b class="fc">&nbsp;	public record Data(BookRequestsController controller,</b>
+&nbsp;	                   User user,
+&nbsp;	                   BookRequest bookRequest,
+&nbsp;	                   BookRequest.Data bookRequestData)
+&nbsp;			implements Function&lt;Keys, DynamicTableController.Data&gt; {
+&nbsp;		/**
+&nbsp;		 * Applies this function to the given argument.
+&nbsp;		 *
+&nbsp;		 * @param key the function argument
+&nbsp;		 * @return the function result
+&nbsp;		 */
+&nbsp;		@Override
+&nbsp;		public DynamicTableController.Data apply(Keys key) {
+<b class="pc">&nbsp;			return switch (key) {</b>
+<b class="fc">&nbsp;				case TITLE -&gt; new DynamicTableController.Data.Text(bookRequest.title());</b>
+<b class="fc">&nbsp;				case AUTHOR -&gt; new DynamicTableController.Data.Text(bookRequest.author());</b>
+<b class="fc">&nbsp;				case USER -&gt; new DynamicTableController.Data.Text(user.username());</b>
+<b class="fc">&nbsp;				case REQUEST_DATE -&gt; new DynamicTableController.Data.Text(</b>
+<b class="fc">&nbsp;						TimeUtil.toStringZonedLocal(bookRequestData.requestDate()), bookRequestData.requestDate());</b>
+<b class="fc">&nbsp;				case ACTIONS -&gt; DynamicTableController.Data.Graphic.ofButtons(</b>
+&nbsp;						new Tuple2&lt;&gt;(new ReadOnlyStringWrapper(&quot;Confirm&quot;), (_, _) -&gt; {
+&nbsp;							try {
+<b class="nc">&nbsp;								switch (Main.getContext().getRequestBooksControl().approveRequest(user, bookRequest)) {</b>
+<b class="nc">&nbsp;									case RequestBooksControl.ApproveResult.Success _ -&gt; controller.tableController.removeDatum(this);</b>
+&nbsp;								}
+&nbsp;							} catch (TransactionException e) {
+<b class="nc">&nbsp;								Alerts.showErrorDialog(e.getLocalizedMessage());</b>
+&nbsp;							}
+&nbsp;						}),
+&nbsp;						new Tuple2&lt;&gt;(new ReadOnlyStringWrapper(&quot;Reject&quot;), (_, _) -&gt; {
+&nbsp;							try {
+<b class="nc">&nbsp;								switch (Main.getContext().getRequestBooksControl().rejectRequest(user, bookRequest)) {</b>
+<b class="nc">&nbsp;									case RequestBooksControl.RejectResult.Success _ -&gt; controller.tableController.removeDatum(this);</b>
+&nbsp;								}
+&nbsp;							} catch (TransactionException e) {
+<b class="nc">&nbsp;								Alerts.showErrorDialog(e.getLocalizedMessage());</b>
+&nbsp;							}
+&nbsp;						})
+&nbsp;				);
+&nbsp;			};
+&nbsp;		}
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

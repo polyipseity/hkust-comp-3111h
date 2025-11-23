@@ -1,0 +1,337 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > BookDownloadController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.controllers.librarian</a>
+</div>
+
+<h1>Coverage Summary for Class: BookDownloadController (library.controllers.librarian)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BookDownloadController</td>
+<td class="coverageStat">
+  <span class="percent">
+    30%
+  </span>
+  <span class="absValue">
+    (3/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    29.6%
+  </span>
+  <span class="absValue">
+    (16/54)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">BookDownloadController$Data</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">BookDownloadController$Keys</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    35.7%
+  </span>
+  <span class="absValue">
+    (5/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    29%
+  </span>
+  <span class="absValue">
+    (18/62)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.controllers.librarian;
+&nbsp;
+&nbsp;import javafx.application.Platform;
+&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+&nbsp;import javafx.fxml.Initializable;
+&nbsp;import javafx.scene.control.TableColumn;
+&nbsp;import javafx.scene.control.TableView;
+&nbsp;import javafx.scene.control.TextField;
+&nbsp;import javafx.scene.layout.Region;
+&nbsp;import javafx.scene.text.Text;
+&nbsp;import library.Main;
+&nbsp;import library.controllers.common.DynamicTableController;
+&nbsp;import library.controllers.common.RequiresLoggedIn;
+&nbsp;import library.controls.PublishBooksControl;
+&nbsp;import library.models.json.GutendexResponse;
+&nbsp;import library.persistence.TransactionException;
+&nbsp;import library.utils.Alerts;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;import org.jetbrains.annotations.UnknownNullability;
+&nbsp;
+&nbsp;import java.net.URL;
+&nbsp;import java.util.LinkedHashMap;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;import java.util.function.Function;
+&nbsp;
+<b class="fc">&nbsp;public final class BookDownloadController implements RequiresLoggedIn, Initializable {</b>
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public TableView&lt;@Nullable Data&gt; table;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public DynamicTableController&lt;Keys, Data&gt; tableController;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public TableColumn&lt;Data, @Nullable Data&gt; titleCol, authorCol, bookshelvesCol, summaryCol;
+&nbsp;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public TextField searchBar;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public Region sidebar;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public Text titleText, authorText, bookshelvesText, summaryText;
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+<b class="fc">&nbsp;		final var keys = new LinkedHashMap&lt;Keys, TableColumn&lt;Data, @Nullable Data&gt;&gt;();</b>
+<b class="fc">&nbsp;		keys.put(Keys.TITLE, titleCol);</b>
+<b class="fc">&nbsp;		keys.put(Keys.AUTHOR, authorCol);</b>
+<b class="fc">&nbsp;		keys.put(Keys.BOOKSHELVES, bookshelvesCol);</b>
+<b class="fc">&nbsp;		keys.put(Keys.SUMMARY, summaryCol);</b>
+<b class="fc">&nbsp;		tableController = new DynamicTableController&lt;&gt;(table, keys);</b>
+<b class="fc">&nbsp;		table.getSortOrder().add(titleCol);</b>
+&nbsp;
+<b class="fc">&nbsp;		RequiresLoggedIn.super.initialize(location, resources);</b>
+<b class="fc">&nbsp;		loadData();</b>
+&nbsp;
+<b class="fc">&nbsp;		final var selectedItem = table.getSelectionModel().selectedItemProperty();</b>
+<b class="pc">&nbsp;		titleText.textProperty().bind(selectedItem.map(item -&gt; item == null ? &quot;&quot; : item.book.title()).orElse(&quot;&quot;));</b>
+<b class="pc">&nbsp;		authorText.textProperty().bind(selectedItem.map(item -&gt; item == null ? &quot;&quot; : item.book.authorString()).orElse(&quot;&quot;));</b>
+<b class="pc">&nbsp;		bookshelvesText.textProperty().bind(selectedItem.map(item -&gt; item == null ? &quot;&quot; : item.book.bookshelvesString()).orElse(&quot;&quot;));</b>
+<b class="pc">&nbsp;		summaryText.textProperty().bind(selectedItem.map(item -&gt; item == null ? &quot;&quot; : item.book.summariesString()).orElse(&quot;&quot;));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@SuppressWarnings(&quot;EmptyMethod&quot;)
+&nbsp;	public void loadData() {
+&nbsp;		// noop
+<b class="fc">&nbsp;	}</b>
+&nbsp;
+&nbsp;	public void searchBooks() {
+<b class="nc">&nbsp;		final var startTime = System.currentTimeMillis();</b>
+<b class="nc">&nbsp;		final var searchFuture = Main.getContext().getBookDownloadControl().searchProjectGutenberg(searchBar.getText()).thenApply(results -&gt; results.stream().map(Data::new).toList());</b>
+&nbsp;
+&nbsp;		// Show not closeable dialog during search
+<b class="nc">&nbsp;		final var running = new SimpleBooleanProperty(true);</b>
+<b class="nc">&nbsp;		searchFuture.whenComplete((_, _) -&gt; Platform.runLater(() -&gt; running.set(false)));</b>
+<b class="nc">&nbsp;		if (!Alerts.showLoadingDialog(&quot;Searching for books...&quot;, running)) {</b>
+<b class="nc">&nbsp;			searchFuture.cancel(true);</b>
+&nbsp;			return;
+&nbsp;		}
+&nbsp;
+&nbsp;		// Handle completion of the future
+<b class="nc">&nbsp;		searchFuture.&lt;Runnable&gt;thenApply(data -&gt; {</b>
+<b class="nc">&nbsp;			final var endTime = System.currentTimeMillis();</b>
+<b class="nc">&nbsp;			return () -&gt; {</b>
+<b class="nc">&nbsp;				tableController.setData(data);</b>
+&nbsp;				// Show dialog with number of books found and time taken
+<b class="nc">&nbsp;				Alerts.showInfoDialog(&quot;Found %d books in %d ms&quot;.formatted(data.size(), endTime - startTime));</b>
+&nbsp;			};
+<b class="nc">&nbsp;		}).exceptionally(throwable -&gt; {</b>
+<b class="nc">&nbsp;			final var endTime = System.currentTimeMillis();</b>
+<b class="nc">&nbsp;			return () -&gt; Alerts.showErrorDialog(&quot;Search failed after %d ms: %s&quot;.formatted(endTime - startTime, throwable.getLocalizedMessage()));</b>
+<b class="nc">&nbsp;		}).thenAccept(Platform::runLater);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void downloadSelected() {
+<b class="nc">&nbsp;		final var context = Main.getContext();</b>
+<b class="nc">&nbsp;		switch (table.getSelectionModel().selectedItemProperty().get()) {</b>
+<b class="nc">&nbsp;			case null -&gt; Alerts.showErrorDialog(&quot;No books selected&quot;);</b>
+<b class="nc">&nbsp;			case Data(final var rawBook) -&gt; // Download the selected book</b>
+&nbsp;			{
+<b class="nc">&nbsp;				final var startTime = System.currentTimeMillis();</b>
+<b class="nc">&nbsp;				final var downloadFuture = context.getBookDownloadControl().downloadProjectGutenberg(rawBook).thenApply(content -&gt; context.getBookDownloadControl().newBook(rawBook, content));</b>
+&nbsp;
+&nbsp;				// Show not closeable dialog during download
+<b class="nc">&nbsp;				final var running = new SimpleBooleanProperty(true);</b>
+<b class="nc">&nbsp;				downloadFuture.whenComplete((_, _) -&gt; Platform.runLater(() -&gt; running.set(false)));</b>
+<b class="nc">&nbsp;				if (!Alerts.showLoadingDialog(&quot;Downloading book...&quot;, running)) {</b>
+<b class="nc">&nbsp;					downloadFuture.cancel(true);</b>
+&nbsp;					return;
+&nbsp;				}
+&nbsp;
+<b class="nc">&nbsp;				downloadFuture.&lt;Runnable&gt;thenApply(results -&gt; () -&gt; {</b>
+<b class="nc">&nbsp;					final var endTime = System.currentTimeMillis();</b>
+&nbsp;					try {
+<b class="nc">&nbsp;						switch (context.getPublishBooksControl().addBook(results._1(), results._2())) {</b>
+<b class="nc">&nbsp;							case PublishBooksControl.AddBookResult.AlreadyExists val -&gt; {</b>
+<b class="nc">&nbsp;								if (!Alerts.showConfirmDialog(&quot;%s\nOverwrite?&quot;.formatted(val.getLocalizedMessage()))) {</b>
+&nbsp;									return;
+&nbsp;								}
+<b class="nc">&nbsp;								switch (context.getPublishBooksControl().addBook(results._1(), results._2(), true)) {</b>
+<b class="nc">&nbsp;									case PublishBooksControl.AddBookResult.AlreadyExists _ -&gt; throw new AssertionError();</b>
+&nbsp;									case PublishBooksControl.AddBookResult.Success _ -&gt; {
+&nbsp;									}
+&nbsp;								}
+&nbsp;							}
+&nbsp;							case PublishBooksControl.AddBookResult.Success _ -&gt; {
+&nbsp;							}
+&nbsp;						}
+<b class="nc">&nbsp;						Alerts.showInfoDialog(&quot;Book downloaded in %d ms&quot;.formatted(endTime - startTime));</b>
+&nbsp;					} catch (TransactionException e) {
+<b class="nc">&nbsp;						Alerts.showErrorDialog(e.getLocalizedMessage());</b>
+&nbsp;					}
+<b class="nc">&nbsp;				}).exceptionally(throwable -&gt; {</b>
+<b class="nc">&nbsp;					final var endTime = System.currentTimeMillis();</b>
+<b class="nc">&nbsp;					return () -&gt; Alerts.showErrorDialog(&quot;Failed to download book in %d ms: %s&quot;.formatted(endTime - startTime, throwable.getLocalizedMessage()));</b>
+<b class="nc">&nbsp;				}).thenAccept(Platform::runLater);</b>
+&nbsp;			}
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+<b class="fc">&nbsp;	public enum Keys {</b>
+<b class="fc">&nbsp;		TITLE, AUTHOR, BOOKSHELVES, SUMMARY,</b>
+&nbsp;	}
+&nbsp;
+<b class="nc">&nbsp;	public record Data(</b>
+&nbsp;			GutendexResponse.Book book) implements Function&lt;Keys, DynamicTableController.Data&gt; {
+&nbsp;		@Override
+&nbsp;		public DynamicTableController.Data apply(Keys key) {
+<b class="nc">&nbsp;			return switch (key) {</b>
+<b class="nc">&nbsp;				case TITLE -&gt; new DynamicTableController.Data.Text(book.title());</b>
+<b class="nc">&nbsp;				case AUTHOR -&gt; new DynamicTableController.Data.Text(book.authorString());</b>
+<b class="nc">&nbsp;				case BOOKSHELVES -&gt; new DynamicTableController.Data.Text(book.bookshelvesString());</b>
+<b class="nc">&nbsp;				case SUMMARY -&gt; new DynamicTableController.Data.Text(book.summariesString());</b>
+&nbsp;			};
+&nbsp;		}
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

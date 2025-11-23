@@ -1,0 +1,160 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > FXMLs</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library</a>
+</div>
+
+<h1>Coverage Summary for Class: FXMLs (library)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FXMLs</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (4/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93.8%
+  </span>
+  <span class="absValue">
+    (30/32)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library;
+&nbsp;
+&nbsp;import javafx.fxml.FXMLLoader;
+&nbsp;import org.jetbrains.annotations.NotNull;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.net.URL;
+&nbsp;import java.util.Objects;
+&nbsp;import java.util.function.Consumer;
+&nbsp;
+<b class="fc">&nbsp;public enum FXMLs {</b>
+<b class="fc">&nbsp;	AUTHOR_DASHBOARD(&quot;/fxml/author/Dashboard.fxml&quot;),</b>
+<b class="fc">&nbsp;	AUTHOR_MY_BOOKS(&quot;/fxml/author/MyBooks.fxml&quot;),</b>
+<b class="fc">&nbsp;	AUTHOR_MODIFY_WINDOW(&quot;/fxml/author/ModifyWindow.fxml&quot;),</b>
+<b class="fc">&nbsp;	AUTHOR_PUBLISH_BOOKS(&quot;/fxml/author/PublishBooks.fxml&quot;),</b>
+<b class="fc">&nbsp;	AUTHOR_STATUS_VIEW(&quot;/fxml/author/StatusView.fxml&quot;),</b>
+<b class="fc">&nbsp;	COMMON_INFORM_BOARD(&quot;/fxml/common/InformBoard.fxml&quot;),</b>
+<b class="fc">&nbsp;	COMMON_MY_PROFILE(&quot;/fxml/common/MyProfile.fxml&quot;),</b>
+<b class="fc">&nbsp;	COMMON_NOTIFICATION_CELL(&quot;/fxml/common/NotificationCell.fxml&quot;),</b>
+<b class="fc">&nbsp;	COMMON_TEXT_VIEW(&quot;/fxml/common/TextView.fxml&quot;),</b>
+<b class="fc">&nbsp;	HOME(&quot;/fxml/Home.fxml&quot;),</b>
+<b class="fc">&nbsp;	LIBRARIAN_BOOK_DOWNLOAD(&quot;/fxml/librarian/BookDownload.fxml&quot;),</b>
+<b class="fc">&nbsp;	LIBRARIAN_BOOK_REQUESTS(&quot;/fxml/librarian/BookRequests.fxml&quot;),</b>
+<b class="fc">&nbsp;	LIBRARIAN_BORROWED_BOOKS(&quot;/fxml/librarian/BorrowedBooks.fxml&quot;),</b>
+<b class="fc">&nbsp;	LIBRARIAN_DASHBOARD(&quot;/fxml/librarian/Dashboard.fxml&quot;),</b>
+<b class="fc">&nbsp;	LIBRARIAN_MANAGE_USERS(&quot;/fxml/librarian/ManageUsers.fxml&quot;),</b>
+<b class="fc">&nbsp;	LIBRARIAN_PENDING_APPROVALS(&quot;/fxml/librarian/PendingApprovals.fxml&quot;),</b>
+<b class="fc">&nbsp;	LIBRARIAN_PUBLISHED_BOOKS(&quot;/fxml/librarian/PublishedBooks.fxml&quot;),</b>
+<b class="fc">&nbsp;	LOGIN(&quot;/fxml/Login.fxml&quot;),</b>
+<b class="fc">&nbsp;	REGISTER(&quot;/fxml/Register.fxml&quot;),</b>
+<b class="fc">&nbsp;	STUDENT_STAFF_BOOK_VIEW(&quot;/fxml/student_staff/BookView.fxml&quot;),</b>
+<b class="fc">&nbsp;	STUDENT_STAFF_BORROWED_BOOKS(&quot;/fxml/student_staff/BorrowedBooks.fxml&quot;),</b>
+<b class="fc">&nbsp;	STUDENT_STAFF_DASHBOARD(&quot;/fxml/student_staff/Dashboard.fxml&quot;),</b>
+<b class="fc">&nbsp;	STUDENT_STAFF_AVAILABLE_BOOKS(&quot;/fxml/student_staff/AvailableBooks.fxml&quot;),</b>
+<b class="fc">&nbsp;	STUDENT_STAFF_REQUEST_BOOK(&quot;/fxml/student_staff/RequestBook.fxml&quot;),</b>
+&nbsp;	;
+&nbsp;
+&nbsp;	public final URL resource;
+&nbsp;
+<b class="fc">&nbsp;	FXMLs(String name) {</b>
+<b class="fc">&nbsp;		this.resource = Objects.requireNonNull(getClass().getResource(name));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@NotNull
+&nbsp;	public &lt;T&gt; T load(Consumer&lt;FXMLLoader&gt; callback) throws IOException {
+<b class="fc">&nbsp;		final var loader = new FXMLLoader(resource);</b>
+<b class="fc">&nbsp;		callback.accept(loader);</b>
+<b class="fc">&nbsp;		return loader.load();</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@NotNull
+&nbsp;	public &lt;T&gt; T load() throws IOException {
+<b class="nc">&nbsp;		return load(_ -&gt; {</b>
+<b class="nc">&nbsp;		});</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

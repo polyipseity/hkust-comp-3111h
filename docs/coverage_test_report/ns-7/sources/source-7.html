@@ -1,0 +1,253 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > ManageUsersControl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.controls</a>
+</div>
+
+<h1>Coverage Summary for Class: ManageUsersControl (library.controls)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ManageUsersControl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (17/17)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ManageUsersControl$ActivateResult</td>
+  </tr>
+  <tr>
+    <td class="name">ManageUsersControl$ActivateResult$Success</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ManageUsersControl$DeactivateResult</td>
+  </tr>
+  <tr>
+    <td class="name">ManageUsersControl$DeactivateResult$Success</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (19/19)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.controls;
+&nbsp;
+&nbsp;import library.models.User;
+&nbsp;import library.persistence.Repository;
+&nbsp;import library.persistence.TransactionException;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;
+&nbsp;import java.util.Objects;
+&nbsp;import java.util.concurrent.atomic.AtomicReference;
+&nbsp;
+<b class="fc">&nbsp;public record ManageUsersControl(Repository repository) {</b>
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Activates an already inactive user.
+&nbsp;	 *
+&nbsp;	 * &lt;p&gt;Updates the user&#39;s status to active in the database and restores their access privileges.
+&nbsp;	 * The user can now perform all actions within the system.&lt;/p&gt;
+&nbsp;	 *
+&nbsp;	 * &lt;p&gt;Any associated notifications or permissions are updated accordingly.&lt;/p&gt;
+&nbsp;	 *
+&nbsp;	 * @param inactiveUser the inactive user to activate; must be in INACTIVE state
+&nbsp;	 * @return an ActivateResult indicating success or failure
+&nbsp;	 * @throws TransactionException if any database operation fails during the transaction
+&nbsp;	 */
+&nbsp;	public ActivateResult activateUser(User inactiveUser) throws TransactionException {
+<b class="fc">&nbsp;		final var data = new AtomicReference&lt;User.@Nullable Data&gt;();</b>
+<b class="fc">&nbsp;		repository.userOps.update(inactiveUser, userData -&gt; {</b>
+<b class="fc">&nbsp;			if (userData.active()) {</b>
+<b class="fc">&nbsp;				throw new IllegalArgumentException(&quot;User is active: %s&quot;.formatted(inactiveUser));</b>
+&nbsp;			}
+<b class="fc">&nbsp;			final var ret = userData.withActive(true);</b>
+<b class="fc">&nbsp;			data.set(ret);</b>
+<b class="fc">&nbsp;			return ret;</b>
+&nbsp;		});
+<b class="fc">&nbsp;		return new ActivateResult.Success(Objects.requireNonNull(data.get()));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Deactivates an already active user.
+&nbsp;	 *
+&nbsp;	 * &lt;p&gt;Updates the user&#39;s status to inactive in the database and removes their access privileges.
+&nbsp;	 * The user remains in the system but cannot perform any actions.&lt;/p&gt;
+&nbsp;	 *
+&nbsp;	 * &lt;p&gt;Any associated notifications or permissions are updated accordingly.&lt;/p&gt;
+&nbsp;	 *
+&nbsp;	 * @param activeUser the active user to deactivate; must be in ACTIVE state
+&nbsp;	 * @return a DeactivateResult indicating success or failure
+&nbsp;	 * @throws TransactionException if any database operation fails during the transaction
+&nbsp;	 */
+&nbsp;	public DeactivateResult deactivateUser(User activeUser) throws TransactionException {
+<b class="fc">&nbsp;		final var data = new AtomicReference&lt;User.@Nullable Data&gt;();</b>
+<b class="fc">&nbsp;		repository.userOps.update(activeUser, userData -&gt; {</b>
+<b class="fc">&nbsp;			if (!userData.active()) {</b>
+<b class="fc">&nbsp;				throw new IllegalArgumentException(&quot;User is not active: %s&quot;.formatted(activeUser));</b>
+&nbsp;			}
+<b class="fc">&nbsp;			final var ret = userData.withActive(false);</b>
+<b class="fc">&nbsp;			data.set(ret);</b>
+<b class="fc">&nbsp;			return ret;</b>
+&nbsp;		});
+<b class="fc">&nbsp;		return new DeactivateResult.Success(Objects.requireNonNull(data.get()));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Result type for the deactivate operation.
+&nbsp;	 */
+&nbsp;	public sealed interface DeactivateResult permits DeactivateResult.Success {
+<b class="fc">&nbsp;		record Success(User.Data data) implements DeactivateResult {</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Result type for the activate operation.
+&nbsp;	 */
+&nbsp;	public sealed interface ActivateResult permits ActivateResult.Success {
+<b class="fc">&nbsp;		record Success(User.Data data) implements ActivateResult {</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,191 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > RepositoryUserOps</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.persistence</a>
+</div>
+
+<h1>Coverage Summary for Class: RepositoryUserOps (library.persistence)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RepositoryUserOps</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (18/18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (25/25)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.persistence;
+&nbsp;
+&nbsp;import library.models.Author;
+&nbsp;import library.models.User;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;
+&nbsp;import java.util.Collections;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.NoSuchElementException;
+&nbsp;import java.util.Optional;
+&nbsp;import java.util.function.Function;
+&nbsp;import java.util.function.Predicate;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+<b class="fc">&nbsp;public record RepositoryUserOps(Repository repository) {</b>
+&nbsp;	public void create(User user, User.Data data) throws TransactionException {
+<b class="fc">&nbsp;		repository.transact(tx -&gt; tx.users().put(user, data) == null, () -&gt; &quot;Already created: %s&quot;.formatted(user));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Map&lt;User, User.Data&gt; read() {
+<b class="fc">&nbsp;		return Collections.unmodifiableMap(repository.users);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Map&lt;User, User.Data&gt; read(Predicate&lt;? super Map.Entry&lt;User, User.Data&gt;&gt; filter) {
+<b class="fc">&nbsp;		return repository.users.entrySet().stream().filter(filter).collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Optional&lt;User.Data&gt; read(User user) {
+<b class="fc">&nbsp;		return Optional.ofNullable(repository.users.get(user));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public User.Data readOrThrow(User user) {
+<b class="fc">&nbsp;		return read(user)</b>
+<b class="fc">&nbsp;				.orElseThrow(() -&gt; new NoSuchElementException(</b>
+<b class="fc">&nbsp;						&quot;Not found: %s&quot;.formatted(user)));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public String readFullName(Author author) {
+<b class="pc">&nbsp;		return switch (author) {</b>
+<b class="fc">&nbsp;			case Author.ByName(final var val) -&gt; val;</b>
+<b class="fc">&nbsp;			case Author.ByRef(final var val) -&gt;</b>
+<b class="fc">&nbsp;					read(val).map(User.Data::fullName).orElseGet(() -&gt; &quot;ERROR: %s&quot;.formatted(val.username()));</b>
+&nbsp;		};
+&nbsp;	}
+&nbsp;
+&nbsp;	public void update(User user, Function&lt;User.Data, User.Data&gt; callback) throws TransactionException {
+<b class="fc">&nbsp;		repository.transact(tx -&gt; {</b>
+<b class="fc">&nbsp;			final var oldValue = tx.users().get(user);</b>
+<b class="fc">&nbsp;			return oldValue != null &amp;&amp; oldValue.equals(tx.users().put(user, callback.apply(oldValue)));</b>
+<b class="fc">&nbsp;		}, () -&gt; &quot;Not found or updated concurrently: %s&quot;.formatted(user));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void update(User user,
+&nbsp;	                   User.Data data,
+&nbsp;	                   User.@Nullable Data expected) throws TransactionException {
+<b class="fc">&nbsp;		repository.transact(</b>
+<b class="fc">&nbsp;				tx -&gt; expected == null</b>
+<b class="fc">&nbsp;						? tx.users().put(user, data) != null</b>
+<b class="fc">&nbsp;						: expected.equals(tx.users().put(user, data)),</b>
+<b class="fc">&nbsp;				() -&gt; &quot;Not found or updated concurrently: %s&quot;.formatted(user)</b>
+&nbsp;		);
+&nbsp;	}
+&nbsp;
+&nbsp;	public void delete(User user,
+&nbsp;	                   @Nullable User.Data expected) throws TransactionException {
+<b class="fc">&nbsp;		repository.transact(</b>
+<b class="fc">&nbsp;				tx -&gt; expected == null ? tx.users().remove(user) != null : tx.users().remove(user, expected),</b>
+<b class="fc">&nbsp;				() -&gt; &quot;Already deleted: %s&quot;.formatted(user)</b>
+&nbsp;		);
+&nbsp;	}
+&nbsp;
+&nbsp;	void delete(User user) throws TransactionException {
+<b class="fc">&nbsp;		delete(user, null);</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

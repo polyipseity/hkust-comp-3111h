@@ -1,0 +1,144 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > TextViewController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.controllers.common</a>
+</div>
+
+<h1>Coverage Summary for Class: TextViewController (library.controllers.common)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TextViewController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (2/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    80%
+  </span>
+  <span class="absValue">
+    (4/5)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.controllers.common;
+&nbsp;
+&nbsp;import javafx.fxml.Initializable;
+&nbsp;import javafx.scene.control.Slider;
+&nbsp;import javafx.scene.control.TextArea;
+&nbsp;import javafx.scene.text.Font;
+&nbsp;import lombok.Getter;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;import org.jetbrains.annotations.UnknownNullability;
+&nbsp;
+&nbsp;import java.net.URL;
+&nbsp;import java.util.ResourceBundle;
+&nbsp;
+&nbsp;@RequiredArgsConstructor
+&nbsp;public final class TextViewController implements RequiresLoggedIn, Initializable {
+&nbsp;	public static final String WINDOW_TITLE = &quot;Reading: &#39;%s&#39; by &#39;%s&#39;&quot;;
+&nbsp;
+&nbsp;	@Getter
+&nbsp;	public final String content;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public TextArea contentArea;
+&nbsp;	@UnknownNullability
+&nbsp;	@SuppressWarnings(&quot;unused&quot;)
+&nbsp;	public Slider zoomSlider;
+&nbsp;
+&nbsp;	@SuppressWarnings(&quot;unused&quot;) // for testing
+<b class="fc">&nbsp;	private TextViewController() {</b>
+<b class="fc">&nbsp;		this.content = &quot;&quot;;</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	@Override
+&nbsp;	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
+<b class="fc">&nbsp;		RequiresLoggedIn.super.initialize(location, resources);</b>
+&nbsp;
+<b class="fc">&nbsp;		zoomSlider.valueProperty().addListener((_, _, newValue) -&gt;</b>
+<b class="nc">&nbsp;				contentArea.setFont(Font.font(contentArea.getFont().getFamily(), newValue.doubleValue())));</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

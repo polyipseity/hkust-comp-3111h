@@ -1,0 +1,220 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > PublishBooksControl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.controls</a>
+</div>
+
+<h1>Coverage Summary for Class: PublishBooksControl (library.controls)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PublishBooksControl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    83.3%
+  </span>
+  <span class="absValue">
+    (5/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (11/11)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">PublishBooksControl$AddBookResult</td>
+  </tr>
+  <tr>
+    <td class="name">PublishBooksControl$AddBookResult$AlreadyExists</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">PublishBooksControl$AddBookResult$Success</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    83.3%
+  </span>
+  <span class="absValue">
+    (5/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/14)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.controls;
+&nbsp;
+&nbsp;import library.models.Book;
+&nbsp;import library.persistence.Repository;
+&nbsp;import library.persistence.TransactionException;
+&nbsp;import library.utils.HasMessage;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;
+&nbsp;import java.util.concurrent.atomic.AtomicReference;
+&nbsp;
+<b class="fc">&nbsp;public record PublishBooksControl(Repository repository) {</b>
+&nbsp;	public PublishBooksControl.AddBookResult addBook(Book book, Book.Data data) throws TransactionException {
+<b class="fc">&nbsp;		return addBook(book, data, false);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public PublishBooksControl.AddBookResult addBook(Book book, Book.Data data, boolean overwrite) throws TransactionException {
+<b class="fc">&nbsp;		final var conflictBookData = new AtomicReference&lt;Book.@Nullable Data&gt;();</b>
+&nbsp;		try {
+<b class="fc">&nbsp;			repository.transact(tx -&gt; {</b>
+<b class="fc">&nbsp;				final var oldBookData = tx.books().put(book, data);</b>
+<b class="fc">&nbsp;				conflictBookData.set(oldBookData);</b>
+<b class="fc">&nbsp;				return overwrite || oldBookData == null;</b>
+<b class="fc">&nbsp;			}, () -&gt; &quot;Failed to add book: %s&quot;.formatted(book));</b>
+&nbsp;		} catch (TransactionException e) {
+<b class="pc">&nbsp;			return switch (conflictBookData.get()) {</b>
+<b class="fc">&nbsp;				case Book.Data data2 -&gt; new AddBookResult.AlreadyExists(data2);</b>
+&nbsp;				case null -&gt; throw e;
+&nbsp;			};
+&nbsp;		}
+<b class="fc">&nbsp;		return new AddBookResult.Success(conflictBookData.get());</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Result type for book operations.
+&nbsp;	 */
+&nbsp;	public sealed interface AddBookResult permits AddBookResult.Success, AddBookResult.AlreadyExists {
+<b class="fc">&nbsp;		record Success(@Nullable Book.Data conflictBookData) implements AddBookResult {</b>
+&nbsp;		}
+&nbsp;
+<b class="fc">&nbsp;		record AlreadyExists(Book.Data conflictBookData) implements AddBookResult, HasMessage {</b>
+&nbsp;
+&nbsp;			@Override
+&nbsp;			public String getMessage() {
+<b class="fc">&nbsp;				return &quot;Book already exists&quot;;</b>
+&nbsp;			}
+&nbsp;		}
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

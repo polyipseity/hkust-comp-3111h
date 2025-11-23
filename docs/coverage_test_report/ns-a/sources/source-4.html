@@ -1,0 +1,201 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > RepositoryUserBookRequestOps</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.persistence</a>
+</div>
+
+<h1>Coverage Summary for Class: RepositoryUserBookRequestOps (library.persistence)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RepositoryUserBookRequestOps</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (21/21)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (14/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (29/29)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.persistence;
+&nbsp;
+&nbsp;import library.models.BookRequest;
+&nbsp;import library.models.User;
+&nbsp;import library.utils.Tuple2;
+&nbsp;import org.jetbrains.annotations.Nullable;
+&nbsp;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.NoSuchElementException;
+&nbsp;import java.util.Optional;
+&nbsp;import java.util.function.Function;
+&nbsp;import java.util.function.Predicate;
+&nbsp;import java.util.stream.Collectors;
+&nbsp;
+<b class="fc">&nbsp;public record RepositoryUserBookRequestOps(Repository repository) {</b>
+&nbsp;	public void create(User user, BookRequest bookRequest, BookRequest.Data data) throws TransactionException {
+<b class="fc">&nbsp;		repository.transact(tx -&gt; tx.userBookRequests().put(new Object[]{user, bookRequest}, data) == null, () -&gt; &quot;Already created: %s, %s&quot;.formatted(user, bookRequest));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Map&lt;Tuple2&lt;User, BookRequest&gt;, BookRequest.Data&gt; read() {
+<b class="fc">&nbsp;		return read(_ -&gt; true);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Map&lt;Tuple2&lt;User, BookRequest&gt;, BookRequest.Data&gt; read(Predicate&lt;? super Map.Entry&lt;Tuple2&lt;User, BookRequest&gt;, BookRequest.Data&gt;&gt; filter) {
+<b class="fc">&nbsp;		return repository.userBookRequests.entrySet().stream().map(entry -&gt; Map.entry(new Tuple2&lt;&gt;((User) entry.getKey()[0], (BookRequest) entry.getKey()[1]), entry.getValue())).filter(filter).collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Optional&lt;BookRequest.Data&gt; read(User user, BookRequest bookRequest) {
+<b class="fc">&nbsp;		return Optional.ofNullable(repository.userBookRequests.get(new Object[]{user, bookRequest}));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public BookRequest.Data readOrThrow(User user, BookRequest bookRequest) {
+<b class="fc">&nbsp;		return read(user, bookRequest)</b>
+<b class="fc">&nbsp;				.orElseThrow(() -&gt; new NoSuchElementException(</b>
+<b class="fc">&nbsp;						&quot;Not found: %s, %s&quot;.formatted(user, bookRequest)));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public Map&lt;BookRequest, BookRequest.Data&gt; read(User user) {
+<b class="fc">&nbsp;		return repository.userBookRequests.prefixSubMap(new Object[]{user}).entrySet().stream().collect(Collectors.toUnmodifiableMap(entry -&gt; (BookRequest) entry.getKey()[1], Map.Entry::getValue));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void update(User user, BookRequest bookRequest, Function&lt;BookRequest.Data, BookRequest.Data&gt; callback) throws TransactionException {
+<b class="fc">&nbsp;		repository.transact(tx -&gt; {</b>
+<b class="fc">&nbsp;			final var key = new Object[]{user, bookRequest};</b>
+<b class="fc">&nbsp;			final var oldValue = tx.userBookRequests().get(key);</b>
+<b class="fc">&nbsp;			return oldValue != null &amp;&amp; oldValue.equals(tx.userBookRequests().put(key, callback.apply(oldValue)));</b>
+<b class="fc">&nbsp;		}, () -&gt; &quot;Not found or updated concurrently: %s, %s&quot;.formatted(user, bookRequest));</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void update(User user,
+&nbsp;	                   BookRequest bookRequest,
+&nbsp;	                   BookRequest.Data data,
+&nbsp;	                   BookRequest.@Nullable Data expected) throws TransactionException {
+<b class="fc">&nbsp;		repository.transact(</b>
+&nbsp;				tx -&gt; {
+<b class="fc">&nbsp;					final var key = new Object[]{user, bookRequest};</b>
+<b class="fc">&nbsp;					return expected == null</b>
+<b class="fc">&nbsp;							? tx.userBookRequests().put(key, data) != null</b>
+<b class="fc">&nbsp;							: expected.equals(tx.userBookRequests().put(key, data));</b>
+&nbsp;				},
+<b class="fc">&nbsp;				() -&gt; &quot;Not found or updated concurrently: %s, %s&quot;.formatted(user, bookRequest)</b>
+&nbsp;		);
+&nbsp;	}
+&nbsp;
+&nbsp;	public void delete(User user,
+&nbsp;	                   BookRequest bookRequest,
+&nbsp;	                   @Nullable BookRequest.Data expected) throws TransactionException {
+<b class="fc">&nbsp;		repository.transact(</b>
+<b class="fc">&nbsp;				tx -&gt; expected == null ? tx.userBookRequests().remove(new Object[]{user, bookRequest}) != null : tx.userBookRequests().remove(new Object[]{user, bookRequest}, expected),</b>
+<b class="fc">&nbsp;				() -&gt; &quot;Already deleted: %s, %s&quot;.formatted(user, bookRequest)</b>
+&nbsp;		);
+&nbsp;	}
+&nbsp;
+&nbsp;	void delete(User user, BookRequest bookRequest) throws TransactionException {
+<b class="fc">&nbsp;		delete(user, bookRequest, null);</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	public void delete(User user) throws TransactionException {
+<b class="fc">&nbsp;		repository.transact(tx -&gt; {</b>
+<b class="fc">&nbsp;			if (!tx.users().containsKey(user)) return false;</b>
+<b class="fc">&nbsp;			tx.userBookRequests().prefixSubMap(new Object[]{user}).clear();</b>
+<b class="fc">&nbsp;			return true;</b>
+<b class="fc">&nbsp;		}, () -&gt; &quot;User not found: %s&quot;.formatted(user));</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>

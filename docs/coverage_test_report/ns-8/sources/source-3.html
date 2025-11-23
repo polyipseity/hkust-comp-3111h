@@ -1,0 +1,299 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > BookRequest</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">library.models</a>
+</div>
+
+<h1>Coverage Summary for Class: BookRequest (library.models)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BookRequest</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">BookRequest$Data</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">BookRequest$Data$S</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">BookRequest$S</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (18/18)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package library.models;
+&nbsp;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import lombok.With;
+&nbsp;import org.mapdb.DataInput2;
+&nbsp;import org.mapdb.DataOutput2;
+&nbsp;import org.mapdb.serializer.GroupSerializerObjectArray;
+&nbsp;
+&nbsp;import java.io.IOException;
+&nbsp;import java.time.Instant;
+&nbsp;import java.time.ZoneId;
+&nbsp;import java.time.ZonedDateTime;
+&nbsp;import java.util.Comparator;
+&nbsp;
+<b class="fc">&nbsp;public record BookRequest(</b>
+&nbsp;		String title,
+&nbsp;		String author
+&nbsp;) implements Comparable&lt;BookRequest&gt; {
+&nbsp;	/**
+&nbsp;	 * Compares this object with the specified object for order.  Returns a
+&nbsp;	 * negative integer, zero, or a positive integer as this object is less
+&nbsp;	 * than, equal to, or greater than the specified object.
+&nbsp;	 *
+&nbsp;	 * &lt;p&gt;The implementor must ensure {@link Integer#signum
+&nbsp;	 * signum}{@code (x.compareTo(y)) == -signum(y.compareTo(x))} for
+&nbsp;	 * all {@code x} and {@code y}.  (This implies that {@code
+&nbsp;	 * x.compareTo(y)} must throw an exception if and only if {@code
+&nbsp;	 * y.compareTo(x)} throws an exception.)
+&nbsp;	 *
+&nbsp;	 * &lt;p&gt;The implementor must also ensure that the relation is transitive:
+&nbsp;	 * {@code (x.compareTo(y) &gt; 0 &amp;&amp; y.compareTo(z) &gt; 0)} implies
+&nbsp;	 * {@code x.compareTo(z) &gt; 0}.
+&nbsp;	 *
+&nbsp;	 * &lt;p&gt;Finally, the implementor must ensure that {@code
+&nbsp;	 * x.compareTo(y)==0} implies that {@code signum(x.compareTo(z))
+&nbsp;	 * == signum(y.compareTo(z))}, for all {@code z}.
+&nbsp;	 *
+&nbsp;	 * @param o the object to be compared.
+&nbsp;	 * @return a negative integer, zero, or a positive integer as this object
+&nbsp;	 * is less than, equal to, or greater than the specified object.
+&nbsp;	 * @throws NullPointerException if the specified object is null
+&nbsp;	 * @throws ClassCastException   if the specified object&#39;s type prevents it
+&nbsp;	 *                              from being compared to this object.
+&nbsp;	 * @apiNote It is strongly recommended, but &lt;i&gt;not&lt;/i&gt; strictly required that
+&nbsp;	 * {@code (x.compareTo(y)==0) == (x.equals(y))}.  Generally speaking, any
+&nbsp;	 * class that implements the {@code Comparable} interface and violates
+&nbsp;	 * this condition should clearly indicate this fact.  The recommended
+&nbsp;	 * language is &quot;Note: this class has a natural ordering that is
+&nbsp;	 * inconsistent with equals.&quot;
+&nbsp;	 */
+&nbsp;	@Override
+&nbsp;	public int compareTo(BookRequest o) {
+<b class="fc">&nbsp;		return Comparator</b>
+<b class="fc">&nbsp;				.comparing(BookRequest::title)</b>
+<b class="fc">&nbsp;				.thenComparing(BookRequest::author)</b>
+<b class="fc">&nbsp;				.compare(this, o);</b>
+&nbsp;	}
+&nbsp;
+<b class="fc">&nbsp;	@With</b>
+<b class="fc">&nbsp;	public record Data(</b>
+&nbsp;			ZonedDateTime requestDate
+&nbsp;	) {
+&nbsp;		@RequiredArgsConstructor
+&nbsp;		public static final class S extends GroupSerializerObjectArray&lt;Data&gt; {
+&nbsp;			/**
+&nbsp;			 * Serializes the content of the given value into the given
+&nbsp;			 * {@link DataOutput2}.
+&nbsp;			 *
+&nbsp;			 * @param out   DataOutput2 to save object into
+&nbsp;			 * @param value Object to serialize
+&nbsp;			 * @throws IOException in case of an I/O error
+&nbsp;			 */
+&nbsp;			@Override
+&nbsp;			public void serialize(DataOutput2 out, BookRequest.Data value) throws IOException {
+&nbsp;				// `requestDate`: second, nano, zone
+<b class="fc">&nbsp;				final var requestDate = value.requestDate();</b>
+<b class="fc">&nbsp;				out.writeLong(requestDate.toEpochSecond());</b>
+<b class="fc">&nbsp;				out.writeLong(requestDate.getNano());</b>
+<b class="fc">&nbsp;				out.writeUTF(requestDate.getZone().getId());</b>
+&nbsp;			}
+&nbsp;
+&nbsp;			/**
+&nbsp;			 * Deserializes and returns the content of the given {@link DataInput2}.
+&nbsp;			 *
+&nbsp;			 * @param input     DataInput2 to de-serialize data from
+&nbsp;			 * @param available how many bytes that are available in the DataInput2 for
+&nbsp;			 *                  reading, may be -1 (in streams) or 0 (null).
+&nbsp;			 * @return the de-serialized content of the given {@link DataInput2}
+&nbsp;			 * @throws IOException in case of an I/O error
+&nbsp;			 */
+&nbsp;			@Override
+&nbsp;			public Data deserialize(DataInput2 input, int available) throws IOException {
+<b class="fc">&nbsp;				final var requestDate = ZonedDateTime.ofInstant(Instant.ofEpochSecond(input.readLong(), input.readLong()), ZoneId.of(input.readUTF()));</b>
+<b class="fc">&nbsp;				return new Data(requestDate);</b>
+&nbsp;			}
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	@RequiredArgsConstructor
+&nbsp;	public static final class S extends GroupSerializerObjectArray&lt;BookRequest&gt; {
+&nbsp;		/**
+&nbsp;		 * Serializes the content of the given value into the given
+&nbsp;		 * {@link DataOutput2}.
+&nbsp;		 *
+&nbsp;		 * @param out   DataOutput2 to save object into
+&nbsp;		 * @param value Object to serialize
+&nbsp;		 * @throws IOException in case of an I/O error
+&nbsp;		 */
+&nbsp;		@Override
+&nbsp;		public void serialize(DataOutput2 out, BookRequest value) throws IOException {
+<b class="fc">&nbsp;			out.writeUTF(value.title());</b>
+<b class="fc">&nbsp;			out.writeUTF(value.author());</b>
+&nbsp;		}
+&nbsp;
+&nbsp;		/**
+&nbsp;		 * Deserializes and returns the content of the given {@link DataInput2}.
+&nbsp;		 *
+&nbsp;		 * @param input     DataInput2 to de-serialize data from
+&nbsp;		 * @param available how many bytes that are available in the DataInput2 for
+&nbsp;		 *                  reading, may be -1 (in streams) or 0 (null).
+&nbsp;		 * @return the de-serialized content of the given {@link DataInput2}
+&nbsp;		 * @throws IOException in case of an I/O error
+&nbsp;		 */
+&nbsp;		@Override
+&nbsp;		public BookRequest deserialize(DataInput2 input, int available) throws IOException {
+<b class="fc">&nbsp;			final var title = input.readUTF();</b>
+<b class="fc">&nbsp;			final var author = input.readUTF();</b>
+<b class="fc">&nbsp;			return new BookRequest(title, author);</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2025-11-23 18:29</div>
+</div>
+</body>
+</html>
