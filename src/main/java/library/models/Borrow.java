@@ -13,44 +13,60 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 
+/**
+ * Represents a borrowing record, which includes a borrow date, duration,
+ * and the path to a PDF file associated with the borrowing.
+ */
 @With
 public record Borrow(
 		ZonedDateTime borrowDate,
 		Duration duration,
 		String pdfPath
 ) {
-	public ZonedDateTime due() {
+    /**
+     * Due zoned date time.
+     *
+     * @return the zoned date time
+     */
+    public ZonedDateTime due() {
 		return borrowDate.plus(duration);
 	}
 
-	/**
-	 * How much time is left until the book is due, relative to {@code reference}.
-	 *
-	 * @param reference the point in time from which we want to measure the remaining period
-	 * @return a {@link Duration} that is zero if the due date has already passed,
-	 * otherwise the duration between {@code reference} and the due date
-	 */
-	public Duration durationLeft(ZonedDateTime reference) {
+    /**
+     * How much time is left until the book is due, relative to {@code reference}.
+     *
+     * @param reference the point in time from which we want to measure the remaining period
+     * @return a {@link Duration} that is zero if the due date has already passed, otherwise the duration between {@code reference} and the due date
+     */
+    public Duration durationLeft(ZonedDateTime reference) {
 		final var due = due();
 		return reference.isAfter(due)
 				? Duration.ZERO
 				: Duration.between(reference, due);
 	}
 
-	/**
-	 * Convenience overload that uses the current instant in UTC.
-	 *
-	 * @return the remaining duration until the book is due (or zero if overdue)
-	 */
-	public Duration durationLeft() {
+    /**
+     * Convenience overload that uses the current instant in UTC.
+     *
+     * @return the remaining duration until the book is due (or zero if overdue)
+     */
+    public Duration durationLeft() {
 		return durationLeft(TimeUtil.nowZoned());
 	}
 
-	public boolean expired() {
+    /**
+     * Expired boolean.
+     *
+     * @return the boolean
+     */
+    public boolean expired() {
 		return durationLeft().isZero();
 	}
 
-	@RequiredArgsConstructor
+    /**
+     * The type S.
+     */
+    @RequiredArgsConstructor
 	public static final class S extends GroupSerializerObjectArray<Borrow> {
 		/**
 		 * Serializes the content of the given value into the given

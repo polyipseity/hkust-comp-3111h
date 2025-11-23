@@ -14,22 +14,67 @@ import java.nio.file.Path;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
+/**
+ * Repository is a class responsible for managing data structures and transactions
+ * related to users, books, their associations, notifications, and borrowing operations.
+ * It communicates with an underlying database structure using several maps and provides
+ * mechanisms to ensure data integrity during updates and modifications.
+ * Implements {@link Closeable} to ensure resources are properly released.
+ */
 public final class Repository implements Closeable {
-	public final RepositoryUserOps userOps = new RepositoryUserOps(this);
-	public final RepositoryBookOps bookOps = new RepositoryBookOps(this);
-	public final RepositoryUserNotificationOps userNotificationOps = new RepositoryUserNotificationOps(this);
-	public final RepositoryUserBookRequestOps userBookRequestOps = new RepositoryUserBookRequestOps(this);
-	public final RepositoryBorrowOps borrowOps = new RepositoryBorrowOps(this);
+    /**
+     * The User ops.
+     */
+    public final RepositoryUserOps userOps = new RepositoryUserOps(this);
+    /**
+     * The Book ops.
+     */
+    public final RepositoryBookOps bookOps = new RepositoryBookOps(this);
+    /**
+     * The User notification ops.
+     */
+    public final RepositoryUserNotificationOps userNotificationOps = new RepositoryUserNotificationOps(this);
+    /**
+     * The User book request ops.
+     */
+    public final RepositoryUserBookRequestOps userBookRequestOps = new RepositoryUserBookRequestOps(this);
+    /**
+     * The Borrow ops.
+     */
+    public final RepositoryBorrowOps borrowOps = new RepositoryBorrowOps(this);
 	private final DBMaker.Maker dbMaker;
 	private final ReentrantLock transactLock = new ReentrantLock();
-	DB db;
-	HTreeMap<User, User.Data> users;
-	HTreeMap<Book, Book.Data> books;
-	HTreeMap<User, String[]> userNotifications;
-	BTreeMap<Object[], BookRequest.Data> userBookRequests; // key: (User, BookRequest)
-	BTreeMap<Object[], Borrow> borrows; // key: (User, Book)
+    /**
+     * The Db.
+     */
+    DB db;
+    /**
+     * The Users.
+     */
+    HTreeMap<User, User.Data> users;
+    /**
+     * The Books.
+     */
+    HTreeMap<Book, Book.Data> books;
+    /**
+     * The User notifications.
+     */
+    HTreeMap<User, String[]> userNotifications;
+    /**
+     * The User book requests.
+     */
+    BTreeMap<Object[], BookRequest.Data> userBookRequests; // key: (User, BookRequest)
+    /**
+     * The Borrows.
+     */
+    BTreeMap<Object[], Borrow> borrows; // key: (User, Book)
 
-	public Repository(DBMaker.Maker dbMaker) {
+    /**
+     * Instantiates a new Repository.
+     *
+     * @param dbMaker the db maker
+     */
+    public Repository(DBMaker.Maker dbMaker) {
 		this.dbMaker = dbMaker.transactionEnable();
 		final var stores = open();
 		this.db = stores._1();
@@ -163,7 +208,16 @@ public final class Repository implements Closeable {
 		return new Tuple6<>(db, users, books, userNotifications, userBookRequests, borrows);
 	}
 
-	public <E extends Throwable> void transact(ThrowingFunction<? super Data, ? extends Boolean, ? extends E> action, Supplier<String> rollbackMessageSupplier) throws TransactionException, E {
+    /**
+     * Transact.
+     *
+     * @param <E>                     the type parameter
+     * @param action                  the action
+     * @param rollbackMessageSupplier the rollback message supplier
+     * @throws TransactionException the transaction exception
+     * @throws E                    the e
+     */
+    public <E extends Throwable> void transact(ThrowingFunction<? super Data, ? extends Boolean, ? extends E> action, Supplier<String> rollbackMessageSupplier) throws TransactionException, E {
 		transactLock.lock();
 		try {
 			if (!action.apply(new Data())) {
@@ -185,7 +239,15 @@ public final class Repository implements Closeable {
 		}
 	}
 
-	<E extends Throwable> void transact(ThrowingFunction<? super Data, ? extends Boolean, ? extends E> action) throws E, TransactionException {
+    /**
+     * Transact.
+     *
+     * @param <E>    the type parameter
+     * @param action the action
+     * @throws E                    the e
+     * @throws TransactionException the transaction exception
+     */
+    <E extends Throwable> void transact(ThrowingFunction<? super Data, ? extends Boolean, ? extends E> action) throws E, TransactionException {
 		transact(action, () -> "Transaction rolled back");
 	}
 
@@ -197,24 +259,52 @@ public final class Repository implements Closeable {
 	private final static class DummyException extends Exception {
 	}
 
-	public final class Data {
-		public HTreeMap<User, User.Data> users() {
+    /**
+     * The type Data.
+     */
+    public final class Data {
+        /**
+         * Users h tree map.
+         *
+         * @return the h tree map
+         */
+        public HTreeMap<User, User.Data> users() {
 			return users;
 		}
 
-		public HTreeMap<Book, Book.Data> books() {
+        /**
+         * Books h tree map.
+         *
+         * @return the h tree map
+         */
+        public HTreeMap<Book, Book.Data> books() {
 			return books;
 		}
 
-		public HTreeMap<User, String[]> userNotifications() {
+        /**
+         * User notifications h tree map.
+         *
+         * @return the h tree map
+         */
+        public HTreeMap<User, String[]> userNotifications() {
 			return userNotifications;
 		}
 
-		public BTreeMap<Object[], BookRequest.Data> userBookRequests() {
+        /**
+         * User book requests b tree map.
+         *
+         * @return the b tree map
+         */
+        public BTreeMap<Object[], BookRequest.Data> userBookRequests() {
 			return userBookRequests;
 		}
 
-		public BTreeMap<Object[], Borrow> borrows() {
+        /**
+         * Borrows b tree map.
+         *
+         * @return the b tree map
+         */
+        public BTreeMap<Object[], Borrow> borrows() {
 			return borrows;
 		}
 	}

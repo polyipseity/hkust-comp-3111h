@@ -18,12 +18,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * The StatusViewController class is responsible for managing the status and popularity of books
+ * related to the logged-in author. It loads and displays data in graphical representations
+ * such as pie charts and bar charts.
+ *
+ * This class implements the {@link RequiresLoggedIn}, {@link Initializable}, and {@link LoadsData}
+ * interfaces to ensure that it is initialized properly and can load necessary book-related data.
+ * It interacts with the {@link Repository} to retrieve book information and display it in a
+ * user-friendly manner.
+ */
 public final class StatusViewController implements RequiresLoggedIn, Initializable, LoadsData {
 	private final Repository repository = Main.getContext().getRepository();
-	@UnknownNullability
+    /**
+     * The Status chart.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public PieChart statusChart;
-	@UnknownNullability
+    /**
+     * The Popular chart.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public BarChart<String, Number> popularChart;
 	private Map<Book, Book.Data> authorBooks = new HashMap<>();

@@ -13,12 +13,23 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 
+/**
+ * Represents a book with a title, an author, and a designation indicating whether it is temporary or not.
+ * This class is immutable and implements {@link Comparable} for natural ordering based on title, author,
+ * and temporary status.
+ */
 public record Book(
 		String title,
 		Author author,
 		boolean temporary
 ) implements Comparable<Book> {
-	public Book(String title, Author author) {
+    /**
+     * Instantiates a new Book.
+     *
+     * @param title  the title
+     * @param author the author
+     */
+    public Book(String title, Author author) {
 		this(title, author, false);
 	}
 
@@ -63,20 +74,38 @@ public record Book(
 				.compare(this, o);
 	}
 
-	public enum ApprovalStatus {
-		PENDING("pending"),
-		APPROVED("approved"),
-		REJECTED("rejected"),
+    /**
+     * The enum Approval status.
+     */
+    public enum ApprovalStatus {
+        /**
+         * Pending approval status.
+         */
+        PENDING("pending"),
+        /**
+         * Approved approval status.
+         */
+        APPROVED("approved"),
+        /**
+         * Rejected approval status.
+         */
+        REJECTED("rejected"),
 		;
 
-		public final String name;
+        /**
+         * The Name.
+         */
+        public final String name;
 
 		ApprovalStatus(String name) {
 			this.name = name;
 		}
 	}
 
-	@With
+    /**
+     * The type Data.
+     */
+    @With
 	public record Data(
 			String summary,
 			String content,
@@ -85,29 +114,33 @@ public record Book(
 			@Nullable Book originalOrModified,
 			long timesBorrowed
 	) {
-		/**
-		 * Indicates whether this book data represents a publicly available, published edition.
-		 *
-		 * <p>A {@code Data} instance is considered published when the following conditions are met:
-		 * <ul>
-		 *   <li>The {@link ApprovalStatus#APPROVED} status has been granted.</li>
-		 *   <li>It is not an edited or derived copy of another book
-		 *       (i.e. {@code originalOrModified == null}).</li>
-		 * </ul>
-		 *
-		 * <p>Both conditions must hold simultaneously; if either fails, the method returns {@code false}.
-		 *
-		 * @return {@code true} when the data is approved and not a modification of an existing book,
-		 * otherwise {@code false}
-		 */
-		public boolean published() {
+        /**
+         * Indicates whether this book data represents a publicly available, published edition.
+         *
+         * <p>A {@code Data} instance is considered published when the following conditions are met:
+         * <ul>
+         *   <li>The {@link ApprovalStatus#APPROVED} status has been granted.</li>
+         *   <li>It is not an edited or derived copy of another book
+         *       (i.e. {@code originalOrModified == null}).</li>
+         * </ul>
+         *
+         * <p>Both conditions must hold simultaneously; if either fails, the method returns {@code false}.
+         *
+         * @return {@code true} when the data is approved and not a modification of an existing book, otherwise {@code false}
+         */
+        public boolean published() {
 			return switch (approvalStatus) {
 				case PENDING, REJECTED -> false;
 				case APPROVED -> originalOrModified == null;
 			};
 		}
 
-		public boolean active() {
+        /**
+         * Active boolean.
+         *
+         * @return the boolean
+         */
+        public boolean active() {
 			return switch (approvalStatus) {
 				case PENDING -> true;
 				case APPROVED -> originalOrModified == null;
@@ -115,7 +148,10 @@ public record Book(
 			};
 		}
 
-		@RequiredArgsConstructor
+        /**
+         * The type S.
+         */
+        @RequiredArgsConstructor
 		public static final class S extends GroupSerializerObjectArray<Data> {
 			private final Serializer<Book> bookSerializer;
 
@@ -175,7 +211,10 @@ public record Book(
 		}
 	}
 
-	@RequiredArgsConstructor
+    /**
+     * The type S.
+     */
+    @RequiredArgsConstructor
 	public static final class S extends GroupSerializerObjectArray<Book> {
 		private final Serializer<Author> authorSerializer;
 

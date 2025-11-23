@@ -25,16 +25,41 @@ import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
+/**
+ * The {@code PendingApprovalsController} class is responsible for managing the display
+ * and interaction with pending approval items in the system. This controller allows
+ * users to view, approve, or reject pending approvals. It implements {@code RequiresLoggedIn},
+ * {@code Initializable}, and {@code LoadsData}, ensuring that only authenticated users
+ * can interact with the data and that the data is correctly initialized and loaded.
+ */
 public final class PendingApprovalsController implements RequiresLoggedIn, Initializable, LoadsData {
-	@UnknownNullability
+    /**
+     * The Table.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public TableView<@Nullable Data> table;
-	@UnknownNullability
+    /**
+     * The Table controller.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public DynamicTableController<Keys, Data> tableController;
-	@UnknownNullability
+    /**
+     * The Title col.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
-	public TableColumn<Data, @Nullable Data> titleCol, authorCol, summaryCol, actionsCol;
+	public TableColumn<Data, @Nullable Data> titleCol, /**
+     * The Author col.
+     */
+    authorCol, /**
+     * The Summary col.
+     */
+    summaryCol, /**
+     * The Actions col.
+     */
+    actionsCol;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
@@ -64,14 +89,32 @@ public final class PendingApprovalsController implements RequiresLoggedIn, Initi
 				.toList());
 	}
 
-	public enum Keys {
-		TITLE,
-		AUTHOR,
-		SUMMARY,
-		ACTIONS
+    /**
+     * The enum Keys.
+     */
+    public enum Keys {
+        /**
+         * Title keys.
+         */
+        TITLE,
+        /**
+         * Author keys.
+         */
+        AUTHOR,
+        /**
+         * Summary keys.
+         */
+        SUMMARY,
+        /**
+         * Actions keys.
+         */
+        ACTIONS
 	}
 
-	public record Data(PendingApprovalsController controller,
+    /**
+     * The type Data.
+     */
+    public record Data(PendingApprovalsController controller,
 	                   Book book,
 	                   Book.Data bookData)
 			implements Function<Keys, DynamicTableController.Data> {

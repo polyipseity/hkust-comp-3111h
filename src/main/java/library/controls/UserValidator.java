@@ -3,9 +3,15 @@ package library.controls;
 import library.utils.HasMessage;
 import lombok.Getter;
 
+/**
+ * The interface User validator.
+ */
 @FunctionalInterface
 public interface UserValidator {
-	UserValidator DEFAULT = (username, password, fullName) -> {
+    /**
+     * The constant DEFAULT.
+     */
+    UserValidator DEFAULT = (username, password, fullName) -> {
 		switch (username) {
 			case "" -> {
 				return new Result.BadUsername("Empty username");
@@ -42,19 +48,42 @@ public interface UserValidator {
 		return new Result.Success();
 	};
 
-	Result apply(String username, String password, String fullName);
+    /**
+     * Apply result.
+     *
+     * @param username the username
+     * @param password the password
+     * @param fullName the full name
+     * @return the result
+     */
+    Result apply(String username, String password, String fullName);
 
-	sealed interface Result permits Result.BadFullName, Result.BadPassword, Result.BadUsername, Result.Success {
-		record Success() implements Result {
+    /**
+     * The interface Result.
+     */
+    sealed interface Result permits Result.BadFullName, Result.BadPassword, Result.BadUsername, Result.Success {
+        /**
+         * The type Success.
+         */
+        record Success() implements Result {
 		}
 
-		record BadUsername(@Getter String message) implements Result, HasMessage {
+        /**
+         * The type Bad username.
+         */
+        record BadUsername(@Getter String message) implements Result, HasMessage {
 		}
 
-		record BadPassword(@Getter String message) implements Result, HasMessage {
+        /**
+         * The type Bad password.
+         */
+        record BadPassword(@Getter String message) implements Result, HasMessage {
 		}
 
-		record BadFullName(@Getter String message) implements Result, HasMessage {
+        /**
+         * The type Bad full name.
+         */
+        record BadFullName(@Getter String message) implements Result, HasMessage {
 		}
 	}
 }

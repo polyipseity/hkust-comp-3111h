@@ -12,6 +12,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 
+/**
+ * Represents a request for a book with a title and author. This class implements
+ * the {@link Comparable} interface to enable comparison based on the title and author fields.
+ */
 public record BookRequest(
 		String title,
 		String author
@@ -56,11 +60,17 @@ public record BookRequest(
 				.compare(this, o);
 	}
 
-	@With
+    /**
+     * The type Data.
+     */
+    @With
 	public record Data(
 			ZonedDateTime requestDate
 	) {
-		@RequiredArgsConstructor
+        /**
+         * The type S.
+         */
+        @RequiredArgsConstructor
 		public static final class S extends GroupSerializerObjectArray<Data> {
 			/**
 			 * Serializes the content of the given value into the given
@@ -96,7 +106,10 @@ public record BookRequest(
 		}
 	}
 
-	@RequiredArgsConstructor
+    /**
+     * The type S.
+     */
+    @RequiredArgsConstructor
 	public static final class S extends GroupSerializerObjectArray<BookRequest> {
 		/**
 		 * Serializes the content of the given value into the given

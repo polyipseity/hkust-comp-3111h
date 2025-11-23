@@ -8,13 +8,35 @@ import org.mapdb.serializer.GroupSerializerObjectArray;
 
 import java.io.IOException;
 
+/**
+ * The {@code Author} interface represents an abstraction of an author entity and
+ * provides methods for comparing and identifying authors. This sealed interface
+ * allows specific implementations, {@link Author.ByName} and {@link Author.ByRef},
+ * to model authors by either a name-based or reference-based identifier.
+ */
 public sealed interface Author extends Comparable<Author> permits Author.ByName, Author.ByRef {
-	byte getTag();
+    /**
+     * Gets tag.
+     *
+     * @return the tag
+     */
+    byte getTag();
 
-	String id();
+    /**
+     * Id string.
+     *
+     * @return the string
+     */
+    String id();
 
-	record ByRef(User value) implements Author {
-		public static final byte TAG = 0;
+    /**
+     * The type By ref.
+     */
+    record ByRef(User value) implements Author {
+        /**
+         * The constant TAG.
+         */
+        public static final byte TAG = 0;
 
 		@Override
 		public byte getTag() {
@@ -67,8 +89,14 @@ public sealed interface Author extends Comparable<Author> permits Author.ByName,
 		}
 	}
 
-	record ByName(String value) implements Author {
-		public static final byte TAG = 1;
+    /**
+     * The type By name.
+     */
+    record ByName(String value) implements Author {
+        /**
+         * The constant TAG.
+         */
+        public static final byte TAG = 1;
 
 		@Override
 		public byte getTag() {
@@ -121,9 +149,15 @@ public sealed interface Author extends Comparable<Author> permits Author.ByName,
 		}
 	}
 
-	@RequiredArgsConstructor
+    /**
+     * The type S.
+     */
+    @RequiredArgsConstructor
 	class S extends GroupSerializerObjectArray<Author> {
-		protected final Serializer<User> userSerializer;
+        /**
+         * The User serializer.
+         */
+        protected final Serializer<User> userSerializer;
 
 		/**
 		 * Serializes the content of the given value into the given

@@ -9,12 +9,23 @@ import org.mapdb.serializer.GroupSerializerObjectArray;
 
 import java.io.IOException;
 
+/**
+ * A final, immutable class representing a wrapper around a byte array.
+ * This class includes a custom serializer for use in data serialization and
+ * deserialization processes.
+ */
 @Data
 public final class ByteArray {
-	public static GroupSerializer<ByteArray> SERIALIZER = new S(GroupSerializerObjectArray.BYTE_ARRAY);
+    /**
+     * The constant SERIALIZER.
+     */
+    public static GroupSerializer<ByteArray> SERIALIZER = new S(GroupSerializerObjectArray.BYTE_ARRAY);
 	private final byte[] data;
 
-	@RequiredArgsConstructor
+    /**
+     * The type S.
+     */
+    @RequiredArgsConstructor
 	public static final class S extends GroupSerializerObjectArray<ByteArray> {
 		private final GroupSerializer<byte[]> byteArraySerializer;
 

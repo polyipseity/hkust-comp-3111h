@@ -11,15 +11,30 @@ import library.utils.Alerts;
 import library.utils.HasMessage;
 import org.jetbrains.annotations.UnknownNullability;
 
+/**
+ * The RequestBookController class handles the functionality for requesting books in the application.
+ * This controller ensures the user is logged in and facilitates sending book request information
+ * to the underlying request book system.
+ * It implements the RequiresLoggedIn interface to enforce user authentication.
+ */
 public final class RequestBookController implements RequiresLoggedIn {
 	private final Context context = Main.getContext();
 	private final User user = this.getLoggedInUser()._1();
 
-	@UnknownNullability
+    /**
+     * The Title field.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
-	public TextField titleField, authorField;
+	public TextField titleField, /**
+     * The Author field.
+     */
+    authorField;
 
-	public void requestBook() {
+    /**
+     * Request book.
+     */
+    public void requestBook() {
 		String title = titleField.getText();
 		String author = authorField.getText();
 		try {

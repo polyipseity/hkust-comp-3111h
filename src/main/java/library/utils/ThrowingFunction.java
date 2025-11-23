@@ -15,12 +15,12 @@ import java.io.Serializable;
  */
 @FunctionalInterface
 public interface ThrowingFunction<T, R, E extends Throwable> extends Serializable {
-	/**
-	 * Applies this function to the given argument.
-	 *
-	 * @param t the function argument
-	 * @return the function result
-	 * @throws E if the application fails for any reason
-	 */
-	R apply(T t) throws E;
+    /**
+     * Applies this function to the given argument.
+     *
+     * @param t the function argument
+     * @return the function result
+     * @throws E if the application fails for any reason
+     */
+    R apply(T t) throws E;
 }

@@ -22,16 +22,49 @@ import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
+/**
+ * The {@code ManageUsersController} class is responsible for managing the user interface
+ * that displays and manages user accounts in the system. This class initializes the user table,
+ * loads user data, and supports user actions such as activation and deactivation.
+ *
+ * It utilizes the {@code DynamicTableController} to manage table operations dynamically and
+ * implements the {@code RequiresLoggedIn} and {@code LoadsData} interfaces to ensure it operates
+ * only within an authenticated session and supports data loading mechanisms.
+ *
+ * This controller maps and populates user properties such as username, role, name, active status,
+ * and actionable operations in a graphical user interface.
+ */
 public final class ManageUsersController implements RequiresLoggedIn, Initializable, LoadsData {
-	@UnknownNullability
+    /**
+     * The Table.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public TableView<@Nullable Data> table;
-	@UnknownNullability
+    /**
+     * The Table controller.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public DynamicTableController<Keys, Data> tableController;
-	@UnknownNullability
+    /**
+     * The Username col.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
-	public TableColumn<Data, @Nullable Data> usernameCol, roleCol, nameCol, activeCol, actionsCol;
+	public TableColumn<Data, @Nullable Data> usernameCol, /**
+     * The Role col.
+     */
+    roleCol, /**
+     * The Name col.
+     */
+    nameCol, /**
+     * The Active col.
+     */
+    activeCol, /**
+     * The Actions col.
+     */
+    actionsCol;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
@@ -62,15 +95,36 @@ public final class ManageUsersController implements RequiresLoggedIn, Initializa
 				.toList());
 	}
 
-	public enum Keys {
-		USERNAME,
-		ROLE,
-		NAME,
-		ACTIVE,
-		ACTIONS
+    /**
+     * The enum Keys.
+     */
+    public enum Keys {
+        /**
+         * Username keys.
+         */
+        USERNAME,
+        /**
+         * Role keys.
+         */
+        ROLE,
+        /**
+         * Name keys.
+         */
+        NAME,
+        /**
+         * Active keys.
+         */
+        ACTIVE,
+        /**
+         * Actions keys.
+         */
+        ACTIONS
 	}
 
-	@With
+    /**
+     * The type Data.
+     */
+    @With
 	public record Data(ManageUsersController controller,
 	                   User user,
 	                   User.Data userData)

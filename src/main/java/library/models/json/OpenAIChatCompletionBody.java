@@ -7,6 +7,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+/**
+ * Represents the body of a request sent to the OpenAI Chat Completion API.
+ * This record encapsulates information about the model, a list of messages for the prompt,
+ * temperature for randomness, a limit on maximum tokens, and whether to stream the result.
+ */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record OpenAIChatCompletionBody(
@@ -17,7 +22,10 @@ public record OpenAIChatCompletionBody(
 		@JsonProperty("stream") @Nullable Boolean stream
 		// Many other properties...
 ) {
-	public record Message(
+    /**
+     * The type Message.
+     */
+    public record Message(
 			@JsonProperty("role") String role,
 			@JsonProperty("content") String content
 	) {

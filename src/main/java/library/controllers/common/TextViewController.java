@@ -12,16 +12,37 @@ import org.jetbrains.annotations.UnknownNullability;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * The {@code TextViewController} class is a final controller class that
+ * manages the textual content display for a UI component. It implements
+ * both {@code RequiresLoggedIn} and {@code Initializable}, ensuring user
+ * authentication and proper initialization of its components.
+ *
+ * This controller is primarily designed to handle and render textual content
+ * while enabling user interaction such as zooming functionality via a slider.
+ */
 @RequiredArgsConstructor
 public final class TextViewController implements RequiresLoggedIn, Initializable {
-	public static final String WINDOW_TITLE = "Reading: '%s' by '%s'";
+    /**
+     * The constant WINDOW_TITLE.
+     */
+    public static final String WINDOW_TITLE = "Reading: '%s' by '%s'";
 
-	@Getter
+    /**
+     * The Content.
+     */
+    @Getter
 	public final String content;
-	@UnknownNullability
+    /**
+     * The Content area.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public TextArea contentArea;
-	@UnknownNullability
+    /**
+     * The Zoom slider.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public Slider zoomSlider;
 

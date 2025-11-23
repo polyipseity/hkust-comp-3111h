@@ -29,16 +29,49 @@ import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
+/**
+ * BorrowedBooksController handles the functionality for managing and displaying
+ * the user's borrowed books within the application. It manages the initialization,
+ * data loading, and UI interactions for the borrowed books table, enforcing that
+ * a user must be logged in to access the features. This controller supports
+ * dynamically updating the displayed data and interacting with borrowed books
+ * such as reading or returning them.
+ *
+ * This class implements {@code RequiresLoggedIn}, {@code Initializable}, and
+ * {@code LoadsData} interfaces to ensure proper initialization, user session validation,
+ * and data handling.
+ */
 public final class BorrowedBooksController implements RequiresLoggedIn, Initializable, LoadsData {
-	@UnknownNullability
+    /**
+     * The Table.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public TableView<@Nullable Data> table;
-	@UnknownNullability
+    /**
+     * The Table controller.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public DynamicTableController<Keys, Data> tableController;
-	@UnknownNullability
+    /**
+     * The Title col.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
-	public TableColumn<Data, @Nullable Data> titleCol, authorCol, borrowedOnCol, durationLeftCol, actionsCol;
+	public TableColumn<Data, @Nullable Data> titleCol, /**
+     * The Author col.
+     */
+    authorCol, /**
+     * The Borrowed on col.
+     */
+    borrowedOnCol, /**
+     * The Duration left col.
+     */
+    durationLeftCol, /**
+     * The Actions col.
+     */
+    actionsCol;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
@@ -65,7 +98,12 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 		);
 	}
 
-	public void readSelectedBook() throws IOException {
+    /**
+     * Read selected book.
+     *
+     * @throws IOException the io exception
+     */
+    public void readSelectedBook() throws IOException {
 		final var context = Main.getContext();
 
 		final var currentRow = table.getSelectionModel().getSelectedItem();
@@ -96,15 +134,36 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 		).show();
 	}
 
-	public enum Keys {
-		TITLE,
-		AUTHOR_FULL_NAME,
-		BORROW_DATE,
-		DURATION_LEFT,
-		ACTIONS
+    /**
+     * The enum Keys.
+     */
+    public enum Keys {
+        /**
+         * Title keys.
+         */
+        TITLE,
+        /**
+         * Author full name keys.
+         */
+        AUTHOR_FULL_NAME,
+        /**
+         * Borrow date keys.
+         */
+        BORROW_DATE,
+        /**
+         * Duration left keys.
+         */
+        DURATION_LEFT,
+        /**
+         * Actions keys.
+         */
+        ACTIONS
 	}
 
-	public record Data(BorrowedBooksController controller,
+    /**
+     * The type Data.
+     */
+    public record Data(BorrowedBooksController controller,
 	                   Book book,
 	                   Borrow borrow,
 	                   String authorFullName)

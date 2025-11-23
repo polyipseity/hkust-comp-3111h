@@ -7,16 +7,34 @@ import library.models.User;
 
 import java.io.IOException;
 
+/**
+ * The type Home controller.
+ */
 public final class HomeController implements RequiresLoggedOut {
-	public void handleStudentStaff() throws IOException {
+    /**
+     * Handle student staff.
+     *
+     * @throws IOException the io exception
+     */
+    public void handleStudentStaff() throws IOException {
 		goToLogin(User.Role.STUDENT_STAFF);
 	}
 
-	public void handleAuthor() throws IOException {
+    /**
+     * Handle author.
+     *
+     * @throws IOException the io exception
+     */
+    public void handleAuthor() throws IOException {
 		goToLogin(User.Role.AUTHOR);
 	}
 
-	public void handleLibrarian() throws IOException {
+    /**
+     * Handle librarian.
+     *
+     * @throws IOException the io exception
+     */
+    public void handleLibrarian() throws IOException {
 		goToLogin(User.Role.LIBRARIAN);
 	}
 

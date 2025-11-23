@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Represents a response from the Gutenberg API.
+ * This record encapsulates the overall structure of the API response, including metadata
+ * such as the total count, pagination details, and a list of books.
+ */
 @SuppressWarnings("unused")
 public record GutendexResponse(
 		@JsonProperty("count") long count,
@@ -14,7 +19,10 @@ public record GutendexResponse(
 		@JsonProperty("previous") @Nullable String previous,
 		@JsonProperty("results") List<Book> results
 ) {
-	public record Book(
+    /**
+     * The type Book.
+     */
+    public record Book(
 			@JsonProperty("id") long id,
 			@JsonProperty("title") String title,
 			@JsonProperty("subjects") List<String> subjects,
@@ -30,23 +38,41 @@ public record GutendexResponse(
 			// <string of MIME-type>: <string of URL>
 			@JsonProperty("download_count") long downloadCount
 	) {
-		public String authorString() {
+        /**
+         * Author string string.
+         *
+         * @return the string
+         */
+        public String authorString() {
 			final var ret = authors.stream().map(Person::name).collect(Collectors.joining("; "));
 			return ret.isBlank() ? "(no authors)" : ret;
 		}
 
-		public String bookshelvesString() {
+        /**
+         * Bookshelves string string.
+         *
+         * @return the string
+         */
+        public String bookshelvesString() {
 			final var ret = String.join("; ", bookshelves);
 			return ret.isBlank() ? "(no bookshelves)" : ret;
 		}
 
-		public String summariesString() {
+        /**
+         * Summaries string string.
+         *
+         * @return the string
+         */
+        public String summariesString() {
 			final var ret = String.join("\n\n", summaries);
 			return ret.isBlank() ? "(no summary)" : ret;
 		}
 	}
 
-	public record Person(
+    /**
+     * The type Person.
+     */
+    public record Person(
 			@JsonProperty("birth_year") @Nullable Integer birthYear,
 			@JsonProperty("death_year") @Nullable Integer deathYear,
 			@JsonProperty("name") String name

@@ -23,26 +23,71 @@ import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
+/**
+ * The BookDownloadController class is responsible for managing the user interface and operations
+ * related to searching, displaying, and downloading books from Project Gutenberg. It relies on
+ * functionalities provided by the RequiresLoggedIn interface for enforcing authentication.
+ *
+ * This class initializes and manages a dynamic table view for displaying book data and provides
+ * mechanisms for book search and download operations. User interactions are facilitated through
+ * various UI components, such as text fields and table columns.
+ */
 public final class BookDownloadController implements RequiresLoggedIn, Initializable {
-	@UnknownNullability
+    /**
+     * The Table.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public TableView<@Nullable Data> table;
-	@UnknownNullability
+    /**
+     * The Table controller.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public DynamicTableController<Keys, Data> tableController;
-	@UnknownNullability
+    /**
+     * The Title col.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
-	public TableColumn<Data, @Nullable Data> titleCol, authorCol, bookshelvesCol, summaryCol;
+	public TableColumn<Data, @Nullable Data> titleCol, /**
+     * The Author col.
+     */
+    authorCol, /**
+     * The Bookshelves col.
+     */
+    bookshelvesCol, /**
+     * The Summary col.
+     */
+    summaryCol;
 
-	@UnknownNullability
+    /**
+     * The Search bar.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public TextField searchBar;
-	@UnknownNullability
+    /**
+     * The Sidebar.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public Region sidebar;
-	@UnknownNullability
+    /**
+     * The Title text.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
-	public Text titleText, authorText, bookshelvesText, summaryText;
+	public Text titleText, /**
+     * The Author text.
+     */
+    authorText, /**
+     * The Bookshelves text.
+     */
+    bookshelvesText, /**
+     * The Summary text.
+     */
+    summaryText;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
@@ -64,12 +109,18 @@ public final class BookDownloadController implements RequiresLoggedIn, Initializ
 		summaryText.textProperty().bind(selectedItem.map(item -> item == null ? "" : item.book.summariesString()).orElse(""));
 	}
 
-	@SuppressWarnings("EmptyMethod")
+    /**
+     * Load data.
+     */
+    @SuppressWarnings("EmptyMethod")
 	public void loadData() {
 		// noop
 	}
 
-	public void searchBooks() {
+    /**
+     * Search books.
+     */
+    public void searchBooks() {
 		final var startTime = System.currentTimeMillis();
 		final var searchFuture = Main.getContext().getBookDownloadControl().searchProjectGutenberg(searchBar.getText()).thenApply(results -> results.stream().map(Data::new).toList());
 
@@ -95,7 +146,10 @@ public final class BookDownloadController implements RequiresLoggedIn, Initializ
 		}).thenAccept(Platform::runLater);
 	}
 
-	public void downloadSelected() {
+    /**
+     * Download selected.
+     */
+    public void downloadSelected() {
 		final var context = Main.getContext();
 		switch (table.getSelectionModel().selectedItemProperty().get()) {
 			case null -> Alerts.showErrorDialog("No books selected");
@@ -141,11 +195,32 @@ public final class BookDownloadController implements RequiresLoggedIn, Initializ
 		}
 	}
 
-	public enum Keys {
-		TITLE, AUTHOR, BOOKSHELVES, SUMMARY,
+    /**
+     * The enum Keys.
+     */
+    public enum Keys {
+        /**
+         * Title keys.
+         */
+        TITLE,
+        /**
+         * Author keys.
+         */
+        AUTHOR,
+        /**
+         * Bookshelves keys.
+         */
+        BOOKSHELVES,
+        /**
+         * Summary keys.
+         */
+        SUMMARY,
 	}
 
-	public record Data(
+    /**
+     * The type Data.
+     */
+    public record Data(
 			GutendexResponse.Book book) implements Function<Keys, DynamicTableController.Data> {
 		@Override
 		public DynamicTableController.Data apply(Keys key) {

@@ -13,52 +13,172 @@ import org.jetbrains.annotations.Nullable;
 import java.io.Closeable;
 import java.util.function.Consumer;
 
+/**
+ * Represents a context providing access to various controls, services, and resources within the application.
+ * This interface supports the management of application windows, user sessions, and timeline listeners.
+ * It also facilitates the control of system operations through various control interfaces.
+ */
 public interface Context extends Closeable {
-	boolean isTesting();
+    /**
+     * Is testing boolean.
+     *
+     * @return the boolean
+     */
+    boolean isTesting();
 
-	void setScene(Parent value);
+    /**
+     * Sets scene.
+     *
+     * @param value the value
+     */
+    void setScene(Parent value);
 
-	<E extends Throwable> Stage newWindow(String title, ThrowingFunction<? super Stage, ? extends Parent, ? extends E> parentSupplier, @Nullable Stage stage) throws E;
+    /**
+     * New window stage.
+     *
+     * @param <E>            the type parameter
+     * @param title          the title
+     * @param parentSupplier the parent supplier
+     * @param stage          the stage
+     * @return the stage
+     * @throws E the e
+     */
+    <E extends Throwable> Stage newWindow(String title, ThrowingFunction<? super Stage, ? extends Parent, ? extends E> parentSupplier, @Nullable Stage stage) throws E;
 
-	default Stage newWindow(String title, Parent parent, @Nullable Stage stage) {
+    /**
+     * New window stage.
+     *
+     * @param title  the title
+     * @param parent the parent
+     * @param stage  the stage
+     * @return the stage
+     */
+    default Stage newWindow(String title, Parent parent, @Nullable Stage stage) {
 		return newWindow(title, _ -> parent, stage);
 	}
 
-	Stage getPrimaryStage();
+    /**
+     * Gets primary stage.
+     *
+     * @return the primary stage
+     */
+    Stage getPrimaryStage();
 
-	Repository getRepository();
+    /**
+     * Gets repository.
+     *
+     * @return the repository
+     */
+    Repository getRepository();
 
-	AIServiceControl getAIServiceControl();
+    /**
+     * Gets ai service control.
+     *
+     * @return the ai service control
+     */
+    AIServiceControl getAIServiceControl();
 
-	BookDownloadControl getBookDownloadControl();
+    /**
+     * Gets book download control.
+     *
+     * @return the book download control
+     */
+    BookDownloadControl getBookDownloadControl();
 
-	BorrowBooksControl getBorrowBooksControl();
+    /**
+     * Gets borrow books control.
+     *
+     * @return the borrow books control
+     */
+    BorrowBooksControl getBorrowBooksControl();
 
-	ManageBooksControl getManageBooksControl();
+    /**
+     * Gets manage books control.
+     *
+     * @return the manage books control
+     */
+    ManageBooksControl getManageBooksControl();
 
-	ManageNotificationsControl getManageNotificationsControl();
+    /**
+     * Gets manage notifications control.
+     *
+     * @return the manage notifications control
+     */
+    ManageNotificationsControl getManageNotificationsControl();
 
-	ManageProfileControl getManageProfileControl();
+    /**
+     * Gets manage profile control.
+     *
+     * @return the manage profile control
+     */
+    ManageProfileControl getManageProfileControl();
 
-	ManageUsersControl getManageUsersControl();
+    /**
+     * Gets manage users control.
+     *
+     * @return the manage users control
+     */
+    ManageUsersControl getManageUsersControl();
 
-	PublishBooksControl getPublishBooksControl();
+    /**
+     * Gets publish books control.
+     *
+     * @return the publish books control
+     */
+    PublishBooksControl getPublishBooksControl();
 
-	RequestBooksControl getRequestBooksControl();
+    /**
+     * Gets request books control.
+     *
+     * @return the request books control
+     */
+    RequestBooksControl getRequestBooksControl();
 
-	StatsControl getStatsControl();
+    /**
+     * Gets stats control.
+     *
+     * @return the stats control
+     */
+    StatsControl getStatsControl();
 
-	void addSecondTimelineListener(Object key, Consumer<? super ActionEvent> listener);
+    /**
+     * Add second timeline listener.
+     *
+     * @param key      the key
+     * @param listener the listener
+     */
+    void addSecondTimelineListener(Object key, Consumer<? super ActionEvent> listener);
 
-	void addMinuteTimelineListener(Object key, Consumer<? super ActionEvent> listener);
+    /**
+     * Add minute timeline listener.
+     *
+     * @param key      the key
+     * @param listener the listener
+     */
+    void addMinuteTimelineListener(Object key, Consumer<? super ActionEvent> listener);
 
-	@Nullable
+    /**
+     * Gets logged in user.
+     *
+     * @return the logged in user
+     */
+    @Nullable
 	Tuple2<User, User.Data> getLoggedInUser();
 
-	@SuppressWarnings("EmptyMethod")
+    /**
+     * Sets logged in user.
+     *
+     * @param loggedInUser the logged in user
+     */
+    @SuppressWarnings("EmptyMethod")
 	void setLoggedInUser(@SuppressWarnings("unused") @Nullable Tuple2<library.models.User, library.models.User.Data> loggedInUser);
 
-	@Nullable
+    /**
+     * Gets logged in token.
+     *
+     * @return the logged in token
+     */
+    @Nullable
 	Object getLoggedInToken();
 
 	/**

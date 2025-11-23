@@ -21,8 +21,21 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * The type Borrow books control.
+ */
 public record BorrowBooksControl(Repository repository) {
-	public BorrowResult borrowBook(User user, Book book, int minutes, int seconds) throws TransactionException {
+    /**
+     * Borrow book borrow result.
+     *
+     * @param user    the user
+     * @param book    the book
+     * @param minutes the minutes
+     * @param seconds the seconds
+     * @return the borrow result
+     * @throws TransactionException the transaction exception
+     */
+    public BorrowResult borrowBook(User user, Book book, int minutes, int seconds) throws TransactionException {
 		int durationUpperBound = 14 * 24 * 60 * 60;
 		int durationLowerBound = 1;
 		int durationSeconds = minutes * 60 + seconds;
@@ -54,7 +67,13 @@ public record BorrowBooksControl(Repository repository) {
 		return new BorrowResult.Success(borrowData);
 	}
 
-	public Map<Book, Book.Data> getBorrowableBooks(User user) {
+    /**
+     * Gets borrowable books.
+     *
+     * @param user the user
+     * @return the borrowable books
+     */
+    public Map<Book, Book.Data> getBorrowableBooks(User user) {
 		final var publishedBooks = repository.bookOps.read(entry -> entry.getValue().published());
 		final var borrowedBooks = repository.borrowOps.read(user);
 		return publishedBooks.entrySet().stream()
@@ -67,7 +86,14 @@ public record BorrowBooksControl(Repository repository) {
 		return "%s__%s.pdf".formatted(user.username(), filteredBookTitle);
 	}
 
-	public ReadResult readBook(User user, Book book) {
+    /**
+     * Read book read result.
+     *
+     * @param user the user
+     * @param book the book
+     * @return the read result
+     */
+    public ReadResult readBook(User user, Book book) {
 		Optional<Borrow> borrowData = repository.borrowOps.read(user, book);
 		Optional<Book.Data> bookData = repository.bookOps.read(book);
 		if (borrowData.isEmpty()) return new ReadResult.BorrowDataNotFound();
@@ -102,22 +128,26 @@ public record BorrowBooksControl(Repository repository) {
 		}
 	}
 
-	/**
-	 * Checks if a book is being borrowed by a user.
-	 *
-	 * @return True if the book is being borrowed by the user, false otherwise.
-	 */
-	public boolean checkBorrowed(User user, Book book) {
+    /**
+     * Checks if a book is being borrowed by a user.
+     *
+     * @param user the user
+     * @param book the book
+     * @return True if the book is being borrowed by the user, false otherwise.
+     */
+    public boolean checkBorrowed(User user, Book book) {
 		return repository.borrowOps.read(user, book).isPresent();
 	}
 
-	/**
-	 * Returns a book being borrowed by a user.
-	 *
-	 * @param user The user whose book will be returned.
-	 * @param book The book to be returned.
-	 */
-	public ReturnResult returnBook(User user, Book book) throws TransactionException {
+    /**
+     * Returns a book being borrowed by a user.
+     *
+     * @param user The user whose book will be returned.
+     * @param book The book to be returned.
+     * @return the return result
+     * @throws TransactionException the transaction exception
+     */
+    public ReturnResult returnBook(User user, Book book) throws TransactionException {
 		if (!checkBorrowed(user, book)) return new ReturnResult.BookNotBorrowed();
 		else {
 			Borrow borrowData = repository.borrowOps.readOrThrow(user, book);
@@ -126,25 +156,40 @@ public record BorrowBooksControl(Repository repository) {
 		}
 	}
 
-	public sealed interface BorrowResult {
-		record Success(Borrow borrow) implements BorrowResult {
+    /**
+     * The interface Borrow result.
+     */
+    public sealed interface BorrowResult {
+        /**
+         * The type Success.
+         */
+        record Success(Borrow borrow) implements BorrowResult {
 		}
 
-		record InvalidDuration(String message) implements BorrowResult, HasMessage {
+        /**
+         * The type Invalid duration.
+         */
+        record InvalidDuration(String message) implements BorrowResult, HasMessage {
 			@Override
 			public String getMessage() {
 				return message;
 			}
 		}
 
-		record BookDataNotFound() implements BorrowResult, HasMessage {
+        /**
+         * The type Book data not found.
+         */
+        record BookDataNotFound() implements BorrowResult, HasMessage {
 			@Override
 			public String getMessage() {
 				return "The data for the selected book cannot be found";
 			}
 		}
 
-		record BookAlreadyBorrowed() implements BorrowResult, HasMessage {
+        /**
+         * The type Book already borrowed.
+         */
+        record BookAlreadyBorrowed() implements BorrowResult, HasMessage {
 			@Override
 			public String getMessage() {
 				return "The user has already borrowed the book";
@@ -152,35 +197,56 @@ public record BorrowBooksControl(Repository repository) {
 		}
 	}
 
-	public sealed interface ReadResult {
-		record Success(@Getter String path) implements ReadResult {
+    /**
+     * The interface Read result.
+     */
+    public sealed interface ReadResult {
+        /**
+         * The type Success.
+         */
+        record Success(@Getter String path) implements ReadResult {
 		}
 
-		record NewPdfGenerated(@Getter String path) implements ReadResult {
+        /**
+         * The type New pdf generated.
+         */
+        record NewPdfGenerated(@Getter String path) implements ReadResult {
 		}
 
-		record PdfGenerationError() implements ReadResult, HasMessage {
+        /**
+         * The type Pdf generation error.
+         */
+        record PdfGenerationError() implements ReadResult, HasMessage {
 			@Override
 			public String getMessage() {
 				return "Error while generating PDF";
 			}
 		}
 
-		record BookDataNotFound() implements ReadResult, HasMessage {
+        /**
+         * The type Book data not found.
+         */
+        record BookDataNotFound() implements ReadResult, HasMessage {
 			@Override
 			public String getMessage() {
 				return "The data for the book is not found";
 			}
 		}
 
-		record BorrowDataNotFound() implements ReadResult, HasMessage {
+        /**
+         * The type Borrow data not found.
+         */
+        record BorrowDataNotFound() implements ReadResult, HasMessage {
 			@Override
 			public String getMessage() {
 				return "The borrow data for the book is not found";
 			}
 		}
 
-		record BookExpired() implements ReadResult, HasMessage {
+        /**
+         * The type Book expired.
+         */
+        record BookExpired() implements ReadResult, HasMessage {
 			@Override
 			public String getMessage() {
 				return "The borrow period for the book has expired";
@@ -188,11 +254,20 @@ public record BorrowBooksControl(Repository repository) {
 		}
 	}
 
-	public sealed interface ReturnResult {
-		record Success() implements ReturnResult {
+    /**
+     * The interface Return result.
+     */
+    public sealed interface ReturnResult {
+        /**
+         * The type Success.
+         */
+        record Success() implements ReturnResult {
 		}
 
-		record BookNotBorrowed() implements ReturnResult, HasMessage {
+        /**
+         * The type Book not borrowed.
+         */
+        record BookNotBorrowed() implements ReturnResult, HasMessage {
 			@Override
 			public String getMessage() {
 				return "The book was not borrowed, so it cannot be returned";

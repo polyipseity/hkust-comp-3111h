@@ -21,16 +21,45 @@ import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
+/**
+ * BorrowedBooksController is a final controller class responsible for managing
+ * and displaying data related to borrowed books in a dynamic table view. It ensures
+ * that only authenticated users can access this functionality and provides methods for
+ * initializing and loading data into the table.
+ *
+ * This class implements RequiresLoggedIn, Initializable, and LoadsData to ensure
+ * proper initialization and user session validation. It dynamically populates a table
+ * with information about borrowed books, such as their title, borrower, borrow date,
+ * and duration left.
+ */
 public final class BorrowedBooksController implements RequiresLoggedIn, Initializable, LoadsData {
-	@UnknownNullability
+    /**
+     * The Table.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public TableView<@Nullable Data> table;
-	@UnknownNullability
+    /**
+     * The Table controller.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public DynamicTableController<Keys, Data> tableController;
-	@UnknownNullability
+    /**
+     * The Title col.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
-	public TableColumn<Data, @Nullable Data> titleCol, borrowerCol, borrowDateCol, durationLeftCol;
+	public TableColumn<Data, @Nullable Data> titleCol, /**
+     * The Borrower col.
+     */
+    borrowerCol, /**
+     * The Borrow date col.
+     */
+    borrowDateCol, /**
+     * The Duration left col.
+     */
+    durationLeftCol;
 
 
 	@Override
@@ -57,14 +86,32 @@ public final class BorrowedBooksController implements RequiresLoggedIn, Initiali
 				.toList());
 	}
 
-	public enum Keys {
-		TITLE,
-		BORROWER,
-		BORROW_DATE,
-		DURATION_LEFT
+    /**
+     * The enum Keys.
+     */
+    public enum Keys {
+        /**
+         * Title keys.
+         */
+        TITLE,
+        /**
+         * Borrower keys.
+         */
+        BORROWER,
+        /**
+         * Borrow date keys.
+         */
+        BORROW_DATE,
+        /**
+         * Duration left keys.
+         */
+        DURATION_LEFT
 	}
 
-	public record Data(BorrowedBooksController controller,
+    /**
+     * The type Data.
+     */
+    public record Data(BorrowedBooksController controller,
 	                   User user,
 	                   Book book,
 	                   Borrow borrow)

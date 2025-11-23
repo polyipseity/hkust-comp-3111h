@@ -8,9 +8,21 @@ import org.mapdb.serializer.GroupSerializerObjectArray;
 import java.io.IOException;
 import java.time.Duration;
 
+/**
+ * A serializer implementation for Java's {@link Duration} class that provides
+ * methods to serialize and deserialize {@link Duration} objects to and from
+ * binary forms using MapDB's {@link DataOutput2} and {@link DataInput2}.
+ * <p>
+ * This class ensures that {@link Duration} objects are stored as a combination
+ * of seconds and nanoseconds components, which are the integral parts of its
+ * internal representation.
+ */
 @RequiredArgsConstructor
 public class DurationSerializer extends GroupSerializerObjectArray<Duration> {
-	public static final DurationSerializer INSTANCE = new DurationSerializer();
+    /**
+     * The constant INSTANCE.
+     */
+    public static final DurationSerializer INSTANCE = new DurationSerializer();
 
 	/**
 	 * Serializes the content of the given value into the given

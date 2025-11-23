@@ -19,20 +19,48 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+/**
+ * The type Dynamic table controller.
+ *
+ * @param <Key>   the type parameter
+ * @param <Value> the type parameter
+ */
 public class DynamicTableController<Key, Value extends Function<Key, DynamicTableController.Data>> {
-	public final TableView<@Nullable Value> table;
-	protected final Map<Key, TableColumn<Value, @Nullable Value>> columnMap = new HashMap<>();
+    /**
+     * The Table.
+     */
+    public final TableView<@Nullable Value> table;
+    /**
+     * The Column map.
+     */
+    protected final Map<Key, TableColumn<Value, @Nullable Value>> columnMap = new HashMap<>();
 
-	public DynamicTableController(TableView<@Nullable Value> table, SequencedMap<Key, TableColumn<Value, @Nullable Value>> keys) {
+    /**
+     * Instantiates a new Dynamic table controller.
+     *
+     * @param table the table
+     * @param keys  the keys
+     */
+    public DynamicTableController(TableView<@Nullable Value> table, SequencedMap<Key, TableColumn<Value, @Nullable Value>> keys) {
 		this(table);
 		setKeys(keys);
 	}
 
-	public DynamicTableController(TableView<@Nullable Value> table) {
+    /**
+     * Instantiates a new Dynamic table controller.
+     *
+     * @param table the table
+     */
+    public DynamicTableController(TableView<@Nullable Value> table) {
 		this.table = table;
 	}
 
-	public void setKeys(SequencedMap<Key, TableColumn<Value, @Nullable Value>> keys) {
+    /**
+     * Sets keys.
+     *
+     * @param keys the keys
+     */
+    public void setKeys(SequencedMap<Key, TableColumn<Value, @Nullable Value>> keys) {
 		setData(List.of());
 
 		// Remove obsolete keys
@@ -52,7 +80,13 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 		}
 	}
 
-	@SuppressWarnings({"UnusedReturnValue", "unchecked"})
+    /**
+     * Sets data.
+     *
+     * @param data the data
+     * @return the data
+     */
+    @SuppressWarnings({"UnusedReturnValue", "unchecked"})
 	public boolean setData(Collection<Value> data) {
 		final var items = table.getItems();
 		final var removed = items.removeIf(Predicate.not(data::contains)); // Remove obsolete items
@@ -77,19 +111,38 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 		return removed;
 	}
 
-	@SuppressWarnings("UnusedReturnValue")
+    /**
+     * Add datum boolean.
+     *
+     * @param datum the datum
+     * @return the boolean
+     */
+    @SuppressWarnings("UnusedReturnValue")
 	public boolean addDatum(@NotNull Value datum) {
 		table.getItems().add(datum); // always `true`
 		table.sort();
 		return true;
 	}
 
-	@SuppressWarnings("UnusedReturnValue")
+    /**
+     * Remove datum boolean.
+     *
+     * @param datum the datum
+     * @return the boolean
+     */
+    @SuppressWarnings("UnusedReturnValue")
 	public boolean removeDatum(@NotNull Value datum) {
 		return table.getItems().remove(datum);
 	}
 
-	@SuppressWarnings("UnusedReturnValue")
+    /**
+     * Replace datum boolean.
+     *
+     * @param oldDatum the old datum
+     * @param datum    the datum
+     * @return the boolean
+     */
+    @SuppressWarnings("UnusedReturnValue")
 	public boolean replaceDatum(@NotNull Value oldDatum, @NotNull Value datum) {
 		final var items = table.getItems();
 		return switch (Integer.valueOf(items.indexOf(oldDatum))) {
@@ -102,7 +155,14 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 		};
 	}
 
-	protected TableColumn<Value, @Nullable Value> configureColumn(@NotNull Key key, TableColumn<Value, @Nullable Value> column) {
+    /**
+     * Configure column table column.
+     *
+     * @param key    the key
+     * @param column the column
+     * @return the table column
+     */
+    protected TableColumn<Value, @Nullable Value> configureColumn(@NotNull Key key, TableColumn<Value, @Nullable Value> column) {
 		column.setComparator(Comparator.comparing(datum -> Objects.requireNonNull(datum).apply(key)));
 		column.setCellValueFactory(new Callback<>() {
 			/**
@@ -203,21 +263,52 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 		return column;
 	}
 
-	public sealed interface Data extends Comparable<Data> permits Data.Graphic, Data.ObservableText, Data.Text {
-		@SuppressWarnings("unchecked")
+    /**
+     * The interface Data.
+     */
+    public sealed interface Data extends Comparable<Data> permits Data.Graphic, Data.ObservableText, Data.Text {
+        /**
+         * Compare comparable int.
+         *
+         * @param left  the left
+         * @param right the right
+         * @return the int
+         */
+        @SuppressWarnings("unchecked")
 		static int compareComparable(@Nullable Comparable<?> left, @Nullable Comparable<?> right) {
 			return ((Comparator<Comparable<?>>) Comparator.nullsFirst(Comparator.naturalOrder())).compare(left, right);
 		}
 
-		byte getTag();
+        /**
+         * Gets tag.
+         *
+         * @return the tag
+         */
+        byte getTag();
 
-		@Nullable
+        /**
+         * Comparable comparable.
+         *
+         * @return the comparable
+         */
+        @Nullable
 		Comparable<?> comparable();
 
-		record Text(String value, @Nullable Comparable<?> comparable) implements Data {
-			public static final byte TAG = 0;
+        /**
+         * The type Text.
+         */
+        record Text(String value, @Nullable Comparable<?> comparable) implements Data {
+            /**
+             * The constant TAG.
+             */
+            public static final byte TAG = 0;
 
-			public Text(String value) {
+            /**
+             * Instantiates a new Text.
+             *
+             * @param value the value
+             */
+            public Text(String value) {
 				this(value, null);
 			}
 
@@ -269,11 +360,22 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 			}
 		}
 
-		record ObservableText(ObservableStringValue value,
+        /**
+         * The type Observable text.
+         */
+        record ObservableText(ObservableStringValue value,
 		                      Supplier<? extends @Nullable Comparable<?>> comparableSupplier) implements Data {
-			public static final byte TAG = 1;
+            /**
+             * The constant TAG.
+             */
+            public static final byte TAG = 1;
 
-			@SuppressWarnings("unused")
+            /**
+             * Instantiates a new Observable text.
+             *
+             * @param value the value
+             */
+            @SuppressWarnings("unused")
 			public ObservableText(ObservableStringValue value) {
 				this(value, () -> null);
 			}
@@ -331,16 +433,36 @@ public class DynamicTableController<Key, Value extends Function<Key, DynamicTabl
 			}
 		}
 
-		record Graphic(Supplier<? extends Node> value, @Nullable Comparable<?> comparable)
+        /**
+         * The type Graphic.
+         */
+        record Graphic(Supplier<? extends Node> value, @Nullable Comparable<?> comparable)
 				implements Data {
-			public static final byte TAG = 2;
-			public static final double BUTTON_SPACING = 5;
+            /**
+             * The constant TAG.
+             */
+            public static final byte TAG = 2;
+            /**
+             * The constant BUTTON_SPACING.
+             */
+            public static final double BUTTON_SPACING = 5;
 
-			public Graphic(Supplier<? extends Node> value) {
+            /**
+             * Instantiates a new Graphic.
+             *
+             * @param value the value
+             */
+            public Graphic(Supplier<? extends Node> value) {
 				this(value, null);
 			}
 
-			@SafeVarargs
+            /**
+             * Of buttons graphic.
+             *
+             * @param buttonData the button data
+             * @return the graphic
+             */
+            @SafeVarargs
 			public static Graphic ofButtons(Tuple2<? extends ObservableValue<? extends String>, ? extends BiConsumer<? super Button, ? super ActionEvent>>... buttonData) {
 				return new Graphic(() -> {
 					final var buttonBox = new HBox(BUTTON_SPACING);

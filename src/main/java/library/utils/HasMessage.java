@@ -1,9 +1,22 @@
 package library.utils;
 
+/**
+ * The interface Has message.
+ */
 public interface HasMessage {
-	String getMessage();
+    /**
+     * Gets message.
+     *
+     * @return the message
+     */
+    String getMessage();
 
-	default String getLocalizedMessage() {
+    /**
+     * Gets localized message.
+     *
+     * @return the localized message
+     */
+    default String getLocalizedMessage() {
 		return getMessage();
 	}
 }

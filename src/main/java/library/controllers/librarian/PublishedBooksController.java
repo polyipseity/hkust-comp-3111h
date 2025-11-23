@@ -27,16 +27,48 @@ import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
+/**
+ * The {@code PublishedBooksController} is responsible for managing the display
+ * and actions related to the published books table in the system. It implements
+ * the {@code RequiresLoggedIn}, {@code Initializable}, and {@code LoadsData} interfaces
+ * to enforce user authentication, enable initialization, and manage data loading
+ * for published books.
+ *
+ * This controller maintains a dynamic table setup powered by {@code DynamicTableController},
+ * where columns and data are mapped to the published books' attributes. It also defines
+ * various actions such as viewing or deleting books directly from the UI.
+ */
 public final class PublishedBooksController implements RequiresLoggedIn, Initializable, LoadsData {
-	@UnknownNullability
+    /**
+     * The Table.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public TableView<@Nullable Data> table;
-	@UnknownNullability
+    /**
+     * The Table controller.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public DynamicTableController<Keys, Data> tableController;
-	@UnknownNullability
+    /**
+     * The Title col.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
-	public TableColumn<Data, @Nullable Data> titleCol, authorFullNameCol, publishDateCol, timesBorrowedCol, actionsCol;
+	public TableColumn<Data, @Nullable Data> titleCol, /**
+     * The Author full name col.
+     */
+    authorFullNameCol, /**
+     * The Publish date col.
+     */
+    publishDateCol, /**
+     * The Times borrowed col.
+     */
+    timesBorrowedCol, /**
+     * The Actions col.
+     */
+    actionsCol;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
@@ -69,15 +101,36 @@ public final class PublishedBooksController implements RequiresLoggedIn, Initial
 				.toList());
 	}
 
-	public enum Keys {
-		TITLE,
-		AUTHOR_FULL_NAME,
-		PUBLISH_DATE,
-		TIMES_BORROWED,
-		ACTIONS
+    /**
+     * The enum Keys.
+     */
+    public enum Keys {
+        /**
+         * Title keys.
+         */
+        TITLE,
+        /**
+         * Author full name keys.
+         */
+        AUTHOR_FULL_NAME,
+        /**
+         * Publish date keys.
+         */
+        PUBLISH_DATE,
+        /**
+         * Times borrowed keys.
+         */
+        TIMES_BORROWED,
+        /**
+         * Actions keys.
+         */
+        ACTIONS
 	}
 
-	public record Data(PublishedBooksController controller,
+    /**
+     * The type Data.
+     */
+    public record Data(PublishedBooksController controller,
 	                   Book book,
 	                   Book.Data bookData,
 	                   String authorFullName)

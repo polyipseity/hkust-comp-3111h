@@ -28,14 +28,32 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * The {@code BookViewController} class is a controller responsible for managing the
+ * viewing and saving of books. It extends the functionality provided by {@code RequiresLoggedIn}
+ * and implements {@code Initializable} to ensure proper initialization and enforce user
+ * authentication before interacting with books.
+ *
+ * This class is primarily designed to display books using an embedded viewer,
+ * manage user interactions, and provide the ability to save changes.
+ */
 public final class BookViewController implements RequiresLoggedIn, Initializable {
-	public static final String WINDOW_TITLE = TextViewController.WINDOW_TITLE;
+    /**
+     * The constant WINDOW_TITLE.
+     */
+    public static final String WINDOW_TITLE = TextViewController.WINDOW_TITLE;
 
-	public final Stage stage;
+    /**
+     * The Stage.
+     */
+    public final Stage stage;
 	private final String currentPath;
 	private final Book book;
 
-	@UnknownNullability
+    /**
+     * The Border pane.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public BorderPane borderPane;
 
@@ -51,7 +69,14 @@ public final class BookViewController implements RequiresLoggedIn, Initializable
 		this.book = null;
 	}
 
-	public BookViewController(Stage stage, String path, Book book) {
+    /**
+     * Instantiates a new Book view controller.
+     *
+     * @param stage the stage
+     * @param path  the path
+     * @param book  the book
+     */
+    public BookViewController(Stage stage, String path, Book book) {
 		this.stage = stage;
 		currentPath = path;
 		this.book = book;
@@ -86,7 +111,10 @@ public final class BookViewController implements RequiresLoggedIn, Initializable
 		load();
 	}
 
-	public void load() {
+    /**
+     * Load.
+     */
+    public void load() {
 		User user = getLoggedInUser()._1();
 		if (!Main.getContext().getBorrowBooksControl().checkBorrowed(user, book)) {
 			Alerts.showErrorDialog("Cannot load book as it is not currently being borrowed.");
@@ -98,7 +126,10 @@ public final class BookViewController implements RequiresLoggedIn, Initializable
 		});
 	}
 
-	public void save() {
+    /**
+     * Save.
+     */
+    public void save() {
 		User user = getLoggedInUser()._1();
 		if (!Main.getContext().getBorrowBooksControl().checkBorrowed(user, book)) {
 			Alerts.showErrorDialog("Cannot save book as it is not currently being borrowed.");

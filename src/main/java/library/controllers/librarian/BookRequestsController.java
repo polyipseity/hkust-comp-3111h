@@ -23,16 +23,49 @@ import java.util.LinkedHashMap;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
+/**
+ * The {@code BookRequestsController} class is responsible for managing and displaying
+ * user book requests in a tabular format. It implements {@code RequiresLoggedIn},
+ * {@code Initializable}, and {@code LoadsData}, ensuring user session validation,
+ * proper initialization, and data loading capabilities.
+ *
+ * The controller binds table columns to data keys via a {@code DynamicTableController},
+ * dynamically populating and updating the tabular view based on the current context's
+ * book request data.
+ *
+ * This class also enables sorting by default on the request date column in descending order.
+ */
 public final class BookRequestsController implements RequiresLoggedIn, Initializable, LoadsData {
-	@UnknownNullability
+    /**
+     * The Table.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public TableView<@Nullable Data> table;
-	@UnknownNullability
+    /**
+     * The Table controller.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public DynamicTableController<Keys, Data> tableController;
-	@UnknownNullability
+    /**
+     * The Title col.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
-	public TableColumn<Data, @Nullable Data> titleCol, authorCol, userCol, requestDateCol, actionsCol;
+	public TableColumn<Data, @Nullable Data> titleCol, /**
+     * The Author col.
+     */
+    authorCol, /**
+     * The User col.
+     */
+    userCol, /**
+     * The Request date col.
+     */
+    requestDateCol, /**
+     * The Actions col.
+     */
+    actionsCol;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
@@ -66,15 +99,36 @@ public final class BookRequestsController implements RequiresLoggedIn, Initializ
 				.toList());
 	}
 
-	public enum Keys {
-		TITLE,
-		AUTHOR,
-		USER,
-		REQUEST_DATE,
-		ACTIONS
+    /**
+     * The enum Keys.
+     */
+    public enum Keys {
+        /**
+         * Title keys.
+         */
+        TITLE,
+        /**
+         * Author keys.
+         */
+        AUTHOR,
+        /**
+         * User keys.
+         */
+        USER,
+        /**
+         * Request date keys.
+         */
+        REQUEST_DATE,
+        /**
+         * Actions keys.
+         */
+        ACTIONS
 	}
 
-	public record Data(BookRequestsController controller,
+    /**
+     * The type Data.
+     */
+    public record Data(BookRequestsController controller,
 	                   User user,
 	                   BookRequest bookRequest,
 	                   BookRequest.Data bookRequestData)

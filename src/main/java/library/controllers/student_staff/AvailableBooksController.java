@@ -23,23 +23,61 @@ import java.net.URL;
 import java.util.*;
 import java.util.function.Function;
 
+/**
+ * The controller responsible for managing and displaying the list of available books
+ * that can be borrowed. This class implements functionalities to handle user interaction,
+ * load data, and manage the borrowing process.
+ */
 public final class AvailableBooksController implements RequiresLoggedIn, Initializable, LoadsData {
 	private final Map<Book, Borrow> activeBorrows = new HashMap<>();
-	@UnknownNullability
+    /**
+     * The Table.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public TableView<@Nullable Data> table;
-	@UnknownNullability
+    /**
+     * The Table controller.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public DynamicTableController<Keys, Data> tableController;
-	@UnknownNullability
+    /**
+     * The Title col.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
-	public TableColumn<Data, @Nullable Data> titleCol, authorCol, publishDateCol, summaryCol;
-	@UnknownNullability
+	public TableColumn<Data, @Nullable Data> titleCol, /**
+     * The Author col.
+     */
+    authorCol, /**
+     * The Publish date col.
+     */
+    publishDateCol, /**
+     * The Summary col.
+     */
+    summaryCol;
+    /**
+     * The Sidebar.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public Node sidebar;
-	@UnknownNullability
+    /**
+     * The Title text.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
-	public Text titleText, authorText, publishDateText, summaryText;
+	public Text titleText, /**
+     * The Author text.
+     */
+    authorText, /**
+     * The Publish date text.
+     */
+    publishDateText, /**
+     * The Summary text.
+     */
+    summaryText;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
@@ -88,10 +126,10 @@ public final class AvailableBooksController implements RequiresLoggedIn, Initial
 				.toList());
 	}
 
-	/**
-	 * Runs each time the "Borrow Book" button is pressed.
-	 */
-	public void borrowSelectedBook() {
+    /**
+     * Runs each time the "Borrow Book" button is pressed.
+     */
+    public void borrowSelectedBook() {
 		final var context = Main.getContext();
 		final var currentRow = table.getSelectionModel().getSelectedItem();
 		if (currentRow == null) {
@@ -160,17 +198,38 @@ public final class AvailableBooksController implements RequiresLoggedIn, Initial
 		return dialog;
 	}
 
-	public enum Keys {
-		TITLE,
-		AUTHOR_FULL_NAME,
-		PUBLISH_DATE,
-		SUMMARY
+    /**
+     * The enum Keys.
+     */
+    public enum Keys {
+        /**
+         * Title keys.
+         */
+        TITLE,
+        /**
+         * Author full name keys.
+         */
+        AUTHOR_FULL_NAME,
+        /**
+         * Publish date keys.
+         */
+        PUBLISH_DATE,
+        /**
+         * Summary keys.
+         */
+        SUMMARY
 	}
 
-	public record dialogResult(String minutes, String seconds) {
+    /**
+     * The type Dialog result.
+     */
+    public record dialogResult(String minutes, String seconds) {
 	}
 
-	public record Data(AvailableBooksController controller,
+    /**
+     * The type Data.
+     */
+    public record Data(AvailableBooksController controller,
 	                   Book book,
 	                   Book.Data bookData,
 	                   String authorFullName)

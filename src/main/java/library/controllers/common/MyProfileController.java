@@ -16,16 +16,30 @@ import org.jetbrains.annotations.UnknownNullability;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * A controller class for handling the profile-related operations of the currently logged-in user.
+ * This class requires the user to be logged in and is responsible for initializing UI elements
+ * and managing profile updates such as changing the username or password.
+ */
 public final class MyProfileController implements RequiresLoggedIn, Initializable {
 	private final Context context = Main.getContext();
 	private final Repository repository = context.getRepository();
 
-	@UnknownNullability
+    /**
+     * The Username text.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public Text usernameText;
-	@UnknownNullability
+    /**
+     * The New name field.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
-	public TextField newNameField, newPasswordField;
+	public TextField newNameField, /**
+     * The New password field.
+     */
+    newPasswordField;
 
 	@Override
 	public void initialize(@Nullable URL location, @Nullable ResourceBundle resources) {
@@ -34,7 +48,10 @@ public final class MyProfileController implements RequiresLoggedIn, Initializabl
 		usernameText.setText(getLoggedInUser()._1().username());
 	}
 
-	public void updateProfile() {
+    /**
+     * Update profile.
+     */
+    public void updateProfile() {
 		String enteredPassword = newPasswordField.getText();
 		String enteredFullName = newNameField.getText();
 		if (enteredPassword.isEmpty() && enteredFullName.isEmpty()) {

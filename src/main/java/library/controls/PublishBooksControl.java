@@ -8,12 +8,32 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * The type Publish books control.
+ */
 public record PublishBooksControl(Repository repository) {
-	public PublishBooksControl.AddBookResult addBook(Book book, Book.Data data) throws TransactionException {
+    /**
+     * Add book publish books control . add book result.
+     *
+     * @param book the book
+     * @param data the data
+     * @return the publish books control . add book result
+     * @throws TransactionException the transaction exception
+     */
+    public PublishBooksControl.AddBookResult addBook(Book book, Book.Data data) throws TransactionException {
 		return addBook(book, data, false);
 	}
 
-	public PublishBooksControl.AddBookResult addBook(Book book, Book.Data data, boolean overwrite) throws TransactionException {
+    /**
+     * Add book publish books control . add book result.
+     *
+     * @param book      the book
+     * @param data      the data
+     * @param overwrite the overwrite
+     * @return the publish books control . add book result
+     * @throws TransactionException the transaction exception
+     */
+    public PublishBooksControl.AddBookResult addBook(Book book, Book.Data data, boolean overwrite) throws TransactionException {
 		final var conflictBookData = new AtomicReference<Book.@Nullable Data>();
 		try {
 			repository.transact(tx -> {
@@ -30,14 +50,20 @@ public record PublishBooksControl(Repository repository) {
 		return new AddBookResult.Success(conflictBookData.get());
 	}
 
-	/**
-	 * Result type for book operations.
-	 */
-	public sealed interface AddBookResult permits AddBookResult.Success, AddBookResult.AlreadyExists {
-		record Success(@Nullable Book.Data conflictBookData) implements AddBookResult {
+    /**
+     * Result type for book operations.
+     */
+    public sealed interface AddBookResult permits AddBookResult.Success, AddBookResult.AlreadyExists {
+        /**
+         * The type Success.
+         */
+        record Success(@Nullable Book.Data conflictBookData) implements AddBookResult {
 		}
 
-		record AlreadyExists(Book.Data conflictBookData) implements AddBookResult, HasMessage {
+        /**
+         * The type Already exists.
+         */
+        record AlreadyExists(Book.Data conflictBookData) implements AddBookResult, HasMessage {
 
 			@Override
 			public String getMessage() {

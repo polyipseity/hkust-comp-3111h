@@ -23,29 +23,35 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
+/**
+ * The type Book download control.
+ */
 public record BookDownloadControl(
 		HttpClient client,
 		ObjectMapper objectMapper
 ) implements Closeable {
-	public static final String GUTENBERG_BOOK_API = "https://gutendex.com/books/";
+    /**
+     * The constant GUTENBERG_BOOK_API.
+     */
+    public static final String GUTENBERG_BOOK_API = "https://gutendex.com/books/";
 
-	/**
-	 * Creates a new BookDownloadControl instance with a pre-initialized HttpClient.
-	 */
-	public BookDownloadControl() {
+    /**
+     * Creates a new BookDownloadControl instance with a pre-initialized HttpClient.
+     */
+    public BookDownloadControl() {
 		this(HttpClient.newBuilder()
 						.followRedirects(HttpClient.Redirect.ALWAYS)
 						.build(),
 				new ObjectMapper());
 	}
 
-	/**
-	 * Searches for books from Project Gutenberg using the Gutendex API asynchronously.
-	 *
-	 * @param query The search query (title or author). Case-insensitive.
-	 * @return A CompletableFuture containing a list of matching books.
-	 */
-	public CompletableFuture<List<GutendexResponse.Book>> searchProjectGutenberg(String query) {
+    /**
+     * Searches for books from Project Gutenberg using the Gutendex API asynchronously.
+     *
+     * @param query The search query (title or author). Case-insensitive.
+     * @return A CompletableFuture containing a list of matching books.
+     */
+    public CompletableFuture<List<GutendexResponse.Book>> searchProjectGutenberg(String query) {
 		return CompletableFuture.supplyAsync(() -> {
 					// Build the search URL with query parameters
 					final var params = Map.of(
@@ -82,7 +88,13 @@ public record BookDownloadControl(
 				.thenApply(GutendexResponse::results);
 	}
 
-	public CompletableFuture<String> downloadProjectGutenberg(GutendexResponse.Book book) {
+    /**
+     * Download project gutenberg completable future.
+     *
+     * @param book the book
+     * @return the completable future
+     */
+    public CompletableFuture<String> downloadProjectGutenberg(GutendexResponse.Book book) {
 		return CompletableFuture.supplyAsync(() -> {
 					// Get the URL for the text/plain format
 					final var uri = URI.create(book.formats().entrySet().stream().filter(entry -> entry.getKey().startsWith("text/plain"))
@@ -97,14 +109,14 @@ public record BookDownloadControl(
 				.thenApply(HttpResponse::body);
 	}
 
-	/**
-	 * Combines a GutendexResponse.Book and its content to create a Book.
-	 *
-	 * @param book    The GutendexResponse.Book to convert.
-	 * @param content The content of the book in string form.
-	 * @return A Book with the combined data.
-	 */
-	public Tuple2<Book, Book.Data> newBook(GutendexResponse.Book book, String content) {
+    /**
+     * Combines a GutendexResponse.Book and its content to create a Book.
+     *
+     * @param book    The GutendexResponse.Book to convert.
+     * @param content The content of the book in string form.
+     * @return A Book with the combined data.
+     */
+    public Tuple2<Book, Book.Data> newBook(GutendexResponse.Book book, String content) {
 		// Extract title and author from GutendexResponse.Book
 		final var title = book.title();
 		final var author = new Author.ByName(book.authorString());

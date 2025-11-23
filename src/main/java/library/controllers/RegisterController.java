@@ -20,15 +20,33 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * The type Register controller.
+ */
 @RequiredArgsConstructor
 public final class RegisterController implements RequiresLoggedOut, Initializable {
-	public final User.Role role;
-	@UnknownNullability
+    /**
+     * The Role.
+     */
+    public final User.Role role;
+    /**
+     * The Header label.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public Label headerLabel;
-	@UnknownNullability
+    /**
+     * The Username field.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
-	public TextField usernameField, passwordField, fullNameField;
+	public TextField usernameField, /**
+     * The Password field.
+     */
+    passwordField, /**
+     * The Full name field.
+     */
+    fullNameField;
 
 	@SuppressWarnings("unused") // for testing
 	private RegisterController() {
@@ -41,7 +59,12 @@ public final class RegisterController implements RequiresLoggedOut, Initializabl
 		headerLabel.setText("%s Register".formatted(role.nameCapitalized));
 	}
 
-	public void register() throws IOException {
+    /**
+     * Register.
+     *
+     * @throws IOException the io exception
+     */
+    public void register() throws IOException {
 		String username = usernameField.getText();
 		String password = passwordField.getText();
 		String fullName = fullNameField.getText();
@@ -60,11 +83,21 @@ public final class RegisterController implements RequiresLoggedOut, Initializabl
 		}
 	}
 
-	public void goToHome() throws IOException {
+    /**
+     * Go to home.
+     *
+     * @throws IOException the io exception
+     */
+    public void goToHome() throws IOException {
 		Main.getContext().setScene(FXMLs.HOME.load());
 	}
 
-	public void goToLogin() throws IOException {
+    /**
+     * Go to login.
+     *
+     * @throws IOException the io exception
+     */
+    public void goToLogin() throws IOException {
 		Main.getContext().setScene(FXMLs.LOGIN.load(loader -> loader.setControllerFactory(_ -> new LoginController(role))));
 	}
 }

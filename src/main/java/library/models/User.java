@@ -8,6 +8,9 @@ import org.mapdb.serializer.GroupSerializerObjectArray;
 
 import java.io.IOException;
 
+/**
+ * The type User.
+ */
 public record User(
 		String username
 ) implements Comparable<User> {
@@ -48,14 +51,32 @@ public record User(
 		return username.compareTo(o.username);
 	}
 
-	public enum Role {
-		STUDENT_STAFF("student/staff", "Student/Staff"),
-		LIBRARIAN("librarian", "Librarian"),
-		AUTHOR("author", "Author"),
+    /**
+     * The enum Role.
+     */
+    public enum Role {
+        /**
+         * Student staff role.
+         */
+        STUDENT_STAFF("student/staff", "Student/Staff"),
+        /**
+         * Librarian role.
+         */
+        LIBRARIAN("librarian", "Librarian"),
+        /**
+         * Author role.
+         */
+        AUTHOR("author", "Author"),
 		;
 
-		public final String name;
-		public final String nameCapitalized;
+        /**
+         * The Name.
+         */
+        public final String name;
+        /**
+         * The Name capitalized.
+         */
+        public final String nameCapitalized;
 
 		Role(String name, String nameCapitalized) {
 			this.name = name;
@@ -63,14 +84,22 @@ public record User(
 		}
 	}
 
-	@With
+    /**
+     * The record Data represents a user entity with a role, active status, password, and full name.
+     */
+    @With
 	public record Data(
 			Role role,
 			boolean active,
 			String password,
 			String fullName
 	) {
-		@RequiredArgsConstructor
+        /**
+         * A serializer implementation for the {@link Data} record that extends
+         * {@link GroupSerializerObjectArray}.
+         * Provides methods to serialize and deserialize {@link Data} objects.
+         */
+        @RequiredArgsConstructor
 		public static final class S extends GroupSerializerObjectArray<Data> {
 			/**
 			 * Serializes the content of the given value into the given
@@ -108,7 +137,10 @@ public record User(
 		}
 	}
 
-	@RequiredArgsConstructor
+    /**
+     * The type S.
+     */
+    @RequiredArgsConstructor
 	public static final class S extends GroupSerializerObjectArray<User> {
 		/**
 		 * Serializes the content of the given value into the given

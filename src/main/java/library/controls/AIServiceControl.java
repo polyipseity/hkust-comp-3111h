@@ -14,14 +14,26 @@ import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
+/**
+ * The type Ai service control.
+ */
 public record AIServiceControl(
 		HttpClient client,
 		ObjectMapper objectMapper
 ) implements Closeable {
-	public static final String OPENAI_API_URL = "https://hkust.azure-api.net/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-10-21";
-	public static final String OPENAI_API_KEY = "d7d5f6c01f3c493292402ec61cafe248";
+    /**
+     * The constant OPENAI_API_URL.
+     */
+    public static final String OPENAI_API_URL = "https://hkust.azure-api.net/openai/deployments/gpt-4o-mini/chat/completions?api-version=2024-10-21";
+    /**
+     * The constant OPENAI_API_KEY.
+     */
+    public static final String OPENAI_API_KEY = "d7d5f6c01f3c493292402ec61cafe248";
 
-	public AIServiceControl() {
+    /**
+     * Instantiates a new Ai service control.
+     */
+    public AIServiceControl() {
 		this(
 				HttpClient.newBuilder()
 						.followRedirects(HttpClient.Redirect.ALWAYS)
@@ -30,7 +42,13 @@ public record AIServiceControl(
 		);
 	}
 
-	public CompletableFuture<OpenAIChatCompletionResponse> chatComplete(OpenAIChatCompletionBody prompt) {
+    /**
+     * Chat complete completable future.
+     *
+     * @param prompt the prompt
+     * @return the completable future
+     */
+    public CompletableFuture<OpenAIChatCompletionResponse> chatComplete(OpenAIChatCompletionBody prompt) {
 		return CompletableFuture.supplyAsync(() -> {
 					try {
 						System.out.println(objectMapper.writeValueAsString(prompt));

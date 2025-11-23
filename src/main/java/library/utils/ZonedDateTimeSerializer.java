@@ -10,9 +10,19 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
+/**
+ * A serializer for {@link ZonedDateTime} that provides custom serialization and deserialization
+ * methods for use with MapDB. This serializer is responsible for converting {@link ZonedDateTime}
+ * objects to and from a binary format compatible with {@link DataOutput2} and {@link DataInput2}.
+ * <p>
+ * The serialized {@link ZonedDateTime} includes the epoch seconds, nanoseconds, and the time zone ID.
+ */
 @RequiredArgsConstructor
 public class ZonedDateTimeSerializer extends GroupSerializerObjectArray<ZonedDateTime> {
-	public static final ZonedDateTimeSerializer INSTANCE = new ZonedDateTimeSerializer();
+    /**
+     * The constant INSTANCE.
+     */
+    public static final ZonedDateTimeSerializer INSTANCE = new ZonedDateTimeSerializer();
 
 	/**
 	 * Serializes the content of the given value into the given

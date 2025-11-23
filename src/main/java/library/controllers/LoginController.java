@@ -20,16 +20,31 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * The type Login controller.
+ */
 @RequiredArgsConstructor
 public final class LoginController implements RequiresLoggedOut, Initializable {
-	public final User.Role role;
-	@UnknownNullability
+    /**
+     * The Role.
+     */
+    public final User.Role role;
+    /**
+     * The Header label.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public Label headerLabel;
-	@UnknownNullability
+    /**
+     * The Username field.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public TextField usernameField;
-	@UnknownNullability
+    /**
+     * The Password field.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public PasswordField passwordField;
 
@@ -44,7 +59,12 @@ public final class LoginController implements RequiresLoggedOut, Initializable {
 		headerLabel.setText("%s Login".formatted(role.nameCapitalized));
 	}
 
-	public void login() throws IOException {
+    /**
+     * Login.
+     *
+     * @throws IOException the io exception
+     */
+    public void login() throws IOException {
 		String username = usernameField.getText();
 		String password = passwordField.getText();
 
@@ -62,14 +82,21 @@ public final class LoginController implements RequiresLoggedOut, Initializable {
 		}
 	}
 
-	public void goToHome() throws IOException {
+    /**
+     * Go to home.
+     *
+     * @throws IOException the io exception
+     */
+    public void goToHome() throws IOException {
 		Main.getContext().setScene(FXMLs.HOME.load());
 	}
 
-	/**
-	 * New: navigate to the standalone Register screen
-	 */
-	public void goToRegister() throws IOException {
+    /**
+     * New: navigate to the standalone Register screen
+     *
+     * @throws IOException the io exception
+     */
+    public void goToRegister() throws IOException {
 		Main.getContext().setScene(FXMLs.REGISTER.load(loader -> loader.setControllerFactory(_ -> new RegisterController(role))));
 	}
 }

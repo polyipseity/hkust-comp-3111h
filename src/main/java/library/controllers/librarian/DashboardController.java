@@ -4,70 +4,129 @@ import javafx.scene.Node;
 import library.controllers.common.CommonDashboardController;
 import org.jetbrains.annotations.UnknownNullability;
 
+/**
+ * Controller to manage the various sections of the dashboard.
+ * This class provides methods to load specific dashboard components.
+ * It extends {@code CommonDashboardController} which includes shared functionality for all dashboard controllers.
+ */
 public final class DashboardController extends CommonDashboardController {
-	@UnknownNullability
+    /**
+     * The Pending approvals.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public Node pendingApprovals;
-	@UnknownNullability
+    /**
+     * The Pending approvals controller.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public PendingApprovalsController pendingApprovalsController;
 
-	@UnknownNullability
+    /**
+     * The Manage users.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public Node manageUsers;
-	@UnknownNullability
+    /**
+     * The Manage users controller.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public ManageUsersController manageUsersController;
 
-	@UnknownNullability
+    /**
+     * The Borrowed books.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public Node borrowedBooks;
-	@UnknownNullability
+    /**
+     * The Borrowed books controller.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public BorrowedBooksController borrowedBooksController;
 
-	@UnknownNullability
+    /**
+     * The Published books.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public Node publishedBooks;
-	@UnknownNullability
+    /**
+     * The Published books controller.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public PublishedBooksController publishedBooksController;
 
-	@UnknownNullability
+    /**
+     * The Book requests.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public Node bookRequests;
-	@UnknownNullability
+    /**
+     * The Book requests controller.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public BookRequestsController bookRequestsController;
 
-	@UnknownNullability
+    /**
+     * The Book download.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public Node bookDownload;
-	@UnknownNullability
+    /**
+     * The Book download controller.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public BookDownloadController bookDownloadController;
 
-	public void loadPendingApprovals() {
+    /**
+     * Load pending approvals.
+     */
+    public void loadPendingApprovals() {
 		pendingApprovalsController.loadData();
 	}
 
-	public void loadManageUsers() {
+    /**
+     * Load manage users.
+     */
+    public void loadManageUsers() {
 		manageUsersController.loadData();
 	}
 
-	public void loadBorrowedBooks() {
+    /**
+     * Load borrowed books.
+     */
+    public void loadBorrowedBooks() {
 		borrowedBooksController.loadData();
 	}
 
-	public void loadPublishedBooks() {
+    /**
+     * Load published books.
+     */
+    public void loadPublishedBooks() {
 		publishedBooksController.loadData();
 	}
 
-	public void loadBookRequests() {
+    /**
+     * Load book requests.
+     */
+    public void loadBookRequests() {
 		bookRequestsController.loadData();
 	}
 
-	public void loadBookDownload() {
+    /**
+     * Load book download.
+     */
+    public void loadBookDownload() {
 		bookDownloadController.loadData();
 	}
 }

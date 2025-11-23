@@ -14,32 +14,51 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * The type Manage books control.
+ */
 public record ManageBooksControl(Repository repository) {
-	public static final String NOTIFICATION_APPROVE = "Your book '%s' has been approved!";
-	public static final String NOTIFICATION_REJECT = "Your book '%s' has been rejected!";
-	public static final String NOTIFICATION_DELETE_BOOK = "Your book '%s' has been deleted!";
-	public static final String NOTIFICATION_DELETE_BORROWED_BOOK = "The book '%s' you were borrowing has been deleted!";
+    /**
+     * The constant NOTIFICATION_APPROVE.
+     */
+    public static final String NOTIFICATION_APPROVE = "Your book '%s' has been approved!";
+    /**
+     * The constant NOTIFICATION_REJECT.
+     */
+    public static final String NOTIFICATION_REJECT = "Your book '%s' has been rejected!";
+    /**
+     * The constant NOTIFICATION_DELETE_BOOK.
+     */
+    public static final String NOTIFICATION_DELETE_BOOK = "Your book '%s' has been deleted!";
+    /**
+     * The constant NOTIFICATION_DELETE_BORROWED_BOOK.
+     */
+    public static final String NOTIFICATION_DELETE_BORROWED_BOOK = "The book '%s' you were borrowing has been deleted!";
 
-	/**
-	 * Approves a pending book and updates the database in one transaction.
-	 *
-	 * <p>For a pending book without an {@code originalOrModified} reference,
-	 * it becomes published immediately with the current timestamp as its publishing date.</p>
-	 *
-	 * <p>If the pending book has an {@code originalOrModified} reference:
-	 * <ul>
-	 *   <li>When the pending book is temporary, the data of the referenced
-	 *       original/modified book is updated to match the pending book’s
-	 *       summary and content, and the temporary book is removed.</li>
-	 *   <li>When it is not temporary, the publishing date of the referenced
-	 *       book is copied to the pending book, the pending book becomes
-	 *       published, and the old book record is deleted.</li>
-	 * </ul></p>
-	 *
-	 * <p>The author of the book (or the original/modified book) receives a
-	 * notification about the approval outcome.</p>
-	 */
-	public ApproveResult approveBook(Book pending) throws TransactionException {
+    /**
+     * Approves a pending book and updates the database in one transaction.
+     *
+     * <p>For a pending book without an {@code originalOrModified} reference,
+     * it becomes published immediately with the current timestamp as its publishing date.</p>
+     *
+     * <p>If the pending book has an {@code originalOrModified} reference:
+     * <ul>
+     *   <li>When the pending book is temporary, the data of the referenced
+     *       original/modified book is updated to match the pending book’s
+     *       summary and content, and the temporary book is removed.</li>
+     *   <li>When it is not temporary, the publishing date of the referenced
+     *       book is copied to the pending book, the pending book becomes
+     *       published, and the old book record is deleted.</li>
+     * </ul></p>
+     *
+     * <p>The author of the book (or the original/modified book) receives a
+     * notification about the approval outcome.</p>
+     *
+     * @param pending the pending
+     * @return the approve result
+     * @throws TransactionException the transaction exception
+     */
+    public ApproveResult approveBook(Book pending) throws TransactionException {
 		repository.transact(_ -> {
 			// read current data for the pending book
 			final var pendingData = repository.bookOps.readOrThrow(pending);
@@ -82,23 +101,23 @@ public record ManageBooksControl(Repository repository) {
 		return new ApproveResult.Success();
 	}
 
-	/**
-	 * Rejects a pending book and updates the database in one transaction.
-	 *
-	 * <p>For a pending book without an {@code originalOrModified} reference,
-	 * it becomes rejected immediately.</p>
-	 *
-	 * <p>If the pending book has an {@code originalOrModified} reference,
-	 * the pending record is simply deleted – the referenced original/modified
-	 * book remains unchanged.</p>
-	 *
-	 * <p>The author of the book receives a notification about the rejection.</p>
-	 *
-	 * @param pending the pending book to reject; must be in {@link Book.ApprovalStatus#PENDING} state
-	 * @return a {@link RejectResult} indicating success (no failure path is exposed)
-	 * @throws TransactionException if any database operation fails during the transaction
-	 */
-	public RejectResult rejectBook(Book pending) throws TransactionException {
+    /**
+     * Rejects a pending book and updates the database in one transaction.
+     *
+     * <p>For a pending book without an {@code originalOrModified} reference,
+     * it becomes rejected immediately.</p>
+     *
+     * <p>If the pending book has an {@code originalOrModified} reference,
+     * the pending record is simply deleted – the referenced original/modified
+     * book remains unchanged.</p>
+     *
+     * <p>The author of the book receives a notification about the rejection.</p>
+     *
+     * @param pending the pending book to reject; must be in {@link Book.ApprovalStatus#PENDING} state
+     * @return a {@link RejectResult} indicating success (no failure path is exposed)
+     * @throws TransactionException if any database operation fails during the transaction
+     */
+    public RejectResult rejectBook(Book pending) throws TransactionException {
 		repository.transact(_ -> {
 			// read current data for the pending book
 			final var pendingData = repository.bookOps.readOrThrow(pending);
@@ -130,7 +149,15 @@ public record ManageBooksControl(Repository repository) {
 		return new RejectResult.Success();
 	}
 
-	public Book.Data modifyBookData(Book.Data oldData, Book.Data newData, boolean newIsTemporary) {
+    /**
+     * Modify book data book . data.
+     *
+     * @param oldData        the old data
+     * @param newData        the new data
+     * @param newIsTemporary the new is temporary
+     * @return the book . data
+     */
+    public Book.Data modifyBookData(Book.Data oldData, Book.Data newData, boolean newIsTemporary) {
 		final var ret = oldData
 				.withSummary(newData.summary())
 				.withContent(newData.content())
@@ -139,20 +166,21 @@ public record ManageBooksControl(Repository repository) {
 		return newIsTemporary ? ret : ret.withOriginalOrModified(newData.originalOrModified());
 	}
 
-	/**
-	 * Deletes a book and notifies the author (if not deleted by author) and all borrowers.
-	 *
-	 * <p>Before deleting the book, it retrieves all borrows associated with the book.
-	 * It then removes each borrow record from the database.</p>
-	 *
-	 * <p>After removing the borrows, it notifies the author and all borrowers about
-	 * the deletion of the book.</p>
-	 *
-	 * @param book the book to delete; must exist in the database
-	 * @return a {@link DeleteResult} indicating success or failure
-	 * @throws TransactionException if any database operation fails during the transaction
-	 */
-	public DeleteResult deleteBook(Book book, User.Role role) throws TransactionException {
+    /**
+     * Deletes a book and notifies the author (if not deleted by author) and all borrowers.
+     *
+     * <p>Before deleting the book, it retrieves all borrows associated with the book.
+     * It then removes each borrow record from the database.</p>
+     *
+     * <p>After removing the borrows, it notifies the author and all borrowers about
+     * the deletion of the book.</p>
+     *
+     * @param book the book to delete; must exist in the database
+     * @param role the role
+     * @return a {@link DeleteResult} indicating success or failure
+     * @throws TransactionException if any database operation fails during the transaction
+     */
+    public DeleteResult deleteBook(Book book, User.Role role) throws TransactionException {
 		return switch (role) {
 			case STUDENT_STAFF -> new DeleteResult.BadRole(role);
 			case AUTHOR, LIBRARIAN -> {
@@ -202,7 +230,16 @@ public record ManageBooksControl(Repository repository) {
 		};
 	}
 
-	public ModifyResult modifyBook(Book book, String title, String summary) throws TransactionException {
+    /**
+     * Modify book modify result.
+     *
+     * @param book    the book
+     * @param title   the title
+     * @param summary the summary
+     * @return the modify result
+     * @throws TransactionException the transaction exception
+     */
+    public ModifyResult modifyBook(Book book, String title, String summary) throws TransactionException {
 		final var ret = new AtomicReference<@Nullable ModifyResult>();
 		try {
 			repository.transact(_ -> {
@@ -283,37 +320,52 @@ public record ManageBooksControl(Repository repository) {
 		return Objects.requireNonNull(ret.get());
 	}
 
-	/**
-	 * Result type for the approval operation.
-	 */
-	public sealed interface ApproveResult permits ApproveResult.Success {
-		record Success() implements ApproveResult {
+    /**
+     * Result type for the approval operation.
+     */
+    public sealed interface ApproveResult permits ApproveResult.Success {
+        /**
+         * The type Success.
+         */
+        record Success() implements ApproveResult {
 		}
 	}
 
-	/**
-	 * Result type for the rejection operation.
-	 */
-	public sealed interface RejectResult permits RejectResult.Success {
-		record Success() implements RejectResult {
+    /**
+     * Result type for the rejection operation.
+     */
+    public sealed interface RejectResult permits RejectResult.Success {
+        /**
+         * The type Success.
+         */
+        record Success() implements RejectResult {
 		}
 	}
 
-	/**
-	 * Result type for the deletion operation.
-	 */
-	public sealed interface DeleteResult permits DeleteResult.BadRole, DeleteResult.HasBorrows, DeleteResult.Success {
-		record Success() implements DeleteResult {
+    /**
+     * Result type for the deletion operation.
+     */
+    public sealed interface DeleteResult permits DeleteResult.BadRole, DeleteResult.HasBorrows, DeleteResult.Success {
+        /**
+         * The type Success.
+         */
+        record Success() implements DeleteResult {
 		}
 
-		record BadRole(User.Role role) implements DeleteResult, HasMessage {
+        /**
+         * The type Bad role.
+         */
+        record BadRole(User.Role role) implements DeleteResult, HasMessage {
 			@Override
 			public String getMessage() {
 				return "Bad role: %s".formatted(role.name);
 			}
 		}
 
-		record HasBorrows(Map<User, Borrow> borrows) implements DeleteResult, HasMessage {
+        /**
+         * The type Has borrows.
+         */
+        record HasBorrows(Map<User, Borrow> borrows) implements DeleteResult, HasMessage {
 			@Override
 			public String getMessage() {
 				return "Borrowed books cannot be modified or deleted.";
@@ -321,39 +373,54 @@ public record ManageBooksControl(Repository repository) {
 		}
 	}
 
-	/**
-	 * Result type for the modification operation.
-	 */
-	public sealed interface ModifyResult permits ModifyResult.HasBorrows, ModifyResult.AlreadyExists, ModifyResult.AlreadyRejected, ModifyResult.SameDetails, ModifyResult.Success {
-		record Success(Book newBook, Book.Data newBookData) implements ModifyResult, HasMessage {
+    /**
+     * Result type for the modification operation.
+     */
+    public sealed interface ModifyResult permits ModifyResult.HasBorrows, ModifyResult.AlreadyExists, ModifyResult.AlreadyRejected, ModifyResult.SameDetails, ModifyResult.Success {
+        /**
+         * The type Success.
+         */
+        record Success(Book newBook, Book.Data newBookData) implements ModifyResult, HasMessage {
 			@Override
 			public String getMessage() {
 				return "Book updated and waiting for approval";
 			}
 		}
 
-		record SameDetails(Book.Data oldBookData) implements ModifyResult, HasMessage {
+        /**
+         * The type Same details.
+         */
+        record SameDetails(Book.Data oldBookData) implements ModifyResult, HasMessage {
 			@Override
 			public String getMessage() {
 				return "Book details are the same";
 			}
 		}
 
-		record AlreadyExists(Book conflictBook) implements ModifyResult, HasMessage {
+        /**
+         * The type Already exists.
+         */
+        record AlreadyExists(Book conflictBook) implements ModifyResult, HasMessage {
 			@Override
 			public String getMessage() {
 				return "Book of the same title and author already exists";
 			}
 		}
 
-		record HasBorrows(Map<User, Borrow> borrows) implements ModifyResult, HasMessage {
+        /**
+         * The type Has borrows.
+         */
+        record HasBorrows(Map<User, Borrow> borrows) implements ModifyResult, HasMessage {
 			@Override
 			public String getMessage() {
 				return "Borrowed books cannot be modified or deleted.";
 			}
 		}
 
-		record AlreadyRejected(Book.Data oldBookData) implements ModifyResult, HasMessage {
+        /**
+         * The type Already rejected.
+         */
+        record AlreadyRejected(Book.Data oldBookData) implements ModifyResult, HasMessage {
 			@Override
 			public String getMessage() {
 				return "Rejected books cannot be modified or deleted.";

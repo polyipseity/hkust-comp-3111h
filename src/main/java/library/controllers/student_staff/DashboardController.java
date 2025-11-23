@@ -6,37 +6,72 @@ import library.controllers.common.InformBoardController;
 import library.controllers.common.RequiresLoggedIn;
 import org.jetbrains.annotations.UnknownNullability;
 
+/**
+ * DashboardController is a final class that extends CommonDashboardController and implements
+ * RequiresLoggedIn. It serves as the controller for handling functionality in the user dashboard,
+ * including operations like loading available books, borrowed books, and the information board.
+ *
+ * This controller is specifically designed to manage different aspects of a user's dashboard
+ * and relies on sub-controllers to handle specific components.
+ */
 public final class DashboardController extends CommonDashboardController implements RequiresLoggedIn {
-	@UnknownNullability
+    /**
+     * The Available books.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public Node availableBooks;
-	@UnknownNullability
+    /**
+     * The Available books controller.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public AvailableBooksController availableBooksController;
 
-	@UnknownNullability
+    /**
+     * The Borrowed books.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public Node borrowedBooks;
-	@UnknownNullability
+    /**
+     * The Borrowed books controller.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public BorrowedBooksController borrowedBooksController;
 
-	@UnknownNullability
+    /**
+     * The Inform board.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public Node informBoard;
-	@UnknownNullability
+    /**
+     * The Inform board controller.
+     */
+    @UnknownNullability
 	@SuppressWarnings("unused")
 	public InformBoardController informBoardController;
 
-	public void loadAvailableBooks() {
+    /**
+     * Load available books.
+     */
+    public void loadAvailableBooks() {
 		availableBooksController.loadData();
 	}
 
-	public void loadBorrowedBooks() {
+    /**
+     * Load borrowed books.
+     */
+    public void loadBorrowedBooks() {
 		borrowedBooksController.loadData();
 	}
 
-	public void loadInformBoard() {
+    /**
+     * Load inform board.
+     */
+    public void loadInformBoard() {
 		informBoardController.loadData();
 	}
 }

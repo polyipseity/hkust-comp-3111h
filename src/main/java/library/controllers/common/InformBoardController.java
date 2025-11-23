@@ -19,10 +19,24 @@ import org.jetbrains.annotations.UnknownNullability;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * The InformBoardController class is responsible for managing the notification board
+ * within the application. It facilitates the display, interaction, and management
+ * of user notifications.
+ *
+ * This controller handles initialization, data loading, and user interactions such as
+ * clearing all notifications or closing individual notifications.
+ *
+ * Implements the {@code RequiresLoggedIn}, {@code Initializable}, and {@code LoadsData} interfaces
+ * to ensure proper user session validation and data handling mechanics.
+ */
 public final class InformBoardController implements RequiresLoggedIn, Initializable, LoadsData {
 	//Storing all notifications of user
 	private final ObservableList<String> notifications = FXCollections.observableArrayList();
-	//Referring to fxml ListView
+    /**
+     * The Notification list.
+     */
+//Referring to fxml ListView
 	@UnknownNullability
 	@SuppressWarnings("unused")
 	public ListView<String> notificationList;
@@ -40,7 +54,10 @@ public final class InformBoardController implements RequiresLoggedIn, Initializa
 		notificationList.setItems(notifications);
 	}
 
-	public void clearAll() {
+    /**
+     * Clear all.
+     */
+    public void clearAll() {
 		try {
 			Main.getContext().getRepository().userNotificationOps.update(getLoggedInUser()._1(), _ -> new String[0]);
 		} catch (TransactionException e) {
@@ -62,13 +79,31 @@ public final class InformBoardController implements RequiresLoggedIn, Initializa
 		loadData();
 	}
 
-	class NotificationCell extends ListCell<@Nullable String> {
-		final HBox hbox = new HBox();
-		final Label label = new Label();
-		final Pane pane = new Pane();
-		final Button button = new Button("Close");
+    /**
+     * The type Notification cell.
+     */
+    class NotificationCell extends ListCell<@Nullable String> {
+        /**
+         * The Hbox.
+         */
+        final HBox hbox = new HBox();
+        /**
+         * The Label.
+         */
+        final Label label = new Label();
+        /**
+         * The Pane.
+         */
+        final Pane pane = new Pane();
+        /**
+         * The Button.
+         */
+        final Button button = new Button("Close");
 
-		public NotificationCell() {
+        /**
+         * Instantiates a new Notification cell.
+         */
+        public NotificationCell() {
 			super();
 			hbox.getChildren().addAll(label, pane, button);
 			HBox.setHgrow(pane, Priority.ALWAYS);
