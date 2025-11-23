@@ -14,6 +14,8 @@ import java.io.Closeable;
 import java.util.function.Consumer;
 
 public interface Context extends Closeable {
+	boolean isTesting();
+
 	void setScene(Parent value);
 
 	<E extends Throwable> Stage newWindow(String title, ThrowingFunction<? super Stage, ? extends Parent, ? extends E> parentSupplier, @Nullable Stage stage) throws E;

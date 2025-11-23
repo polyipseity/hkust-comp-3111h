@@ -28,6 +28,8 @@ public final class ContextImpl implements Context {
 	public static final double WINDOW_INITIAL_HEIGHT = 480;
 
 	@Getter
+	private final boolean testing = false;
+	@Getter
 	private final Stage primaryStage;
 	@Getter
 	private final Repository repository;
