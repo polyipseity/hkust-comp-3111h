@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.stage.Stage;
 import library.persistence.Repository;
-import lombok.AccessLevel;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 import org.mapdb.DBMaker;
@@ -13,7 +12,7 @@ import java.util.Objects;
 
 public final class Main extends Application {
 	@Nullable
-	@Setter(AccessLevel.PACKAGE)
+	@Setter
 	private static Context context = null;
 
 	public static Context getContext() {
