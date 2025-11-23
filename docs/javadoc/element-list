@@ -1,0 +1,12 @@
+module:library
+library
+library.controllers
+library.controllers.author
+library.controllers.common
+library.controllers.librarian
+library.controllers.student_staff
+library.controls
+library.models
+library.models.json
+library.persistence
+library.utils
