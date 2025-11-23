@@ -198,7 +198,7 @@ public record RepositoryBorrowOps(Repository repository) {
 	}
 
     /**
-     * Prune.
+     * Prune expired borrows.
      *
      * @throws TransactionException the transaction exception
      */
@@ -207,7 +207,13 @@ public record RepositoryBorrowOps(Repository repository) {
 			// Prune all borrows based on if expired
 			for (final var borrowEntry : tx.borrows().entrySet()) {
 				if (!borrowEntry.getValue().expired()) continue;
-				tx.borrows().remove(borrowEntry.getKey(), borrowEntry.getValue());
+				if (tx.borrows().remove(borrowEntry.getKey(), borrowEntry.getValue())) {
+					final var user = (User) borrowEntry.getKey()[0];
+					final var book = (Book) borrowEntry.getKey()[1];
+					repository.userNotificationOps.updateAsList(user, notifications -> {
+						notifications.add("The book '%s' you borrowed has been expired!".formatted(book.title()));
+					});
+				}
 			}
 			return true;
 		}, () -> "Error while pruning");

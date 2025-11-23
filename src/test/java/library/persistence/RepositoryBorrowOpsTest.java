@@ -37,6 +37,7 @@ class RepositoryBorrowOpsTest {
 		data.books().put(book2, new Book.Data("summary", "content", Book.ApprovalStatus.REJECTED, null, null, 42));
 
 		data.borrows().put(new Object[]{reader, book}, new Borrow(TimeUtil.nowZoned(), Duration.ofHours(42), "test.pdf")); // ensure not expired
+		data.borrows().put(new Object[]{reader, book2}, new Borrow(TimeUtil.nowZoned().plusDays(-1), Duration.ofNanos(42), "test.pdf")); // ensure expired
 
 		return true;
 	}
@@ -294,6 +295,20 @@ class RepositoryBorrowOpsTest {
 
 		// should throw, nothing to remove
 		assertThrows(TransactionException.class, () -> ops.delete(user));
+	}
+
+	@Test
+	void prune_succeeds() {
+		final var reader = new User("reader");
+		final var author = new User("author");
+		final var book = new Book("book", new Author.ByRef(author));
+		final var book2 = new Book("book", new Author.ByName("author"));
+
+		assertTrue(repository.borrows.containsKey(new Object[]{reader, book}));
+		assertTrue(repository.borrows.containsKey(new Object[]{reader, book2}));
+		assertDoesNotThrow(() -> ops.prune());
+		assertTrue(repository.borrows.containsKey(new Object[]{reader, book}));
+		assertFalse(repository.borrows.containsKey(new Object[]{reader, book2}));
 	}
 
 	@Test

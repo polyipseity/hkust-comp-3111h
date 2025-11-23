@@ -122,6 +122,7 @@ public final class AvailableBooksController implements RequiresLoggedIn, Initial
 				.map(entry ->
 						new Data(this, entry.getKey(), entry.getValue(), repository.userOps.readFullName(entry.getKey().author())))
 				.toList());
+
 		activeBorrows.clear();
 		activeBorrows.putAll(activeBorrows2);
 	}

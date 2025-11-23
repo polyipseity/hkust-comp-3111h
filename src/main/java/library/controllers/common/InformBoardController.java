@@ -11,26 +11,32 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import library.Main;
+import library.models.Book;
+import library.models.Borrow;
 import library.persistence.TransactionException;
 import library.utils.Alerts;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
  * The InformBoardController class is responsible for managing the notification board
  * within the application. It facilitates the display, interaction, and management
  * of user notifications.
- *
+ * <p>
  * This controller handles initialization, data loading, and user interactions such as
  * clearing all notifications or closing individual notifications.
- *
+ * <p>
  * Implements the {@code RequiresLoggedIn}, {@code Initializable}, and {@code LoadsData} interfaces
  * to ensure proper user session validation and data handling mechanics.
  */
 public final class InformBoardController implements RequiresLoggedIn, Initializable, LoadsData {
+	private final Map<Book, Borrow> activeBorrows = new HashMap<>();
+
 	//Storing all notifications of user
 	private final ObservableList<String> notifications = FXCollections.observableArrayList();
     /**
@@ -46,11 +52,24 @@ public final class InformBoardController implements RequiresLoggedIn, Initializa
 		notificationList.setCellFactory(_ -> new NotificationCell());
 
 		LoadsData.super.initialize(location, resources);
+
+		final var context = Main.getContext();
+		context.addSecondTimelineListener(getLoggedInToken(), _ -> activeBorrows.entrySet().removeIf(entry -> {
+			if (!entry.getValue().expired()) return false;
+			// Sync with `RepositoryBorrowOps.prune`.
+			notificationList.getItems().add("The book '%s' you borrowed has been expired!".formatted(entry.getKey().title()));
+			return true;
+		}));
 	}
 
 	@Override
 	public void loadData() {
-		notifications.setAll(Main.getContext().getRepository().userNotificationOps.readOrThrow(getLoggedInUser()._1()));
+		final var repository = Main.getContext().getRepository();
+
+		activeBorrows.clear();
+		activeBorrows.putAll(repository.borrowOps.read(getLoggedInUser()._1()));
+
+		notifications.setAll(repository.userNotificationOps.readOrThrow(getLoggedInUser()._1()));
 		notificationList.setItems(notifications);
 	}
 
