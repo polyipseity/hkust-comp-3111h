@@ -6,7 +6,10 @@ import library.persistence.TransactionException;
 import library.utils.HasMessage;
 
 /**
- * The type Manage profile control.
+ * This class provides methods for managing user profiles, including login and registration operations.
+ * It interacts with a repository for user operations.
+ *
+ * @param repository The repository instance that manages user data.
  */
 public record ManageProfileControl(Repository repository) {
     /**

@@ -22,7 +22,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * The type Borrow books control.
+ * Represents the control class for borrowing, reading, and returning books.
+ * Provides the functionality to borrow books for a specific duration, read
+ * borrowed books, check if a book is borrowed, and return borrowed books.
  */
 public record BorrowBooksControl(Repository repository) {
     /**

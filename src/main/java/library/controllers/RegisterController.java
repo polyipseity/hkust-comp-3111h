@@ -21,7 +21,9 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 /**
- * The type Register controller.
+ * The RegisterController class is responsible for handling the registration process for new users.
+ * It ensures that the user is logged out before access and provides initialization logic for
+ * various UI components and actions related to user registration.
  */
 @RequiredArgsConstructor
 public final class RegisterController implements RequiresLoggedOut, Initializable {

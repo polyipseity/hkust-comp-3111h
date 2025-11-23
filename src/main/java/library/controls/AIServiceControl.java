@@ -18,8 +18,17 @@ import java.util.concurrent.CompletionException;
  * The type Ai service control.
  */
 public record AIServiceControl(
-		HttpClient client,
-		ObjectMapper objectMapper
+        /**
+         *
+         *//**
+ * The HTTP client used for making asynchronous HTTP requests.
+ * <p>
+ * This variable is part of the {@link AIServiceControl} class and is used
+ * to send HTTP requests, specifically to interact with external APIs such as OpenAI.
+ * It is initialized as an instance of {@link HttpClient} with configurations
+ * for redirect handling.
+ */HttpClient client,
+        ObjectMapper objectMapper
 ) implements Closeable {
     /**
      * The constant OPENAI_API_URL.

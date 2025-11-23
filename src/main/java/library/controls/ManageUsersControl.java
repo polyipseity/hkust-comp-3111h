@@ -9,7 +9,9 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * The type Manage users control.
+ * A class for managing user activation and deactivation operations.
+ *
+ * Encapsulates business logic for updating user statuses within the system through a repository-based approach.
  */
 public record ManageUsersControl(Repository repository) {
 

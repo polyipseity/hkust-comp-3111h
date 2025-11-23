@@ -8,7 +8,8 @@ import library.utils.HasMessage;
 import library.utils.TimeUtil;
 
 /**
- * The type Request books control.
+ * The RequestBooksControl class manages book request operations,
+ * including the creation, approval, and rejection of book requests by a user.
  */
 public record RequestBooksControl(Repository repository) {
     /**

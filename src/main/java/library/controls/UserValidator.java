@@ -4,7 +4,10 @@ import library.utils.HasMessage;
 import lombok.Getter;
 
 /**
- * The interface User validator.
+ * Functional interface for validating user-related attributes such as username, password, and full name.
+ * <p>
+ * This interface provides a single method for validation and a default implementation
+ * that performs checks on common issues like empty fields, inappropriate characters, and inadequate length.
  */
 @FunctionalInterface
 public interface UserValidator {

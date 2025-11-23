@@ -24,7 +24,11 @@ import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 /**
- * The type Book download control.
+ * A utility class that handles interactions with Project Gutenberg's Gutendex API.
+ * This class provides functionality to search for books, download their content, and
+ * process the results into a structured book format. It requires an `HttpClient` for
+ * networking operations and an `ObjectMapper` for JSON deserialization. It implements
+ * `Closeable`, allowing it to release resources when no longer in use.
  */
 public record BookDownloadControl(
 		HttpClient client,

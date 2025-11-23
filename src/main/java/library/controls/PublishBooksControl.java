@@ -9,7 +9,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * The type Publish books control.
+ * Control class for publishing books. This class provides methods to add books to a repository,
+ * encapsulating transaction handling and data conflict resolution.
+ *
+ * @param repository the repository used to manage book data
  */
 public record PublishBooksControl(Repository repository) {
     /**

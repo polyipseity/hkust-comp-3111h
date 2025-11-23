@@ -15,7 +15,9 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * The type Manage books control.
+ * This class provides control logic for managing books, including operations
+ * for approving, rejecting, modifying, and deleting books. It uses a repository
+ * to perform database transactions and updates related to book management.
  */
 public record ManageBooksControl(Repository repository) {
     /**

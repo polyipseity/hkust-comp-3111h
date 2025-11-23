@@ -21,7 +21,10 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 /**
- * The type Login controller.
+ * The LoginController class handles the login functionality for different user roles.
+ * It is responsible for managing the login process, directing users to the appropriate
+ * dashboard upon successful login, and providing navigation options to other screens
+ * such as the home or register screens. The controller requires the user to be logged out.
  */
 @RequiredArgsConstructor
 public final class LoginController implements RequiresLoggedOut, Initializable {

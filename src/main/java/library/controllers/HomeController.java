@@ -8,7 +8,14 @@ import library.models.User;
 import java.io.IOException;
 
 /**
- * The type Home controller.
+ * The HomeController class manages the navigation to the login screen
+ * for different user roles. It ensures that the user is logged out
+ * before initializing any operations. The class implements the
+ * RequiresLoggedOut interface to enforce this requirement.
+ *
+ * This class provides methods for handling specific roles and
+ * transitions the application to the login screen with the appropriate
+ * setup based on the role.
  */
 public final class HomeController implements RequiresLoggedOut {
     /**
