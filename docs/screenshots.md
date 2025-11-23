@@ -53,6 +53,38 @@ one for when borrowed book is deleted by librarian, and the other for approval o
 
 ## Task 2
 
+### "My Books" Tab
+
+![](screenshots/author/my_books.png)
+
+![](screenshots/author/book_view.png)
+*Window that appears after "View" is pressed while a book is selected.*
+
+![](screenshots/author/modify_book.png)
+*Window that appears after "Modify" is pressed.*
+
+![](screenshots/author/delete_confirmation.png)
+*Confirmation window that appears after "Delete" is pressed.*
+
+### "Publish New Book" Tab 
+
+![](screenshots/author/publish_new_book.png)
+
+### "Status View" Tab
+
+![](screenshots/author/status_view.png)
+
+### "Inform Board" Tab
+
+![](screenshots/author/inform_board.png)
+*Uses the same layout and logic as "Inform Board" from Student/Staff dashboard.*
+
 ## Task 3
 
-![](screenshots/librarian_download.png)
+### "Manage Users" Tab
+
+![](screenshots/librarian/manage_users.png)
+
+### "Book Download" Tab
+
+![](screenshots/librarian/book_download.png)
