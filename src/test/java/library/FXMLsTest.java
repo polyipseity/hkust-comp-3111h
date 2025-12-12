@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.abort;
 
 class FXMLsTest {
-	private static boolean unsupported = false;
+	private static boolean supported = false;
 
 	@SuppressWarnings("SameReturnValue")
 	private static boolean populate(Repository.Data data) {
@@ -87,7 +87,7 @@ class FXMLsTest {
 
 	@AfterAll
 	static void tearDownAll() {
-		if (unsupported) {
+		if (!supported) {
 			return;
 		}
 		Main.getContext().close();

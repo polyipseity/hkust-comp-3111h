@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.abort;
 
 class DynamicTableControllerTest {
-	private static boolean unsupported = false;
+	private static boolean supported = false;
 	private TableView<Function<String, DynamicTableController.Data>> table;
 	private DynamicTableController<@NotNull String, @NotNull Function<String, DynamicTableController.Data>> tableController;
 	private SequencedMap<String, TableColumn<Function<String, Data>, Function<String, Data>>> keys;
@@ -38,7 +38,7 @@ class DynamicTableControllerTest {
 
 	@AfterAll
 	static void tearDownAll() {
-		if (unsupported) {
+		if (!supported) {
 			return;
 		}
 		Main.getContext().close();
