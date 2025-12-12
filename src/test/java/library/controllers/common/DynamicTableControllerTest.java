@@ -29,7 +29,7 @@ class DynamicTableControllerTest {
 
 	@BeforeAll
 	static void setUpAll() {
-		if (!PlatformTestUtil.startup()) {
+		if (!(supported = PlatformTestUtil.startup())) {
 			abort();
 		}
 		final var context = new FakeContext(false);

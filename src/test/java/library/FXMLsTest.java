@@ -77,7 +77,7 @@ class FXMLsTest {
 
 	@BeforeAll
 	static void setUpAll() throws TransactionException {
-		if (!PlatformTestUtil.startup()) {
+		if (!(supported = PlatformTestUtil.startup())) {
 			abort();
 		}
 		final var context = new FakeContext(true);
