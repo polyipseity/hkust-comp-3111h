@@ -6,6 +6,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import library.FakeContext;
 import library.Main;
+import library.PlatformTestUtil;
 import library.controllers.common.DynamicTableController.Data;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterAll;
@@ -28,14 +29,8 @@ class DynamicTableControllerTest {
 
 	@BeforeAll
 	static void setUpAll() {
-		try {
-			Platform.startup(() -> {
-			});   // starts the toolkit
-		} catch (IllegalStateException _) {
-		} catch (UnsupportedOperationException ex) {
-			// java.lang.UnsupportedOperationException: Unable to open DISPLAY
-			unsupported = true;
-			abort(ex.getLocalizedMessage());
+		if (!PlatformTestUtil.startup()) {
+			abort();
 		}
 		final var context = new FakeContext(false);
 		Main.setContext(context);

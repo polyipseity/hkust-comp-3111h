@@ -77,14 +77,8 @@ class FXMLsTest {
 
 	@BeforeAll
 	static void setUpAll() throws TransactionException {
-		try {
-			Platform.startup(() -> {
-			});   // starts the toolkit
-		} catch (IllegalStateException _) {
-		} catch (UnsupportedOperationException ex) {
-			// java.lang.UnsupportedOperationException: Unable to open DISPLAY
-			unsupported = true;
-			abort(ex.getLocalizedMessage());
+		if (!PlatformTestUtil.startup()) {
+			abort();
 		}
 		final var context = new FakeContext(true);
 		Main.setContext(context);
