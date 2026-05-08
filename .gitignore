@@ -147,7 +147,7 @@ http-client.private.env.json
 .idea/ApifoxUploaderProjectSetting.xml
 # }
 
-# https://github.com/github/gitignore/blob/fc6ce5da28a8c3480cc8a5acad050449f72a9261/Global/Linux.gitignore {
+# https://github.com/github/gitignore/blob/1046d8fba6b42d367da6314c934cddb6bfe5662e/Global/Linux.gitignore {
 *~
 
 # temporary files which can be created if a process still has a handle open of a deleted file
@@ -190,7 +190,7 @@ nbdist/
 *.vsix
 # }
 
-# https://github.com/github/gitignore/blob/fc6ce5da28a8c3480cc8a5acad050449f72a9261/Global/Windows.gitignore {
+# https://github.com/github/gitignore/blob/1046d8fba6b42d367da6314c934cddb6bfe5662e/Global/Windows.gitignore {
 # Windows thumbnail cache files
 Thumbs.db
 Thumbs.db:encryptable
@@ -217,19 +217,19 @@ $RECYCLE.BIN/
 *.lnk
 # }
 
-# https://github.com/github/gitignore/blob/fc6ce5da28a8c3480cc8a5acad050449f72a9261/Global/macOS.gitignore {
+# https://github.com/github/gitignore/blob/1046d8fba6b42d367da6314c934cddb6bfe5662e/Global/macOS.gitignore {
 # General
 .DS_Store
+.localized
 __MACOSX/
 .AppleDouble
 .LSOverride
-# Icon[
-# ]
+Icon[^ -~]
 
-# Thumbnails
+# Resource forks
 ._*
 
-# Files that might appear in the root of a volume
+# Files and directories that might appear in the root of a volume
 .DocumentRevisions-V100
 .fseventsd
 .Spotlight-V100
@@ -237,6 +237,15 @@ __MACOSX/
 .Trashes
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
+.com.apple.timemachine.supported
+.PKInstallSandboxManager
+.PKInstallSandboxManager-SystemSoftware
+.hotfiles.btree
+.vol
+.file
+.disk_label*
+lost+found
+.HFS+ Private Directory Data[^ -~]
 
 # Directories potentially created on remote AFP share
 .AppleDB
@@ -244,6 +253,28 @@ __MACOSX/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# Mac OS 6 to 9
+Desktop DB
+Desktop DF
+TheFindByContentFolder
+TheVolumeSettingsFolder
+.FBCIndex
+.FBCSemaphoreFile
+.FBCLockFolder
+
+# Quota system
+.quota.group
+.quota.user
+.quota.ops.group
+.quota.ops.user
+
+# TimeMachine
+Backups.backupdb
+.MobileBackups
+.MobileBackups.trash
+MobileBackups.trash
+tmbootpicker.efi
 # }
 
 # https://github.com/github/gitignore/blob/fc6ce5da28a8c3480cc8a5acad050449f72a9261/Java.gitignore {
